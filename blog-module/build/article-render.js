@@ -1,5 +1,9 @@
-const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb } = require('../taxonomy');
+const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensions, getImageDimensionsForPublicPath } = require('./shared');
+const { truthfulSrcset } = require('./image-sizes');
+const { mediaFor, slotOf, creditLineHtml, applyBodyMedia } = require('./media-meta');
+const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb, formatReadingTime } = require('../taxonomy');
+const { readingTimeFromWords, wordsInHtml } = require('./reading-time');
+const { transformBody, renderRunningOrder, coverVariant, COVER_SIZES } = require('./race-report');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -41,41 +45,88 @@ function getEditorialProfile(category) {
         : { kind: 'journal', label: 'F1 STORIES JOURNAL' };
 }
 
-// The cover byline: the writer's small portrait, then "Γράφει" and the name. The
-// team (no author record) signs with the name alone.
+// The cover byline on the signal rule: the writer's small portrait, "Γράφει", the
+// name and their specialty. A writer without a record signs with the name alone.
 function renderHeaderByline(post) {
     const author = findAuthor(post.author);
     const name = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const href = escapeHtmlAttribute(authorProfileHref(post.author));
-    const avatar = author
-        ? `<img class="article-header-byline__avatar" src="${authorThumb(author)}" alt="" width="32" height="32" decoding="async">`
-        : '';
-    return `<p class="article-header-byline"${author ? ` data-author-slug="${author.slug}"` : ''}>${avatar}<span>Γράφει</span> <a href="${href}" class="article-author-link">${name}</a></p>`;
+    const avatar = author ? `<img src="${authorThumb(author)}" alt="" width="48" height="48" decoding="async">` : '';
+    const specialty = author && author.specialty ? `<small>${escapeHtmlText(author.specialty)}</small>` : '';
+    return `<div class="rr-cover__side${author ? '' : ' rr-cover__side--plain'}"${author ? ` data-author-slug="${author.slug}"` : ''}>${avatar}`
+        + `<p><span>Γράφει</span> <a href="${href}" class="article-author-link">${name}</a>${specialty}</p></div>`;
 }
 
-// The signed ending of every story: portrait, specialty, one line of biography and
-// the way into the writer's archive. The writer's accent ink comes from CSS via
-// data-author-slug; unknown writers (the team) get a plain card with no accent.
+// The signed ending of every story, on the ink pit wall: portrait, specialty, one line
+// of biography and the way into the writer's archive. Unknown writers get the team.
 function renderAuthorCard(post) {
     const author = findAuthor(post.author);
     if (!author) {
-        return '<section class="author-card" aria-label="Συντάκτης">'
-            + '<p class="author-card__label">ΓΡΑΦΕΙ</p>'
-            + '<p class="author-card__name">Η ομάδα του F1 Stories</p>'
-            + '<p class="author-card__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p>'
-            + '</section>';
+        return '<div class="rr-pitwall__author rr-pitwall__author--plain"><div>'
+            + '<p class="rr-label">Γράφει</p>'
+            + '<h2 class="rr-pitwall__name" id="author-card-name">Η ομάδα του F1 Stories</h2>'
+            + '<p class="rr-pitwall__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p>'
+            + '</div></div>';
     }
     const social = author.instagram
-        ? `<a class="author-card__social" href="${escapeHtmlAttribute(author.instagram)}" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a>`
+        ? `<a href="${escapeHtmlAttribute(author.instagram)}" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a>`
         : '';
-    return `<section class="author-card" data-author-slug="${author.slug}" aria-labelledby="author-card-name">`
-        + '<p class="author-card__label">ΓΡΑΦΕΙ</p>'
-        + `<div class="author-card__head"><img class="author-card__portrait" src="${author.portrait}" alt="" width="80" height="80" loading="lazy" decoding="async">`
-        + `<div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=${author.slug}">${escapeHtmlText(author.label)}</a></p>`
-        + `<p class="author-card__specialty">${escapeHtmlText(author.specialty)}</p></div></div>`
-        + `<p class="author-card__bio">${escapeHtmlText(author.bio)}</p>`
-        + `<p class="author-card__links"><a href="/blog-module/blog/index.html?author=${author.slug}">Όλα τα άρθρα του ${escapeHtmlText(author.genitive)} <span aria-hidden="true">→</span></a>${social}</p>`
-        + '</section>';
+    return `<div class="rr-pitwall__author" data-author-slug="${author.slug}">`
+        + `<img src="${author.portrait}" alt="" width="132" height="132" loading="lazy" decoding="async"><div>`
+        + '<p class="rr-label">Γράφει</p>'
+        + `<h2 class="rr-pitwall__name" id="author-card-name"><a href="/authors/?author=${author.slug}">${escapeHtmlText(author.label)}</a></h2>`
+        + `<p class="rr-pitwall__role">${escapeHtmlText(author.specialty)}</p>`
+        + `<p class="rr-pitwall__bio">${escapeHtmlText(author.bio)}</p>`
+        + `<p class="rr-pitwall__links"><a href="/blog-module/blog/index.html?author=${author.slug}">Όλα τα άρθρα του ${escapeHtmlText(author.genitive)} <span aria-hidden="true">→</span></a>${social}</p>`
+        + '</div></div>';
+}
+
+// The partners strip is the homepage's own (labels, logos, roles and links), read from index.html so the two never
+// drift apart. Only the ids change; the article styles it as the homepage's night edition in both themes.
+let partnersHtml = null;
+function renderPartners() {
+    if (partnersHtml !== null) return partnersHtml;
+    const home = fs.readFileSync(path.join(__dirname, '..', '..', 'index.html'), 'utf8');
+    const section = (/<section id="home-sponsors"[\s\S]*?<\/section>/.exec(home) || [''])[0];
+    const label = /<h2 class="sponsor-strip-label"[^>]*>([\s\S]*?)<\/h2>/.exec(section);
+    const list = /<ul class="sponsor-logos">[\s\S]*?<\/ul>/.exec(section);
+    if (!label || !list) throw new Error('index.html: the #home-sponsors partners block was not found');
+    partnersHtml = `<div class="rr-partners__layout">\n            <h2 class="rr-partners__label" id="partners-heading">${label[1]}</h2>\n            ${list[0].replace(/\n\s*/g, '\n            ')}\n        </div>`;
+    return partnersHtml;
+}
+
+const pad2 = value => String(value).padStart(2, '0');
+
+function editionDate(post) {
+    const [year, month, day] = String(post.dateISO || '').split('-');
+    return year && month && day ? `${day}.${month}.${year}` : escapeHtmlText(post.displayDate || post.date || '');
+}
+
+// The timing strip: real metadata only. The fourth column counts the data tools when the
+// story has any, otherwise its length in words.
+function renderTiming(post, category, minutes, dataCount, words) {
+    const [year, month, day] = String(post.dateISO || '').split('-');
+    const date = year && month && day
+        ? `<time datetime="${escapeHtmlAttribute(post.dateISO)}">${day}.${month}<small>.${year}</small></time>`
+        : escapeHtmlText(post.displayDate || post.date || '');
+    const fourth = dataCount
+        ? `<div class="is-signal"><dt>Δεδομένα</dt><dd class="rr-num">${pad2(dataCount)}<small> ${dataCount === 1 ? 'εργαλείο' : 'εργαλεία'}</small></dd></div>`
+        : words ? `<div><dt>Έκταση</dt><dd class="rr-num">${words.toLocaleString('el-GR')}<small> λέξεις</small></dd></div>` : '';
+    return '<dl class="rr-timing">'
+        + `<div><dt>Κατηγορία</dt><dd>${escapeHtmlText(categoryLabel(category))}</dd></div>`
+        + `<div><dt>Δημοσίευση</dt><dd class="rr-num">${date}</dd></div>`
+        + (minutes ? `<div><dt>Ανάγνωση</dt><dd class="rr-num">${pad2(minutes)}<small> ${minutes === 1 ? 'λεπτό' : 'λεπτά'}</small></dd></div>` : '')
+        + `${fourth}</dl>`;
+}
+
+// Desktop running-order tower and, below it, the phone/tablet contents list: both list
+// exactly the sections and data stops the body contains, so either can be empty.
+function renderRunningOrderBlocks(entries) {
+    if (!entries.length) return '';
+    const items = renderRunningOrder(entries);
+    const tower = `<nav class="rr-tower" aria-label="Running order: ενότητες και δεδομένα">\n                <p class="rr-tower__label" aria-hidden="true">RUNNING ORDER</p>\n                <ol class="rr-ro">\n${items}\n                </ol>\n            </nav>`;
+    if (entries.length < 3) return tower;
+    return `${tower}\n            <details class="rr-contents">\n                <summary>Σε αυτό το άρθρο <span>${pad2(entries.length)}</span></summary>\n                <nav aria-label="Ενότητες άρθρου"><ol class="rr-ro">\n${items}\n                </ol></nav>\n            </details>`;
 }
 
 function normalizeSourceReferences(value) {
@@ -127,6 +178,15 @@ function renderArticleSources(sources, profile) {
         : 'Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.';
 
     return `<span class="article-trust__pending">${escapeHtmlText(context)}</span>`;
+}
+
+// Badge text such as "8 λεπτά ανάγνωσης": the same stored value the cards, index and homepage show (see reading-time.js).
+function readingBadgeText(post) {
+    const stored = post.readingTime || post.readTime
+        || (post.wordCount ? readingTimeFromWords(post.wordCount) : '')
+        || (post.content ? readingTimeFromWords(wordsInHtml(post.content)) : '');
+    const minutes = formatReadingTime(stored);
+    return minutes ? `${minutes} ανάγνωσης` : '';
 }
 
 function replaceTemplateTokens(templateHtml, tokens) {
@@ -269,6 +329,10 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="article-rail-label">)Article(<\/span>)/i, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2')
         .replace(/<p class="article-header-byline"[^>]*>[\s\S]*?<\/p>/, () => renderHeaderByline(post))
+        .replace(/(<span id="reading-time-value">)[^<]*(<\/span>)/, (block, open, close) => {
+            const badge = readingBadgeText(post);
+            return badge ? `${open}${escapeHtmlText(badge)}${close}` : block;
+        })
         // Every story ends on the current author card (all shapes of the old box included).
         .replace(/<(?:div class="article-author-footer"|section class="author-card")[\s\S]*?(?=\s*<div class="sponsor-strip">)/, () => renderAuthorCard(post));
 
@@ -293,6 +357,43 @@ function refreshArticleTaxonomy(html, post) {
     return updated;
 }
 
+// Older published bodies declare widths their files no longer have (a 1600px file as "2048w"). Each width descriptor of
+// a story's own file is rewritten to the file's measured width; anything else is left as written. Idempotent.
+async function measureBodySrcsets(html, entryPath, id) {
+    const names = new Set();
+    for (const set of html.matchAll(/\bsrcset="([^"]+)"/g)) {
+        for (const part of set[1].split(',')) {
+            const [name, descriptor] = part.trim().split(/\s+/);
+            if (/^\d+w$/.test(descriptor || '') && /^[\w.-]+$/.test(name)) names.add(name);
+        }
+    }
+    const widths = new Map();
+    await Promise.all([...names].map(async name => {
+        const size = fs.existsSync(path.join(entryPath, name)) ? await getImageDimensions(path.join(entryPath, name)) : null;
+        if (size) widths.set(name, size.width);
+    }));
+    // A same-path editorial replacement can change the original's proportions, too.
+    const images = new Map();
+    for (const tag of html.matchAll(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g)) {
+        const name = (/\ssrc="([^"]+)"/.exec(tag[0]) || [])[1];
+        if (name && /^[\w.-]+$/.test(name) && mediaFor(id, slotOf(name))?.type === 'graphic') images.set(name, await getImageDimensions(path.join(entryPath, name)));
+    }
+    html = html.replace(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g, tag => {
+        const size = images.get((/\ssrc="([^"]+)"/.exec(tag) || [])[1]);
+        return size ? tag.replace(/\bwidth="\d+"/, `width="${size.width}"`).replace(/\bheight="\d+"/, `height="${size.height}"`) : tag;
+    });
+    return html.replace(/\bsrcset="([^"]+)"/g, (match, set) => {
+        const parts = set.split(',').map(part => part.trim().split(/\s+/));
+        const wrong = parts.some(([name, descriptor]) => widths.has(name) && /^\d+w$/.test(descriptor || '') && descriptor !== `${widths.get(name)}w`);
+        if (!wrong) return match;
+        // Two copies that turn out to be the same width are one candidate (the first, lighter one stays).
+        const seen = new Set();
+        return `srcset="${parts.map(([name, descriptor]) => (widths.has(name) && /^\d+w$/.test(descriptor || '') ? `${name} ${widths.get(name)}w` : [name, descriptor].filter(Boolean).join(' ')))
+            .filter(candidate => { const w = candidate.split(' ')[1]; if (!w || !w.endsWith('w')) return true; if (seen.has(w)) return false; seen.add(w); return true; })
+            .join(', ')}"`;
+    });
+}
+
 async function renderArticleHtml(postData, entryPath, folderName = postData.id || path.basename(entryPath)) {
     const taxonomy = getPostTaxonomy(postData);
     const editorialProfile = getEditorialProfile(taxonomy.category);
@@ -304,28 +405,53 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroBase = path.parse(bgImageFilename).name;
     const mobileWebp = `${heroBase}-mobile.webp`;
     const mobileAvif = `${heroBase}-mobile.avif`;
-    const heroSizes = '(max-width: 820px) calc(100vw - 2rem), 770px';
-    const heroAvifSrcset = fs.existsSync(path.join(entryPath, heroAvifFile))
-        ? `${fs.existsSync(path.join(entryPath, mobileAvif)) ? `${encodePathSegment(mobileAvif)} 800w, ` : ''}${encodePathSegment(heroAvifFile)} 1600w`
+    const replacementDimensions = mediaFor(folderName, slotOf(bgImageFilename))?.type === 'graphic'
+        ? await getImageDimensionsForPublicPath(headerImage) : null;
+    const headerImageDimensions = replacementDimensions || (postData.backgroundImageWidth && postData.backgroundImageHeight
+        ? { width: postData.backgroundImageWidth, height: postData.backgroundImageHeight }
+        : await getImageDimensionsForPublicPath(headerImage));
+    const coverWidth = headerImageDimensions && headerImageDimensions.width;
+    const cover = coverVariant(coverWidth, headerImageDimensions && headerImageDimensions.height);
+    const heroSizes = COVER_SIZES[cover];
+    // Width descriptors are the files' measured widths (a small original's "mobile" copy is not 800px, and an
+    // older full AVIF can be wider than 1600px), so the browser picks from what really exists.
+    const measured = new Map();
+    await Promise.all([mobileAvif, heroAvifFile, mobileWebp, bgImageFilename].map(async name => {
+        const file = path.join(entryPath, name);
+        if (fs.existsSync(file)) measured.set(file, await getImageDimensions(file));
+    }));
+    const dimensionsOf = file => measured.get(file) || null;
+    const heroAvifSrcset = measured.get(path.join(entryPath, heroAvifFile))
+        ? truthfulSrcset(entryPath, [mobileAvif, heroAvifFile], encodePathSegment, dimensionsOf)
         : '';
     const heroAvifSource = heroAvifSrcset
         ? `<source type="image/avif" srcset="${heroAvifSrcset}" sizes="${heroSizes}">`
         : '';
-    const heroWebpSrcset = fs.existsSync(path.join(entryPath, mobileWebp))
-        ? `${encodePathSegment(mobileWebp)} 800w, ${encodePathSegment(bgImageFilename)} 1600w`
-        : encodePathSegment(bgImageFilename);
+    const heroWebpSrcset = truthfulSrcset(entryPath, [mobileWebp, bgImageFilename], encodePathSegment, dimensionsOf)
+        || encodePathSegment(bgImageFilename);
+    // The editors' record for the cover file (media-metadata.json): presentation type, focal point, caption/credit
+    // line and verified alt. Nothing is printed or changed without an entry.
+    const coverMeta = headerImage.startsWith('/blog-module/blog-entries/') ? mediaFor(folderName, slotOf(bgImageFilename)) : null;
+    const coverStyle = [
+        coverWidth && cover !== 'split' ? `--cover-${cover === 'bleed' ? 'max' : 'w'}: ${coverWidth}px` : '',
+        coverMeta && coverMeta.focus ? `--focus: ${coverMeta.focus}` : ''
+    ].filter(Boolean).join('; ');
+    const coverLine = creditLineHtml(coverMeta);
     // Preload the candidate the <picture> will actually pick: AVIF when it has an
     // AVIF source (browsers without AVIF skip the typed preload), otherwise WebP.
+    // The href is the widest candidate the srcset really lists (a small original's copies collapse to one file).
+    const widest = set => set.split(', ').pop().split(' ')[0];
     const heroPreload = heroAvifSrcset
-        ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(encodePathSegment(heroAvifFile))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
-        : `<link rel="preload" as="image" href="${escapeHtmlAttribute(encodePathSegment(bgImageFilename))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
-    const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
-        ? { width: postData.backgroundImageWidth, height: postData.backgroundImageHeight }
-        : await getImageDimensionsForPublicPath(headerImage);
+        ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(widest(heroAvifSrcset))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
+        : `<link rel="preload" as="image" href="${escapeHtmlAttribute(widest(heroWebpSrcset))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
+    const body = transformBody(await measureBodySrcsets(applyBodyMedia(postData.content || '', folderName), entryPath, folderName));
+    const badge = readingBadgeText(postData);
+    const minutes = parseInt(badge, 10) || 1;
+    const titleText = String(postData.title || '');
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
-    const articleUrl = `https://f1stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/article.html`;
+    const articleUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/article.html`;
     const imageFilePath = encodePathSegment(bgImageFilename);
-    const imageUrl = `https://f1stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/${imageFilePath}`;
+    const imageUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/${imageFilePath}`;
     const renderTokens = {
         ARTICLE_TITLE_TEXT: escapeHtmlText(postData.title),
         ARTICLE_TITLE_ATTR: escapeHtmlAttribute(postData.title),
@@ -346,6 +472,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_EXCERPT_ATTR: escapeHtmlAttribute(postData.excerpt),
         ARTICLE_EXCERPT_JSON: jsonScriptLiteral(postData.excerpt),
         ARTICLE_COMMENTS: String(postData.comments || 0),
+        ARTICLE_READING_TIME: escapeHtmlText(readingBadgeText(postData) || '1 λεπτό ανάγνωσης'),
         ARTICLE_IMAGE_WIDTH: String(headerImageDimensions && headerImageDimensions.width ? headerImageDimensions.width : 848),
         ARTICLE_IMAGE_HEIGHT: String(headerImageDimensions && headerImageDimensions.height ? headerImageDimensions.height : 400),
         ARTICLE_IMAGE_ATTR: escapeHtmlAttribute(imageFilePath),
@@ -361,7 +488,25 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_EDITORIAL_KIND: escapeHtmlAttribute(editorialProfile.kind),
         ARTICLE_EDITORIAL_LABEL: escapeHtmlText(editorialProfile.label),
         ARTICLE_CATEGORY_LINKS: renderCategoryLinks(taxonomy.categories),
-        ARTICLE_CONTENT: postData.content || '',
+        ARTICLE_CATEGORY_HREF: escapeHtmlAttribute(`/blog-module/blog/index.html?category=${encodeURIComponent(taxonomy.category)}`),
+        ARTICLE_EDITION_DATE: editionDate(postData),
+        ARTICLE_COVER_VARIANT: cover,
+        ARTICLE_COVER_SIZES: heroSizes,
+        // The photograph's own width: a bleed never stretches past it on very wide screens, and an inset
+        // reserves its box before the file arrives (no layout shift).
+        // A graphic, diagram or archival print is marked so the cover shows it whole instead of cropping it.
+        ARTICLE_COVER_STYLE: (coverMeta && coverMeta.type && coverMeta.type !== 'photo' ? ` data-media="${coverMeta.type}"` : '')
+            + (coverStyle ? ` style="${coverStyle}"` : ''),
+        ARTICLE_COVER_CAPTION: coverLine ? `<figcaption class="rr-cover__caption">${coverLine}</figcaption>` : '',
+        ARTICLE_COVER_ALT: escapeHtmlAttribute(coverMeta && coverMeta.alt ? coverMeta.alt : postData.title),
+        // Long titles step down a size; a title that ends in its own punctuation gets no signal full stop.
+        ARTICLE_TITLE_CLASS: titleText.length > 64 ? 'rr-title rr-title--long' : 'rr-title',
+        ARTICLE_TITLE_PERIOD: /[.!?;…»"”)]$/.test(titleText.trim()) ? '' : '<span class="rr-period" aria-hidden="true">.</span>',
+        ARTICLE_TIMING_HTML: renderTiming(postData, taxonomy.category, minutes, body.dataCount, Number(postData.wordCount) || wordsInHtml(body.html)),
+        ARTICLE_SECTOR_SEGMENTS: body.sections ? `<ol class="rr-sectorbar__segs" aria-hidden="true">${'<li></li>'.repeat(body.sections)}</ol>` : '',
+        ARTICLE_RUNNING_ORDER: renderRunningOrderBlocks(body.entries),
+        ARTICLE_SPONSORS: renderPartners(),
+        ARTICLE_CONTENT: body.html,
         ARTICLE_URL_ATTR: escapeHtmlAttribute(articleUrl),
         ARTICLE_URL_JSON: jsonScriptLiteral(articleUrl),
         ARTICLE_URL_PARAM: encodeURIComponent(articleUrl)

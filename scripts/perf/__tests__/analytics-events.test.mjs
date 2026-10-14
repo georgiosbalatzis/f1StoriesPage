@@ -14,7 +14,7 @@ function boot(pathname = '/', search = '?email=private@example.com&utm_source=we
     const timers = new Map();
     const dataLayer = [];
     const stored = new Map();
-    const location = new URL(`https://f1stories.gr${pathname}${search}`);
+    const location = new URL(`https://f1-stories.gr${pathname}${search}`);
     let timerId = 0;
 
     const window = {
@@ -102,7 +102,7 @@ test('click analytics stays consent-gated and records safe internal and outbound
     const internal = events.find(event => event.name === 'internal_page_click').params;
     const outbound = events.find(event => event.name === 'outbound_click').params;
     const share = events.find(event => event.name === 'article_share').params;
-    assert.equal(internal.link_url, 'https://f1stories.gr/blog-module/blog/index.html');
+    assert.equal(internal.link_url, 'https://f1-stories.gr/blog-module/blog/index.html');
     assert.equal(internal.link_path, '/blog-module/blog/index.html');
     assert.equal(outbound.destination_domain, 'balatzis.gr');
     assert.equal(outbound.sponsored, true);
@@ -110,7 +110,15 @@ test('click analytics stays consent-gated and records safe internal and outbound
     assert.equal(share.method, 'whatsapp');
 
     const config = page.dataLayer.map(command => Array.from(command)).find(command => command[0] === 'config');
-    assert.equal(config[2].page_location, 'https://f1stories.gr/?utm_source=weekly');
+    assert.equal(config[2].page_location, 'https://f1-stories.gr/?utm_source=weekly');
+});
+
+test('Journal clients receive the actual consent contract, never a boolean analytics property', () => {
+    const page = boot('/blog-module/blog/index.html', '');
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics_storage, 'denied');
+    page.consent();
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics_storage, 'granted');
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics, undefined);
 });
 
 test('article engagement requires consent, 30 visible seconds, and 50% scroll depth', () => {

@@ -486,6 +486,12 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
     padding: 0;
 }
 
+/* Collapsed links leave the tab order and the accessibility tree; the delay lets the close animation finish. */
+.toc-body:not(.open) {
+    visibility: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease, visibility 0s 0.4s;
+}
+
 .toc-body.open {
     max-height: 600px;
     padding: 0.35rem 0 0.9rem;
@@ -1330,6 +1336,8 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
 }
 
 .lb-counter {
+    max-width: calc(100% - 32px);
+    text-align: center;
     grid-area: counter;
     min-height: 1.5rem;
     color: rgba(255, 255, 255, 0.72);

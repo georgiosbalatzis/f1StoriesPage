@@ -1,5 +1,8 @@
 ---
 category: Technical
+debriefSeason: 2026
+debriefRound: 16
+debriefLocation: Kuala Lumpur
 tags: Mercedes, 2026, Bahrain, Malayisia, Sepang
 title: Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε
 ---
@@ -24,7 +27,7 @@ title: Γιατί το νέο πάτωμα δεν έφερε τα δέκατα �
 
 Γι' αυτό έχει σημασία να ξεχωρίζουμε το downforce από το usable downforce, δηλαδή το downforce που μπορείς πραγματικά να χρησιμοποιήσεις. Το πρώτο είναι το αεροδυναμικό φορτίο που μετράς. Το δεύτερο είναι πόσο από αυτό γίνεται τελικά χρόνος γύρου, όταν μπουν στην εξίσωση τα ελαστικά, η θερμοκρασία, το ride height, η ισορροπία και ο τρόπος οδήγησης.
 
-<iframe src="https://f1stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16&amp;debriefView=tyre-deg" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
+<iframe src="https://f1-stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16&amp;debriefView=tyre-deg" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
 
 Τα δεδομένα από το Friday Debrief του F1 Stories προσθέτουν εδώ μια ενδιαφέρουσα λεπτομέρεια. Στο Soft long run του Russell που απομονώνει το Debrief, το μοντέλο δίνει μέση πτώση περίπου 0,135 δευτερολέπτων τον γύρο σε διάστημα 12 γύρων, ενώ στον Antonelli περίπου 0,402 δευτ./γύρο σε επτά γύρους. Αυτά τα νούμερα δεν είναι μέτρηση θερμοκρασίας ελαστικών. Δείχνουν τη γραμμική τάση των αντιπροσωπευτικών χρόνων ενός stint, που επηρεάζεται επίσης από το καύσιμο, την κίνηση, την εξέλιξη της πίστας και τον τρόπο οδήγησης. Ακριβώς επειδή όμως δεν μετράνε θερμοκρασία, μας λένε κάτι χρήσιμο.
 
@@ -36,7 +39,7 @@ title: Γιατί το νέο πάτωμα δεν έφερε τα δέκατα �
 
 <iframe
   src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?year=2026&circuit=Kuala+Lumpur&session=11728&drivers=12%2C63&lap=14&tab=telemetry&embed=1&theme=dark#telemetry-speed-trace"
-  title="f1stories.gr F1 Telemetry Dashboard"
+  title="f1-stories.gr F1 Telemetry Dashboard"
   width="100%"
   height="720"
   loading="lazy"

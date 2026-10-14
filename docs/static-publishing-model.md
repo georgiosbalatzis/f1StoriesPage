@@ -103,9 +103,9 @@ The local author flow is:
 
 The expected Actions history for one author-tool publish is therefore two top-level runs: `Site Quality` and `Publish Article`. The Pages build and deployment are jobs inside `Publish Article`, not a second downstream workflow run. Non-author pull requests keep the normal manual review and merge flow.
 
-### Editing the Journal front
+### Editing the Edition Index
 
-The top of `/blog-module/blog/` is chosen in `blog-module/editorial-selection.json`:
+`blog-module/editorial-selection.json` retains its existing keys:
 
 ```json
 {
@@ -115,10 +115,38 @@ The top of `/blog-module/blog/` is chosen in `blog-module/editorial-selection.js
 }
 ```
 
-- Values are article folder ids. `lead` is one story, `secondary` up to two, `deepReads` up to two older stories shown under "ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ".
-- Every field is optional. An empty or missing `lead`/`secondary` slot takes the newest story not already shown; empty `deepReads` omits that column. The "ΠΡΟΣΦΑΤΑ" list is always the next four newest stories.
-- An unknown or deleted id prints a build warning and its slot falls back, so a stale file never breaks the page. A curated lead stays until someone changes it: clear `lead` to return to newest-first.
-- Run `npm run build:blog` (or any full build) to re-render the static archive page.
+- Values are article folder ids. On the Edition Index `lead` leads the latest publication week when it belongs to that week; otherwise the index uses the newest story and prints a warning. Clear `lead` to return to newest-first. Homepage cover selection remains its existing newest-story behavior; it does not read this key.
+- `secondary` and `deepReads` are preserved but **inactive in the Edition Index**. The retired Journal front used three secondary slots and two deep-read slots (with newest unused Analysis stories as fallback). Those visual sections are retired; neither key affects the homepage or the technical spread.
+- `homeTech` retains the homepage technical-spread behavior described below.
+- Run `npm run build:blog` (or any full build) to re-render the static discovery pages.
+- Writer discovery keeps `/authors/` and the existing `?author=` filters. Dedicated `/blog-module/blog/author/<slug>/` pages are deferred to a later feature.
+- ΝΕΟ covers publication day plus six Athens calendar days; exactly seven-day-old and future stories are excluded. Builds mark relative to the newest published day and the browser removes stale labels. Without JavaScript, unchanged output can retain expired labels until the next build/deploy.
+
+### Choosing the homepage's technical spread
+
+The dark "TECHNICAL DEEP DIVE." spread on the homepage shows one Technical story. Choose it in the same file:
+
+```json
+{ "homeTech": "20261006F" }
+```
+
+- The value is one article folder id. A pick stays until someone changes it: clear it (`""`) to return to the newest Technical story.
+- With no valid pick, the spread shows the newest Technical story that is not the homepage cover. The homepage Journal then skips whichever story the spread shows, so no story appears twice.
+- The pick must be a published (built) article whose primary category is Technical and that is not the cover. A pick that is unknown, the wrong category or the cover prints a build warning and the spread falls back to the newest Technical story.
+- Same-day stories keep the order the build already gives them (`publish-order.js`), so the fallback is stable between builds.
+- The spread's data panel follows the story: it shows Friday's numbers for the team named in the title or tags (Mercedes, Ferrari, …), or for the fastest team when none is named.
+
+### Artwork with printed type
+
+If a Technical story's lead image is artwork with lettering of its own (a promotional graphic) or a diagram, add this to the story's front matter:
+
+```
+homeImage: graphic
+```
+
+The spread then starts the image after the "TECHNICAL" mast on desktop and drops the photograph shade, colour filter and hover zoom. At every width, the graphic keeps its proportions and the caption sits below it. Below 992px, the layout stacks and the data panel also starts below the graphic, so printed artwork stays visible. Leave it out for photographs, which keep the crossing. It describes the image only; it does not choose the story.
+
+After changing an existing article's flag, run `npm run build:blog` before `npm run build:public` to refresh its cached metadata.
 
 For manual local article work:
 

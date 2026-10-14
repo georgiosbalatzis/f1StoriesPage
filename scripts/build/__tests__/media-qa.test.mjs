@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
+import { preservedPublicMedia } from '../public-media-integrity.mjs';
+const repo=fileURLToPath(new URL('../../../',import.meta.url));
+const script=path.join(repo,'scripts/perf/media-qa.mjs');
+test('media QA fails for absent prerequisites, a false width, and a missing asset', async t => {
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'f1s-media-qa-'));
+    t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+    const run=()=>spawnSync(process.execPath,[script,`--root=${root}`],{encoding:'utf8',timeout:10000});
+    assert.match(run().stderr,/needs complete built output.*npm run build:public/);
+    function write(rel,body) {const f=path.join(root,rel);fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,body);}
+    for(const rel of Object.keys(preservedPublicMedia))write(rel,fs.readFileSync(path.join(repo,rel)));
+    write('index.html','');
+    write('blog-module/blog/index.html','');
+    write('blog-module/blog-index-data.json',JSON.stringify({v:2,p:[['fixture']]}));
+    const article='blog-module/blog-entries/fixture/article.html';
+    write(article,'<img src="1.webp" srcset="1.webp 8w" width="8" height="4">');
+    await sharp({create:{width:8,height:4,channels:3,background:'#fff'}}).webp().toFile(path.join(root,'blog-module/blog-entries/fixture/1.webp'));
+    assert.equal(run().status,0);
+    write(article,'<img src="1.webp" srcset="1.webp 999w">');
+    const invalid=run();assert.equal(invalid.status,1);assert.match(invalid.stderr,/FAIL \[srcset\].*file is 8px wide/);
+    write(article,'<img src="missing.webp">');
+    const missing=run();assert.equal(missing.status,1);assert.match(missing.stderr,/FAIL \[references\].*file does not exist/);
+});

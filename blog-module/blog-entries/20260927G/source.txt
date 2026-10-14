@@ -20,7 +20,7 @@ title: Tο Σαββατοκύριακο που η McLaren τα έχασε όλα
 
 <iframe
   src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?year=2026&circuit=Baku&session=11377&drivers=1%2C43&lap=36&tab=telemetry&embed=1#telemetry-throttle-brake"
-  title="f1stories.gr F1 Telemetry Dashboard"
+  title="f1-stories.gr F1 Telemetry Dashboard"
   width="100%"
   height="720"
   loading="lazy"

@@ -74,7 +74,7 @@ const REVIEWED = {
         'frame-src': [
             'https://codepen.io',
             'https://datawrapper.dwcdn.net',
-            'https://f1stories.gr',
+            'https://f1-stories.gr',
             'https://facebook.com',
             'https://georgiosbalatzis.github.io',
             'https://instagram.com',
@@ -84,7 +84,7 @@ const REVIEWED = {
             'https://sketchfab.com',
             'https://syndication.twitter.com',
             'https://threads.net',
-            'https://www.f1stories.gr',
+            'https://www.f1-stories.gr',
             'https://www.facebook.com',
             'https://www.instagram.com',
             'https://www.sketchfab.com',

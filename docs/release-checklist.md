@@ -18,6 +18,17 @@ npm run qa:visual
 
 `qa:visual` serves `dist/`, captures desktop and mobile screenshots, and checks critical routes for layout overflow, broken visible images, page errors, headings, landmarks, labelled controls, focus traversal, control contrast, article readability, standings tab state, consent UI, navigation, and 404 behavior. Screenshot runs are written under `perf/visual-qa/`, which is intentionally ignored by git.
 
+The permanent discovery gate uses actual built static files with GitHub Pages directory handling and no fallback routing:
+
+```bash
+npm run build:public
+npm run qa:edition
+```
+
+`qa:edition` is part of `verify` and the full Site Quality CI path after its public build. It requires installed Chrome/Chromium (set `CHROME_PATH` if automatic discovery fails); missing output, an unavailable browser or missing Linux runtime libraries fail with instructions. CI uses the browser already installed on `ubuntu-latest`; no new browser download or dependency is needed. Article-only CI retains its existing content path; run the full discovery gate before release.
+
+The icon generator scans product HTML/templates and the runtime dependency graph from `scripts/build/asset-sources.mjs`. Add new runtime entry points there when they become public assets; imported dependencies, lazy standings tabs and article-only icons are included automatically. Audit, scratch and test files cannot enlarge the sprite.
+
 ## Manual Visual Pass
 
 - Home: hero image crops cleanly on 390 px mobile, tablet, desktop, and wide desktop; the next section is visible enough to invite scrolling.

@@ -10,17 +10,21 @@ const {
     getCardThumbnailPath,
     getImageDimensionsForPublicPath
 } = require('./shared');
+const { primeImageDimensions, truthfulSrcset, cardSrcset } = require('./image-sizes');
+const { mediaFor, slotOf, isContained, creditLineHtml, cardDisclosureHtml, mediaAttributes } = require('./media-meta');
 const { generateSitemap } = require('./sitemap');
-const { htmlToPlainText } = require('./metadata');
+const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
-const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry } = require('./home-panels');
+const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
-    PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
-    formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
+    PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    formatReadingTime, CARD_SIZES, athensDay
 } = require('../taxonomy');
+const { buildPages, writeDiscoveryPages } = require('./discovery');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
 
@@ -144,10 +148,6 @@ function compactExcerpt(value, maxLength = 120) {
     return `${clipped || text.slice(0, maxLength).trim()}...`;
 }
 
-function formatBlogIndexDate(post) {
-    return formatDate(post.date || '') || post.displayDate || '';
-}
-
 function jsonKb(value) {
     return Math.round(Buffer.byteLength(JSON.stringify(value)) / 1024);
 }
@@ -207,6 +207,21 @@ function buildCompactIndexData(posts) {
     };
 }
 
+// The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
+// pages are static files; blog-index.js only renders the ?category= / ?author= / ?q= views on top of them.
+function injectEdition(indexPosts, selection = {}) {
+    const blogDir = CONFIG.OUTPUT_HTML_DIR;
+    if (!fs.existsSync(path.join(blogDir, 'index.html'))) {
+        console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
+        return null;
+    }
+    const edition = buildPages(indexPosts, { today: athensDay(), selection, deps: { storyImage, renderStoryImage, cardSrcset } });
+    edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
+    writeDiscoveryPages(blogDir, edition);
+    console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
+    return edition;
+}
+
 function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
     if (!fs.existsSync(filePath)) return {};
     try {
@@ -216,48 +231,6 @@ function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
         console.warn(`⚠️  ${path.basename(filePath)} is not valid JSON; the Journal front falls back to the newest stories (${error.message})`);
         return {};
     }
-}
-
-// The Journal front: one lead, three secondary stories, a short recent list and
-// the deep reads ("ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ"). Explicit picks come from editorial-selection.json;
-// every empty or invalid slot falls back to the newest story not already shown, so the
-// front is valid with no selection file at all. The deep reads fall back to the newest
-// Analysis stories, taken after the other slots so none is shown twice.
-// `posts` must be newest first.
-function resolveJournalFront(posts, selection = {}) {
-    const byId = new Map(posts.map(post => [post.id, post]));
-    const used = new Set();
-    const warnings = [];
-    function pick(value, limit) {
-        const picked = [];
-        (Array.isArray(value) ? value : [value]).forEach(id => {
-            if (typeof id !== 'string' || !id.trim()) return;
-            const post = byId.get(id.trim());
-            if (!post) warnings.push(`unknown article id "${id}"`);
-            else if (!used.has(post.id) && picked.length < limit) {
-                used.add(post.id);
-                picked.push(post);
-            }
-        });
-        return picked;
-    }
-    function fill(picked, limit, accepts = () => true) {
-        for (const post of posts) {
-            if (picked.length >= limit) break;
-            if (used.has(post.id) || !accepts(post)) continue;
-            used.add(post.id);
-            picked.push(post);
-        }
-        return picked;
-    }
-    const lead = pick(selection.lead, 1);
-    const secondary = pick(selection.secondary, JOURNAL_LAYOUT.secondary);
-    const deepReads = pick(selection.deepReads, JOURNAL_LAYOUT.deepReads);
-    fill(lead, 1);
-    fill(secondary, JOURNAL_LAYOUT.secondary);
-    const recent = fill([], JOURNAL_LAYOUT.recent);
-    fill(deepReads, JOURNAL_LAYOUT.deepReads, post => primaryCategory(post) === 'Analysis');
-    return { lead: lead[0] || null, secondary, recent, deepReads, ids: [...used], warnings };
 }
 
 function storyUrl(post) {
@@ -277,217 +250,175 @@ function storyImage(post) {
 
 function storyReadingTime(post) {
     let readingTime = post.readingTime || post.readTime || '';
-    if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
+    if (!readingTime && post.wordCount) readingTime = readingTimeFromWords(post.wordCount);
     return formatReadingTime(readingTime);
 }
 
 // Story images sit inside a link that already carries the headline, so alt stays empty.
-function renderStoryImage(post, image, { sizes, full = false, eager = false }) {
-    const srcset = cardImageSrcset(image, full);
+// The editors' media record (media-metadata.json) adds the crop's focal point, marks artwork and archival prints for
+// containment (data-media), and adds the AI label when the picture is documented as generated.
+function renderStoryImage(post, image, { sizes, full = false, eager = false, disclose = true }) {
+    const srcset = cardSrcset(image, full);
     const width = parseInt(post.thumbnailWidth, 10) || 400;
     const height = parseInt(post.thumbnailHeight, 10) || 188;
     return `<img src="${escapeHtmlAttribute(image)}"`
         + (srcset ? ` srcset="${escapeHtmlAttribute(srcset)}" sizes="${sizes}"` : '')
         + ` width="${width}" height="${height}"`
         + (eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"')
-        + ` decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+        + ` decoding="async" alt=""${mediaAttributes(post.id, image)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
+        + (disclose ? cardDisclosureHtml(post.id, image) : '');
 }
 
-function renderStoryCategory(post, withSecondary = false) {
-    const [primary, ...rest] = post.categories && post.categories.length ? post.categories : ['News'];
-    const more = withSecondary && rest.length
-        ? `<span class="story-cats">${escapeHtmlAttribute(rest.map(categoryLabel).join(' · '))}</span>`
-        : '';
-    return `<p class="story-kicker"><span class="story-cat">${escapeHtmlAttribute(greekUpper(categoryLabel(primary)))}</span>${more}</p>`;
-}
-
-function renderStoryMeta(post, withDate) {
-    const items = [`<span>${escapeHtmlAttribute(authorLabel(post.author || 'F1 Stories'))}</span>`];
-    if (withDate) items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>`);
-    const readingTime = storyReadingTime(post);
-    if (readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
-    return `<p class="story-meta">${items.join('')}</p>`;
-}
-
-function renderJournalLead(post, deck) {
-    const image = storyImage(post);
-    // Long headlines step down a size so the deck and byline stay on the first screen;
-    // qa:visual checks the live lead. ponytail: character count stands
-    // in for rendered width (62 fits every current title at 360px); if qa:visual flags the lead, lower it.
-    const long = post.title.length > 62 ? ' journal-lead--long' : '';
-    return `<article class="journal-lead${image ? '' : ' journal-lead--text'}${long}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-lead__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + (image ? `<div class="journal-lead__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLead, full: true, eager: true })}</div>` : '')
-        + `<div class="journal-lead__text">${renderStoryCategory(post, true)}`
-        + `<h2 class="journal-lead__title">${escapeHtmlAttribute(post.title)}</h2>`
-        + (deck ? `<p class="journal-lead__deck">${escapeHtmlAttribute(deck)}</p>` : '')
-        + `${renderStoryMeta(post, true)}</div></a></article>`;
-}
-
-function renderJournalSecondary(post) {
-    const image = storyImage(post);
-    return `<article class="journal-second${image ? '' : ' journal-second--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-second__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + (image ? `<div class="journal-second__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveSecond })}</div>` : '')
-        + `<div class="journal-second__text">${renderStoryCategory(post)}`
-        + `<h2 class="journal-second__title">${escapeHtmlAttribute(post.title)}</h2>`
-        + `${renderStoryMeta(post, false)}</div></a></article>`;
-}
-
-function renderJournalRecent(posts) {
-    if (!posts.length) return '';
-    const items = posts.map((post, index) => `<li class="journal-recent__item" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-recent__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + `<span class="journal-recent__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>`
-        + `${renderStoryCategory(post)}<h3 class="journal-recent__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + `${renderStoryMeta(post, true)}</a></li>`);
-    return '<section class="journal-recent" aria-labelledby="journal-recent-title">'
-        + '<h2 class="journal-label" id="journal-recent-title">ΠΡΟΣΦΑΤΑ</h2>'
-        + `<ol class="journal-recent__list">${items.join('')}</ol></section>`;
-}
-
-function renderJournalDeepReads(items) {
-    if (!items.length) return '';
-    const stories = items.map(({ post, deck }) => `<article class="journal-deep__item" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-deep__link" href="${escapeHtmlAttribute(storyUrl(post))}">${renderStoryCategory(post, true)}`
-        + `<h3 class="journal-deep__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + (deck ? `<p class="journal-deep__deck">${escapeHtmlAttribute(deck)}</p>` : '')
-        + `${renderStoryMeta(post, true)}</a></article>`);
-    return '<section class="journal-deep" aria-labelledby="journal-deep-title">'
-        + `<h2 class="journal-label" id="journal-deep-title">ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ</h2>${stories.join('')}</section>`;
-}
-
-function renderJournalFront(front, decks = {}) {
-    const lead = front.lead ? renderJournalLead(front.lead, decks[front.lead.id] || front.lead.excerpt || '') : '';
-    const secondary = front.secondary.map(renderJournalSecondary).join('');
-    return `<section class="journal-front" aria-label="Πρωτοσέλιδο">`
-        + `${lead}<div class="journal-front__side">${secondary}</div></section>`
-        + '<div class="journal-shelf">'
-        + renderJournalRecent(front.recent)
-        + renderJournalDeepReads(front.deepReads.map(post => ({ post, deck: decks[post.id] || post.excerpt || '' })))
-        + '</div>';
-}
-
-function renderLedgerRow(post, index) {
-    const date = ledgerDate(post.date);
-    const image = isLedgerPicture(index) ? storyImage(post) : '';
-    const day = date
-        ? `${date.day} ${date.month}<span class="visually-hidden"> ${date.year}</span>`
-        : escapeHtmlAttribute(formatBlogIndexDate(post));
-    return `<li class="ledger-row${image ? ' ledger-row--picture' : ''}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="ledger-row__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + `<time class="ledger-row__date" datetime="${escapeHtmlAttribute(post.date || '')}">${day}</time>`
-        + renderStoryCategory(post)
-        + (image ? `<span class="ledger-row__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLedger })}</span>` : '')
-        + `<h3 class="ledger-row__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + (image && post.excerpt ? `<p class="ledger-row__excerpt">${escapeHtmlAttribute(post.excerpt)}</p>` : '')
-        + `${renderStoryMeta(post, false)}</a></li>`;
-}
-
-// Rows are grouped under month rules; each page opens with its month.
-function renderLedgerRows(posts, startIndex = 0) {
-    let month = '';
-    const rows = [];
-    posts.forEach((post, offset) => {
-        const date = ledgerDate(post.date);
-        if (date && date.key !== month) {
-            month = date.key;
-            rows.push(`<li class="ledger-month" aria-hidden="true">${date.monthTitle}</li>`);
-        }
-        rows.push(renderLedgerRow(post, startIndex + offset));
-    });
-    return rows.join('\n            ');
-}
-
-// Homepage journal: the stories after the cover. Numbering continues from the
-// cover (01): a lead (02), two side stories (03–04) and the recent list (05–08).
-const HOME_JOURNAL = Object.freeze({ side: 2, recent: 4 });
-
-// "Themis Charvalis" → "Θ. ΧΑΡΒΑΛΗΣ"; the house byline stays whole.
-function homeByline(name) {
-    const author = findAuthor(name);
-    const label = authorLabel(name || 'F1 Stories');
-    if (!author || author.slug === 'f1-stories') return greekUpper(label);
-    const [first, ...rest] = label.split(' ');
-    return greekUpper(rest.length ? `${first[0]}. ${rest.join(' ')}` : label);
-}
+// Homepage journal (THE PADDOCK): every story after the cover and the technical spread, newest first.
+// The two newest with a picture stand beside the cover photograph, the next is the analysis feature, then
+// the opinion columns (VOICES), the History pieces (ARCHIVE) and the news desk (WIRE). Each slot takes the
+// newest eligible stories, so a quiet desk shows fewer items rather than another desk's.
+const HOME_PADDOCK = Object.freeze({ frames: 2, voices: 3, archive: 2, wire: 4 });
+const WIRE_CATEGORIES = new Set(['News', 'Teams', 'Drivers']);
 
 function homeDate(value) {
     return formatDate(value);
 }
 
-function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {}) {
-    const items = [];
-    if (withIndex) items.push(`<span class="home-story__idx" aria-hidden="true">${String(index).padStart(2, '0')}</span>`);
-    items.push(`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`);
-    items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
+// "3 λεπτά" → "3 ΛΕΠΤΑ" with a no-break space, so a wrap never splits number from unit.
+function homeReadingTime(post) {
     const readingTime = storyReadingTime(post);
-    if (withTime && readingTime) items.push(`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`);
+    return readingTime ? greekUpper(readingTime).replace(/(\d) /, '$1\u00a0') : '';
+}
+
+// Desk and reading time: "ΑΝΑΛΥΣΗ" then "9 ΛΕΠΤΑ".
+function homeStoryMeta(post, { withDate = false } = {}) {
+    const items = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`];
+    if (withDate) items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
+    const readingTime = homeReadingTime(post);
+    if (readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
     return `<p class="home-story__meta">${items.join('')}</p>`;
 }
 
-// The title link stretches over the whole story, so picture and text both open it.
-function renderHomeStory(post, index, variant, dek) {
-    const image = storyImage(post);
-    const lead = variant === 'lead';
-    const readingTime = storyReadingTime(post);
-    const byline = homeByline(post.author) + (!lead && readingTime ? ` · ${greekUpper(readingTime)}` : '');
-    return `<article class="home-story home-story--${variant}${image ? '' : ' home-story--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + (image ? `<div class="home-story__media">${renderStoryImage(post, image, { sizes: lead ? CARD_SIZES.homeLead : CARD_SIZES.homeSecondary, full: lead })}`
-            + (lead ? '<span class="home-story__tab">ΤΩΡΑ ΣΤΟ JOURNAL</span>' : '') + '</div>' : '')
-        + `<div class="home-story__text">${homeStoryMeta(post, index, { withTime: lead })}`
-        + `<h3 class="home-story__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
-        + (lead && dek ? `<p class="home-story__dek">${escapeHtmlAttribute(dek)}</p>` : '')
-        + `<p class="home-story__byline">${escapeHtmlAttribute(byline)}</p></div></article>`;
+function selectPaddock(pool = []) {
+    const used = new Set();
+    const take = (count, accept) => pool.filter(post => !used.has(post) && accept(post)).slice(0, count)
+        .map(post => { used.add(post); return post; });
+    const hasImage = post => Boolean(storyImage(post));
+    const frames = take(HOME_PADDOCK.frames, hasImage);
+    const feature = take(1, hasImage)[0] || take(1, () => true)[0] || null;
+    const voices = take(HOME_PADDOCK.voices, post => primaryCategory(post) === 'Opinion');
+    const archive = take(HOME_PADDOCK.archive, post => primaryCategory(post) === 'History');
+    const wire = take(HOME_PADDOCK.wire, post => WIRE_CATEGORIES.has(primaryCategory(post)));
+    return { frames, feature, voices, archive, wire };
 }
 
-function renderHomeJournal(posts, leadDek = '') {
-    const [lead, ...rest] = posts;
-    if (!lead) return '';
-    const side = rest.slice(0, HOME_JOURNAL.side);
-    const recent = rest.slice(HOME_JOURNAL.side, HOME_JOURNAL.side + HOME_JOURNAL.recent);
-    const firstRecent = 3 + side.length;
-    const ledger = recent.map((post, offset) => {
-        const readingTime = storyReadingTime(post);
-        return `<li class="home-ledger__item" data-kind="${categoryKind(primaryCategory(post))}">`
-            + `<span class="home-ledger__num" aria-hidden="true">${String(firstRecent + offset).padStart(2, '0')}</span>`
-            + homeStoryMeta(post, 0, { withIndex: false })
-            + `<h3 class="home-ledger__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
-            + `<p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author) + (readingTime ? ` · ${greekUpper(readingTime)}` : ''))}</p></li>`;
-    }).join('\n                ');
-    return `        <div class="home-front">
-            ${renderHomeStory(lead, 2, 'lead', leadDek)}
-            <div class="home-front__side">
-                ${side.map((post, offset) => renderHomeStory(post, 3 + offset, 'side')).join('\n                ')}
-            </div>
-        </div>`
-        + (ledger ? `
-        <div class="home-latest">
-            <p class="home-latest__label">ΠΡΟΣΦΑΤΑ</p>
-            <ol class="home-ledger" start="${firstRecent}">
-                ${ledger}
-            </ol>
-        </div>` : '')
-        + '\n        ';
+// A cover frame's picture: the card, its 800px mobile copy and the original, with AVIF twins where they exist. The
+// homepage is a reference source of scripts/build/public-artifact.mjs, so every file named here is published (and
+// validate-public-artifact.mjs fails the build if one is not). `source` is the blog post: its image is the original.
+function coverFrameSources(post, source = {}) {
+    const dir = path.join(CONFIG.BLOG_DIR, post.id);
+    const has = name => fs.existsSync(path.join(dir, name));
+    const url = name => `/blog-module/blog-entries/${post.id}/${name}`;
+    const width = parseInt(source.imageWidth, 10) || 0;
+    const height = parseInt(source.imageHeight, 10) || 0;
+    // Every candidate at its measured width; the original only when the story's image is the 1.webp it measures.
+    const original = /\/1\.webp$/.test(source.image || '');
+    const card = has('1-card.webp');
+    const split = value => (value ? value.split(', ') : []);
+    const webp = card ? split(truthfulSrcset(dir, ['1-card.webp', '1-mobile.webp'].concat(original ? ['1.webp'] : []), url)) : [];
+    // AVIF only as a complete set (the mobile copy, plus the full file when the original is offered), so the two
+    // formats never disagree on what is available.
+    const avif = card && has('1-mobile.avif') && (!original || has('1.avif'))
+        ? split(truthfulSrcset(dir, ['1-mobile.avif'].concat(original ? ['1.avif'] : []), url)) : [];
+    return { webp, avif, width, height };
 }
 
-// The dark technical spread: one technical story under the "TECHNICAL DEEP DIVE."
-// mast, with Friday's numbers for the team it names (home-panels.js).
-function renderHomeTech(post, dek, telemetry, teamName) {
+// The two photographs beside the cover's: each frame is its story's link, captioned with desk and headline.
+// The frames crop landscape photographs to tall boxes, so `sizes` asks for the box height times the picture's own
+// proportions: the box is clamp(320px, 39vw, 600px) tall from 1100px, a 4:3 half-width box on tablets and 150px tall
+// on phones. Above the fold but not the largest paint, so they load at once with low priority.
+function renderCoverFrames(frames = [], sourceOf = () => ({})) {
+    return frames.map(post => {
+        const readingTime = homeReadingTime(post);
+        const desk = greekUpper(categoryLabel(primaryCategory(post))) + (readingTime ? ` · ${readingTime}` : '');
+        const { webp, avif, width, height } = coverFrameSources(post, sourceOf(post));
+        const ratio = width && height ? width / height : (parseInt(post.thumbnailWidth, 10) || 16) / (parseInt(post.thumbnailHeight, 10) || 9);
+        const r = ratio.toFixed(3);
+        // Rounded down: a 150px-tall 16:9 frame needs 266.7px, and 267 at 3× would just miss the 800px copy.
+        const sizes = `(max-width: ${Math.round(300 * ratio)}px) ${Math.floor(150 * ratio)}px, (max-width: 767px) 50vw, `
+            + `(max-width: 1099px) ${ratio > 4 / 3 ? `calc(37.5vw * ${r})` : '50vw'}, (max-width: 1538px) calc(39vw * ${r}), ${Math.round(600 * ratio)}px`;
+        const fallback = storyImage(post);
+        const img = `<img src="${escapeHtmlAttribute(fallback)}" srcset="${escapeHtmlAttribute(webp.join(', '))}" sizes="${sizes}" `
+            + `width="${width || parseInt(post.thumbnailWidth, 10) || 400}" height="${height || parseInt(post.thumbnailHeight, 10) || 225}" fetchpriority="low" decoding="async" alt=""${mediaAttributes(post.id, fallback)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+        // AVIF copies start at 800px; phones keep the 400px card, which already fills their 150px-tall frames.
+        const picture = avif.length ? `<picture><source type="image/avif" media="(min-width: 768px)" srcset="${escapeHtmlAttribute(avif.join(', '))}" sizes="${sizes}">${img}</picture>` : img;
+        return `\n        <a class="cover-frame" href="${escapeHtmlAttribute(storyUrl(post))}">${picture}${cardDisclosureHtml(post.id, fallback)}`
+            + `<span class="cover-frame__tag"><span>${escapeHtmlAttribute(desk)}</span>${escapeHtmlAttribute(post.title)}</span></a>`;
+    }).join('') + (frames.length ? '\n        ' : '');
+}
+
+function renderHomeJournal({ feature = null, voices = [], archive = [], wire = [] } = {}, featureDek = '') {
+    const esc = escapeHtmlAttribute;
+    const link = (post, text = post.title) => `<a href="${esc(storyUrl(post))}">${esc(text)}</a>`;
+    const kind = post => categoryKind(primaryCategory(post));
+    const byline = post => `<p class="home-story__byline">${esc(homeByline(post.author))} · <time datetime="${esc(post.date || '')}">${homeDate(post.date)}</time></p>`;
+    // Only the analysis feature is wide enough to need the full-size variant (as the old Journal lead did).
+    const picture = (post, sizes, full = false) => {
+        const image = storyImage(post);
+        return image ? `<figure>${renderStoryImage(post, image, { sizes, full })}</figure>` : '';
+    };
+    const blocks = [];
+    if (feature) {
+        const figure = picture(feature, '(max-width: 1099px) 100vw, 64vw', true);
+        blocks.push(`<article class="pd-analysis${figure ? '' : ' pd-analysis--text'}" data-kind="${kind(feature)}">${figure}`
+            + `<div class="pd-analysis__panel">${homeStoryMeta(feature)}<h3 class="pd-analysis__title">${link(feature)}</h3>`
+            + (featureDek ? `<p class="pd-analysis__dek">${esc(featureDek)}</p>` : '') + `${byline(feature)}</div></article>`);
+    }
+    const wireList = wire.length ? '<section class="pd-wire" aria-labelledby="wire-heading"><h3 class="pd-label" id="wire-heading">WIRE · ΕΙΔΗΣΕΙΣ</h3><ol>'
+        + wire.map(post => {
+            const date = ledgerDate(post.date);
+            const day = date ? `<b>${date.day.padStart(2, '0')}</b>${date.month}<span class="visually-hidden"> ${date.year}</span>` : '';
+            return `<li data-kind="${kind(post)}"><time class="pd-wire__date" datetime="${esc(post.date || '')}">${day}</time>`
+                + `<div>${homeStoryMeta(post)}<h4 class="pd-wire__title">${link(post)}</h4></div></li>`;
+        }).join('') + '</ol></section>' : '';
+    // The first column carries its picture when it has one; the others are the writer and the headline.
+    const voicesList = voices.length ? '<section class="pd-voices" aria-labelledby="voices-heading"><h3 class="pd-label" id="voices-heading">VOICES · ΑΠΟΨΗ</h3>'
+        + voices.map((post, index) => {
+            const author = findAuthor(post.author);
+            const figure = index === 0 ? picture(post, '(max-width: 767px) 100vw, 26vw') : '';
+            const face = author ? `<img src="${esc(authorThumb(author))}" alt="" width="96" height="96" loading="lazy" decoding="async">` : '';
+            return `<article class="pd-voice${figure ? ' pd-voice--photo' : ''}" data-kind="${kind(post)}">${figure}`
+                + `<div><p class="pd-voice__who">${face}${esc(greekUpper(authorLabel(post.author || 'F1 Stories')))}</p>`
+                + `<h4 class="pd-voice__title">${link(post, `«${post.title}»`)}</h4>${homeStoryMeta(post, { withDate: true })}</div></article>`;
+        }).join('') + '</section>' : '';
+    const archiveBand = archive.length ? '\n    <section class="pd-archive" aria-labelledby="archive-heading"><div class="container"><h3 class="pd-label" id="archive-heading">ARCHIVE · ΑΠΟ ΤΟ ΑΡΧΕΙΟ</h3><div class="pd-archive__grid">'
+        + archive.map(post => `<article class="pd-archive__item" data-kind="${kind(post)}">${picture(post, '(max-width: 767px) 100vw, 46vw')}`
+            + `${homeStoryMeta(post)}<h4 class="pd-archive__title">${link(post)}</h4>`
+            + (post.excerpt ? `<p class="pd-archive__excerpt">${esc(post.excerpt)}</p>` : '') + '</article>').join('')
+        + '</div></div></section>' : '';
+    const split = wireList || voicesList ? `\n        <div class="pd-split">${wireList}${voicesList}</div>` : '';
+    if (!blocks.length && !split && !archiveBand) return '';
+    return `\n    <div class="container">${blocks.map(block => `\n        ${block}`).join('')}${split}\n    </div>${archiveBand}\n    `;
+}
+
+// The dark technical spread: one technical story under the "TECHNICAL." mast, beside its picture, with
+// Friday's numbers for the team it names in a strip underneath (home-panels.js). Nothing is laid over the
+// picture; `graphic` (the article's `homeImage: graphic`) also shows artwork with printed type uncropped.
+function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}) {
     const image = storyImage(post);
+    // The picture's caption is what the editors recorded for it (caption, credit, AI label), or nothing: the team
+    // name printed as "ΕΙΚΟΝΑ / <TEAM>" read like a photo credit and was not one, so `teamName` is no longer printed.
+    const imageMeta = image ? mediaFor(post.id, slotOf(image)) : null;
+    const caption = creditLineHtml(imageMeta);
+    graphic = graphic || isContained(imageMeta);
     const url = escapeHtmlAttribute(storyUrl(post));
     const date = String(post.date || '').slice(0, 10).split('-').reverse().join('.');
-    const readingTime = storyReadingTime(post);
+    const readingTime = homeReadingTime(post);
     const meta = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`]
-        .concat(readingTime ? [`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`] : []).join('');
+        .concat(readingTime ? [`<span>${escapeHtmlAttribute(readingTime)}</span>`] : []).join('');
     return `
-        <div class="container tech-folio">
-            <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
-            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${date}</span>
-        </div>
         <div class="container">
-            <div class="tech-stage" data-kind="${categoryKind(primaryCategory(post))}">
-                <p class="home-mast tech-mast" aria-hidden="true">TECHNICAL<br>DEEP DIVE<span class="editorial-accent">.</span></p>
+            <header class="pd-mast pd-mast--tech">
+                <p class="pd-mast__word" aria-hidden="true">TECHNICAL<span>.</span></p>
+                <p class="pd-mast__sub"><span>DEEP DIVE</span><span>ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span></p>
+            </header>
+            <div class="tech-stage${graphic ? ' tech-stage--no-cross' : ''}" data-kind="${categoryKind(primaryCategory(post))}">
                 <div class="tech-copy">
                     <p class="home-story__meta">${meta}</p>
                     <h2 class="tech-copy__title" id="tech-heading"><a href="${url}">${escapeHtmlAttribute(post.title)}</a></h2>`
@@ -498,17 +429,43 @@ function renderHomeTech(post, dek, telemetry, teamName) {
                 </div>`
         + (image ? `
                 <figure class="tech-photo">
-                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 991px) 100vw, 64vw', full: true })}</a>
-                    <figcaption>ΕΙΚΟΝΑ / ${escapeHtmlAttribute(greekUpper(teamName || 'F1 Stories'))}</figcaption>
+                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 1099px) 100vw, 58vw', full: true, disclose: false })}</a>${caption ? `
+                    <figcaption>${caption}</figcaption>` : ''}
                 </figure>` : '')
+        + `
+            </div>`
         + (telemetry ? `\n${telemetry}` : '')
         + `
-            </div>
         </div>
         `;
 }
 
-function injectHomeJournal(indexPosts, blogPosts) {
+// The homepage's story slots, with no story in two of them: the cover (the newest story), the
+// technical spread and the Journal (every other story, newest first; selectPaddock places them). The
+// spread is the editor's `homeTech` pick in editorial-selection.json when it is valid, otherwise the newest
+// Technical story that is not the cover, and the Journal then skips it. `posts` is newest first
+// (comparePosts), which also settles same-day ties.
+function selectHomeStories(posts, selection = {}) {
+    const warnings = [];
+    const cover = posts[0] || null;
+    const isTechnical = post => primaryCategory(post) === 'Technical';
+    let tech = null;
+    const requested = selection && selection.homeTech;
+    if (requested !== undefined && requested !== null && requested !== '') {
+        const id = typeof requested === 'string' ? requested.trim() : '';
+        const pick = id && posts.find(post => post.id === id);
+        if (!id) warnings.push('homeTech must be one article id');
+        else if (!pick) warnings.push(`homeTech "${id}" is not a published article`);
+        else if (!isTechnical(pick)) warnings.push(`homeTech "${id}" is not a Technical story`);
+        else if (pick === cover) warnings.push(`homeTech "${id}" is already the homepage cover`);
+        else tech = pick;
+    }
+    if (!tech) tech = posts.find(post => post !== cover && isTechnical(post)) || null;
+    const journal = posts.filter(post => post !== cover && post !== tech);
+    return { cover, tech, journal, warnings };
+}
+
+function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
     const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
     if (!fs.existsSync(indexHtmlPath)) return false;
     const html = fs.readFileSync(indexHtmlPath, 'utf8');
@@ -516,57 +473,40 @@ function injectHomeJournal(indexPosts, blogPosts) {
         console.warn('⚠️  index.html has no home-journal markers; the homepage journal was not rendered');
         return false;
     }
-    // [0] is the cover story, rendered by injectHomepageHero.
-    const posts = indexPosts.slice(1, 2 + HOME_JOURNAL.side + HOME_JOURNAL.recent);
-    const leadSource = posts[0] && blogPosts.find(post => post.id === posts[0].id);
-    let updated = replaceInlineMarkers(html, 'home-journal', `\n${renderHomeJournal(posts, leadSource ? leadSource.excerpt || '' : '')}`);
-    // The technical spread takes the newest technical story not already on the page.
-    const shown = new Set([indexPosts[0], ...posts].filter(Boolean).map(post => post.id));
-    const tech = indexPosts.find(post => primaryCategory(post) === 'Technical' && !shown.has(post.id));
+    // The cover story itself is rendered by injectHomepageHero; its reading time and the two frames beside it come from here.
+    const { cover, tech, journal, warnings } = selectHomeStories(indexPosts, selection);
+    // ON AIR already leads with this episode; the Journal moves on to the next story.
+    const onAirEpisode = featuredEpisode(blogPosts);
+    const posts = journal.filter(post => !isFeaturedEpisode(post, onAirEpisode));
+    warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the technical spread falls back to the newest Technical story`));
+    const paddock = selectPaddock(posts);
+    const featureSource = paddock.feature && blogPosts.find(post => post.id === paddock.feature.id);
+    let updated = replaceInlineMarkers(html, 'home-journal', renderHomeJournal(paddock, featureSource ? featureSource.excerpt || '' : ''));
+    updated = replaceInlineMarkers(updated, 'home-cover-frames', renderCoverFrames(paddock.frames, post => blogPosts.find(item => item.id === post.id) || {}));
+    updated = replaceInlineMarkers(updated, 'home-cover-time', cover ? escapeHtmlAttribute(homeReadingTime(cover)) : '');
     if (tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
         const source = blogPosts.find(post => post.id === tech.id) || tech;
         const teamKey = findTeamKey(tech.title, (tech.tags || []).join(' '));
-        const round = latestDebriefRound();
+        // Read explicit source provenance even when the article's cached metadata predates this contract.
+        const sourcePath = path.join(CONFIG.BLOG_DIR, tech.id, 'source.txt');
+        const metadata = fs.existsSync(sourcePath) ? extractMetadata(sourcePath, fs.readFileSync(sourcePath, 'utf8')) : {};
+        const storyDate = String(tech.date || '').slice(0, 10);
+        const season = metadata.debriefSeason;
+        const round = latestDebriefRound(undefined, { season, date: storyDate, round: metadata.debriefRound, location: metadata.debriefLocation });
         const team = round && round.teamIdealLap.find(item => item.teamKey === teamKey);
-        const telemetry = renderTelemetry(round, teamKey);
-        updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : ''));
+        const telemetry = renderTelemetry(round, teamKey, { season });
+        updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : '', { graphic: source.homeImage === 'graphic' }));
+    } else if (!tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
+        updated = replaceInlineMarkers(updated, 'home-tech', '\n');
+    }
+    if (updated.includes('<!-- f1s:home-tech:begin -->')) {
+        // An empty eligible pool must not leave a previous feature visible; a later build restores the section.
+        updated = updated.replace(/(<section id="tech")(?: hidden)?(?=\s)/, `$1${tech ? '' : ' hidden'}`);
     }
     if (updated === html) return false;
     fs.writeFileSync(indexHtmlPath, updated);
     console.log(`Homepage journal rendered into ${indexHtmlPath}`);
     return true;
-}
-
-// Writers from the one author list; the slug carries each writer's accent (CSS) and
-// the specialty feeds the archive's author view.
-function renderAuthorFilterOptions() {
-    const base = '/blog-module/blog/index.html';
-    return [`<a class="filter-option" href="${base}" data-author="all" aria-current="true">Όλοι</a>`]
-        .concat(AUTHORS.map(author => `<a class="filter-option filter-option--author" href="${base}?author=${author.slug}" data-author="${escapeHtmlAttribute(author.name)}" data-author-slug="${author.slug}" data-specialty="${escapeHtmlAttribute(author.specialty)}">`
-            + `<img src="${authorThumb(author)}" alt="" width="48" height="48" loading="lazy" decoding="async">${escapeHtmlAttribute(author.label)}</a>`))
-        .join('\n                            ');
-}
-
-function renderCategoryFilterOptions() {
-    const base = '/blog-module/blog/index.html';
-    return [`<a class="filter-option" href="${base}" data-category="all" aria-current="true">Όλα</a>`]
-        .concat(PUBLIC_CATEGORIES.map(name => `<a class="filter-option" href="${base}?category=${encodeURIComponent(name)}" data-category="${escapeHtmlAttribute(name)}" data-kind="${categoryKind(name)}">${escapeHtmlAttribute(categoryLabel(name))}</a>`))
-        .join('\n                        ');
-}
-
-function replaceMarkedBlock(html, begin, end, innerHtml) {
-    const start = html.indexOf(begin);
-    const finish = html.indexOf(end);
-    if (start === -1 || finish === -1 || finish < start) return html;
-    const lineStart = html.lastIndexOf('\n', start) + 1;
-    const indentMatch = html.slice(lineStart, start).match(/^[ \t]*/);
-    const indent = indentMatch ? indentMatch[0] : '';
-    return html.slice(0, start + begin.length)
-        + '\n'
-        + innerHtml
-        + '\n'
-        + indent
-        + html.slice(finish);
 }
 
 function replaceInlineMarkedBlock(html, begin, end, value) {
@@ -679,6 +619,9 @@ function updateHomepageHeroPeriod(html, presentation) {
     );
 }
 
+const HOME_COVER_MIN_WIDTH = 1200;
+const HOME_COVER_RENDER_WIDTH = 1100;
+
 function injectHomepageHero(hero) {
     const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
     if (!fs.existsSync(indexHtmlPath) || !hero) {
@@ -699,8 +642,19 @@ function injectHomepageHero(hero) {
     const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
     const width = parseInt(hero.heroImageWidth, 10) || 1920;
     const height = parseInt(hero.heroImageHeight, 10) || 1080;
-    const imageSizes = '(max-width: 767px) 100vw, 55vw';
-    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
+    // The cover renders up to ~1,100 CSS px wide (1920 viewport). An unmeasured image (no width) is not flagged.
+    const measuredWidth = parseInt(hero.heroImageWidth, 10);
+    if (measuredWidth > 0 && measuredWidth < HOME_COVER_MIN_WIDTH) {
+        console.warn(`⚠️  Cover image ${image} (story ${storyId}) is ${measuredWidth}px wide; the homepage cover renders up to ~${HOME_COVER_RENDER_WIDTH}px, so it is upscaled ${(HOME_COVER_RENDER_WIDTH / measuredWidth).toFixed(2)}× at 1920 (double on 2× displays). Supply a ≥1,600px master (D8).`);
+    }
+    // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
+    const imageSizes = '(max-width: 1099px) 100vw, 50vw';
+    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1-stories.gr${image}`;
+    // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file.
+    const widths = width > 800 && /\/1\.webp$/.test(image) && /\/1\.avif$/.test(avif) ? coverFrameSources({ id: storyId }, { image, imageWidth: width }) : { webp: [], avif: [] };
+    // Widest first: validate-public-artifact reads the first candidate as the story image.
+    const avifSet = widths.avif.length > 1 ? [...widths.avif].reverse().join(', ') : '';
+    const webpSet = widths.webp.length > 1 ? [...widths.webp].reverse().join(', ') : '';
     let html = fs.readFileSync(indexHtmlPath, 'utf8');
     const original = html;
 
@@ -745,16 +699,22 @@ function injectHomepageHero(hero) {
         byline
     );
 
+    // The button and the cover photograph's frame both open the story.
     html = html.replace(
-        /(<a\b[^>]*\bid="hero-story-link"[^>]*\bhref=")[^"]*(")/i,
+        /(<a\b[^>]*\bid="hero-(?:story|frame)-link"[^>]*\bhref=")[^"]*(")/gi,
         `$1${escapeHtmlAttribute(href)}$2`
     );
     html = updateElementById(html, 'hero-source-avif', attributes => {
-        return avif ? setHtmlAttribute(attributes, 'srcset', avif) : removeHtmlAttribute(attributes, 'srcset');
+        const updated = avif ? setHtmlAttribute(attributes, 'srcset', avifSet || avif) : removeHtmlAttribute(attributes, 'srcset');
+        return avifSet ? setHtmlAttribute(updated, 'sizes', imageSizes) : removeHtmlAttribute(updated, 'sizes');
     });
     html = updateElementById(html, 'hero-source-webp', attributes => {
-        return webp ? setHtmlAttribute(attributes, 'srcset', webp) : removeHtmlAttribute(attributes, 'srcset');
+        const updated = webp ? setHtmlAttribute(attributes, 'srcset', webpSet || webp) : removeHtmlAttribute(attributes, 'srcset');
+        return webpSet ? setHtmlAttribute(updated, 'sizes', imageSizes) : removeHtmlAttribute(updated, 'sizes');
     });
+    // The editors' record for the cover picture: its focal point drives the lead's crop (home.css reads
+    // --f1s-hero-position), and artwork with printed type is shown whole (data-media).
+    const heroMeta = mediaFor(storyId, slotOf(image));
     html = updateElementById(html, 'hero-image', attributes => {
         let updated = setHtmlAttribute(attributes, 'src', image);
         updated = removeHtmlAttribute(updated, 'srcset');
@@ -762,11 +722,16 @@ function injectHomepageHero(hero) {
         updated = setHtmlAttribute(updated, 'width', width);
         updated = setHtmlAttribute(updated, 'height', height);
         updated = setHtmlAttribute(updated, 'sizes', imageSizes);
+        updated = heroMeta && heroMeta.type && heroMeta.type !== 'photo' ? setHtmlAttribute(updated, 'data-media', heroMeta.type) : removeHtmlAttribute(updated, 'data-media');
+        updated = heroMeta && heroMeta.focus ? setHtmlAttribute(updated, 'style', `--f1s-hero-position: ${heroMeta.focus}`) : removeHtmlAttribute(updated, 'style');
         return updated;
     });
+    const heroLabel = cardDisclosureHtml(storyId, image).replace('<span class=', '<span id="hero-ai-label" class=');
+    html = html.replace(/<span id="hero-ai-label"[^>]*>[^<]*<\/span>/, '')
+        .replace(/(<picture id="hero-picture">[\s\S]*?<\/picture>)/, `$1${heroLabel}`);
     html = updateElementById(html, 'hero-image-preload', attributes => {
         let updated = setHtmlAttribute(attributes, 'href', avif || image);
-        updated = removeHtmlAttribute(updated, 'imagesrcset');
+        updated = avifSet ? setHtmlAttribute(updated, 'imagesrcset', avifSet) : removeHtmlAttribute(updated, 'imagesrcset');
         updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
         return updated;
     });
@@ -788,45 +753,6 @@ function replaceInlineMarkers(html, name, value) {
     return html.replace(pattern, (match, begin, end) => begin + value + end);
 }
 
-// The archive ships as static HTML: the front, the category filters and the first
-// ledger page, so the first screen needs no data request. The browser loads the
-// compact index only for filters, search, sorting and later pages.
-function injectBlogIndexFirstPage(indexPosts, front, decks = {}) {
-    const indexHtmlPath = path.join(CONFIG.OUTPUT_HTML_DIR, 'index.html');
-    if (!fs.existsSync(indexHtmlPath)) {
-        console.warn(`⚠️  Blog index HTML not found, static first-page render skipped: ${indexHtmlPath}`);
-        return false;
-    }
-
-    const shown = new Set(front.ids);
-    const ledger = indexPosts.filter(post => !shown.has(post.id)).slice(0, JOURNAL_LAYOUT.page);
-    const leadImage = front.lead ? storyImage(front.lead) : '';
-    const leadSrcset = leadImage ? cardImageSrcset(leadImage, true) : '';
-    // Mirror the lead image's srcset/sizes, or the preload fetches a candidate the <img> never uses.
-    const preload = leadImage
-        ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(leadImage)}"${leadSrcset ? ` imagesrcset="${escapeHtmlAttribute(leadSrcset)}" imagesizes="${CARD_SIZES.archiveLead}"` : ''} fetchpriority="high">`
-        : '';
-    const edition = `<div class="journal-edition" id="journal-edition" data-story-ids="${escapeHtmlAttribute(front.ids.join(' '))}" data-total="${indexPosts.length}">`
-        + renderJournalFront(front, decks)
-        + '</div>';
-
-    let html = fs.readFileSync(indexHtmlPath, 'utf8');
-    const original = html;
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-index-preload:begin -->', '<!-- f1s:blog-index-preload:end -->', preload ? `    ${preload}` : '');
-    html = replaceMarkedBlock(html, '<!-- f1s:journal-front:begin -->', '<!-- f1s:journal-front:end -->', `        ${edition}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-categories:begin -->', '<!-- f1s:blog-categories:end -->', `                        ${renderCategoryFilterOptions()}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-authors:begin -->', '<!-- f1s:blog-authors:end -->', `                            ${renderAuthorFilterOptions()}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-first-page:begin -->', '<!-- f1s:blog-first-page:end -->', `            ${renderLedgerRows(ledger)}`);
-    html = replaceInlineMarkers(html, 'journal-total', String(indexPosts.length));
-
-    if (html !== original) {
-        fs.writeFileSync(indexHtmlPath, html);
-        console.log(`Blog first page rendered into ${indexHtmlPath}`);
-        return true;
-    }
-    return false;
-}
-
 // Cover copy comes from the article's opening paragraph and is cut only at sentence ends:
 // `deck` gathers whole sentences up to 160 characters (or one opening sentence up to 240),
 // `lede` is the next whole sentence.
@@ -834,8 +760,8 @@ function heroCopy(post) {
     let html = typeof post.content === 'string' ? post.content : '';
     if (!html) {
         try {
-            html = fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8');
-            html = html.slice(html.indexOf('class="article-content"'));
+            html = articleBodyHtml(fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8'))
+                .replace(/<header class="rr-data__head">[\s\S]*?<\/header>/g, '');
         } catch (_) { html = ''; }
     }
     const paragraph = /<p\b[^>]*>([\s\S]*?)<\/p>/i.exec(html);
@@ -903,6 +829,18 @@ function loadExistingPosts() {
     }
 }
 
+// Posts carried over without their body (cache hits, source-less legacy pages) keep whatever reading time an older
+// build stored. Measure the page that is actually served so the card, the index and the article badge agree.
+function syncCachedReadingTimes(posts) {
+    posts.forEach(post => {
+        if (!post || !post.id || (typeof post.content === 'string' && post.content.trim())) return;
+        const articlePath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+        if (!fs.existsSync(articlePath)) return;
+        const measured = readingTimeFromPage(fs.readFileSync(articlePath, 'utf8'));
+        if (measured) post.readingTime = measured;
+    });
+}
+
 async function renderCachedArticlePages(cachedPosts) {
     let rendered = 0;
     for (const post of cachedPosts) {
@@ -912,11 +850,18 @@ async function renderCachedArticlePages(cachedPosts) {
         if (typeof post.content === 'string' && post.content.trim()) {
             await renderArticleHtml(post, entryPath, post.id);
         } else {
-            // Source-less articles retain their existing body and media. Only owned
-            // taxonomy slots are migrated, including their structured metadata.
+            // Source-less articles keep their published body and media: the page around it is
+            // rendered from the current template (race-report.js transforms are idempotent).
             const articlePath = path.join(entryPath, 'article.html');
             if (!fs.existsSync(articlePath)) continue;
             const html = fs.readFileSync(articlePath, 'utf8');
+            const content = articleBodyHtml(html);
+            if (content.trim()) {
+                await renderArticleHtml({ ...post, content }, entryPath, post.id);
+                rendered++;
+                continue;
+            }
+            // A page without an article body: only owned taxonomy slots are migrated.
             const updated = refreshArticleTaxonomy(html, post);
             if (updated === html) continue;
             fs.writeFileSync(articlePath, updated);
@@ -1099,6 +1044,7 @@ async function processBlogEntries(options = {}) {
     ];
 
     fixMissingAuthors(blogPosts);
+    syncCachedReadingTimes(blogPosts);
     blogPosts.forEach(post => {
         Object.assign(post, getPostTaxonomy(post));
         delete post.tag;
@@ -1127,6 +1073,10 @@ async function processBlogEntries(options = {}) {
         posts: blogPosts,
         lastUpdated
     };
+    const previousBlogData = readJsonIfExists(CONFIG.OUTPUT_JSON);
+    if (sameJsonExceptKey(previousBlogData, blogData, 'lastUpdated') && previousBlogData.lastUpdated) {
+        blogData.lastUpdated = previousBlogData.lastUpdated;
+    }
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
 
@@ -1145,20 +1095,15 @@ async function processBlogEntries(options = {}) {
     // their thumbnail paths, while the generator's existence checks keep this
     // incremental for an unchanged archive.
     generateMissingImageVariants();
+    await primeImageDimensions();
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     const compactIndexData = buildCompactIndexData(indexPosts);
     fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
-    const front = resolveJournalFront(indexPosts, loadEditorialSelection());
-    front.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the slot falls back to the newest story`));
-    const postsById = new Map(blogPosts.map(post => [post.id, post]));
-    const decks = {};
-    [front.lead, ...front.deepReads].filter(Boolean).forEach(post => {
-        decks[post.id] = heroCopy(postsById.get(post.id) || post).deck;
-    });
-    injectBlogIndexFirstPage(indexPosts, front, decks);
+    const selection = loadEditorialSelection();
+    const edition = injectEdition(indexPosts, selection);
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1167,10 +1112,10 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
     injectHomepageHero(homeLatest[0]);
-    injectHomeJournal(indexPosts, blogPosts);
+    injectHomeJournal(indexPosts, blogPosts, selection);
     await injectHomePanels(undefined, blogPosts);
 
-    generateSitemap(blogPosts);
+    generateSitemap(blogPosts, edition ? edition.pages.filter(page => page.file !== 'index.html') : []);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
@@ -1194,12 +1139,14 @@ module.exports = {
     buildIndexPosts,
     buildCompactIndexData,
     loadEditorialSelection,
-    resolveJournalFront,
-    renderJournalFront,
-    renderLedgerRows,
+    injectEdition,
     renderHomeJournal,
+    selectPaddock,
+    renderCoverFrames,
     renderHomeTech,
-    injectBlogIndexFirstPage,
+    selectHomeStories,
+    injectHomeJournal,
+    injectHomepageHero,
     buildHomeLatest,
     loadExistingPosts,
     renderCachedArticlePages,

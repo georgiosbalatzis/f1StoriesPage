@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// build-icon-sprite.mjs — scan the repo for Font Awesome icon usages and
+// build-icon-sprite.mjs — scan production sources for Font Awesome icon usages and
 // emit a single SVG sprite containing one <symbol> per unique icon.
 //
 // Why:
@@ -8,8 +8,7 @@
 //   and ships only the icons we actually use.
 //
 // What it does:
-//   1. Scans *.html / *.js / *.css under the repo (excluding node_modules,
-//      blog-module/blog-entries, and other generated trees) for
+//   1. Scans product HTML/templates and the production asset dependency graph for
 //      `fa[srb] fa-<name>` class patterns.
 //   2. Maps each (prefix, name) pair to an SVG file shipped by
 //      @fortawesome/fontawesome-free (devDep). Resolves v5-era aliases
@@ -28,6 +27,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productionIconSources } from './icon-sources.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -39,28 +39,6 @@ const OUT_PATH = path.join(REPO_ROOT, 'images', 'icons', 'sprite.svg');
 // Map `fa<prefix>` class → FA svgs subdir.
 const PREFIX_DIR = { fas: 'solid', fab: 'brands', far: 'regular', fa: 'solid' };
 
-// Scanned *for icon usage*. blog-entries/ is included because Phase 3c will
-// regenerate those articles against this same sprite — capturing icons only
-// used inside article bodies now (e.g. fa-spotify, fa-calendar, fa-folder)
-// means the regeneration pass needs no further sprite updates.
-const SCAN_EXCLUDES = [
-    /\/node_modules\//,
-    /\/blog-module\/generated\//,
-    /\.min\.(js|css)$/,
-    /\/dist\//
-];
-
-function walk(dir, out = []) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const e of entries) {
-        const abs = path.join(dir, e.name);
-        if (SCAN_EXCLUDES.some(re => re.test(abs))) continue;
-        if (e.isDirectory()) walk(abs, out);
-        else if (/\.(html|js|css)$/.test(e.name)) out.push(abs);
-    }
-    return out;
-}
-
 // Two usage forms we scan for, post- and pre-Phase-3b migration:
 //   1. `<use href="#fa-<name>"/>` — the canonical migrated form.
 //      Prefix is unknown here, so we route it to 'fa' (solid default with
@@ -70,23 +48,31 @@ function walk(dir, out = []) {
 //      any new code an author forgets to migrate.
 const USE_RE   = /<use\s+href="#fa-([a-z0-9][a-z0-9-]*)"\s*\/?>/g;
 const CLASS_RE = /\b(fas|fab|far|fa)\s+fa-([a-z0-9][a-z0-9-]*)\b/g;
+// DOM icon factories also take a quoted name without <use> markup.
+const JS_ICON_RE = /["'`](fa-[a-z0-9]+(?:-[a-z0-9]+)*)["'`]/g;
 
-function scanUsages() {
-    const files = walk(REPO_ROOT).filter(f => !SCAN_EXCLUDES.some(re => re.test(f)));
+async function scanUsages() {
+    const files = await productionIconSources(REPO_ROOT);
     const usage = new Map(); // key: `${prefix}:${name}` → Set of source files
     const add = (prefix, name, rel) => {
         const key = `${prefix}:${name}`;
         if (!usage.has(key)) usage.set(key, new Set());
         usage.get(key).add(rel);
     };
-    for (const abs of files) {
+    for (const rel of files) {
+        const abs = path.join(REPO_ROOT, rel);
         const txt = fs.readFileSync(abs, 'utf8');
-        const rel = path.relative(REPO_ROOT, abs);
         let m;
         USE_RE.lastIndex = 0;
         while ((m = USE_RE.exec(txt)) !== null) add('fa', m[1], rel);
         CLASS_RE.lastIndex = 0;
         while ((m = CLASS_RE.exec(txt)) !== null) add(m[1], m[2], rel);
+        if (/\.js$/.test(rel)) {
+            JS_ICON_RE.lastIndex = 0;
+            while ((m = JS_ICON_RE.exec(txt)) !== null) {
+                if (m[1] !== 'fa-spin') add('fa', m[1].slice(3), rel);
+            }
+        }
     }
     return usage;
 }
@@ -167,12 +153,12 @@ function extractSymbol(svgText) {
     return { viewBox, inner };
 }
 
-function build(dry) {
+async function build(dry) {
     if (!fs.existsSync(FA_ROOT)) {
         console.error(`✗ ${FA_ROOT} not found — run: npm install`);
         process.exit(2);
     }
-    const usage = scanUsages();
+    const usage = await scanUsages();
     const aliasMap = loadAliasMap();
 
     // Group usages by the *alias name* we'll use as the sprite symbol id.
@@ -236,4 +222,7 @@ function build(dry) {
     console.log(`\n✓ wrote ${path.relative(REPO_ROOT, OUT_PATH)} (${sprite.length} B)`);
 }
 
-build(process.argv.includes('--dry'));
+build(process.argv.includes('--dry')).catch(error => {
+    console.error(error.message);
+    process.exitCode = 1;
+});

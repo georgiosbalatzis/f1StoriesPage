@@ -66,6 +66,7 @@ const SOURCE_FILES = [
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-index.js',
     'blog-module/blog-index-data.json',
+    'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js',
     'blog-module/blog-processor.js',
@@ -109,6 +110,7 @@ const MINIFIED_JS_SOURCES = new Set([
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-index.js',
+    'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js'
 ]);

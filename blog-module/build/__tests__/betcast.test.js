@@ -79,16 +79,16 @@ test('renders an escaped semantic native table with scope, timestamp and matchin
         rows: [row({ betLabel: '<script>alert(1)</script>', company: 'A & B' })]
     });
     writeSnapshot(value);
-    const html = renderBetcastArticleBlock(value.id, { baseUrl: 'https://f1stories.gr/betcast/' });
+    const html = renderBetcastArticleBlock(value.id, { baseUrl: 'https://f1-stories.gr/betcast/' });
 
     for (const value of [
         '<section class="betcast-article-block"', '<table>', '<caption>Επιλογές στοιχήματος',
         '<th scope="col">Στοίχημα</th>', '&lt;script&gt;alert(1)&lt;/script&gt;', 'A &amp; B',
         'Σεζόν &lt;script&gt;season&lt;/script&gt; · Εβδομάδα 16', 'Δεδομένα snapshot καταγεγραμμένα στις',
-        'https://f1stories.gr/betcast/?viz=dataTable&amp;season=current&amp;week=16&amp;cmpA=12&amp;cmpB=16'
+        'https://f1-stories.gr/betcast/?viz=dataTable&amp;season=current&amp;week=16&amp;cmpA=12&amp;cmpB=16'
     ]) assert.ok(html.includes(value), `Expected rendered block to include ${value}`);
     for (const value of ['<script>', 'embed=', 'theme=', 'chart-select']) assert.ok(!html.includes(value), `Unexpected rendered content: ${value}`);
-    assert.equal(renderBetcastArticleBlock(value.id, { baseUrl: 'https://f1stories.gr/betcast/' }), html);
+    assert.equal(renderBetcastArticleBlock(value.id, { baseUrl: 'https://f1-stories.gr/betcast/' }), html);
 });
 
 test('empty and long selections remain present in ordinary HTML without JavaScript', () => {
@@ -131,14 +131,14 @@ test('analysis URLs preserve the complete selection and use only approved config
     assert.equal(getAnalysisUrl(value, 'https://georgiosbalatzis.github.io/BetCastVisualisation/'),
         'https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&season=lastYear&from=4&to=12&week=7&cmpA=5&cmpB=7'
     );
-    assert.throws(() => getAnalysisUrl(snapshot(), 'https://f1stories.gr/standings/'), /BETCAST_BASE_URL/);
+    assert.throws(() => getAnalysisUrl(snapshot(), 'https://f1-stories.gr/standings/'), /BETCAST_BASE_URL/);
 });
 
 test('only approved BetCast embed frames receive a managed sizing wrapper and analysis fallback', () => {
     const { getManagedBetCastUrl } = require('../embed-render');
     const managedUrl = 'https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=budget&embed=1&presentation=article&theme=host';
     assert.equal(getManagedBetCastUrl(managedUrl).origin, 'https://georgiosbalatzis.github.io');
-    assert.equal(getManagedBetCastUrl('https://f1stories.gr/standings/?embed=1'), null);
+    assert.equal(getManagedBetCastUrl('https://f1-stories.gr/standings/?embed=1'), null);
     const html = buildEmbedHtml({ type: 'iframe', value: `${managedUrl}|title=BetCast&height=960&style=width:100%;min-height:960px;border:0` });
     assert.match(html, /class="embed-container embed-iframe betcast-managed-embed"/);
     assert.match(html, /data-f1s-betcast-managed="true"/);

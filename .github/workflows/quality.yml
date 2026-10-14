@@ -54,6 +54,13 @@ jobs:
       - name: Run static source guard
         run: npm run quality:static
 
+      - name: Verify generated editorial media
+        run: npm run qa:media -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
+
+      - name: Verify release media and primary domain
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs
+
       - name: Audit runtime dependencies
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run audit:runtime
@@ -64,8 +71,17 @@ jobs:
       - name: Run standings module tests
         run: npm run test:standings
 
+      - name: Run blog module tests
+        run: npm run test:blog
+
+      # ubuntu-latest supplies Chrome and its runtime libraries; use that browser
+      # through chrome-launcher rather than downloading Playwright binaries.
+      - name: Run Edition discovery regression
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run qa:edition
+
       - name: Run security policy tests
         run: npm run test:security
 
       - name: Run publishing regression tests
-        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs
+        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs

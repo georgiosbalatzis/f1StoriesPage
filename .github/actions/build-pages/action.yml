@@ -52,6 +52,14 @@ runs:
       shell: bash
       run: npm run quality:static
 
+    - name: Verify public editorial media
+      shell: bash
+      run: npm run qa:media
+
+    - name: Verify release media and primary domain
+      shell: bash
+      run: node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs
+
     - name: Audit runtime dependencies
       shell: bash
       run: npm run audit:runtime

@@ -145,6 +145,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-rail.js',
+    'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
@@ -168,7 +169,9 @@ const FONT_PRELOADS = {
         'assets/fonts/barlow-condensed-700.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
+    // The Race Report cover sets its edition bar and timing numerals in Barlow Condensed, as the homepage does.
     'blog-module/blog/template.html': [
+        'assets/fonts/barlow-condensed-700.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'generate.html': [
@@ -180,6 +183,29 @@ const FONT_PRELOADS = {
         'assets/fonts/outfit-700.woff2'
     ]
 };
+
+// The Edition Index's generated section and archive pages (blog-module/blog/section, /archive; written by
+// blog-module/build/discovery.js) are the blog index's shell with another <main>: they stamp exactly as it does.
+function listDiscoveryPages() {
+    const pages = [];
+    function walk(dir) {
+        if (!fs.existsSync(dir)) return;
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const abs = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(abs);
+            else if (entry.name === 'index.html') pages.push(path.relative(REPO_ROOT, abs).split(path.sep).join('/'));
+        }
+    }
+    ['section', 'archive'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
+    return pages.sort();
+}
+for (const rel of listDiscoveryPages()) {
+    TARGET_HTML.push(rel);
+    SPRITE_TARGETS.add(rel);
+    EDITORIAL_TARGETS.add(rel);
+    ROUTE_FONTS_SOURCES[rel] = ROUTE_FONTS_SOURCES['blog-module/blog/index.html'];
+    FONT_PRELOADS[rel] = FONT_PRELOADS['blog-module/blog/index.html'];
+}
 
 // Marker comments around the font preload block. Idempotent replacement.
 const FONTS_BEGIN = '<!-- f1s:fonts-preload:begin -->';
@@ -722,8 +748,25 @@ function ensureArticleCommentsScript(html, commentsInfo) {
     );
 }
 
+// article-embeds.js (BetCast/standings/telemetry adapters, ~12 KB min) is shipped only to articles that carry a
+// managed embed; the markers mirror MANAGED_EMBED_SELECTOR in article-script.js. It precedes article-script so
+// both deferred scripts run, in order, before DOMContentLoaded.
+const MANAGED_EMBED_MARKUP = /<iframe\b[^>]*\bsrc=["'][^"']*(?:\/standings\/|\/telemetry\/|f1-telemetry-dashboard|BetCastVisualisation|\/betcast\/)|data-f1s-betcast-widget|class=["'][^"']*\bf1-telemetry-figure\b/i;
+
+function ensureArticleEmbedsScript(html, embedsInfo) {
+    if (!embedsInfo || !embedsInfo.min || !embedsInfo.hash) return html;
+    if (!MANAGED_EMBED_MARKUP.test(html)) return html;
+    if (/\/blog-module\/blog\/article-embeds(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
+    return String(html || '').replace(
+        /([ \t]*<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        `<script defer src="/${embedsInfo.min}?v=${embedsInfo.hash}"></script>\n$1`
+    );
+}
+
 function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     let result = String(html || '');
+    // Race Report pages (P3B) have no side rail; only older page shapes still carry one.
+    if (!/\bdata-rail-related\b/.test(result)) return result;
 
     if (railCssInfo && railCssInfo.min && railCssInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.css(?:\?v=[a-f0-9]+)?/i.test(result)) {
         const railCssHref = `/${railCssInfo.min}?v=${railCssInfo.hash}`;
@@ -908,7 +951,7 @@ function ensureLazyIframes(html) {
     ));
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo) {
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo, embedsInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
@@ -932,6 +975,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     );
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
+    result = ensureArticleEmbedsScript(result, embedsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
     result = ensureSwCleanupScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
@@ -961,7 +1005,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.

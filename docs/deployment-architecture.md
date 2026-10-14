@@ -10,7 +10,7 @@ All four repositories are public, default branch `main`.
 
 | Repository | Live publisher | Live URL | Custom domain |
 | --- | --- | --- | --- |
-| f1StoriesPage | Actions (`deploy-pages.yml`, reusable by maintenance) | https://f1stories.gr/ | f1stories.gr |
+| f1StoriesPage | Actions (`deploy-pages.yml`, reusable by maintenance) | https://f1-stories.gr/ | f1-stories.gr |
 | f1-telemetry-dashboard | branch `gh-pages:/` | https://georgiosbalatzis.github.io/f1-telemetry-dashboard/ | none |
 | ghostcar | branch `gh-pages:/` | https://georgiosbalatzis.github.io/ghostcar/ | none |
 | BetCastVisualisation | branch `gh-pages:/` | https://georgiosbalatzis.github.io/BetCastVisualisation/ | none |
@@ -64,7 +64,7 @@ redirect is excluded from the aggregate's Main input **before** collision testin
 that single declared ownership transfer is not permission to overwrite other files.
 `/f1telemetry/` remains a compatibility entry to `/telemetry/`, preserving query/hash.
 
-Canonical origin: `https://f1stories.gr`. Canonical product paths are lowercase,
+Canonical origin: `https://f1-stories.gr`. Canonical product paths are lowercase,
 trailing-slash `/standings/`, `/telemetry/`, `/ghostcar/`, `/betcast/`.
 Race Desk order remains THE GRID, TELEMETRY, GHOST CAR; BetCast remains a sibling.
 Internal canonical navigation uses root-relative paths; metadata/sitemaps use
@@ -93,7 +93,7 @@ No long-lived PAT is introduced.
 ## Storage, security, consent
 
 Only `f1stories-theme` is intentionally shared. Product preferences/caches must
-have distinct keys. Old github.io storage cannot be read from f1stories.gr; retain
+have distinct keys. Old github.io storage cannot be read from f1-stories.gr; retain
 normal first-load rules, and honor an existing valid canonical preference. Add no
 bridges, cookies, theme forwarding, or live-sync requirement.
 

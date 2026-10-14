@@ -1146,22 +1146,22 @@ function standingsSignature(season, round, driverStandings, constructorStandings
 }
 
 // The timing band names its data source: the tracked snapshot (with its date)
-// until the live API answers, and says so when it doesn't. The stale label must
+// until the API answers, and says so when it doesn't. The stale label must
 // be no wider than the snapshot label it replaces, or the band re-wraps (CLS).
-function setStandingsDataStatus(state) {
+function setStandingsDataStatus(state, source) {
     if (!standingsDataStatus) return;
     const updated = new Date(latestStandingsMeta.updatedAt);
     const date = Number.isFinite(updated.getTime())
         ? formatEditorialDate(updated)
         : '';
     const labels = {
-        live: 'Live δεδομένα',
+        live: source || latestStandingsMeta.source || 'Jolpica F1',
         snapshot: date ? 'Στιγμιότυπο ' + date : 'Στιγμιότυπο',
-        stale: date ? 'Χωρίς live · ' + date : 'Χωρίς live',
+        stale: date ? 'Στιγμιότυπο ' + date : 'Στιγμιότυπο',
         error: 'Χωρίς δεδομένα'
     };
     standingsDataStatus.textContent = labels[state];
-    if (standingsLiveDot) standingsLiveDot.hidden = state !== 'live';
+    if (standingsLiveDot) standingsLiveDot.hidden = true;
 }
 
 function renderStandingsPayload(driverData, constructorData, meta) {
@@ -1241,7 +1241,7 @@ function renderPrimaryStandings(useFallback) {
     return fetchPrimaryStandings().then(function(payload) {
         renderStandingsPayload(payload.driverStandings, payload.constructorStandings, {
             updatedAt: new Date().toISOString(),
-            source: 'Jolpica F1 · live',
+            source: 'Jolpica F1',
             live: true
         });
     }).catch(function(err) {
@@ -1335,7 +1335,7 @@ function loadFromOpenF1Fallback() {
             validateOpenF1ArrayPayload(r[2], 'OpenF1 drivers');
             renderDriversFromOpenF1(r[0], r[2]);
             renderConstructorsFromOpenF1(r[1], r[2]);
-            setStandingsDataStatus('live');
+            setStandingsDataStatus('live', 'OpenF1');
         })
         .catch(function(err) {
             console.error('OpenF1 fallback failed:', err);

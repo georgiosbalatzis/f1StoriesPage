@@ -1,0 +1,910 @@
+{
+  "base": "1491a21ade9a3b6a00800fa7420bc85a06d3cdf4",
+  "cases": [
+    {
+      "id": "20260922W",
+      "slot": "2",
+      "slots": [
+        "2"
+      ],
+      "classification": "A",
+      "evidence": "Visible LAT Images mark; permission unverified",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΙΣΤΟΡΙΑ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "59b06c6e9c678946b082f3d1db532977a3e218ceb25d9ab1264be08b34ba3212",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20260922W/2.webp",
+      "editorial": {
+        "id": "20260922W",
+        "title": "Pedro de la rosa: Αυτός που περίμενε την μεγάλη ευκαιρία.",
+        "author": "Themis Charvalis",
+        "date": "2026-09-22",
+        "category": "History",
+        "categories": [
+          "History"
+        ],
+        "tags": [
+          "F1",
+          "Racing",
+          "Pedro de la Rosa",
+          "legend",
+          "Historical"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20260922W/2-mobile.avif",
+          "sha256": "f4df183e9c58b5e1a7a341797dda09c29a4a75e5fb0ef7da99fa8025cff23cf6",
+          "publicDestination": "/blog-module/blog-entries/20260922W/2-mobile.avif",
+          "baselinePublicSha256": "f4df183e9c58b5e1a7a341797dda09c29a4a75e5fb0ef7da99fa8025cff23cf6"
+        },
+        {
+          "path": "blog-module/blog-entries/20260922W/2-mobile.webp",
+          "sha256": "b9b8a061bc926d61b64e8e6ef589a390f5fb22a245af451cdb98e5825ff8f78e",
+          "publicDestination": "/blog-module/blog-entries/20260922W/2-mobile.webp",
+          "baselinePublicSha256": "b9b8a061bc926d61b64e8e6ef589a390f5fb22a245af451cdb98e5825ff8f78e"
+        },
+        {
+          "path": "blog-module/blog-entries/20260922W/2.avif",
+          "sha256": "f4df183e9c58b5e1a7a341797dda09c29a4a75e5fb0ef7da99fa8025cff23cf6",
+          "publicDestination": "/blog-module/blog-entries/20260922W/2.avif",
+          "baselinePublicSha256": "f4df183e9c58b5e1a7a341797dda09c29a4a75e5fb0ef7da99fa8025cff23cf6"
+        },
+        {
+          "path": "blog-module/blog-entries/20260922W/2.webp",
+          "sha256": "6dc896087813ce4ebccbbea7f01f9017902fa6b0ea3f45d48853f165f5c68ee8",
+          "publicDestination": "/blog-module/blog-entries/20260922W/2.webp",
+          "baselinePublicSha256": "6dc896087813ce4ebccbbea7f01f9017902fa6b0ea3f45d48853f165f5c68ee8"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20260922W/2-mobile.avif": {
+          "sha256": "da225d19c5987a30135b31666e4222cae3641d0765a84dbe02a7eca8543dadc4",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260922W/2-mobile.webp": {
+          "sha256": "1bf26d6a5f24bf473e9adcb368837754449621b2338976528b64cb33c6a4ec0f",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260922W/2.avif": {
+          "sha256": "5acfa3bae68cf3cc79368229d6a782f80333b1e6764ba919d60ba9984ec93944",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20260922W/2.webp": {
+          "sha256": "1ffe683f4cb07e95e9c9fe6163f4648a172ea082d0b2acbaae02c75a1e938dac",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20260525-2W",
+      "slot": "2",
+      "slots": [
+        "2"
+      ],
+      "classification": "A",
+      "evidence": "Visible LAT Images mark; permission unverified",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΕΙΔΗΣΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "7558ce454a45b400b5000978e58a538e5558193261715a585b81a8b217924c44",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20260525-2W/2.webp",
+      "editorial": {
+        "id": "20260525-2W",
+        "title": "Patrick Tambay ένας οδηγός μεγαλύτερος από τα στατιστικά του",
+        "author": "Themis Charvalis",
+        "date": "2026-05-25",
+        "category": "News",
+        "categories": [
+          "News"
+        ],
+        "tags": [
+          "F1",
+          "Racing",
+          "Patrick Tambay",
+          "80s",
+          "Ferrari"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20260525-2W/2-mobile.avif",
+          "sha256": "2520ef6213d43122fd3a85a6b0928c0648d1e96fcf4ad44e1ab802a4f02ec09e",
+          "publicDestination": "/blog-module/blog-entries/20260525-2W/2-mobile.avif",
+          "baselinePublicSha256": "2520ef6213d43122fd3a85a6b0928c0648d1e96fcf4ad44e1ab802a4f02ec09e"
+        },
+        {
+          "path": "blog-module/blog-entries/20260525-2W/2-mobile.webp",
+          "sha256": "6281b7e367a28db72cba309e9ae6af6ebf3c46f1cf879dfc2f1ed2fac28290f2",
+          "publicDestination": "/blog-module/blog-entries/20260525-2W/2-mobile.webp",
+          "baselinePublicSha256": "6281b7e367a28db72cba309e9ae6af6ebf3c46f1cf879dfc2f1ed2fac28290f2"
+        },
+        {
+          "path": "blog-module/blog-entries/20260525-2W/2.avif",
+          "sha256": "2520ef6213d43122fd3a85a6b0928c0648d1e96fcf4ad44e1ab802a4f02ec09e",
+          "publicDestination": "/blog-module/blog-entries/20260525-2W/2.avif",
+          "baselinePublicSha256": "2520ef6213d43122fd3a85a6b0928c0648d1e96fcf4ad44e1ab802a4f02ec09e"
+        },
+        {
+          "path": "blog-module/blog-entries/20260525-2W/2.webp",
+          "sha256": "b9dad2f6cc1a3ca10f94124801b245d38ab64a3d7f5e022552a9351b1d8f9cc1",
+          "publicDestination": "/blog-module/blog-entries/20260525-2W/2.webp",
+          "baselinePublicSha256": "b9dad2f6cc1a3ca10f94124801b245d38ab64a3d7f5e022552a9351b1d8f9cc1"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20260525-2W/2-mobile.avif": {
+          "sha256": "41c8ddc13030e092201e280631f30452429efa21f1651f5e609bdcb87a4b68c9",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260525-2W/2-mobile.webp": {
+          "sha256": "d054e0e0e2bdcd3cbd0db96202cb294cf0b59aecaa7fa73749cb732bae42eff5",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260525-2W/2.avif": {
+          "sha256": "1dcc762f4e99c552e63b41ddfabb54eb1fc1894052adfdd178c9bedec9549018",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20260525-2W/2.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20260430W",
+      "slot": "2",
+      "slots": [
+        "2"
+      ],
+      "classification": "A",
+      "evidence": "Visible motorsport.com mark; permission unverified",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΕΙΔΗΣΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "e2582620742c7990f0487cbc46ee3754e7426c38b32194c57d07fc849f7cde5c",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20260430W/2.webp",
+      "editorial": {
+        "id": "20260430W",
+        "title": "Το πιο άδικο Σαββατοκύριακο στην ιστορία της Formula 1.",
+        "author": "Themis Charvalis",
+        "date": "2026-04-30",
+        "category": "News",
+        "categories": [
+          "News"
+        ],
+        "tags": [
+          "F1",
+          "Racing",
+          "90ς",
+          "Imola",
+          "Simtek"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20260430W/2-mobile.avif",
+          "sha256": "cfb2020bd73586f80fea9fb1f3ad7239f24189c2197f9b171d943536f5b8d1b8",
+          "publicDestination": "/blog-module/blog-entries/20260430W/2-mobile.avif",
+          "baselinePublicSha256": "cfb2020bd73586f80fea9fb1f3ad7239f24189c2197f9b171d943536f5b8d1b8"
+        },
+        {
+          "path": "blog-module/blog-entries/20260430W/2-mobile.webp",
+          "sha256": "26671255283c24ff1975c3880476a164033c43ccdcf1543fcfe18bd1e83f6af3",
+          "publicDestination": "/blog-module/blog-entries/20260430W/2-mobile.webp",
+          "baselinePublicSha256": "26671255283c24ff1975c3880476a164033c43ccdcf1543fcfe18bd1e83f6af3"
+        },
+        {
+          "path": "blog-module/blog-entries/20260430W/2.avif",
+          "sha256": "cfb2020bd73586f80fea9fb1f3ad7239f24189c2197f9b171d943536f5b8d1b8",
+          "publicDestination": "/blog-module/blog-entries/20260430W/2.avif",
+          "baselinePublicSha256": "cfb2020bd73586f80fea9fb1f3ad7239f24189c2197f9b171d943536f5b8d1b8"
+        },
+        {
+          "path": "blog-module/blog-entries/20260430W/2.webp",
+          "sha256": "cf22e2ed8d25c81b907f8338fdccd6587eeb9f1b2bb3e3bcdc6a54eff2ab7b1a",
+          "publicDestination": "/blog-module/blog-entries/20260430W/2.webp",
+          "baselinePublicSha256": "cf22e2ed8d25c81b907f8338fdccd6587eeb9f1b2bb3e3bcdc6a54eff2ab7b1a"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20260430W/2-mobile.avif": {
+          "sha256": "41c8ddc13030e092201e280631f30452429efa21f1651f5e609bdcb87a4b68c9",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260430W/2-mobile.webp": {
+          "sha256": "d054e0e0e2bdcd3cbd0db96202cb294cf0b59aecaa7fa73749cb732bae42eff5",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260430W/2.avif": {
+          "sha256": "1dcc762f4e99c552e63b41ddfabb54eb1fc1894052adfdd178c9bedec9549018",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20260430W/2.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20250905W",
+      "slot": "2",
+      "slots": [
+        "2"
+      ],
+      "classification": "A",
+      "evidence": "Visible motorsport.com mark; permission unverified",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΙΣΤΟΡΙΑ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "e040d6391ee80afef3827dc31c3ab86965a222f4c34601cc8212f7b6dd8d2410",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20250905W/2.webp",
+      "editorial": {
+        "id": "20250905W",
+        "title": "Carlo Chiti: Ο θρυλικός αρχιτέκτονας της ιταλικής αγωνιστικής δόξας",
+        "author": "Themis Charvalis",
+        "date": "2025-09-05",
+        "category": "History",
+        "categories": [
+          "History"
+        ],
+        "tags": [
+          "Historical",
+          "Misc"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20250905W/2.avif",
+          "sha256": "b571b2bdbaa157ee695c3041b91d1edd5dbf08b9a9a5e89e9e80d73cfa29e1ce",
+          "publicDestination": "/blog-module/blog-entries/20250905W/2.avif",
+          "baselinePublicSha256": "b571b2bdbaa157ee695c3041b91d1edd5dbf08b9a9a5e89e9e80d73cfa29e1ce"
+        },
+        {
+          "path": "blog-module/blog-entries/20250905W/2.webp",
+          "sha256": "9809d1b99c5e51fa287d83eafa3242fa79532ca9fa4fdb4b9d579dd7ed796c60",
+          "publicDestination": "/blog-module/blog-entries/20250905W/2.webp",
+          "baselinePublicSha256": "9809d1b99c5e51fa287d83eafa3242fa79532ca9fa4fdb4b9d579dd7ed796c60"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20250905W/2.avif": {
+          "sha256": "5acfa3bae68cf3cc79368229d6a782f80333b1e6764ba919d60ba9984ec93944",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20250905W/2.webp": {
+          "sha256": "1ffe683f4cb07e95e9c9fe6163f4648a172ea082d0b2acbaae02c75a1e938dac",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20250618G",
+      "slot": "2",
+      "slots": [
+        "2",
+        "1"
+      ],
+      "classification": "B",
+      "evidence": "Visible Getty credit; register specifically flags missing permission; credit is not proof of a preview",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΕΙΔΗΣΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "469566d9a5b19aa895b968b34292583154ccf1d934bb8b7834a88b36f6d39d2b",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20250618G/2.webp",
+      "editorial": {
+        "id": "20250618G",
+        "title": "Η Αθέατη Δύναμη της F1: Πώς Aramco, Petronas και άλλοι Γίγαντες Καυσίμων Καθορίζουν τον Αγώνα",
+        "author": "Georgios Balatzis",
+        "date": "2025-06-18",
+        "category": "News",
+        "categories": [
+          "News"
+        ],
+        "tags": [
+          "Random",
+          "Misc"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20250618G/1-card.webp",
+          "sha256": "c5095e6e23173cae09003e996d6890a6663cf65c05d5ae7829fa753bef9fb66d",
+          "publicDestination": "/blog-module/blog-entries/20250618G/1-card.webp",
+          "baselinePublicSha256": "c5095e6e23173cae09003e996d6890a6663cf65c05d5ae7829fa753bef9fb66d"
+        },
+        {
+          "path": "blog-module/blog-entries/20250618G/1-mobile.webp",
+          "sha256": "45200907d3a6e84efd87fb1182c333a5466e08200e735e864af5df7ab3c54d6a",
+          "publicDestination": "/blog-module/blog-entries/20250618G/1-mobile.webp",
+          "baselinePublicSha256": "45200907d3a6e84efd87fb1182c333a5466e08200e735e864af5df7ab3c54d6a"
+        },
+        {
+          "path": "blog-module/blog-entries/20250618G/1.webp",
+          "sha256": "12e65b7d532a1706d79176b935ec5d613b1d58dad6ab73ddc109b0fbb79f6c9e",
+          "publicDestination": "/blog-module/blog-entries/20250618G/1.webp",
+          "baselinePublicSha256": "12e65b7d532a1706d79176b935ec5d613b1d58dad6ab73ddc109b0fbb79f6c9e"
+        },
+        {
+          "path": "blog-module/blog-entries/20250618G/2.avif",
+          "sha256": "4a57660dde9ed9c516256b73c3dbc2ca60b2a5312a0d4c24a0f177429d31db2c",
+          "publicDestination": "/blog-module/blog-entries/20250618G/2.avif",
+          "baselinePublicSha256": "4a57660dde9ed9c516256b73c3dbc2ca60b2a5312a0d4c24a0f177429d31db2c"
+        },
+        {
+          "path": "blog-module/blog-entries/20250618G/2.webp",
+          "sha256": "12e65b7d532a1706d79176b935ec5d613b1d58dad6ab73ddc109b0fbb79f6c9e",
+          "publicDestination": "/blog-module/blog-entries/20250618G/2.webp",
+          "baselinePublicSha256": "12e65b7d532a1706d79176b935ec5d613b1d58dad6ab73ddc109b0fbb79f6c9e"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20250618G/1-card.webp": {
+          "sha256": "f922f55f511d2126ccdbe4b337cc5075f2bdb7b3de2591abb49ef7c7fb81625b",
+          "width": 400,
+          "height": 200
+        },
+        "blog-module/blog-entries/20250618G/1-mobile.webp": {
+          "sha256": "d054e0e0e2bdcd3cbd0db96202cb294cf0b59aecaa7fa73749cb732bae42eff5",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20250618G/1.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20250618G/2.avif": {
+          "sha256": "1dcc762f4e99c552e63b41ddfabb54eb1fc1894052adfdd178c9bedec9549018",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20250618G/2.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20260722",
+      "slot": "1",
+      "slots": [
+        "1"
+      ],
+      "classification": "B",
+      "evidence": "Visible FB-PhotoImages credit; register specifically flags missing permission",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΕΙΔΗΣΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "4d5f87c0effc3275d35b98c380f22ddd4212b66bdc7808dbba049a0ff27c5596",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20260722/1.webp",
+      "editorial": {
+        "id": "20260722",
+        "title": "Η Ferrari SF-26 δεν είναι πλέον γρήγορη μόνο στις αργές στροφές",
+        "author": "F1 Stories Team",
+        "date": "2026-07-22",
+        "category": "News",
+        "categories": [
+          "News"
+        ],
+        "tags": [
+          "F1",
+          "Racing"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20260722/1-card.webp",
+          "sha256": "1b977f00e16e5d3e58212b9e17cd5f7d09d31d4ff24a487272c991cb0c5a02ff",
+          "publicDestination": "/blog-module/blog-entries/20260722/1-card.webp",
+          "baselinePublicSha256": "1b977f00e16e5d3e58212b9e17cd5f7d09d31d4ff24a487272c991cb0c5a02ff"
+        },
+        {
+          "path": "blog-module/blog-entries/20260722/1-mobile.avif",
+          "sha256": "06a3ca56db2708d01012c6f2476ee5c8183b14c852f05e2fe85b59ca40172d2b",
+          "publicDestination": "/blog-module/blog-entries/20260722/1-mobile.avif",
+          "baselinePublicSha256": "06a3ca56db2708d01012c6f2476ee5c8183b14c852f05e2fe85b59ca40172d2b"
+        },
+        {
+          "path": "blog-module/blog-entries/20260722/1-mobile.webp",
+          "sha256": "221541275e35af88cda23349da7dd3aa035125550cd1f094cc88f02469d03588",
+          "publicDestination": "/blog-module/blog-entries/20260722/1-mobile.webp",
+          "baselinePublicSha256": "221541275e35af88cda23349da7dd3aa035125550cd1f094cc88f02469d03588"
+        },
+        {
+          "path": "blog-module/blog-entries/20260722/1.avif",
+          "sha256": "1541e0d8edf6cf89f049e3f5a0bfd01c2cfe2e9d9af8522e8a1d2507c0a21e92",
+          "publicDestination": "/blog-module/blog-entries/20260722/1.avif",
+          "baselinePublicSha256": "1541e0d8edf6cf89f049e3f5a0bfd01c2cfe2e9d9af8522e8a1d2507c0a21e92"
+        },
+        {
+          "path": "blog-module/blog-entries/20260722/1.webp",
+          "sha256": "4013b9cd1b36b9dd37c95b27b9998ea43d28b83bf72761af93dda6ddef3e7fae",
+          "publicDestination": "/blog-module/blog-entries/20260722/1.webp",
+          "baselinePublicSha256": "4013b9cd1b36b9dd37c95b27b9998ea43d28b83bf72761af93dda6ddef3e7fae"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20260722/1-card.webp": {
+          "sha256": "f922f55f511d2126ccdbe4b337cc5075f2bdb7b3de2591abb49ef7c7fb81625b",
+          "width": 400,
+          "height": 200
+        },
+        "blog-module/blog-entries/20260722/1-mobile.avif": {
+          "sha256": "41c8ddc13030e092201e280631f30452429efa21f1651f5e609bdcb87a4b68c9",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260722/1-mobile.webp": {
+          "sha256": "d054e0e0e2bdcd3cbd0db96202cb294cf0b59aecaa7fa73749cb732bae42eff5",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260722/1.avif": {
+          "sha256": "1dcc762f4e99c552e63b41ddfabb54eb1fc1894052adfdd178c9bedec9549018",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20260722/1.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20250328G",
+      "slot": "5",
+      "slots": [
+        "5"
+      ],
+      "classification": "A",
+      "evidence": "Piola signature and repeated motorsport.com preview marks; license unverified",
+      "action": "withheld figure; same-path neutral plate and unavailable caption",
+      "section": "ΤΕΧΝΙΚΑ",
+      "caption": "Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "bodyTextSha256": "36009db692d442866475680ffceba08fe9604a4a9a802ce533e0248d11bab844",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20250328G/2.webp",
+      "editorial": {
+        "id": "20250328G",
+        "title": "Το “Mini-DRS” της McLaren",
+        "author": "Georgios Balatzis",
+        "date": "2025-03-28",
+        "category": "Technical",
+        "categories": [
+          "Technical"
+        ],
+        "tags": [
+          "McLaren"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20250328G/5-sm.avif",
+          "sha256": "e0ff7c4dc02729c26f27d9bb09a0d0885b6b526c10094e013275be6e5c1f522f",
+          "publicDestination": "/blog-module/blog-entries/20250328G/5-sm.avif",
+          "baselinePublicSha256": "e0ff7c4dc02729c26f27d9bb09a0d0885b6b526c10094e013275be6e5c1f522f"
+        },
+        {
+          "path": "blog-module/blog-entries/20250328G/5-sm.webp",
+          "sha256": "ec42a70a25ea90d8269285ddf92b5a998b8ee5741c3ce5109db3b98a929dc899",
+          "publicDestination": "/blog-module/blog-entries/20250328G/5-sm.webp",
+          "baselinePublicSha256": "ec42a70a25ea90d8269285ddf92b5a998b8ee5741c3ce5109db3b98a929dc899"
+        },
+        {
+          "path": "blog-module/blog-entries/20250328G/5.avif",
+          "sha256": "900847b4c61306639778db05ca5f921f4330c98f7250354b7a186dfdaacf593b",
+          "publicDestination": "/blog-module/blog-entries/20250328G/5.avif",
+          "baselinePublicSha256": "900847b4c61306639778db05ca5f921f4330c98f7250354b7a186dfdaacf593b"
+        },
+        {
+          "path": "blog-module/blog-entries/20250328G/5.webp",
+          "sha256": "0718d0ad6ca034cf6a880b588db653b9eb8bf8f00f6010654df115daa1dc8def",
+          "publicDestination": "/blog-module/blog-entries/20250328G/5.webp",
+          "baselinePublicSha256": "0718d0ad6ca034cf6a880b588db653b9eb8bf8f00f6010654df115daa1dc8def"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20250328G/5-sm.avif": {
+          "sha256": "adb95e1d19e3f1f6c851e5bd6cd2e31d04247db8c052a5baa0fd17bd7fe5fea9",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250328G/5-sm.webp": {
+          "sha256": "b18d85936c608b2122b4f73bcbbe87d7f15bb242aa4f528f800c43d843d6015b",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250328G/5.avif": {
+          "sha256": "adb95e1d19e3f1f6c851e5bd6cd2e31d04247db8c052a5baa0fd17bd7fe5fea9",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250328G/5.webp": {
+          "sha256": "b18d85936c608b2122b4f73bcbbe87d7f15bb242aa4f528f800c43d843d6015b",
+          "width": 607,
+          "height": 304
+        }
+      }
+    },
+    {
+      "id": "20261007F",
+      "slot": "1",
+      "slots": [
+        "1"
+      ],
+      "classification": "B",
+      "evidence": "AP/Aijaz Rahi XMP; caption names Bahrain Grand Prix in Sepang, Malaysia; register flags permission and event context unresolved",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΕΙΔΗΣΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "0cb2370a62601f9250eec237879d5297f669514517857d99b95c995d0808230a",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20261007F/1.webp",
+      "editorial": {
+        "id": "20261007F",
+        "title": "Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή",
+        "author": "F1 Stories Team",
+        "date": "2026-10-07",
+        "category": "News",
+        "categories": [
+          "News"
+        ],
+        "tags": [
+          "Sepang",
+          "2026",
+          "Bahrain"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20261007F/1-card.webp",
+          "sha256": "845fb2d10a23dfa98402bf2f4653eb3868d04d2335dca2f00e485d06c8923bfa",
+          "publicDestination": "/blog-module/blog-entries/20261007F/1-card.webp",
+          "baselinePublicSha256": "845fb2d10a23dfa98402bf2f4653eb3868d04d2335dca2f00e485d06c8923bfa"
+        },
+        {
+          "path": "blog-module/blog-entries/20261007F/1-mobile.avif",
+          "sha256": "4c017f6d763fed791a839b7d2aefb6bbb93ab04eb86ce31456a60ec04441a7a6",
+          "publicDestination": "/blog-module/blog-entries/20261007F/1-mobile.avif",
+          "baselinePublicSha256": "4c017f6d763fed791a839b7d2aefb6bbb93ab04eb86ce31456a60ec04441a7a6"
+        },
+        {
+          "path": "blog-module/blog-entries/20261007F/1-mobile.webp",
+          "sha256": "d38f7c60d1084578210f4160edd75c819cb1a7b7ad406f20a52af4932ef9eadf",
+          "publicDestination": "/blog-module/blog-entries/20261007F/1-mobile.webp",
+          "baselinePublicSha256": "d38f7c60d1084578210f4160edd75c819cb1a7b7ad406f20a52af4932ef9eadf"
+        },
+        {
+          "path": "blog-module/blog-entries/20261007F/1.avif",
+          "sha256": "4c017f6d763fed791a839b7d2aefb6bbb93ab04eb86ce31456a60ec04441a7a6",
+          "publicDestination": "/blog-module/blog-entries/20261007F/1.avif",
+          "baselinePublicSha256": "4c017f6d763fed791a839b7d2aefb6bbb93ab04eb86ce31456a60ec04441a7a6"
+        },
+        {
+          "path": "blog-module/blog-entries/20261007F/1.webp",
+          "sha256": "2b8ac71df486d725a62a08ad0d706018bb28f027c57cc1c5403170b5da4e19e3",
+          "publicDestination": "/blog-module/blog-entries/20261007F/1.webp",
+          "baselinePublicSha256": "2b8ac71df486d725a62a08ad0d706018bb28f027c57cc1c5403170b5da4e19e3"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20261007F/1-card.webp": {
+          "sha256": "f922f55f511d2126ccdbe4b337cc5075f2bdb7b3de2591abb49ef7c7fb81625b",
+          "width": 400,
+          "height": 200
+        },
+        "blog-module/blog-entries/20261007F/1-mobile.avif": {
+          "sha256": "41c8ddc13030e092201e280631f30452429efa21f1651f5e609bdcb87a4b68c9",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20261007F/1-mobile.webp": {
+          "sha256": "d054e0e0e2bdcd3cbd0db96202cb294cf0b59aecaa7fa73749cb732bae42eff5",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20261007F/1.avif": {
+          "sha256": "1dcc762f4e99c552e63b41ddfabb54eb1fc1894052adfdd178c9bedec9549018",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20261007F/1.webp": {
+          "sha256": "2c01139b6abbc75c4a57207967b6e08f219ef9b9958af631060dd530bb42b9f0",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20250412G",
+      "slot": "7",
+      "slots": [
+        "7"
+      ],
+      "classification": "B",
+      "evidence": "XPB XMP identifies MCL36/Miami 2022; permission and contextual use unresolved",
+      "action": "withheld figure; same-path neutral plate and unavailable caption",
+      "section": "ΤΕΧΝΙΚΑ",
+      "caption": "Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "bodyTextSha256": "7922c70a2413412428c6a7d24f8cb66dd8e5e70fb932b8e5adb84b11f45e16e7",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20250412G/2.webp",
+      "editorial": {
+        "id": "20250412G",
+        "title": "Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025",
+        "author": "Georgios Balatzis",
+        "date": "2025-04-12",
+        "category": "Technical",
+        "categories": [
+          "Technical"
+        ],
+        "tags": [
+          "McLaren"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20250412G/7-sm.avif",
+          "sha256": "3c7bd6394399f0cf5f74636992a349c5d0d6e936201b89e90cae58b87d457679",
+          "publicDestination": "/blog-module/blog-entries/20250412G/7-sm.avif",
+          "baselinePublicSha256": "3c7bd6394399f0cf5f74636992a349c5d0d6e936201b89e90cae58b87d457679"
+        },
+        {
+          "path": "blog-module/blog-entries/20250412G/7-sm.webp",
+          "sha256": "9f6752d63db5d4860a9ae8d8973d9c48661a090688467a1659bbce02188f90cc",
+          "publicDestination": "/blog-module/blog-entries/20250412G/7-sm.webp",
+          "baselinePublicSha256": "9f6752d63db5d4860a9ae8d8973d9c48661a090688467a1659bbce02188f90cc"
+        },
+        {
+          "path": "blog-module/blog-entries/20250412G/7.avif",
+          "sha256": "73dfb1d85f9331e87dcfe3c8a4640a012664449facf0005254b27274ff2c335c",
+          "publicDestination": "/blog-module/blog-entries/20250412G/7.avif",
+          "baselinePublicSha256": "73dfb1d85f9331e87dcfe3c8a4640a012664449facf0005254b27274ff2c335c"
+        },
+        {
+          "path": "blog-module/blog-entries/20250412G/7.webp",
+          "sha256": "c6064c06926645008d3ac519095b1509f5c52c854f182d55075e4fb719278c22",
+          "publicDestination": "/blog-module/blog-entries/20250412G/7.webp",
+          "baselinePublicSha256": "c6064c06926645008d3ac519095b1509f5c52c854f182d55075e4fb719278c22"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20250412G/7-sm.avif": {
+          "sha256": "adb95e1d19e3f1f6c851e5bd6cd2e31d04247db8c052a5baa0fd17bd7fe5fea9",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250412G/7-sm.webp": {
+          "sha256": "b18d85936c608b2122b4f73bcbbe87d7f15bb242aa4f528f800c43d843d6015b",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250412G/7.avif": {
+          "sha256": "adb95e1d19e3f1f6c851e5bd6cd2e31d04247db8c052a5baa0fd17bd7fe5fea9",
+          "width": 607,
+          "height": 304
+        },
+        "blog-module/blog-entries/20250412G/7.webp": {
+          "sha256": "b18d85936c608b2122b4f73bcbbe87d7f15bb242aa4f528f800c43d843d6015b",
+          "width": 607,
+          "height": 304
+        }
+      }
+    },
+    {
+      "id": "20260926D",
+      "slot": "1",
+      "slots": [
+        "1"
+      ],
+      "classification": "B",
+      "evidence": "Registered Russell/Woody parody; source/context unverified; no AI finding",
+      "action": "neutral cover; all existing derivatives replaced",
+      "section": "ΑΠΟΨΕΙΣ",
+      "caption": "Γραφικό",
+      "bodyTextSha256": "377939fab47bc7d13b217597a90cf6fc5e9549337a77b233d3d8839b1eee6ca1",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20260926D/1.webp",
+      "editorial": {
+        "id": "20260926D",
+        "title": "Μέσα από το F1λτρο μου",
+        "author": "Dimitris Keramidiotis",
+        "date": "2026-09-26",
+        "category": "Opinion",
+        "categories": [
+          "Opinion"
+        ],
+        "tags": [
+          "Formula 1",
+          "Azerbaijan GP",
+          "VSC"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20260926D/1-card.webp",
+          "sha256": "065bceecbd163162eee28013356f78581bd8ac8027936fa318f1918262ad9fbd",
+          "publicDestination": "/blog-module/blog-entries/20260926D/1-card.webp",
+          "baselinePublicSha256": "065bceecbd163162eee28013356f78581bd8ac8027936fa318f1918262ad9fbd"
+        },
+        {
+          "path": "blog-module/blog-entries/20260926D/1-mobile.avif",
+          "sha256": "d16ad562f2e9625193415a0ff1152d8e204933067e995006c85c4b9092f2fcb9",
+          "publicDestination": "/blog-module/blog-entries/20260926D/1-mobile.avif",
+          "baselinePublicSha256": "d16ad562f2e9625193415a0ff1152d8e204933067e995006c85c4b9092f2fcb9"
+        },
+        {
+          "path": "blog-module/blog-entries/20260926D/1-mobile.webp",
+          "sha256": "b0114b91a75682ac1be403ac6faf04012e431408bc957ecd57d345e6416ae81f",
+          "publicDestination": "/blog-module/blog-entries/20260926D/1-mobile.webp",
+          "baselinePublicSha256": "b0114b91a75682ac1be403ac6faf04012e431408bc957ecd57d345e6416ae81f"
+        },
+        {
+          "path": "blog-module/blog-entries/20260926D/1.avif",
+          "sha256": "923979c62deb87c43f09c0553f7eaf07ab437cd64da02b00aef536be51b65368",
+          "publicDestination": "/blog-module/blog-entries/20260926D/1.avif",
+          "baselinePublicSha256": "923979c62deb87c43f09c0553f7eaf07ab437cd64da02b00aef536be51b65368"
+        },
+        {
+          "path": "blog-module/blog-entries/20260926D/1.webp",
+          "sha256": "c3d1802e30e401d6128493adac9880e9dafe9ad2cbc9dd639c57b2553fc25663",
+          "publicDestination": "/blog-module/blog-entries/20260926D/1.webp",
+          "baselinePublicSha256": "c3d1802e30e401d6128493adac9880e9dafe9ad2cbc9dd639c57b2553fc25663"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20260926D/1-card.webp": {
+          "sha256": "de4ac0a0941d150f481d9b0d7b3624e4034d0a3e49f138c4a4f42b0c435b5451",
+          "width": 400,
+          "height": 200
+        },
+        "blog-module/blog-entries/20260926D/1-mobile.avif": {
+          "sha256": "56ea8f0994c1dc1a1f91bef1bf2df5b96331fb794697c8145edaed7fe63cbcec",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260926D/1-mobile.webp": {
+          "sha256": "44c150a1177416e270c12140b8c77f44cac4e7819ecd99166f4baac50b67b537",
+          "width": 800,
+          "height": 400
+        },
+        "blog-module/blog-entries/20260926D/1.avif": {
+          "sha256": "57ed1a07a6b582652574e67e518caa348f2feac3bf948e82e60624db3fed95fb",
+          "width": 900,
+          "height": 450
+        },
+        "blog-module/blog-entries/20260926D/1.webp": {
+          "sha256": "0eb0ab1d2bf55c97e65e7d26dc9efa6b945f312780f9e87bb77f1cdf37540fce",
+          "width": 900,
+          "height": 450
+        }
+      }
+    },
+    {
+      "id": "20261002W",
+      "slot": "4",
+      "slots": [
+        "4"
+      ],
+      "classification": "B",
+      "evidence": "Identifiable child; no source/permission documentation; R6 release concern",
+      "action": "withheld figure; same-path neutral plate and unavailable caption",
+      "section": "ΙΣΤΟΡΙΑ",
+      "caption": "Η φωτογραφία δεν είναι διαθέσιμη.",
+      "bodyTextSha256": "5c58afd1619ed5babe95e21fc33ec84bf980f0c76c341cada73414a7b44aecb9",
+      "social": "https://f1-stories.gr/blog-module/blog-entries/20261002W/2.webp",
+      "editorial": {
+        "id": "20261002W",
+        "title": "Kimi Raikkonen και  Antonio Giovinazzi: Η απρόσμενη φιλία του Iceman",
+        "author": "Themis Charvalis",
+        "date": "2026-10-02",
+        "category": "History",
+        "categories": [
+          "History"
+        ],
+        "tags": [
+          "Raikkonen",
+          "Giovinazzi",
+          "Alfa Romeo"
+        ]
+      },
+      "originals": [
+        {
+          "path": "blog-module/blog-entries/20261002W/4-thumb.webp",
+          "sha256": "81905545ffc9899124485a58e35d1f22c274ec39bd67e9b87984b80fe09adbac",
+          "publicDestination": "/blog-module/blog-entries/20261002W/4-thumb.webp",
+          "baselinePublicSha256": "81905545ffc9899124485a58e35d1f22c274ec39bd67e9b87984b80fe09adbac"
+        },
+        {
+          "path": "blog-module/blog-entries/20261002W/4.webp",
+          "sha256": "11ff85951bb0b770410ae3698cc8a03a88df622a2434e7d5b73d781036e0179b",
+          "publicDestination": "/blog-module/blog-entries/20261002W/4.webp",
+          "baselinePublicSha256": "11ff85951bb0b770410ae3698cc8a03a88df622a2434e7d5b73d781036e0179b"
+        }
+      ],
+      "outputs": {
+        "blog-module/blog-entries/20261002W/4-thumb.webp": {
+          "sha256": "f5cf791869e96870e1a773e2bec638dd4c687c51012cf7a7cd7fb81c645457d6",
+          "width": 228,
+          "height": 114
+        },
+        "blog-module/blog-entries/20261002W/4.webp": {
+          "sha256": "5b193c4125e8f461d5de0a3ec374c7632ffddc3b9a914539053d82e77616d732",
+          "width": 607,
+          "height": 304
+        }
+      }
+    }
+  ],
+  "unchanged": {
+    "blog-module/blog-entries/20250409G/2.avif": "c2ce27858a470270f77ce7c12d063dde34c578fc20154af7568a194e47b5d6ec",
+    "blog-module/blog-entries/20250409G/2.webp": "477886d69ddb1e5ea781ffedcb5bae1d25eb9ec98bbe940635539f8db89a4d12",
+    "blog-module/blog-entries/20260817J/1-card.webp": "6cf79636a82778c15c2afb095ebd18e967f2cd22a80a6cb29e19970b4b73dbbd",
+    "blog-module/blog-entries/20260817J/1-mobile.avif": "91576a7d284729b83c2a46392674e23a0b2f0f3946bdea7a002c039d82714690",
+    "blog-module/blog-entries/20260817J/1-mobile.webp": "7cc67525eace04f25818fbab59afae35b851c4c0027b33390973482415416817",
+    "blog-module/blog-entries/20260817J/1.avif": "fc30896368640da7523e8bbde2a00a61adf31e1d1acdd530241038be819ec385",
+    "blog-module/blog-entries/20260817J/1.webp": "c75e613d4b9b7cfc38417938dacd1d5ae57f9abcc68be479d61edaead6ebc125",
+    "blog-module/blog-entries/20260930G/1-card.webp": "0e9a89d0affd4564d852b738e4a7624061898ad18b97c2ec3fcad9945ed31e46",
+    "blog-module/blog-entries/20260930G/1-mobile.avif": "c1abbe371141272f7c1734503bd4f6e29865162a7f785e39c296164ffe6d871e",
+    "blog-module/blog-entries/20260930G/1-mobile.webp": "6bede62b6474170b1f5af3c47674ec7967fd2773e344ab88de19fcfc99e7b068",
+    "blog-module/blog-entries/20260930G/1.avif": "5012a5ba31ed35b447bf6901e35ba9431e661dec8960719925087252b57fa5ac",
+    "blog-module/blog-entries/20260930G/1.webp": "6b5114d406c67803c6e1180ede7e07c366f25c2660323ce523661de9866d884a",
+    "blog-module/blog-entries/20261002W/3-thumb.webp": "bcee7d21c9deeb04ea74449a49b400e887845388b1d24405671a49a88229478c",
+    "blog-module/blog-entries/20261002W/3.webp": "06c95e9f9ee47d041204b78dfc6c5811309a6a6d648cb77ff0e20d6a5b10fc94",
+    "blog-module/blog-entries/20250409G/1-card.webp": "f9843a0fc282480042db3cfcec038ea0efb2510d1b0af093c6f7346328eb8b18",
+    "blog-module/blog-entries/20250409G/1-mobile.webp": "6cf4f23a2b4b4130e8c9304eca6fd8e68f9677f1dd472a6838820dff2eec2b7f",
+    "blog-module/blog-entries/20250409G/1.webp": "8296000229359ec09e579a44cd7f1fb8956c7a96b61685f072c986f9db20ac3f",
+    "blog-module/blog-entries/20260329G/2.avif": "455111ecc2b223b86b6d5471d0e5d49023225298be82f24a301e83e27835a6e1",
+    "blog-module/blog-entries/20260329G/2.webp": "bde5da74a0584cfb548bf57f3062578c837dd95a51ef06e25091de7861102551",
+    "blog-module/blog-entries/20260217T/2.avif": "42621d2eb38bf4262c05eb3de49c6f332215c1916c376128da693d24dcec1fd4",
+    "blog-module/blog-entries/20260217T/2.webp": "3567ca50c8eb5a0bd650f14ab381a2d321f8cb6f2bb0a215a1b7250cc05116ed",
+    "blog-module/blog-entries/20260222T/2.avif": "42621d2eb38bf4262c05eb3de49c6f332215c1916c376128da693d24dcec1fd4",
+    "blog-module/blog-entries/20260222T/2.webp": "3567ca50c8eb5a0bd650f14ab381a2d321f8cb6f2bb0a215a1b7250cc05116ed",
+    "blog-module/blog-entries/20260227Τ/2.avif": "42621d2eb38bf4262c05eb3de49c6f332215c1916c376128da693d24dcec1fd4",
+    "blog-module/blog-entries/20260227Τ/2.webp": "3567ca50c8eb5a0bd650f14ab381a2d321f8cb6f2bb0a215a1b7250cc05116ed",
+    "blog-module/blog-entries/20260423G/5-sm.avif": "f5221e9970f3d9abdd97630833e68645da033660b7bef40eaff814a05ab924f0",
+    "blog-module/blog-entries/20260423G/5-sm.webp": "dc943092c8dd3aee243669ef8969c5aef287609db9828caf01473b40dda6edce",
+    "blog-module/blog-entries/20260423G/5.avif": "b22e0541c2ed2344305cbd82999b0398c23abb48f43dc3ecda4d7690719f8098",
+    "blog-module/blog-entries/20260423G/5.webp": "f8f2529589fecf42b9d076344544868c6ab40aa5aa4014b61b7829488ba5df51",
+    "blog-module/blog-entries/20260626W/2-mobile.avif": "bd43fc8914398bd7813a7584cb774c1e915fcfc097c671a071de41942d99d278",
+    "blog-module/blog-entries/20260626W/2-mobile.webp": "ac990152a8dffe736c84baac8430cce4f25ed5e528b4153881335f1569c8c1c0",
+    "blog-module/blog-entries/20260626W/2.avif": "727c2f6829628bd9c7fc947059a704c8d7a0edff4203a7d8eb7c46993e950598",
+    "blog-module/blog-entries/20260626W/2.webp": "0f2d938fc19b728bdc57298c894f2e1605d89a00122992d42d42fb6e8ddc4fa4",
+    "blog-module/blog-entries/20260630W/2-mobile.avif": "e827fe71b600baeb11b086870dfa9e9cd3bb17f052054957589355448e9abd25",
+    "blog-module/blog-entries/20260630W/2-mobile.webp": "89e3511b0013f0304fbf2d3cf62019e42babe70d6c32507a1b7e8fa493333f67",
+    "blog-module/blog-entries/20260630W/2.avif": "655a6dc3bdb1fcac0bf12f9363fcd7ec6c2ecba5019b80a6d9c7682e2aedcc6e",
+    "blog-module/blog-entries/20260630W/2.webp": "be516be7ffd130e0e51ae69ea4676bf7b541f6d230b92d105aac5ecc6089d3e4",
+    "blog-module/blog-entries/20260928G/1-card.webp": "15ba85941675693ad4cdd666eab7ca6d288629d025764322b684a2ed0cdd5eb5",
+    "blog-module/blog-entries/20260928G/1-mobile.avif": "7d5855c6c9dd97ce0edc916b527fc9205a9b64ad0eb56d962771e220e4f1f09b",
+    "blog-module/blog-entries/20260928G/1-mobile.webp": "d7f5b6ea16d958fdaf2d1dd932183bb3d6dec248fc6ec7f206223c28ab7bd73c",
+    "blog-module/blog-entries/20260928G/1.avif": "6e5b1115614bafe8d577def82cc739d366c0f287634f12149267c9a9634d804c",
+    "blog-module/blog-entries/20260928G/1.webp": "b9510ab31e8d45b5b8fe8f0667577dceec24ad1054ff89c628e86ff020735cad",
+    "blog-module/blog-entries/20260910-5G/1-card.webp": "f588a0aa4805145f80dee20ce0cefe1d4d73b1bb4b4e36dca89d6c6b992183b3",
+    "blog-module/blog-entries/20260910-5G/1-mobile.avif": "448430281d16321acf68047ee9fa6ff7dac4d4ac2d0d603a7ec09d0c4dfeef91",
+    "blog-module/blog-entries/20260910-5G/1-mobile.webp": "95495a2f3cd45fc0483d8a725a51a7a8b2dfaee02e5c30b08a0bb561824ef276",
+    "blog-module/blog-entries/20260910-5G/1.avif": "8d47e296c0f18a006547694adbead700d847d19c57763eb5157f7eabc8636553",
+    "blog-module/blog-entries/20260910-5G/1.webp": "948911edde19f1878716a861849bb6256171ba60786427968ede28d3b2177c80",
+    "blog-module/blog-entries/20260312J/2.avif": "73e17d7e4c3782da32cd4257ba56a46b1b53fc0e4995445c08ef7e15c248ef82",
+    "blog-module/blog-entries/20260312J/2.webp": "1d3b6243da4a058dc40e97464a31eb6c8a7a2da62845ad22e3bcb5e81fef3642",
+    "blog-module/blog-entries/20250926W/2.avif": "c24c003b93886bfeeda9712e37844d6b6994517a1fe87a1ca269a82dde65f36b",
+    "blog-module/blog-entries/20250926W/2.webp": "07186549519fd772be3b217fcccb4969c324e50aca4150bdbc6867c06402aebb",
+    "blog-module/blog-entries/20260423G/1-card.webp": "915db56ae368f5ae98a7642579b5e9bab137c8caea49e8d1dc7327470b228fbe",
+    "blog-module/blog-entries/20260423G/1-mobile.avif": "2f4fe3ef33c70d25baef672741fa4e2a3cba391f80e5af9c5011c2ce7c361a1c",
+    "blog-module/blog-entries/20260423G/1-mobile.webp": "1f77a09ef88f328d2eb3ac8dbdf4e1e11ba55b2ccb9c47c8311766083428ba23",
+    "blog-module/blog-entries/20260423G/1.avif": "8b8f6e95cf7c72c6769d88a1abe016776deda7a0976a792351f510178f8c7218",
+    "blog-module/blog-entries/20260423G/1.webp": "2a3ffbe70c07d8f8e5c666fb7e34a3d9a97ce8a9fd482a602eee3cbfa8436f19"
+  }
+}

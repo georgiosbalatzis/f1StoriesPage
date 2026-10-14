@@ -11,7 +11,7 @@ const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
-const SITE_ORIGIN = 'https://f1stories.gr';
+const SITE_ORIGIN = 'https://f1-stories.gr';
 const CURRENT_YEAR = new Date().getFullYear();
 
 const FILE_LIMITS = {

@@ -1,362 +1,9 @@
-// article-script.js — Article page functionality
-// Share + scroll-to-top handled by blog-fixes.js / shared-nav.js.
-function setupBetCastFrameBridge(articleContent, doc, win) {
-    if (!articleContent || !doc || !win) return () => {};
-    const frameOrigin = src => {
-        try {
-            const url = new URL(src, win.location.href);
-            const allowed = (url.origin === 'https://georgiosbalatzis.github.io'
-                    && (url.pathname === '/BetCastVisualisation/' || url.pathname === '/BetCastVisualisation'))
-                || (url.origin === 'https://f1stories.gr' && url.pathname === '/betcast/');
-            const embed = url.searchParams.get('embed');
-            if (!allowed || url.username || url.password || url.port || embed == null || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
-            return url;
-        } catch (_) { return null; }
-    };
-    const frames = new Map();
-    const post = (frame, type, origin, extra = {}) => {
-        try { frame.contentWindow?.postMessage({ type, ...extra }, origin); } catch (_) {}
-    };
-    const getTheme = () => doc.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    const sendTheme = state => {
-        if (!state.ready || state.url.searchParams.get('presentation') !== 'article' || state.url.searchParams.get('theme') !== 'host') return;
-        post(state.frame, 'betcast:theme', state.url.origin, { theme: getTheme() });
-    };
-    const clearRetries = state => {
-        state.timers.forEach(timer => win.clearTimeout(timer));
-        state.timers = [];
-    };
-    const requestMeasurement = state => post(state.frame, 'betcast:measure', state.url.origin);
-    const addFallbackLink = (frame, url) => {
-        const parent = frame.parentElement;
-        if (!parent || parent.querySelector(':scope > .betcast-embed-fallback')) return;
-        const link = doc.createElement('a');
-        const analysis = new URL(url.href);
-        ['embed', 'presentation', 'theme'].forEach(key => analysis.searchParams.delete(key));
-        link.href = analysis.toString();
-        link.className = 'betcast-embed-fallback';
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = 'Άνοιγμα BetCast ↗';
-        frame.insertAdjacentElement('afterend', link);
-    };
-    const initializeFrame = frame => {
-        if (!frame || frames.has(frame.contentWindow)) return;
-        const url = frameOrigin(frame.getAttribute('src') || frame.src);
-        if (!url) return;
-        frame.dataset.f1sBetcastManaged = 'true';
-        addFallbackLink(frame, url);
-        const state = { frame, url, ready: false, timers: [] };
-        frames.set(frame.contentWindow, state);
-        frame.addEventListener('load', () => {
-            state.ready = false;
-            frame.dataset.f1sBetcastReady = 'false';
-            clearRetries(state);
-            requestMeasurement(state);
-            [250, 750, 1600, 3200].forEach(delay => state.timers.push(win.setTimeout(requestMeasurement, delay, state)));
-        });
-        requestMeasurement(state);
-        [250, 750, 1600, 3200].forEach(delay => state.timers.push(win.setTimeout(requestMeasurement, delay, state)));
-    };
-    const onMessage = event => {
-        const state = frames.get(event.source);
-        if (!state || event.origin !== state.url.origin) return;
-        const data = event.data;
-        if (!data || typeof data !== 'object' || Array.isArray(data)) return;
-        const keys = Object.keys(data).sort().join(',');
-        if (data.type !== 'betcast:resize' || keys !== 'height,type' || typeof data.height !== 'number'
-            || !Number.isFinite(data.height) || !Number.isInteger(data.height) || data.height < 100 || data.height > 12000) return;
-        state.ready = true;
-        state.frame.dataset.f1sBetcastReady = 'true';
-        clearRetries(state);
-        state.frame.style.height = `${data.height}px`;
-        state.frame.style.removeProperty('min-height');
-        sendTheme(state);
-    };
-
-    // Install validation before observing existing or future article frames.
-    win.addEventListener('message', onMessage);
-    articleContent.querySelectorAll('iframe').forEach(initializeFrame);
-    const observer = win.MutationObserver ? new win.MutationObserver(records => {
-        records.forEach(record => record.addedNodes.forEach(node => {
-            if (node.nodeType !== 1) return;
-            if (node.matches?.('iframe')) initializeFrame(node);
-            node.querySelectorAll?.('iframe').forEach(initializeFrame);
-        }));
-    }) : null;
-    observer?.observe(articleContent, { childList: true, subtree: true });
-    const themeObserver = new win.MutationObserver(() => frames.forEach(sendTheme));
-    themeObserver.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-    return () => {
-        win.removeEventListener('message', onMessage);
-        observer?.disconnect();
-        themeObserver.disconnect();
-        frames.forEach(clearRetries);
-    };
-}
-
-// Size approved standings and telemetry embeds to their reported content height.
-// Validate the originating frame, application URL, message shape and height.
-function setupDataFrameBridge(articleContent, doc, win, kind) {
-    if (!articleContent || !doc || !win) return () => {};
-    const frameUrl = src => {
-        try {
-            const url = new URL(src, win.location.href);
-            const sameSite = url.origin === 'https://f1stories.gr' || url.origin === win.location.origin;
-            const embed = url.searchParams.get('embed');
-            const allowed = kind === 'telemetry'
-                ? ((sameSite && url.pathname === '/telemetry/')
-                    || ((sameSite || url.origin === 'https://georgiosbalatzis.github.io') && url.pathname === '/f1-telemetry-dashboard/'))
-                : sameSite && url.pathname.startsWith('/standings/');
-            if (!allowed || url.username || url.password || embed == null
-                || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
-            return url;
-        } catch (_) { return null; }
-    };
-    const frames = new Map();
-    const post = (state, type, extra) => {
-        try { state.frame.contentWindow?.postMessage({ type, ...extra }, state.url.origin); } catch (_) {}
-    };
-    // Telemetry embeds cannot read this origin's theme storage: push the article theme to them.
-    const sendTheme = state => {
-        if (kind === 'telemetry') post(state, 'f1s-telemetry:theme', { theme: doc.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark' });
-    };
-    const clearRetries = state => {
-        state.timers.forEach(timer => win.clearTimeout(timer));
-        state.timers = [];
-    };
-    const requestMeasurement = state => { post(state, `f1s-${kind}:measure`); sendTheme(state); };
-    const startMeasuring = state => {
-        clearRetries(state);
-        requestMeasurement(state);
-        [250, 750, 1600, 3200].forEach(delay => state.timers.push(win.setTimeout(requestMeasurement, delay, state)));
-    };
-    const initializeFrame = frame => {
-        if (!frame || !frame.contentWindow || frames.has(frame.contentWindow)) return;
-        const url = frameUrl(frame.getAttribute('src') || frame.src);
-        if (!url) return;
-        frame.dataset[kind === 'telemetry' ? 'f1sTelemetryManaged' : 'f1sStandingsManaged'] = 'true';
-        const state = { frame, url, timers: [] };
-        frames.set(frame.contentWindow, state);
-        frame.addEventListener('load', () => startMeasuring(state));
-        startMeasuring(state);
-    };
-    const onMessage = event => {
-        const state = frames.get(event.source);
-        if (!state || event.origin !== state.url.origin) return;
-        const data = event.data;
-        if (!data || typeof data !== 'object' || Array.isArray(data)) return;
-        const keys = Object.keys(data).sort().join(',');
-        if (data.type !== `f1s-${kind}:resize` || keys !== 'height,type' || typeof data.height !== 'number'
-            || !Number.isInteger(data.height) || data.height < 100 || data.height > 12000) return;
-        clearRetries(state);
-        state.frame.dataset[kind === 'telemetry' ? 'f1sTelemetryReady' : 'f1sStandingsReady'] = 'true';
-        state.frame.setAttribute('scrolling', 'no');
-        state.frame.style.height = `${data.height}px`;
-        state.frame.style.removeProperty('min-height');
-    };
-
-    win.addEventListener('message', onMessage);
-    articleContent.querySelectorAll('iframe').forEach(initializeFrame);
-    const observer = win.MutationObserver ? new win.MutationObserver(records => {
-        records.forEach(record => record.addedNodes.forEach(node => {
-            if (node.nodeType !== 1) return;
-            if (node.matches?.('iframe')) initializeFrame(node);
-            node.querySelectorAll?.('iframe').forEach(initializeFrame);
-        }));
-    }) : null;
-    observer?.observe(articleContent, { childList: true, subtree: true });
-    const themeObserver = kind === 'telemetry' && win.MutationObserver ? new win.MutationObserver(() => frames.forEach(sendTheme)) : null;
-    themeObserver?.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-    return () => {
-        win.removeEventListener('message', onMessage);
-        observer?.disconnect();
-        themeObserver?.disconnect();
-        frames.forEach(clearRetries);
-    };
-}
-
-function setupStandingsFrameBridge(articleContent, doc, win) {
-    return setupDataFrameBridge(articleContent, doc, win, 'standings');
-}
-
-function setupTelemetryFrameBridge(articleContent, doc, win) {
-    return setupDataFrameBridge(articleContent, doc, win, 'telemetry');
-}
-
-function setupBetCastWidgets(articleContent, doc, win) {
-    if (!articleContent || !doc || !win) return () => {};
-    const figures = [...articleContent.querySelectorAll('[data-f1s-betcast-widget="1"]')];
-    if (!figures.length) return () => {};
-    let runtimePromise;
-    let observer;
-    const unmounts = new Map();
-
-    const loadRuntime = () => {
-        if (runtimePromise) return runtimePromise;
-        runtimePromise = win.fetch('/blog-module/widgets/betcast/manifest.json', { credentials: 'same-origin' })
-            .then(response => { if (!response.ok) throw new Error('Widget manifest unavailable'); return response.json(); })
-            .then(manifest => {
-                if (!manifest || manifest.schemaVersion !== 1 || !Number.isSafeInteger(manifest.bytes) || manifest.bytes < 1
-                    || !Number.isSafeInteger(manifest.gzipBytes) || manifest.gzipBytes < 1 || manifest.gzipBytes > manifest.bytes
-                    || typeof manifest.version !== 'string' || !/^[a-f0-9]{12}$/.test(manifest.version)
-                    || typeof manifest.integrity !== 'string' || !/^sha384-[A-Za-z0-9+/]+=*$/.test(manifest.integrity)
-                    || manifest.entry !== `/blog-module/widgets/betcast/widget.js?v=${manifest.version}`) throw new Error('Invalid widget manifest');
-                return new Promise((resolve, reject) => {
-                    const script = doc.createElement('script');
-                    script.src = manifest.entry;
-                    script.integrity = manifest.integrity;
-                    script.crossOrigin = 'anonymous';
-                    script.onload = () => win.F1StoriesBetCastWidget?.mount ? resolve(win.F1StoriesBetCastWidget) : reject(new Error('Widget API missing'));
-                    script.onerror = () => reject(new Error('Widget runtime failed'));
-                    doc.head.append(script);
-                });
-            }).catch(error => { runtimePromise = null; throw error; });
-        return runtimePromise;
-    };
-
-    const enhance = figure => {
-        if (figure.dataset.widgetStarted === 'true') return;
-        figure.dataset.widgetStarted = 'true';
-        let config;
-        try { config = JSON.parse(figure.dataset.f1sBetcastConfig || ''); } catch (_) { figure.dataset.widgetStarted = 'false'; return; }
-        let mount;
-        loadRuntime().then(api => {
-            mount = doc.createElement('div');
-            mount.className = 'betcast-chart-fallback__interactive';
-            figure.append(mount);
-            const unmount = api.mount(mount, config);
-            unmounts.set(figure, unmount);
-            const fallback = figure.querySelector('.betcast-chart-fallback__static');
-            if (fallback) fallback.hidden = true;
-        }).catch(() => { mount?.remove(); figure.dataset.widgetStarted = 'false'; });
-    };
-
-    if ('IntersectionObserver' in win) {
-        observer = new win.IntersectionObserver(entries => entries.forEach(entry => {
-            if (entry.isIntersecting) { observer.unobserve(entry.target); enhance(entry.target); }
-        }), { rootMargin: '240px 0px' });
-        figures.forEach(figure => observer.observe(figure));
-    } else figures.forEach(enhance);
-
-    return () => {
-        observer?.disconnect();
-        unmounts.forEach(unmount => unmount());
-        unmounts.clear();
-    };
-}
-
-function setupTelemetryFigures(articleContent, doc, win) {
-    if (!articleContent || !doc || !win || typeof win.fetch !== 'function') return () => {};
-    const figures = new Map();
-    let runtimePromise = null;
-    const maxPayloadBytes = 5 * 1024 * 1024;
-    const fetchJson = async url => {
-        const response = await win.fetch(url, { credentials: 'omit', headers: { Accept: 'application/json' } });
-        if (!response.ok) throw new Error('Telemetry resource unavailable');
-        const length = Number(response.headers.get('content-length'));
-        if (Number.isFinite(length) && length > maxPayloadBytes) throw new Error('Telemetry resource too large');
-        const text = await response.text();
-        if (new TextEncoder().encode(text).length > maxPayloadBytes) throw new Error('Telemetry resource too large');
-        return JSON.parse(text);
-    };
-    const getRuntime = async manifestUrl => {
-        if (!runtimePromise) runtimePromise = (async () => {
-            const manifest = await fetchJson(manifestUrl);
-            const entry = manifest && manifest['src/embeds/interactive-entry.tsx'];
-            if (!entry || entry.isEntry !== true || typeof entry.file !== 'string' || !/^assets\/interactive-[\w-]+\.js$/.test(entry.file)) throw new Error('Interactive telemetry is not configured');
-            const base = new URL('.', manifestUrl).href;
-            const runtime = await import(/* webpackIgnore: true */ `${base}${entry.file}`);
-            if (typeof runtime.mount !== 'function') throw new Error('Interactive telemetry is unavailable');
-            return runtime;
-        })().catch(error => { runtimePromise = null; throw error; });
-        return runtimePromise;
-    };
-    const theme = () => doc.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    const mountFigure = figure => {
-        if (figures.has(figure)) return;
-        const dataUrl = figure.getAttribute('data-telemetry-data');
-        const manifestUrl = figure.getAttribute('data-runtime-manifest');
-        if (!dataUrl || !manifestUrl || !['telemetry-speed-trace', 'telemetry-throttle-brake'].includes(figure.getAttribute('data-panel'))) return;
-        let data; let manifest; let page;
-        try { data = new URL(dataUrl, doc.baseURI); manifest = new URL(manifestUrl, doc.baseURI); page = new URL(doc.baseURI); } catch (_) { return; }
-        const localRuntime = manifest.origin === page.origin && /^\/(?:telemetry|f1-telemetry-dashboard)\/interactive\/manifest\.json$/.test(manifest.pathname);
-        const approvedRuntime = new Set([
-            'https://f1stories.gr/telemetry/interactive/manifest.json',
-            'https://www.f1stories.gr/telemetry/interactive/manifest.json',
-            'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/interactive/manifest.json',
-            'https://georgiosbalatzis.github.io/f1StoriesPage/f1telemetry/interactive/manifest.json'
-        ]).has(manifest.href);
-        if (data.origin !== page.origin || data.search || data.hash
-            || !['http:', 'https:'].includes(data.protocol)
-            || !['http:', 'https:'].includes(manifest.protocol) || manifest.username || manifest.password
-            || manifest.search || manifest.hash || (!localRuntime && !approvedRuntime)) return;
-        const button = doc.createElement('button');
-        button.type = 'button'; button.className = 'f1-telemetry-interactive-toggle';
-        button.textContent = 'Εξερεύνηση γραφήματος';
-        button.setAttribute('aria-expanded', 'false');
-        const status = doc.createElement('p'); status.className = 'f1-telemetry-interactive-status';
-        status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
-        const mountNode = doc.createElement('div'); mountNode.className = 'f1-telemetry-interactive-host'; mountNode.hidden = true;
-        figure.insertBefore(button, figure.querySelector('.f1-telemetry-source') || null);
-        button.insertAdjacentElement('afterend', status);
-        status.insertAdjacentElement('afterend', mountNode);
-        const state = { figure, button, status, mountNode, instance: null, pending: null, disposed: false, dataUrl: data.href, manifestUrl: manifest.href };
-        figures.set(figure, state);
-        button.addEventListener('click', async () => {
-            if (state.instance) {
-                state.instance.unmount(); state.instance = null; mountNode.hidden = true;
-                figure.classList.remove('f1-telemetry-interactive');
-                button.textContent = 'Εξερεύνηση γραφήματος'; button.setAttribute('aria-expanded', 'false'); status.textContent = '';
-                button.focus(); return;
-            }
-            if (state.pending) return state.pending;
-            button.disabled = true; button.textContent = 'Φόρτωση γραφήματος…'; status.textContent = '';
-            state.pending = (async () => {
-                const [runtime, saved] = await Promise.all([getRuntime(state.manifestUrl), fetchJson(state.dataUrl)]);
-                if (state.disposed) return;
-                if (saved.panelId !== figure.getAttribute('data-panel')) throw new Error('Telemetry panel mismatch');
-                const instance = runtime.mount(mountNode, saved, { theme: theme() });
-                state.instance = instance; mountNode.hidden = false;
-                figure.classList.add('f1-telemetry-interactive');
-                button.textContent = 'Επιστροφή στο στατικό γράφημα'; button.setAttribute('aria-expanded', 'true');
-            })().catch(() => { status.textContent = 'Το διαδραστικό γράφημα δεν φόρτωσε. Μπορείτε να δοκιμάσετε ξανά ή να δείτε τη στατική εικόνα.'; })
-                .finally(() => { state.pending = null; button.disabled = false; if (!state.instance) button.textContent = 'Δοκιμάστε ξανά το διαδραστικό γράφημα'; });
-            return state.pending;
-        });
-    };
-    articleContent.querySelectorAll('.f1-telemetry-figure[data-telemetry-data][data-runtime-manifest]').forEach(mountFigure);
-    const contentObserver = win.MutationObserver ? new win.MutationObserver(records => records.forEach(record => {
-        record.removedNodes.forEach(node => {
-            if (node.nodeType !== 1) return;
-            const removed = [];
-            if (figures.has(node)) removed.push(node);
-            node.querySelectorAll?.('.f1-telemetry-figure[data-telemetry-data][data-runtime-manifest]').forEach(figure => removed.push(figure));
-            removed.forEach(figure => {
-                const state = figures.get(figure);
-                if (!state) return;
-                state.disposed = true; state.instance?.unmount(); state.button.remove(); state.status.remove(); state.mountNode.remove(); figures.delete(figure);
-            });
-        });
-        record.addedNodes.forEach(node => {
-            if (node.nodeType !== 1) return;
-            if (node.matches?.('.f1-telemetry-figure[data-telemetry-data][data-runtime-manifest]')) mountFigure(node);
-            node.querySelectorAll?.('.f1-telemetry-figure[data-telemetry-data][data-runtime-manifest]').forEach(mountFigure);
-        });
-    })) : null;
-    contentObserver?.observe(articleContent, { childList: true, subtree: true });
-    const themeObserver = new win.MutationObserver(() => figures.forEach(state => state.instance?.setTheme(theme())));
-    themeObserver.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => {
-        contentObserver?.disconnect(); themeObserver.disconnect();
-        figures.forEach(state => { state.disposed = true; state.instance?.unmount(); state.button.remove(); state.status.remove(); state.mountNode.remove(); });
-        figures.clear(); runtimePromise = null;
-    };
-}
-
-if (typeof module !== 'undefined' && module.exports) module.exports = { setupBetCastFrameBridge, setupStandingsFrameBridge, setupTelemetryFrameBridge, setupBetCastWidgets, setupTelemetryFigures };
+// Managed-embed adapters (BetCast, standings, telemetry) live in article-embeds.js, which stamp-html only adds to
+// articles that carry such an embed. Node tests still reach them through this module's exports.
+const isCommonJs = typeof module !== 'undefined' && module.exports;
+const embedAdapters = isCommonJs ? require('./article-embeds') : (typeof window !== 'undefined' && window.F1SArticleEmbeds) || {};
+if (isCommonJs) module.exports = embedAdapters;
+const MANAGED_EMBED_SELECTOR = 'iframe[src*="/standings/"], iframe[src*="/telemetry/"], iframe[src*="f1-telemetry-dashboard"], iframe[src*="BetCastVisualisation"], iframe[src*="/betcast/"], [data-f1s-betcast-widget], .f1-telemetry-figure[data-telemetry-data]';
 
 if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
@@ -364,16 +11,6 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
 
     // Cache article content element — queried by multiple functions
     const articleContent = $('.article-content');
-
-    function calcReadingTime() {
-        const el = $('#reading-time-value');
-        if (!articleContent || !el) return;
-        const words = articleContent.textContent.trim().split(/\s+/).length;
-        const mins = Math.max(1, Math.ceil(words / 200));
-        const label = `${mins} λεπτά ανάγνωσης`;
-        el.textContent = label;
-        $$('[data-reading-time]').forEach(node => { node.textContent = label; });
-    }
 
     function setupImageFallbacks() {
         document.addEventListener('error', function(event) {
@@ -450,54 +87,72 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         });
     }
 
-    function setupArticleMiniBar() {
-        const miniBar = $('#article-mini-bar');
-        if (!miniBar) return;
-
-        const header = $('.article-header');
-        const shareButton = $('#article-mini-share');
-        const titleEl = $('.article-title');
-        const miniTitle = miniBar.querySelector('.article-mini-bar__title');
-        const getShortTitle = text => {
-            const clean = String(text || '').replace(/\s+/g, ' ').trim();
-            if (!clean) return '';
-            const split = clean.split(/[:;·–—-]/).map(part => part.trim()).filter(Boolean);
-            const candidate = split[0] && split[0].length >= 12 ? split[0] : clean;
-            return candidate.length > 64 ? `${candidate.slice(0, 61).trim()}…` : candidate;
-        };
-        const triggerShare = () => {
-            const webShare = $('#web-share-btn');
-            const copyLink = $('#copy-link-btn');
-            if (webShare && typeof navigator.share === 'function') {
-                webShare.click();
-                return;
-            }
-            if (copyLink) copyLink.click();
-        };
-
-        if (shareButton) shareButton.addEventListener('click', triggerShare);
-
+    // THE RACE REPORT: the sector bar slides in under the masthead once the cover has gone and leaves at the
+    // pit wall. It, the running order and the contents list follow the section being read; the meter is the
+    // share of the body that has passed the reading line. Sections and segments are written at build time.
+    function setupRaceReport() {
+        const bar = $('#rr-sectorbar');
+        const cover = $('[data-cover]');
+        if (!bar || !cover || !articleContent) return;
+        const end = $('[data-article-end]');
+        const meter = bar.querySelector('[role="progressbar"]');
+        const current = bar.querySelector('[data-current]');
+        const segments = bar.querySelectorAll('.rr-sectorbar__segs li');
+        const title = current ? current.textContent : '';
+        // The build's navigable sections (race-report.js): headings with words of their own and no media.
+        const sections = Array.from(articleContent.querySelectorAll(':scope > h2[id], :scope > h3[id]'))
+            .filter(heading => heading.textContent.trim() && !heading.querySelector('figure, img, picture, iframe, video'));
+        const links = Array.from($$('.rr-ro a'));
         let shown = null;
+        let active = -2;
+        let percent = -1;
         let frame = 0;
+
         const update = () => {
             frame = 0;
-            if (!header) return;
-            const show = window.innerWidth <= 767 && header.getBoundingClientRect().bottom < 82;
-            if (show === shown) return;
-            shown = show;
-            miniBar.classList.toggle('is-visible', show);
-            miniBar.setAttribute('aria-hidden', String(!show));
-            miniBar.inert = !show; // a hidden bar's share button must not take focus
+            const show = cover.getBoundingClientRect().bottom < 90 && !(end && end.getBoundingClientRect().top < window.innerHeight * 0.6);
+            if (show !== shown) {
+                shown = show;
+                bar.classList.toggle('is-visible', show);
+                bar.setAttribute('aria-hidden', String(!show));
+                bar.inert = !show; // a hidden bar's share button must not take focus
+                document.body.classList.toggle('rr-bar-on', show);
+            }
+            const body = articleContent.getBoundingClientRect();
+            const read = Math.min(1, Math.max(0, (window.innerHeight * 0.35 - body.top) / Math.max(1, body.height)));
+            bar.style.setProperty('--read', read.toFixed(4));
+            if (meter && Math.round(read * 100) !== percent) {
+                percent = Math.round(read * 100);
+                meter.setAttribute('aria-valuenow', String(percent));
+            }
+            let now = -1;
+            sections.forEach((section, index) => { if (section.getBoundingClientRect().top < window.innerHeight * 0.3) now = index; });
+            if (now === active) return;
+            active = now;
+            if (current) current.textContent = now >= 0 ? sections[now].textContent.replace(/\s+/g, ' ').trim() : title;
+            segments.forEach((segment, index) => { segment.className = index < now ? 'is-done' : index === now ? 'is-now' : ''; });
+            const href = now >= 0 ? `#${sections[now].id}` : '';
+            links.forEach(link => {
+                if (link.getAttribute('href') === href) link.setAttribute('aria-current', 'location');
+                else link.removeAttribute('aria-current');
+            });
         };
         const schedule = () => { frame = frame || requestAnimationFrame(update); };
-
         update();
         window.addEventListener('scroll', schedule, { passive: true });
         window.addEventListener('resize', schedule);
 
-        if (titleEl && miniTitle) {
-            miniTitle.textContent = getShortTitle(titleEl.textContent);
-        }
+        // The bar's share button uses the native sheet where there is one, otherwise copies the link.
+        const share = $('#rr-sectorbar-share');
+        if (share) share.addEventListener('click', () => {
+            const target = typeof navigator.share === 'function' ? $('#web-share-btn') : $('#copy-link-btn');
+            if (target) target.click();
+        });
+        // Choosing a section in the phone contents list closes it.
+        $$('.rr-contents a').forEach(link => link.addEventListener('click', () => {
+            const details = link.closest('details');
+            if (details) details.open = false;
+        }));
     }
 
     function loadScriptOnce(src, attrs = {}) {
@@ -663,84 +318,6 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         });
     }
 
-    function buildTableOfContents() {
-        if (!articleContent) return;
-        const headings = articleContent.querySelectorAll('h2, h3');
-        if (headings.length < 3) return;
-
-        headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
-
-        function createIcon(iconId, className) {
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('class', className || 'icon');
-            svg.setAttribute('aria-hidden', 'true');
-            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            use.setAttribute('href', '#' + iconId);
-            svg.appendChild(use);
-            return svg;
-        }
-
-        const tocEl = document.createElement('nav');
-        tocEl.className = 'article-toc';
-        const toggle = document.createElement('button');
-        toggle.className = 'toc-toggle';
-        toggle.id = 'toc-toggle';
-        toggle.type = 'button';
-        toggle.setAttribute('aria-label', 'Toggle table of contents');
-        const label = document.createElement('span');
-        label.textContent = 'Περιεχόμενα';
-        toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
-
-        const body = document.createElement('div');
-        body.className = 'toc-body';
-        body.id = 'toc-body';
-        headings.forEach(h => {
-            const link = document.createElement('a');
-            link.setAttribute('href', '#' + h.id);
-            link.className = h.tagName === 'H3' ? 'toc-item toc-sub' : 'toc-item';
-            link.textContent = h.textContent.trim();
-            body.appendChild(link);
-        });
-        tocEl.append(toggle, body);
-
-        articleContent.parentNode.insertBefore(tocEl, articleContent);
-
-        const tocToggle = toggle;
-        const tocBody = body;
-        if (tocToggle && tocBody) {
-            tocToggle.addEventListener('click', () => {
-                tocBody.classList.toggle('open');
-                tocToggle.classList.toggle('open');
-            });
-        }
-
-        tocEl.querySelectorAll('.toc-item').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    const offset = 80;
-                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                    window.scrollTo({ top, behavior: 'smooth' });
-                }
-            });
-        });
-
-        const tocLinks = tocEl.querySelectorAll('.toc-item');
-        let activeHeadingId = '';
-
-        const headingObserver = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) activeHeadingId = entry.target.id;
-            });
-            tocLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === '#' + activeHeadingId);
-            });
-        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
-
-        headings.forEach(h => headingObserver.observe(h));
-    }
-
     function setupResponsiveTables() {
         if (!articleContent) return;
 
@@ -792,6 +369,18 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     }
 
     // ── Gallery Carousel ────────────────────────────────────
+    function setupChartScrolling() {
+        document.querySelectorAll('.rr-chart__scroll').forEach(scroller => {
+            // WebKit does not consistently scroll a focused horizontal region with arrow keys.
+            scroller.addEventListener('keydown', event => {
+                if (event.target !== scroller || scroller.scrollWidth <= scroller.clientWidth) return;
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                scroller.scrollLeft += event.key === 'ArrowRight' ? 64 : -64;
+            });
+        });
+    }
+
     function setupGalleryCarousel() {
         document.querySelectorAll('.gallery-carousel').forEach(function (carousel) {
             const slides = carousel.querySelectorAll('.gallery-slide');
@@ -799,6 +388,19 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             const prevBtn = carousel.querySelector('.gallery-carousel-prev');
             const nextBtn = carousel.querySelector('.gallery-carousel-next');
             const counter = carousel.querySelector('.gallery-carousel-counter');
+
+            // Race Report articles show the archive as a filmstrip band (CSS hides the carousel controls):
+            // every frame is visible and the strip scrolls sideways, by keyboard too.
+            const strip = carousel.closest('.rr-body') && carousel.querySelector('.gallery-carousel-slides');
+            if (strip) {
+                carousel.removeAttribute('aria-roledescription');
+                if (slides.length > 1) {
+                    strip.tabIndex = 0;
+                    strip.setAttribute('role', 'group');
+                    strip.setAttribute('aria-label', `${slides.length} φωτογραφίες, οριζόντια κύλιση`);
+                }
+                return;
+            }
 
             if (slides.length <= 1) {
                 carousel.querySelectorAll('.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs').forEach(function (control) { control.remove(); });
@@ -888,19 +490,20 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         overlay.className = 'lb-overlay';
         overlay.setAttribute('role', 'dialog');
         overlay.setAttribute('aria-modal', 'true');
-        overlay.setAttribute('aria-label', 'Image viewer');
-        const closeButton = createLightboxButton('lb-close', 'Close', 'fa-times');
+        overlay.setAttribute('aria-label', 'Προβολή φωτογραφίας');
+        const closeButton = createLightboxButton('lb-close', 'Κλείσιμο', 'fa-times');
         const imageWrap = document.createElement('div');
         imageWrap.className = 'lb-img-wrap';
         const image = document.createElement('img');
         image.className = 'lb-img';
-        image.src = '';
         image.alt = '';
         imageWrap.appendChild(image);
-        const prevButton = createLightboxButton('lb-prev', 'Previous image', 'fa-chevron-left');
-        const nextButton = createLightboxButton('lb-next', 'Next image', 'fa-chevron-right');
+        const prevButton = createLightboxButton('lb-prev', 'Προηγούμενη φωτογραφία', 'fa-chevron-left');
+        const nextButton = createLightboxButton('lb-next', 'Επόμενη φωτογραφία', 'fa-chevron-right');
         const counter = document.createElement('div');
         counter.className = 'lb-counter';
+        counter.id = 'article-image-viewer-caption';
+        counter.setAttribute('aria-live', 'polite');
         overlay.append(closeButton, imageWrap, prevButton, nextButton, counter);
         document.body.appendChild(overlay);
 
@@ -953,6 +556,15 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             lbImg.src = fullSrc(img);
             lbImg.alt = img.alt || '';
             lbCounter.textContent = imgs.length > 1 ? `${current + 1} / ${imgs.length}` : '';
+            const container = img.closest('figure, .gallery-slide');
+            const disclosure = container?.querySelector('.media-credit__ai');
+            const caption = disclosure || container?.querySelector('.media-credit__caption');
+            const graphic = img.dataset.media === 'graphic' || container?.dataset.media === 'graphic';
+            if (caption) {
+                lbCounter.textContent += (lbCounter.textContent ? ' · ' : '') + caption.textContent;
+                lbImg.setAttribute('aria-describedby', lbCounter.id);
+            } else lbImg.removeAttribute('aria-describedby');
+            overlay.setAttribute('aria-label', disclosure ? 'Προβολή εικονογράφησης' : graphic ? 'Προβολή εικόνας' : 'Προβολή φωτογραφίας');
             lbPrev.disabled = current === 0;
             lbNext.disabled = current === imgs.length - 1;
         }
@@ -985,11 +597,12 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
 
         const headerImage = $('.article-header-img');
         if (headerImage) {
-            const header = headerImage.closest('.article-header');
-            const picture = headerImage.closest('picture');
+            // Race Report cover: the figure is the control (its <picture> is display: contents and cannot take focus).
+            const header = headerImage.closest('.article-header, .rr-cover__media');
+            const picture = headerImage.closest('.rr-cover__media') || headerImage.closest('picture');
             picture.tabIndex = 0;
             picture.setAttribute('role', 'button');
-            picture.setAttribute('aria-label', 'Open article image');
+            picture.setAttribute('aria-label', picture.querySelector('.media-credit__ai') ? 'Άνοιγμα εικονογράφησης εξωφύλλου' : picture.dataset.media === 'graphic' ? 'Άνοιγμα γραφικού εξωφύλλου' : 'Άνοιγμα φωτογραφίας εξωφύλλου');
             header.addEventListener('click', e => {
                 if (e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) return;
                 openImage(headerImage, e);
@@ -1043,21 +656,21 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     }
 
     setupImageFallbacks();
-    calcReadingTime();
     updateShareLinks();
-    setupArticleMiniBar();
-    setupBetCastFrameBridge(articleContent, document, window);
-    setupStandingsFrameBridge(articleContent, document, window);
-    setupTelemetryFrameBridge(articleContent, document, window);
-    setupBetCastWidgets(articleContent, document, window);
-    setupTelemetryFigures(articleContent, document, window);
+    setupRaceReport();
+    if (embedAdapters.setupBetCastFrameBridge) {
+        ['setupBetCastFrameBridge', 'setupStandingsFrameBridge', 'setupTelemetryFrameBridge', 'setupBetCastWidgets', 'setupTelemetryFigures']
+            .forEach(name => embedAdapters[name](articleContent, document, window));
+    } else if (articleContent && articleContent.querySelector(MANAGED_EMBED_SELECTOR)) {
+        console.warn('article-embeds.js is missing: managed embeds will not resize or follow the theme.');
+    }
     markAuthoredSectionNumbers();
-    buildTableOfContents();
     setupResponsiveTables();
     setupNavigation();
     setupYouTubeFacades();
     setupSocialEmbeds();
     setupTyreEmbeds();
+    setupChartScrolling();
     setupGalleryCarousel();
     setupLightbox();
 });

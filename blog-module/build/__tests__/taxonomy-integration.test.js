@@ -3,10 +3,12 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+// The homepage renderers read image sizes measured once per build (image-sizes.primeImageDimensions).
+test.before(() => require('../image-sizes').primeImageDimensions());
 const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
     buildIndexPosts, buildCompactIndexData, buildHomeLatest,
-    loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
+    loadEditorialSelection
 } = require('../index');
 const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources, renderAuthorCard } = require('../article-render');
 const { extractMetadata } = require('../metadata');
@@ -105,72 +107,6 @@ test('archive index lists the primary category first', async () => {
     assert.deepEqual(post.categories, ['Drivers', 'Analysis']);
 });
 
-const frontPosts = Array.from({ length: 12 }, (_, index) => ({
-    id: `p${index}`, title: `Story ${index}`, author: 'Georgios Balatzis',
-    date: `2026-09-${String(20 - index).padStart(2, '0')}`, categories: ['Technical'], excerpt: 'Excerpt.', thumbnail: ''
-}));
-
-test('journal front falls back to the newest stories without a selection', () => {
-    const front = resolveJournalFront(frontPosts, {});
-    assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
-    assert.deepEqual(front.deepReads, []);
-    assert.deepEqual(front.warnings, []);
-    assert.deepEqual(front.ids, ['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']);
-});
-
-test('journal front honours a valid selection and never repeats a story', () => {
-    const front = resolveJournalFront(frontPosts, { lead: 'p5', secondary: ['p0', 'p5'], deepReads: ['p11', 'p10', 'p9'] });
-    assert.equal(front.lead.id, 'p5');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p0', 'p1', 'p2']);
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p10']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p3', 'p4', 'p6', 'p7']);
-    assert.equal(new Set(front.ids).size, front.ids.length);
-});
-
-// Analysis stories scattered through an otherwise Technical archive: p2, p5, p8, p10 (newest first).
-const mixedPosts = frontPosts.map(post => ({ ...post, categories: ['2', '5', '8', '10'].includes(post.id.slice(1)) ? ['Analysis'] : ['Technical'] }));
-
-test('deep reads fill themselves with the newest Analysis stories not already on the front', () => {
-    const front = resolveJournalFront(mixedPosts, {});
-    // p2 is already a secondary story and p5 is in the recent list, so neither repeats in the deep reads.
-    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p8', 'p10']);
-    assert.equal(new Set(front.ids).size, front.ids.length);
-    // Moving the newest Analysis story out of the way gives it to the deep reads instead.
-    const quiet = resolveJournalFront(mixedPosts.map(post => post.id === 'p2' ? { ...post, categories: ['Technical'] } : post), {});
-    assert.deepEqual(quiet.deepReads.map(post => post.id), ['p8', 'p10']);
-});
-
-test('an explicit deep read wins its slot and the fill completes the section', () => {
-    const front = resolveJournalFront(mixedPosts, { deepReads: ['p11'] });
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p8']);
-    const both = resolveJournalFront(mixedPosts, { deepReads: ['p11', 'p9'] });
-    assert.deepEqual(both.deepReads.map(post => post.id), ['p11', 'p9']);
-    // A pinned id that no longer exists is dropped with a warning and the fill covers the gap.
-    const gone = resolveJournalFront(mixedPosts, { deepReads: ['gone'] });
-    assert.deepEqual(gone.deepReads.map(post => post.id), ['p8', 'p10']);
-    assert.equal(gone.warnings.length, 1);
-});
-
-test('deep reads stay empty, and the section absent, when no Analysis story is free', () => {
-    assert.deepEqual(resolveJournalFront(frontPosts, {}).deepReads, []);
-    const few = resolveJournalFront(mixedPosts.slice(0, 6), {});
-    assert.deepEqual(few.deepReads, []);
-    assert.doesNotMatch(renderJournalFront(few, {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
-    assert.match(renderJournalFront(resolveJournalFront(mixedPosts, {}), {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
-});
-
-test('journal front drops unknown or deleted ids with a warning', () => {
-    const front = resolveJournalFront(frontPosts, { lead: 'deleted-story', secondary: ['p3'], deepReads: ['gone'] });
-    assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p3', 'p1', 'p2']);
-    assert.deepEqual(front.deepReads, []);
-    assert.equal(front.warnings.length, 2);
-});
-
 test('journal selection file is optional and tolerates invalid JSON', () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-selection-'));
     try {
@@ -183,26 +119,6 @@ test('journal selection file is optional and tolerates invalid JSON', () => {
     } finally {
         fs.rmSync(directory, { recursive: true, force: true });
     }
-});
-
-test('journal front renders a text lead when the story has no image', () => {
-    const html = renderJournalFront(resolveJournalFront(frontPosts, {}), { p0: 'A whole-sentence deck.' });
-    assert.match(html, /class="journal-lead journal-lead--text" data-kind="technical"/);
-    assert.match(html, /A whole-sentence deck\./);
-    assert.doesNotMatch(html, /<img/);
-    assert.match(html, /<span class="story-cat">ΤΕΧΝΙΚΑ<\/span>/);
-});
-
-test('archive ledger groups rows by month and marks the category signal', () => {
-    const html = renderLedgerRows([
-        { id: 'a', title: 'A', author: 'Themis Charvalis', date: '2026-09-02', categories: ['History'], readingTime: '4 min' },
-        { id: 'b', title: 'B', author: 'Themis Charvalis', date: '2026-08-31', categories: ['Analysis', 'Drivers'], readingTime: '1 min' }
-    ]);
-    assert.equal((html.match(/class="ledger-month"/g) || []).length, 2);
-    assert.match(html, /ΣΕΠΤΕΜΒΡΙΟΣ 2026[\s\S]*ΑΥΓΟΥΣΤΟΣ 2026/);
-    assert.match(html, /data-kind="analysis"[\s\S]*ΑΝΑΛΥΣΗ/);
-    assert.match(html, /2 ΣΕΠ<span class="visually-hidden"> 2026<\/span>/);
-    assert.match(html, /Θέμης Χαρβάλης<\/span><span>1 λεπτό/);
 });
 
 test('an article takes its colour from the author-chosen primary category', () => {
@@ -229,24 +145,30 @@ test('every author resolves from the one list, by canonical name or slug', () =>
     assert.equal(authorLabel('Guest Writer'), 'Guest Writer');
 });
 
-test('the homepage journal numbers on from the cover and signs with short bylines', () => {
-    const { renderHomeJournal } = require('../index');
-    const post = (id, author, extra = {}) => ({ id, title: `Story ${id}`, author, date: '2026-09-27', readingTime: '4 min', categories: ['History'], ...extra });
-    const html = renderHomeJournal([
-        post('L', 'Themis Charvalis'),
-        post('S1', 'F1 Stories Team'),
-        post('S2', 'Guest Writer'),
-        post('R1', 'Georgios Balatzis'), post('R2', 'Georgios Balatzis'), post('R3', 'Georgios Balatzis'), post('R4', 'Georgios Balatzis')
-    ], 'The lead dek.');
-    // Stories without a card image in the repo render as text-only.
-    assert.equal((html.match(/home-story--text/g) || []).length, 3);
-    assert.deepEqual([...html.matchAll(/home-story__idx" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['02', '03', '04']);
-    assert.deepEqual([...html.matchAll(/home-ledger__num" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['05', '06', '07', '08']);
-    assert.match(html, /<ol class="home-ledger" start="5">/);
-    assert.match(html, /home-story__dek">The lead dek\./);
-    assert.match(html, /Θ\. ΧΑΡΒΑΛΗΣ<\/p>/);
-    assert.match(html, /F1 STORIES · 4 ΛΕΠΤΑ/);
-    assert.match(html, /GUEST WRITER · 4 ΛΕΠΤΑ/);
+test('THE PADDOCK signs with short bylines and dates the wire, voices and archive', () => {
+    const { renderHomeJournal, selectPaddock } = require('../index');
+    const post = (id, author, category, extra = {}) => ({ id, title: `Story ${id}`, author, date: '2026-09-27', readingTime: '4 min', categories: [category], ...extra });
+    const html = renderHomeJournal(selectPaddock([
+        post('L', 'Themis Charvalis', 'Analysis'),
+        post('V1', 'Giannis Poulikidis', 'Opinion'), post('V2', 'Guest Writer', 'Opinion'),
+        post('A1', 'F1 Stories Team', 'History', { excerpt: 'From the archive.' }),
+        post('W1', 'Georgios Balatzis', 'News'), post('W2', 'Georgios Balatzis', 'Drivers')
+    ]), 'The lead dek.');
+    // Stories without a card image in the repo render as text: the feature, then each desk.
+    assert.match(html, /<article class="pd-analysis pd-analysis--text" data-kind="analysis">/);
+    assert.match(html, /pd-analysis__dek">The lead dek\./);
+    assert.match(html, /home-story__byline">Θ\. ΧΑΡΒΑΛΗΣ · <time datetime="2026-09-27">27 Σεπ 2026<\/time>/);
+    assert.deepEqual([...html.matchAll(/<h4 class="pd-voice__title"><a [^>]+>«Story (\w+)»/g)].map(m => m[1]), ['V1', 'V2']);
+    assert.match(html, /pd-voice__who"><img src="\/images\/avatars\/SV-96\.webp"[^>]*>ΓΙΑΝΝΗΣ ΠΟΥΛΙΚΙΔΗΣ/);
+    // A writer outside the list has no portrait, only the name.
+    assert.match(html, /pd-voice__who">GUEST WRITER</);
+    assert.deepEqual([...html.matchAll(/<h4 class="pd-wire__title"><a [^>]+>Story (\w+)/g)].map(m => m[1]), ['W1', 'W2']);
+    assert.match(html, /<time class="pd-wire__date" datetime="2026-09-27"><b>27<\/b>ΣΕΠ<span class="visually-hidden"> 2026<\/span><\/time>/);
+    assert.match(html, /pd-archive__excerpt">From the archive\./);
+    // Number and unit never wrap apart: a no-break space (U+00A0).
+    assert.match(html, /<span>4 ΛΕΠΤΑ<\/span>/);
+    assert.doesNotMatch(html, /\d ΛΕΠΤΑ/);
+    assert.match(html, /home-story__kind">ΑΝΑΛΥΣΗ/);
     assert.match(html, /home-story__kind">ΙΣΤΟΡΙΑ/);
 });
 
@@ -300,6 +222,20 @@ test('ON AIR uses a newer published BetCast article when the YouTube snapshot is
     assert.match(refreshedLead, /datetime="2026-10-07"/);
 });
 
+test('ON AIR signs an article episode like the Journal and shows square art whole', () => {
+    const { renderOnAir } = require('../home-panels');
+    const article = (id, title, date, extra = {}) => ({ id, title, date, url: `/blog-module/blog-entries/${id}/article.html`, image: `/blog-module/blog-entries/${id}/1.webp`, author: 'Giannis Poulikidis', ...extra });
+    const html = renderOnAir(null, () => false, [
+        article('20261002J', 'BetCast #275: Το Grid', '2026-10-02'),
+        article('20260924J', 'BetCast #274: Baku', '2026-09-24', { imageWidth: 300, imageHeight: 300 }),
+        article('20260912J', 'BetCast #273: Προσπεράσεις', '2026-09-12', { imageWidth: 1672, imageHeight: 941 })
+    ]);
+    assert.match(html.split('<ol class="episodes"')[0], /home-story__byline">Γ\. ΠΟΥΛΙΚΙΔΗΣ</);
+    assert.equal((html.match(/episode__thumb--contain/g) || []).length, 1);
+    assert.match(html.match(/<a class="episode__thumb[^"]*" href="[^"]*20260924J[^>]*>/)[0], /episode__thumb--contain/);
+    assert.doesNotMatch(html.match(/<a class="episode__thumb[^"]*" href="[^"]*20260912J[^>]*>/)[0], /contain/);
+});
+
 test('the homepage cover uses the article header photograph before the card thumbnail', async () => {
     const [hero] = await buildHomeLatest([{
         id: '20261007W', title: 'Hamilton', date: '2026-10-07',
@@ -312,14 +248,14 @@ test('the homepage cover uses the article header photograph before the card thum
     assert.equal(hero.heroImageHeight, 900);
 });
 
-test('THE NUMBERS renders the top five, scales bars to the leader and pace to the fifth team', () => {
+test('THE GRID renders the top ten, scales bars to the leader, the points share and the pace to the slowest team', () => {
     const { renderNumbers } = require('../home-panels');
-    const driver = (position, code, points) => ({ position: String(position), points: String(points), Driver: { code, familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
+    const driver = (position, code, points, wins = 0) => ({ position: String(position), points: String(points), wins: String(wins), Driver: { code, givenName: 'G', familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
     const team = (position, name, points, wins) => ({ position: String(position), points: String(points), wins: String(wins), Constructor: { constructorId: name.toLowerCase(), name } });
     const table = (key, rows) => ({ MRData: { StandingsTable: { StandingsLists: [{ season: '2026', round: '15', [key]: rows }] } } });
     const standings = {
-        driverStandings: table('DriverStandings', [driver(1, 'ANT', 200), driver(2, 'RUS', 100), driver(3, 'A', 50), driver(4, 'B', 40), driver(5, 'C', 30), driver(6, 'D', 20)]),
-        constructorStandings: table('ConstructorStandings', [team(1, 'Mercedes', 300, 1), team(2, 'Ferrari', 150, 0)])
+        driverStandings: table('DriverStandings', [driver(1, 'ANT', 200, 1), driver(2, 'RUS', 100, 2), ...['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map((code, i) => driver(i + 3, code, 50 - i * 5))]),
+        constructorStandings: table('ConstructorStandings', [team(1, 'Mercedes', 300, 11), team(2, 'Ferrari', 100, 0), team(3, 'Cadillac', 0, 0)])
     };
     const debrief = { rounds: [
         { round: 14, location: 'Madrid', racePacePrediction: [
@@ -329,16 +265,34 @@ test('THE NUMBERS renders the top five, scales bars to the leader and pace to th
         ] },
         { round: 15, location: 'Baku', racePacePrediction: [] }
     ] };
-    const { boards, stamp } = renderNumbers(standings, debrief, () => '#123456');
+    const { boards, stamp, season } = renderNumbers(standings, debrief, () => '#123456');
     assert.equal(stamp, '<span>ΣΕΖΟΝ 2026</span><span>ΜΕΤΑ ΤΟΝ ΓΥΡΟ 15</span>');
-    assert.equal((boards.match(/board-row__code/g) || []).length, 5);
-    assert.match(boards, /RUS[\s\S]*?width:50%/);
-    assert.match(boards, /1 ΝΙΚΗ/);
-    assert.match(boards, /0 ΝΙΚΕΣ/);
+    // Ten rows, real positions, bars and gaps against the leader.
+    assert.deepEqual([...boards.matchAll(/tower-row__pos">(\d+)</g)].map(m => m[1]), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
+    assert.match(boards, /tower-row__code">RUS[\s\S]*?/);
+    assert.match(boards, /--w:50%">\s*<span class="tower-row__pos">2</);
+    assert.match(boards, /tower-row__gap">LEADER</);
+    assert.match(boards, /tower-row__gap">−100</);
+    assert.match(boards, /Mercedes · 1 νίκη/);
+    assert.match(boards, /Mercedes · 2 νίκες/);
+    // The points share counts only teams that have scored: 300 and 100 of 400.
+    assert.match(boards, /aria-label="Mercedes 300, Ferrari 100"/);
+    assert.match(boards, /<span>Mercedes<\/span><b>300<\/b><small>75%<\/small>/);
+    assert.match(boards, /<span>Cadillac<\/span><b>0<\/b><small>0%<\/small>/);
     // The newest round with a prediction; the slowest shown team sits at the end of the track.
-    assert.match(boards, /R14 · MADRID/);
+    assert.match(boards, /ΠΡΟΒΛΕΨΗ R14 · MADRID/);
     assert.match(boards, /--x:0%[\s\S]*--x:50%[\s\S]*--x:100%/);
     assert.match(boards, /1:39\.611/);
+    // The cover's season line comes from the same snapshot: leader, gap to second, the leading team's wins out of
+    // the completed rounds, then the pace prediction with its own round.
+    assert.deepEqual([...season.matchAll(/<b>(.*?)<\/b><span>(.*?)<\/span>/g)].map(m => [m[1], m[2]]), [
+        ['200', 'ANT · ΒΑΘΜΟΙ ΣΤΗΝ ΚΟΡΥΦΗ'], ['+100', 'ΔΙΑΦΟΡΑ ΑΠΟ RUS'], ['11<small>/15</small>', 'ΝΙΚΕΣ MERCEDES'], ['1:39.611', 'ΠΡΟΒΛΕΨΗ ΡΥΘΜΟΥ · MER · R14']
+    ]);
+    // A debrief from another season is not shown next to these standings; no standings, no season line.
+    const otherSeason = renderNumbers(standings, { ...debrief, season: 2025 }, () => '#123456');
+    assert.doesNotMatch(otherSeason.boards, /ΡΥΘΜΟΣ ΑΓΩΝΑ/);
+    assert.doesNotMatch(otherSeason.season, /ΠΡΟΒΛΕΨΗ/);
+    assert.deepEqual(renderNumbers(null, debrief, () => '#123456'), { boards: '', season: '', stamp: '', edition: '' });
 });
 
 test('the technical spread finds the article\'s team and shows its Friday numbers', () => {
@@ -367,7 +321,8 @@ test('the technical spread finds the article\'s team and shows its Friday number
     const fastest = renderTelemetry(round, '');
     assert.match(fastest, /FERRARI · ΙΔΑΝΙΚΟΣ ΓΥΡΟΣ ΟΜΑΔΑΣ/);
     assert.match(fastest, /telemetry__value">1:33\.443</);
-    assert.match(fastest, /Η ταχύτερη ομάδα · 2η από 3 ομάδες/);
+    // The fastest ideal lap is first, whatever `pos` the bundle carries (Ferrari is listed with pos 2 here).
+    assert.match(fastest, /Η ταχύτερη ομάδα · 1η από 3 ομάδες/);
     assert.doesNotMatch(fastest, /class="bars"/);
     assert.equal(renderTelemetry(null, 'audi'), '');
 });
@@ -388,7 +343,9 @@ test('the homepage team gives every writer a spotlight card with their three new
     // Only the first card and roster row start active; the page script takes over from there.
     assert.equal((html.match(/is-active/g) || []).length, 1);
     assert.equal((html.match(/is-current/g) || []).length, 1);
-    const card = html.slice(html.indexOf('data-author-slug="georgios-balatzis"'));
+    // The roster tiles come first; the card is the spotlight article for the same writer.
+    assert.ok(html.indexOf('class="team-roster"') < html.indexOf('data-team-spotlight'));
+    const card = html.slice(html.indexOf('<article class="team-card" data-author-slug="georgios-balatzis"'));
     const stories = card.slice(card.indexOf('team-card__stories'), card.indexOf('</ul>'));
     assert.deepEqual([...stories.matchAll(/<span>([^<]+)<\/span><a[^>]*>([^<]+)</g)].map(m => [m[1], m[2]]),
         [['20 Σεπ 2026', 'Newest'], ['15 Σεπ 2026', 'Second'], ['10 Σεπ 2026', 'Third']]);
@@ -397,7 +354,8 @@ test('the homepage team gives every writer a spotlight card with their three new
 
 test('the article author card signs with the writer and degrades for an unknown name', () => {
     const card = renderAuthorCard({ author: 'Georgios Balatzis' });
-    assert.match(card, /class="author-card" data-author-slug="georgios-balatzis"/);
+    assert.match(card, /class="rr-pitwall__author" data-author-slug="georgios-balatzis"/);
+    assert.match(card, /<h2 class="rr-pitwall__name" id="author-card-name">/, 'the pit wall is labelled by the writer');
     assert.match(card, /Γιώργος Μπαλατζής/);
     assert.match(card, /Τεχνική ανάλυση και αγωνιστικός ρυθμός/);
     assert.match(card, /index\.html\?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου/);
@@ -407,6 +365,7 @@ test('the article author card signs with the writer and degrades for an unknown 
     assert.doesNotMatch(team, /Instagram/);
     const guest = renderAuthorCard({ author: 'Guest Writer' });
     assert.doesNotMatch(guest, /data-author-slug|<img|Instagram/);
+    assert.match(guest, /id="author-card-name">Η ομάδα του F1 Stories</);
 });
 
 test('the author card migration replaces the old box once and stays idempotent', () => {

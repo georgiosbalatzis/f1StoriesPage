@@ -34,7 +34,7 @@ jobs:
           node-version: '22'
 
       # The verifier imports only scripts/build/security-policy.mjs; no npm install.
-      - name: Verify https://f1stories.gr
+      - name: Verify https://f1-stories.gr
         env:
           STRICT: ${{ inputs.strict && '--strict' || '' }}
         run: |

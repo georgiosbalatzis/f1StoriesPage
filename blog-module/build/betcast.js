@@ -149,7 +149,7 @@ function getAnalysisUrl(snapshot, baseUrl = CONFIG.BETCAST_BASE_URL) {
     try { base = new URL(baseUrl); } catch (_) { throw snapshotError('BETCAST_BASE_URL is not a valid absolute URL'); }
     const approved = (base.protocol === 'https:' && base.hostname === 'georgiosbalatzis.github.io'
             && base.pathname === '/BetCastVisualisation/')
-        || (base.protocol === 'https:' && base.hostname === 'f1stories.gr' && base.pathname === '/betcast/');
+        || (base.protocol === 'https:' && base.hostname === 'f1-stories.gr' && base.pathname === '/betcast/');
     if (!approved || base.username || base.password || base.port || base.search || base.hash) {
         throw snapshotError('BETCAST_BASE_URL must be the approved GitHub Pages or /betcast/ URL');
     }

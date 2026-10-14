@@ -7,8 +7,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 import { injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
+import { preservedPublicMedia, assertPreservedPublicMedia, rewriteOptimizedImageWidths } from './public-media-integrity.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -53,6 +55,7 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/archive-editorial.min.css',
     'blog-module/blog/article-editorial.min.css',
     'blog-module/blog/article-comments.min.js',
+    'blog-module/blog/article-embeds.min.js',
     'blog-module/blog/article-rail.min.css',
     'blog-module/blog/article-rail.min.js',
     'blog-module/blog/article-script.min.js',
@@ -83,6 +86,23 @@ const STANDINGS_ROOT_FILES = new Set([
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
 const PUBLIC_IMAGE_REFS = collectPublicImageRefs();
+const SMALL_ORIGINALS = await collectSmallOriginals();
+
+// Pages describe images at their measured widths, so a small original (no wider than its "800px" mobile copy, which
+// is then the same picture at the same width) is named through the lighter copy only. Its own URL was published
+// before and stays published: originals whose mobile copy is as wide as they are.
+async function collectSmallOriginals() {
+    const root = path.join(REPO_ROOT, 'blog-module/blog-entries');
+    const found = new Set();
+    await Promise.all(fs.readdirSync(root, { withFileTypes: true }).filter(entry => entry.isDirectory()).flatMap(entry =>
+        fs.readdirSync(path.join(root, entry.name)).map(name => /^(\d+)-mobile\.(webp|avif)$/.exec(name)).filter(Boolean).map(async ([, base, ext]) => {
+            const dir = path.join(root, entry.name);
+            if (!fs.existsSync(path.join(dir, `${base}.${ext}`))) return;
+            const [original, mobile] = await Promise.all([`${base}.${ext}`, `${base}-mobile.${ext}`].map(name => sharp(path.join(dir, name)).metadata()));
+            if (original.width <= mobile.width) found.add(`blog-module/blog-entries/${entry.name}/${base}.${ext}`);
+        })));
+    return found;
+}
 
 function toPosix(relPath) {
     return relPath.split(path.sep).join('/');
@@ -115,7 +135,7 @@ function cleanPublicRef(ref) {
     if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(clean)) {
         try {
             const url = new URL(clean);
-            if (!/^(?:www\.)?f1stories\.gr$/i.test(url.hostname)) return '';
+            if (!/^(?:www\.)?f1-stories\.gr$/i.test(url.hostname)) return '';
             clean = url.pathname || '';
         } catch (_) {
             return '';
@@ -183,7 +203,7 @@ function collectHtmlRefs(refs, html, relPath) {
         });
     }
 
-    const publicPathPattern = /(?:https:\/\/f1stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
+    const publicPathPattern = /(?:https:\/\/f1-stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
     for (const match of String(html || '').matchAll(publicPathPattern)) {
         addBlogEntryRef(refs, match[0], relPath);
     }
@@ -207,7 +227,7 @@ function collectPublicImageRefsFromText(refs, text, relPath) {
         addPublicImageRef(refs, match[2], relPath);
     }
 
-    const publicImagePattern = /(?:https:\/\/f1stories\.gr)?\/images\/[^"'()\s<>]+/gi;
+    const publicImagePattern = /(?:https:\/\/f1-stories\.gr)?\/images\/[^"'()\s<>]+/gi;
     for (const match of String(text || '').matchAll(publicImagePattern)) {
         addPublicImageRef(refs, match[0], relPath);
     }
@@ -216,6 +236,8 @@ function collectPublicImageRefsFromText(refs, text, relPath) {
 function collectBlogEntryPublicRefs() {
     const refs = new Set();
     const dataSources = [
+        // The homepage cover asks for full-size originals of its supporting photographs (P3A-R3).
+        'index.html',
         'blog-module/blog/index.html',
         'blog-module/blog-index-data.json',
         'blog-module/home-latest.json'
@@ -292,6 +314,7 @@ const LEAD_CARD_REFS = (() => {
 
 function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
+    if (Object.hasOwn(preservedPublicMedia, relPath)) return true;
     if (/^blog-module\/blog-entries\/[^/]+\/embeds\/telemetry-[a-f\d]{20}-(?:narrowLight|wideLight|narrowDark|wideDark)\.svg$/i.test(relPath)) {
         return BLOG_ENTRY_PUBLIC_REFS.has(relPath);
     }
@@ -308,6 +331,7 @@ function shouldCopyBlogEntry(relPath) {
         const cardShips = fs.existsSync(path.join(REPO_ROOT, cardRel)) && shouldCopyBlogEntry(cardRel);
         if (cardShips && (sibling[2] || LEAD_CARD_REFS.has(cardRel))) return true;
     }
+    if (SMALL_ORIGINALS.has(relPath) && shouldCopyBlogEntry(relPath.replace(/\.(webp|avif)$/, '-mobile.$1'))) return true;
     // Compact archive cards advertise the smaller variant through their
     // thumbnail run map. Entries without that variant still need their first
     // source image available when the archive reconstructs the card. Article
@@ -346,6 +370,8 @@ function shouldCopy(relPath) {
     if (AUTHOR_TOOL_FILES.has(relPath)) return true;
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
+    // The Edition Index's static section and month pages (blog-module/build/discovery.js).
+    if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
 
@@ -382,7 +408,7 @@ function writeSecurityHeadersFile() {
 }
 
 function rewritePublicLogoRefs(html) {
-    return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
+    return String(html || '').replace(/https:\/\/f1-stories\.gr\/images\/logo\.png/g, `https://f1-stories.gr/${PUBLIC_LOGO_IMAGE}`);
 }
 
 async function copyFile(relPath) {
@@ -394,13 +420,14 @@ async function copyFile(relPath) {
         fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8')), relPath), 'utf8');
         return null;
     }
-    const optimized = await optimizePublicArticleImage(src, dest, relPath);
+    const optimized = Object.hasOwn(preservedPublicMedia, relPath) ? null : await optimizePublicArticleImage(src, dest, relPath);
     if (optimized) return optimized;
     fs.copyFileSync(src, dest);
     return null;
 }
 
 async function main() {
+    assertPreservedPublicMedia(REPO_ROOT);
     fs.rmSync(DIST_ROOT, { recursive: true, force: true });
     ensureDir(DIST_ROOT);
 
@@ -419,6 +446,18 @@ async function main() {
         const optimized = await copyFile(relPath);
         if (optimized) optimizedImages.push(optimized);
     }
+
+    const optimizedWidths = new Map(await Promise.all(optimizedImages.map(async image => {
+        const meta = await sharp(path.join(DIST_ROOT, image.relPath)).metadata();
+        return [image.relPath, meta.width];
+    })));
+    for (const relPath of copied.filter(file => /\.html$/i.test(file))) {
+        const dest = path.join(DIST_ROOT, relPath);
+        const html = fs.readFileSync(dest, 'utf8');
+        const rewritten = rewriteOptimizedImageWidths(html, relPath, optimizedWidths);
+        if (rewritten !== html) fs.writeFileSync(dest, rewritten);
+    }
+    assertPreservedPublicMedia(DIST_ROOT);
 
     const publicFiles = copied.concat(writeSecurityHeadersFile()).sort();
     const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);

@@ -34,13 +34,13 @@ F1 STORIES
 
 ## Deployment boundaries
 
-The GitHub Pages hosts for Telemetry, Ghost Car and TYRES are temporary deployment boundaries, not separate brands. The switcher links to them as ordinary same-tab product navigation: no `target="_blank"`, no ↗, no iframe or proxy. When the products later move under f1stories.gr, only the `href`s change.
+The GitHub Pages hosts for Telemetry, Ghost Car and TYRES are temporary deployment boundaries, not separate brands. The switcher links to them as ordinary same-tab product navigation: no `target="_blank"`, no ↗, no iframe or proxy. When the products later move under f1-stories.gr, only the `href`s change.
 
 The `/f1telemetry/`, `/ghostcar/` and `/tyres/` pages in this repo are redirect stubs. The switcher links straight to the live apps, not to the stubs.
 
 | Product | Canonical URL |
 |---|---|
-| THE GRID | `https://f1stories.gr/standings/` (the main site uses `/standings/`) |
+| THE GRID | `https://f1-stories.gr/standings/` (the main site uses `/standings/`) |
 | TELEMETRY | `https://georgiosbalatzis.github.io/f1-telemetry-dashboard/` |
 | GHOST CAR | `https://georgiosbalatzis.github.io/ghostcar/` |
 | TYRES | `https://georgiosbalatzis.github.io/Tyres/` |
@@ -66,3 +66,9 @@ Markup is in `standings/index.html` and styles are in `standings/standings-edito
 - **Visual language.** Labels are Barlow Condensed 700 at 0.9375rem. Inactive labels use `--text-secondary`. The current product uses `--text-primary` plus a 3px signal bar on the rule, so the state does not depend on color alone. Focus is a 2px `--accent` outline. Each target is at least 44px tall. No pills, cards, logo or hamburger.
 - **Hierarchy contrast.** Products are marked by a bar on the rule *above* them. THE GRID's report tabs (below the timing band) use an underline *below*, and on mobile they become a `<select>`. The two levels never look alike.
 - **Other apps.** Telemetry, Ghost Car and TYRES reproduce the same three levels: kicker, product H1, and switcher with their own item current. Map the tokens to their `f1stories-theme` equivalents. Do not ship a shared package yet.
+- **Page titles.** Every product uses `PRODUCT — what it is | F1 Stories`, e.g. `GHOST CAR — Σύγκριση γύρων Formula 1 | F1 Stories`.
+- **Source, not "live".** A product's signal band names its data source (`Δεδομένα OpenF1`, `Προεπισκόπηση Pirelli`). Recorded sessions are never labelled live.
+
+## Race Desk index (this repo)
+
+`partials/race-desk-index.html` explains the family on the main site: the four products in switcher order, each with one line on what it shows and its data source. It is a `<section>` with a heading, not a second `aria-label="Race Desk"` nav. It sits under THE GRID on the homepage (h3) and at the foot of `/standings/` (h2, THE GRID `aria-current`), is hidden in standings embeds, and is styled in `styles/editorial.css` (`.desk-index`). `scripts/build/__tests__/race-desk-index.test.mjs` pins the order, URLs and current item.

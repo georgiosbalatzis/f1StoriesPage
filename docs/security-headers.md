@@ -61,7 +61,7 @@ GitHub Pages sends its own fixed response headers. The site cannot add:
 | `Permissions-Policy` | no |
 | `frame-ancestors` / `X-Frame-Options` | no; author tools refuse to hold a token when framed (`session-token.js`) |
 
-To serve them, proxy `f1stories.gr` through Cloudflare and add the `dist/_headers`
+To serve them, proxy `f1-stories.gr` through Cloudflare and add the `dist/_headers`
 values as a Response Header Transform Rule, or deploy `dist/` to a host that
 applies `_headers`. Do not add `preload` to HSTS until every current and future
 subdomain is known to be HTTPS-only.
@@ -69,7 +69,7 @@ subdomain is known to be HTTPS-only.
 ## Verifying production
 
 ```bash
-npm run security:headers                # https://f1stories.gr, human-readable
+npm run security:headers                # https://f1-stories.gr, human-readable
 node scripts/quality/security-headers-verify.mjs --json
 node scripts/quality/security-headers-verify.mjs --strict   # also fail on host limits
 ```

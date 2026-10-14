@@ -17,19 +17,20 @@ function sitemapUrl(loc, changefreq, priority, lastmod) {
     return entry;
 }
 
-function generateSitemap(articles) {
+function generateSitemap(articles, edition = []) {
     const entries = [
-        sitemapUrl('https://f1stories.gr/', 'daily', '1.0'),
-        sitemapUrl('https://f1stories.gr/blog-module/blog/index.html', 'daily', '0.9'),
-        sitemapUrl('https://f1stories.gr/standings/', 'weekly', '0.8'),
-        sitemapUrl('https://f1stories.gr/authors/', 'monthly', '0.5'),
-        sitemapUrl('https://f1stories.gr/privacy/privacy.html', 'yearly', '0.2'),
-        sitemapUrl('https://f1stories.gr/privacy/terms.html', 'yearly', '0.2')
+        sitemapUrl('https://f1-stories.gr/', 'daily', '1.0'),
+        sitemapUrl('https://f1-stories.gr/blog-module/blog/index.html', 'daily', '0.9'),
+        ...edition.map(page => sitemapUrl(`https://f1-stories.gr${page.path}`, page.changefreq, page.priority, page.lastmod)),
+        sitemapUrl('https://f1-stories.gr/standings/', 'weekly', '0.8'),
+        sitemapUrl('https://f1-stories.gr/authors/', 'monthly', '0.5'),
+        sitemapUrl('https://f1-stories.gr/privacy/privacy.html', 'yearly', '0.2'),
+        sitemapUrl('https://f1-stories.gr/privacy/terms.html', 'yearly', '0.2')
     ];
 
     (articles || []).forEach(article => {
         entries.push(sitemapUrl(
-            `https://f1stories.gr/blog-module/blog-entries/${article.id}/article.html`,
+            `https://f1-stories.gr/blog-module/blog-entries/${article.id}/article.html`,
             'monthly',
             '0.6',
             formatSitemapDate(article.date || article.dateISO)

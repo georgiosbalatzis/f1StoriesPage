@@ -47,7 +47,8 @@
     "scripts/perf/web-vitals-beacon.js": 4558,
     "blog-module/blog-index.js": 28984,
     "blog-module/blog-index-data.json": 131020,
-    "blog-module/blog/article-script.js": 28364,
+    "blog-module/blog/article-embeds.js": 22065,
+    "blog-module/blog/article-script.js": 31877,
     "blog-module/blog-fixes.js": 5043,
     "blog-module/blog-processor.js": 236,
     "blog-module/build/shared.js": 10168,
@@ -62,9 +63,9 @@
     "blog-module/build/nav.js": 2956,
     "blog-module/build/sitemap.js": 1910,
     "blog-module/build/worker.js": 8162,
-    "blog-module/build/index.js": 55370,
+    "blog-module/build/index.js": 66158,
     "blog-module/build/authors-page.js": 9615,
-    "blog-module/build/home-panels.js": 17199,
+    "blog-module/build/home-panels.js": 27908,
     "blog-module/build/__tests__/golden.js": 12364,
     "blog-module/build/__tests__/run-golden.js": 778,
     "scripts/build/fetch-youtube.mjs": 9455,
@@ -105,7 +106,8 @@
     "scripts/perf/error-beacon.min.js": 1450,
     "scripts/perf/web-vitals-beacon.min.js": 2267,
     "blog-module/blog-index.min.js": 13872,
-    "blog-module/blog/article-script.min.js": 14111,
+    "blog-module/blog/article-embeds.min.js": 13491,
+    "blog-module/blog/article-script.min.js": 16192,
     "blog-module/blog-fixes.min.js": 1890
   }
 }

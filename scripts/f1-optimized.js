@@ -580,9 +580,24 @@
         });
     }
 
-    // Team spotlight: a random writer every five seconds. The active card's fuse (a
-    // 5s CSS animation) drives the rotation, so hover, focus and the pause button only
-    // pause that animation and the timing always matches what the reader sees.
+    // Team spotlight: the next writer in roster order every twelve seconds, from a random
+    // start. The active card's fuse (a 12s CSS animation) drives the rotation, so hover,
+    // focus and the pause button only pause that animation and the timing always matches
+    // what the reader sees.
+    // The section jump bar scrolls sideways. Browsers scroll a focused link in only when it is wholly outside the
+    // bar, so one half outside would keep a clipped focus ring: bring every focused link fully into view.
+    function initPageIndex() {
+        var bar = document.querySelector('.page-index');
+        if (!bar) return;
+        bar.addEventListener('focusin', function (event) {
+            if (event.target.closest('a')) event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        });
+        function edge() { bar.classList.toggle('is-more', bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2); }
+        bar.addEventListener('scroll', edge, { passive: true });
+        window.addEventListener('resize', edge);
+        edge();
+    }
+
     function initTeamSpotlight() {
         var spotlight = document.querySelector('[data-team-spotlight]');
         if (!spotlight) return;
@@ -606,10 +621,9 @@
             });
         }
 
-        // Random, but never the same writer twice in a row.
+        // Roster order from a random start, so every writer gets a turn before any repeats.
         function showNext() {
-            var index = Math.floor(Math.random() * (cards.length - 1));
-            show(index >= current ? index + 1 : index);
+            show((current + 1) % cards.length);
         }
 
         show(Math.floor(Math.random() * cards.length));
@@ -638,4 +652,5 @@
     initHomeVideoFacade();
     initVideoLoading();
     initTeamSpotlight();
+    initPageIndex();
 })();

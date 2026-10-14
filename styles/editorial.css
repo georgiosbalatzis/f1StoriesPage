@@ -438,6 +438,12 @@ body.editorial-page .blog-nav:has(.theme-toggle-nav-btn) .blog-nav-mobile .theme
     body.editorial-page .blog-nav-brand img { width: 32px; height: 32px; }
 }
 
+/* Brand + ON AIR + theme + menu need ~353px in flow; below 360px the brand and row gap give back the rest (menu stays inside the gutter at 320). */
+@media (max-width: 359.98px) {
+    body.editorial-page .blog-nav-inner { gap: 0.5rem; }
+    body.editorial-page .blog-nav-brand { gap: 0.35rem; font-size: 1.2rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     body.editorial-page .blog-nav-brand img,
     body.editorial-page .blog-nav-link::after,
@@ -807,3 +813,37 @@ body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--sig
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
 /* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
 body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .article-author-link, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: var(--control-height-md); }
+
+/* RACE DESK index (partials/race-desk-index.html): the four data products, what each shows and its source, on the
+ * homepage's THE GRID and at the foot of THE GRID itself. A ruled table, not cards: a signal bar marks the product
+ * the reader is on, as in the products' own switcher. */
+body.editorial-page .desk-index { margin-top: clamp(40px, 5vw, 64px); padding: 0; border: 0; color: var(--text-primary); }
+body.editorial-page .desk-index__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 24px; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); }
+body.editorial-page .desk-index__title { margin: 0; color: var(--text-primary); font: 700 clamp(2rem, 3vw, 2.75rem)/.9 var(--font-brand); letter-spacing: -.005em; }
+body.editorial-page .desk-index__title span { color: var(--signal); }
+body.editorial-page .desk-index__lede { margin: 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.45; }
+body.editorial-page .desk-index__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+body.editorial-page .desk-index__list a { position: relative; display: grid; align-content: start; gap: 6px; height: 100%; padding: 16px 18px 18px 0; color: var(--text-primary); text-decoration: none; }
+body.editorial-page .desk-index__list li + li a { padding-left: 18px; border-left: 1px solid var(--border); }
+body.editorial-page .desk-index__list a::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: var(--signal); transform: scaleX(0); transform-origin: left; transition: transform .2s var(--ease-editorial); }
+body.editorial-page .desk-index__list a:is(:hover, [aria-current="page"])::before { transform: scaleX(1); }
+body.editorial-page .desk-index__list a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+body.editorial-page .desk-index__name { font: 700 1.5rem/1 var(--font-brand); letter-spacing: .02em; }
+body.editorial-page .desk-index__list a:hover .desk-index__name { color: var(--accent); }
+body.editorial-page .desk-index__what { color: var(--text-secondary); font-size: .875rem; line-height: 1.45; }
+body.editorial-page .desk-index__src { margin-top: 4px; color: var(--text-secondary); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .12em; text-transform: uppercase; }
+body.standings-embed .desk-index { display: none; }
+@media (max-width: 991px) {
+    body.editorial-page .desk-index__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    body.editorial-page .desk-index__list li:nth-child(odd) a { padding-left: 0; border-left: 0; }
+    body.editorial-page .desk-index__list li:nth-child(n + 3) a { border-top: 1px solid var(--border); }
+}
+/* Phones: one row per product, the name beside its description, so all four fit in about a screen. */
+@media (max-width: 575.98px) {
+    body.editorial-page .desk-index__list { grid-template-columns: minmax(0, 1fr); }
+    body.editorial-page .desk-index__list li a,
+    body.editorial-page .desk-index__list li + li a { grid-template-columns: 6.6rem minmax(0, 1fr); column-gap: 14px; padding: 14px 0; border-left: 0; border-top: 0; border-bottom: 1px solid var(--border); }
+    body.editorial-page .desk-index__name { grid-row: span 2; font-size: 1.25rem; }
+    body.editorial-page .desk-index__src { margin-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) { body.editorial-page .desk-index__list a::before { transition: none; } }

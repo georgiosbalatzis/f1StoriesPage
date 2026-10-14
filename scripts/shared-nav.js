@@ -517,12 +517,14 @@
     }
 
     // ── Next Race Countdown ───────────────────────
+    // Offline/pre-fetch calendar: race START instants (UTC) of the 2026 season, kept equal to the FIA schedule
+    // (scripts/build/__tests__/race-calendar.test.mjs checks rounds, instants and local start times).
     var FALLBACK_RACES = [
-        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T05:00:00Z' },
+        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T04:00:00Z' },
         { name: 'Chinese GP',       flag: '\u{1F1E8}\u{1F1F3}', date: '2026-03-15T07:00:00Z' },
         { name: 'Japanese GP',      flag: '\u{1F1EF}\u{1F1F5}', date: '2026-03-29T05:00:00Z' },
         { name: 'Miami GP',         flag: '\u{1F1FA}\u{1F1F8}', date: '2026-05-03T20:00:00Z' },
-        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T18:00:00Z' },
+        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T20:00:00Z' },
         { name: 'Monaco GP',        flag: '\u{1F1F2}\u{1F1E8}', date: '2026-06-07T13:00:00Z' },
         { name: 'Catalunya GP',     flag: '\u{1F1EA}\u{1F1F8}', date: '2026-06-14T13:00:00Z' },
         { name: 'Austrian GP',      flag: '\u{1F1E6}\u{1F1F9}', date: '2026-06-28T13:00:00Z' },
@@ -533,12 +535,13 @@
         { name: 'Italian GP',       flag: '\u{1F1EE}\u{1F1F9}', date: '2026-09-06T13:00:00Z' },
         { name: 'Spanish GP',       flag: '\u{1F1EA}\u{1F1F8}', date: '2026-09-13T13:00:00Z' },
         { name: 'Azerbaijan GP',    flag: '\u{1F1E6}\u{1F1FF}', date: '2026-09-26T11:00:00Z' },
+        { name: 'Bahrain GP in Malaysia', flag: '\u{1F1F2}\u{1F1FE}', date: '2026-10-04T07:00:00Z' },
         { name: 'Singapore GP',     flag: '\u{1F1F8}\u{1F1EC}', date: '2026-10-11T12:00:00Z' },
-        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T19:00:00Z' },
+        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T20:00:00Z' },
         { name: 'Mexico City GP',   flag: '\u{1F1F2}\u{1F1FD}', date: '2026-11-01T20:00:00Z' },
         { name: 'S\u00e3o Paulo GP',flag: '\u{1F1E7}\u{1F1F7}', date: '2026-11-08T17:00:00Z' },
-        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-21T06:00:00Z' },
-        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T14:00:00Z' },
+        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-22T04:00:00Z' },
+        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T16:00:00Z' },
         { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
     ];
 
@@ -556,10 +559,12 @@
         'Italy': '\u{1F1EE}\u{1F1F9}',     'Azerbaijan': '\u{1F1E6}\u{1F1FF}',
         'Singapore': '\u{1F1F8}\u{1F1EC}', 'Mexico': '\u{1F1F2}\u{1F1FD}',
         'Brazil': '\u{1F1E7}\u{1F1F7}',    'Qatar': '\u{1F1F6}\u{1F1E6}',
+        'Malaysia': '\u{1F1F2}\u{1F1FE}',
         'UAE': '\u{1F1E6}\u{1F1EA}',       'United Arab Emirates': '\u{1F1E6}\u{1F1EA}'
     };
 
     var RACES = FALLBACK_RACES;
+    var calendarSource = 'fallback'; // 'fallback' | 'cache' | 'live'
     var countdownNameEl = document.getElementById('next-race-name');
     var countdownEl = document.getElementById('race-countdown');
     var countdownMobileEl = document.getElementById('race-countdown-mobile');
@@ -650,6 +655,26 @@
         flagEl.textContent = flag || '\u{1F3C1}';
     }
 
+    // This countdown always targets the RACE start (not FP1 or qualifying): say so for tooltips and screen readers,
+    // with the start in the visitor's own time zone, and flag a schedule that has not been confirmed by the live API.
+    var targetFormat = null;
+    function labelCountdown(race) {
+        var label = 'Αγώνας: ' + race.name;
+        try {
+            targetFormat = targetFormat || new Intl.DateTimeFormat('el-GR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZoneName: 'shortOffset' });
+            label += ' · έναρξη ' + targetFormat.format(race.ts);
+        } catch (_) {}
+        if (calendarSource === 'fallback') label += ' · αποθηκευμένο πρόγραμμα';
+        ['nav-countdown', 'nav-countdown-mobile'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('role', 'group');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('title', label);
+            el.setAttribute('data-calendar-source', calendarSource);
+        });
+    }
+
     function tickCountdown() {
         var now = Date.now();
         var race = getNextRace(now);
@@ -658,6 +683,10 @@
             if (countdownEl) countdownEl.textContent = '2027 προσεχώς';
             if (countdownMobileEl) countdownMobileEl.textContent = 'Τέλος';
             setMobileFlag(null);
+            ['nav-countdown', 'nav-countdown-mobile'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) ['aria-label', 'title'].forEach(function (a) { el.removeAttribute(a); });
+            });
             return;
         }
         var ms = race.ts - now;
@@ -666,6 +695,7 @@
         if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
         if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
         setMobileFlag(race.flag);
+        labelCountdown(race);
         scheduleCountdown(ms);
     }
 
@@ -689,6 +719,7 @@
             var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
             if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.races) {
                 RACES = cached.races;
+                calendarSource = 'cache';
                 tickCountdown();
                 return;
             }
@@ -701,6 +732,7 @@
                 var parsed = parseJolpicaRaces(data);
                 if (parsed && parsed.length) {
                     RACES = parsed;
+                    calendarSource = 'live';
                     try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), races: parsed })); } catch (_) {}
                     if (countdownTimer) window.clearTimeout(countdownTimer);
                     tickCountdown();

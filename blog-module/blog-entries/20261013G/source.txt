@@ -24,7 +24,7 @@ title: Mercedes W17 , μα 388mm διαφορά ...
 
 Στον πρώτο τομέα ο Russell ήταν ταχύτερος κατά 118 χιλιοστά. Στον δεύτερο κατά 146. Στον τρίτο, όμως, ο Antonelli έχασε άλλα 309 χιλιοστά. Περισσότερο από το μισό συνολικό έλλειμμα συγκεντρώθηκε στο τελευταίο κομμάτι του γύρου.
 
-<iframe src="https://f1stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=17&amp;debriefView=team-ideal" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
+<iframe src="https://f1-stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=17&amp;debriefView=team-ideal" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
 
 Εκείνη την ώρα η εύκολη εξήγηση ήταν ότι η νέα Mercedes είχε πρόβλημα με τη συμπεριφορά της όσο προχωρούσε ο γύρος. Όμως ο Andrew Shovlin έδωσε ένα πολύ πιο συγκεκριμένο στοιχείο. Ο Antonelli, είπε μετά το Sprint Qualifying, δεν είχε την απαιτούμενη εμπιστοσύνη στο φρενάρισμα και στην είσοδο των στροφών.
 

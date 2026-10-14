@@ -62,19 +62,19 @@ export function prepareMain(directory) {
         for (const [old, target] of oldTargets) text = text.replaceAll(old, target);
         // Metadata stays absolute. UI anchors become same-origin, including Main's compatibility Telemetry path.
         if (rel.endsWith('.html')) {
-            text = text.replace(/(<a\b[^>]*\bhref=["'])https:\/\/f1stories\.gr(?=\/)/g, '$1');
+            text = text.replace(/(<a\b[^>]*\bhref=["'])https:\/\/f1-stories\.gr(?=\/)/g, '$1');
             text = text.replace(/(<a\b[^>]*\bhref=["'])\/f1telemetry\//g, '$1/telemetry/');
         }
         if (rel === 'f1telemetry/index.html') {
-            text = text.replace(/(<link rel="canonical" href=")\/telemetry\//, '$1https://f1stories.gr/telemetry/');
-            text = text.replace('https://f1stories.gr/f1telemetry/', 'https://f1stories.gr/telemetry/');
+            text = text.replace(/(<link rel="canonical" href=")\/telemetry\//, '$1https://f1-stories.gr/telemetry/');
+            text = text.replace('https://f1-stories.gr/f1telemetry/', 'https://f1-stories.gr/telemetry/');
         }
         fs.writeFileSync(file, text);
     }
     const sitemap = path.join(directory, 'sitemap.xml');
     let xml = fs.readFileSync(sitemap, 'utf8');
     for (const product of ['/standings/', '/telemetry/', '/ghostcar/', '/betcast/']) {
-        const url = `https://f1stories.gr${product}`;
+        const url = `https://f1-stories.gr${product}`;
         if (!xml.includes(`<loc>${url}</loc>`)) xml = xml.replace('</urlset>', `  <url><loc>${url}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n</urlset>`);
     }
     fs.writeFileSync(sitemap, xml);
@@ -94,15 +94,15 @@ export function validateSite(directory, apps) {
         const html = fs.readFileSync(path.join(directory, rel), 'utf8');
         if ([...html.matchAll(/<link\b[^>]*\brel=["']canonical["']/g)].length !== 1) throw new Error(`${app.application}: must have exactly one canonical`);
         if ([...html.matchAll(/<meta\b[^>]*\bproperty=["']og:url["']/g)].length !== 1) throw new Error(`${app.application}: must have exactly one OG URL`);
-        if (!html.includes(`rel="canonical" href="https://f1stories.gr${app.path}"`)) throw new Error(`${app.application}: incorrect canonical`);
-        if (!html.includes(`property="og:url" content="https://f1stories.gr${app.path}"`)) throw new Error(`${app.application}: incorrect OG URL`);
-        if (!urls.includes(`https://f1stories.gr${app.path}`)) throw new Error(`${app.application}: missing sitemap URL`);
+        if (!html.includes(`rel="canonical" href="https://f1-stories.gr${app.path}"`)) throw new Error(`${app.application}: incorrect canonical`);
+        if (!html.includes(`property="og:url" content="https://f1-stories.gr${app.path}"`)) throw new Error(`${app.application}: incorrect OG URL`);
+        if (!urls.includes(`https://f1-stories.gr${app.path}`)) throw new Error(`${app.application}: missing sitemap URL`);
         if (new RegExp(`Disallow:\\s*${app.path}`).test(robots)) throw new Error(`${app.application}: blocked by robots`);
         // Asset references from the entry point must resolve within the child namespace.
         for (const match of html.matchAll(/<(?:link|script|img)\b[^>]*\b(?:src|href)=["']([^"']+)["']/g)) {
             const ref = match[1];
             if (/^(?:https?:|data:|#)/.test(ref)) continue;
-            const resolved = new URL(ref, `https://f1stories.gr${app.path}`);
+            const resolved = new URL(ref, `https://f1-stories.gr${app.path}`);
             if (!resolved.pathname.startsWith(app.path)) throw new Error(`${app.application}: asset escapes namespace: ${ref}`);
             if (!names.has(decodeURIComponent(resolved.pathname.slice(1)))) throw new Error(`${app.application}: missing asset ${ref}`);
         }
@@ -110,10 +110,10 @@ export function validateSite(directory, apps) {
         if (names.has(manifest)) {
             const data = JSON.parse(fs.readFileSync(path.join(directory, manifest)));
             for (const field of ['start_url', 'scope', 'id']) {
-                if (!data[field] || new URL(data[field], `https://f1stories.gr${app.path}manifest.json`).pathname !== app.path) throw new Error(`${app.application}: unsafe manifest ${field}`);
+                if (!data[field] || new URL(data[field], `https://f1-stories.gr${app.path}manifest.json`).pathname !== app.path) throw new Error(`${app.application}: unsafe manifest ${field}`);
             }
             for (const icon of data.icons || []) {
-                const resolved = new URL(icon.src, `https://f1stories.gr${app.path}manifest.json`);
+                const resolved = new URL(icon.src, `https://f1-stories.gr${app.path}manifest.json`);
                 if (!resolved.pathname.startsWith(app.path) || !names.has(resolved.pathname.slice(1))) throw new Error(`${app.application}: missing/out-of-scope manifest icon`);
             }
         }
@@ -146,7 +146,7 @@ export function assemble(inputs, destination, metadata, reportDirectory) {
     }
     const result = validateSite(destination, inputs);
     const outputDigest = createHash('sha256').update(JSON.stringify(report.entries)).digest('hex');
-    const manifest = { schemaVersion: 1, origin: 'https://f1stories.gr', ...metadata, outputDigest, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
+    const manifest = { schemaVersion: 1, origin: 'https://f1-stories.gr', ...metadata, outputDigest, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
     const manifestText = JSON.stringify(manifest, null, 2) + '\n';
     fs.writeFileSync(path.join(destination, 'deployment-manifest.json'), manifestText);
     return { ...result, files: result.files + 1, bytes: report.bytes + Buffer.byteLength(manifestText), outputDigest, collisions: report.collisions.length, releaseEligible: metadata.releaseEligible };

@@ -184,7 +184,11 @@
         // (a 112px square beside the text on phones, two across on tablets).
         homeLead: '(min-width: 1200px) 900px, (min-width: 992px) 62vw, 100vw',
         homeSecondary: '(max-width: 767px) 240px, (max-width: 991px) 50vw, 440px',
-        related: '(max-width: 767px) 40vw, 390px'
+        related: '(max-width: 767px) 40vw, 390px',
+        // Edition Index: the week's lead beside its text, a section's lead over its column, and the 120px row thumbnails.
+        editionWeek: '(min-width: 1200px) 440px, (min-width: 768px) 50vw, 100vw',
+        editionSection: '(min-width: 1200px) 800px, (min-width: 992px) 58vw, 100vw',
+        editionThumb: '(max-width: 767px) 96px, 120px'
     });
     // The Journal front and archive ledger, shared by the build and the browser.
     // A ledger page shows `page` rows; every `pictureEvery` rows, starting at
@@ -193,10 +197,74 @@
     function isLedgerPicture(index) {
         return index >= JOURNAL_LAYOUT.pictureAt && (index - JOURNAL_LAYOUT.pictureAt) % JOURNAL_LAYOUT.pictureEvery === 0;
     }
-    function cardImageSrcset(url, includeFull) {
+    function cardImageSrcset(url, includeFull, dimensions) {
         const match = /^(.*)-card\.webp$/.exec(String(url || ''));
-        if (!match) return '';
-        return `${match[1]}-card.webp 400w, ${match[1]}-mobile.webp 800w${includeFull ? `, ${match[1]}.webp 1600w` : ''}`;
+        if (!match || !dimensions) return '';
+        const candidates = [`${match[1]}-card.webp`, `${match[1]}-mobile.webp`].concat(includeFull ? [`${match[1]}.webp`] : []);
+        let lastWidth = 0;
+        return candidates.filter(candidate => {
+            const width = dimensions[candidate];
+            if (!Number.isInteger(width) || width <= lastWidth) return false;
+            lastWidth = width;
+            return true;
+        }).map(candidate => `${candidate} ${dimensions[candidate]}w`).join(', ');
+    }
+
+    // The Edition Index (archive discovery): layout and calendar rules shared by the build (static section and
+    // month pages) and the browser (legacy ?category= / ?author= / ?q= views).
+    // `page` stories per list page, after the `front` stories a section's first page leads with.
+    const EDITION_LAYOUT = Object.freeze({ page: 30, front: 4, weekMax: 16, yearAgoDays: 15, yearAgoMax: 4 });
+    // A story is NEW for this many calendar days, the publication day included.
+    const NEW_DAYS = 7;
+    const MONTHS_NOMINATIVE = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος',
+        'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
+
+    /** Publication days are folder-name dates ("2026-09-20"): a real calendar day or nothing. */
+    function isDay(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ''));
+        if (!match) return false;
+        const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+        return date.getUTCFullYear() === Number(match[1]) && date.getUTCMonth() === Number(match[2]) - 1 && date.getUTCDate() === Number(match[3]);
+    }
+    function addDays(day, count) {
+        const date = new Date(`${day}T00:00:00Z`);
+        date.setUTCDate(date.getUTCDate() + count);
+        return date.toISOString().slice(0, 10);
+    }
+    /** Today's calendar day in the publishing time zone (the folder dates are Athens dates). */
+    function athensDay(now) {
+        return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now || new Date());
+    }
+    /** NEW: a real publication day within the last NEW_DAYS days of `today`; never a missing or future date. */
+    function isNewStory(date, today) {
+        const day = String(date || '').slice(0, 10);
+        return isDay(day) && isDay(today) && day <= today && day >= addDays(today, 1 - NEW_DAYS);
+    }
+    /** The last day a story published on `date` still counts as NEW. */
+    function newUntil(date) {
+        return addDays(String(date).slice(0, 10), NEW_DAYS - 1);
+    }
+    /** "2026-10" → "Οκτώβριος 2026"; "ΟΚΤ" for the short capital form. */
+    function monthName(key) {
+        return `${MONTHS_NOMINATIVE[Number(String(key).slice(5, 7)) - 1]} ${String(key).slice(0, 4)}`;
+    }
+    function monthShort(key) {
+        return greekUpper(MONTHS_SHORT[Number(String(key).slice(5, 7)) - 1]);
+    }
+    function plural(count, one, many) {
+        return `${count} ${count === 1 ? one : many}`;
+    }
+    /** Page numbers and gaps for a pager: every page up to 9, otherwise the ends and the neighbours of `current`. */
+    function pageItems(current, total) {
+        if (total <= 9) return Array.from({ length: total }, (_, index) => index + 1);
+        const items = [1];
+        const left = Math.max(2, current - 1);
+        const right = Math.min(total - 1, current + 1);
+        if (left > 2) items.push('…');
+        for (let page = left; page <= right; page += 1) items.push(page);
+        if (right < total - 1) items.push('…');
+        items.push(total);
+        return items;
     }
 
     function comparisonKey(value) {
@@ -270,6 +338,7 @@
     return Object.freeze({
         PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
         AUTHORS, findAuthor, authorThumb, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
-        cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
+        cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture,
+        EDITION_LAYOUT, NEW_DAYS, isDay, addDays, athensDay, isNewStory, newUntil, monthName, monthShort, plural, pageItems
     });
 }));

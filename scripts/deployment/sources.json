@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "enabled": false,
-  "origin": "https://f1stories.gr",
+  "origin": "https://f1-stories.gr",
   "applications": [
     {
       "application": "main",

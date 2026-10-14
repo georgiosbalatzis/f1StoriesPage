@@ -338,8 +338,6 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 .skeleton-card { contain: content; }
 .navbar, .cookie-banner, .cookie-consent, .scroll-to-top-btn { contain: layout style; }
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
-/* Skip off-screen section rendering on mobile — speeds up initial paint */
-#about { content-visibility: auto; contain-intrinsic-size: 0 320px; }
 /* #contact is not skipped: while skipped, Lighthouse's axe reads its text against the sponsor mat above it (dark theme a11y 96). */
 
 

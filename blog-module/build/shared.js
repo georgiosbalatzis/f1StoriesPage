@@ -23,8 +23,8 @@ const CONFIG = {
     AUTHOR_MAP: Object.fromEntries(AUTHORS.map(author => [author.code, author.name])),
     IFRAME_WHITELIST: [
         'georgiosbalatzis.github.io',
-        'f1stories.gr',
-        'www.f1stories.gr',
+        'f1-stories.gr',
+        'www.f1-stories.gr',
         'facebook.com',
         'www.facebook.com',
         'www.youtube.com',

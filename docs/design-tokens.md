@@ -191,7 +191,7 @@ old blue/pink nav values are legacy/tooling semantics, not new brand colors.
 
 1. Read this contract and `editorial.css`; use the **core** `themes` and
    `primitives` from the snapshot for independently built products. No runtime
-   import from f1stories.gr, CDN, token JavaScript, package or theme API.
+   import from f1-stories.gr, CDN, token JavaScript, package or theme API.
 2. Classify each product value as exact canonical match, equivalent semantic
    alias, legitimate product-specific value, or accidental divergence. Map
    ordinary canvas/surface/text/border/action/focus/control/font primitives to
