@@ -1,6 +1,41 @@
 {
   "posts": [
     {
+      "id": "20261014G",
+      "title": "Ολημερίς το έχτιζαν, το βράδυ γκρεμιζόταν",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-14",
+      "dateISO": "2026-10-14",
+      "displayDate": "14 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261014G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261014G/1.webp",
+      "excerpt": "Τρία Q3 και κανένας βαθμός για την Alpine Θα το πω από την αρχή, γιατί τα νούμερα το λένε ήδη: η Alpine δεν έχει πια πρόβλημα το Σάββατο, έχει πρόβλημα την Κυριακή. Ο Pierre Gasly πέρασε στο Q3 στο...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261014G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Gasly",
+        "Colapinto",
+        "Briatore",
+        "Flavio",
+        "Pierre. Renault",
+        "Alpine",
+        "F1",
+        "Franco",
+        "2026"
+      ],
+      "wordCount": 1571,
+      "readingTime": "8 min",
+      "imageWidth": 474,
+      "imageHeight": 316,
+      "backgroundImageWidth": 474,
+      "backgroundImageHeight": 316
+    },
+    {
       "id": "20261013W",
       "title": "Carlos Checa: Αγαπημένος σκληροτράχηλος και απόλυτος επαγγελματίας των 2 τροχών",
       "author": "Themis Charvalis",
@@ -10500,5 +10535,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-13T17:18:02.187Z"
+  "lastUpdated": "2026-10-14T12:38:23.850Z"
 }
