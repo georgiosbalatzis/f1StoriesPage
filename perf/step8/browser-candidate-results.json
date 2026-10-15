@@ -1,0 +1,518 @@
+[
+  {
+    "width": 390,
+    "theme": "dark",
+    "id": "20250328G",
+    "state": {
+      "actual": 16,
+      "expected": 16,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "id": "20261009W",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "id": "20261007G",
+    "state": {
+      "actual": 6,
+      "expected": 6,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "id": "20260422G",
+    "state": {
+      "actual": 9,
+      "expected": 9,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "editionInitialScriptMs": 15.774,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 781,
+        "scriptMs": 4.226000000000001
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 40,
+        "scriptMs": 1.2069999999999999
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 35,
+        "scriptMs": 1.5720000000000005
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 20,
+        "scriptMs": 1.9839999999999995
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "id": "20250328G",
+    "state": {
+      "actual": 16,
+      "expected": 16,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "id": "20261009W",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "id": "20261007G",
+    "state": {
+      "actual": 6,
+      "expected": 6,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "id": "20260422G",
+    "state": {
+      "actual": 9,
+      "expected": 9,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "editionInitialScriptMs": 13.785,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 795,
+        "scriptMs": 2.1199999999999988
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 50,
+        "scriptMs": 2.0930000000000013
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 36,
+        "scriptMs": 0.6999999999999993
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 25,
+        "scriptMs": 2.319999999999999
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "id": "20250328G",
+    "state": {
+      "actual": 15,
+      "expected": 15,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "id": "20261009W",
+    "state": {
+      "actual": 12,
+      "expected": 12,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "id": "20261007G",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "id": "20260422G",
+    "state": {
+      "actual": 10,
+      "expected": 10,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "editionInitialScriptMs": 14.831000000000001,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 768,
+        "scriptMs": 2.5999999999999983
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 42,
+        "scriptMs": 0.9000000000000015
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 25,
+        "scriptMs": 2.242000000000001
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 28,
+        "scriptMs": 3.525999999999998
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "id": "20250328G",
+    "state": {
+      "actual": 15,
+      "expected": 15,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "id": "20261009W",
+    "state": {
+      "actual": 12,
+      "expected": 12,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "id": "20261007G",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "id": "20260422G",
+    "state": {
+      "actual": 10,
+      "expected": 10,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "editionInitialScriptMs": 13.559,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 785,
+        "scriptMs": 3.191999999999999
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 42,
+        "scriptMs": 1.687000000000001
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 31,
+        "scriptMs": 1.7950000000000015
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 22,
+        "scriptMs": 1.7140000000000002
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "id": "20250328G",
+    "state": {
+      "actual": 15,
+      "expected": 15,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "id": "20261009W",
+    "state": {
+      "actual": 12,
+      "expected": 12,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "id": "20261007G",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "id": "20260422G",
+    "state": {
+      "actual": 10,
+      "expected": 10,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "editionInitialScriptMs": 14.79,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 657,
+        "scriptMs": 3.266
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 38,
+        "scriptMs": 1.5690000000000008
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 30,
+        "scriptMs": 1.5140000000000016
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 21,
+        "scriptMs": 1.6419999999999977
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "id": "20250328G",
+    "state": {
+      "actual": 15,
+      "expected": 15,
+      "current": "Τι ήταν το “Mini-DRS” τελικά;",
+      "expectedCurrent": "Τι ήταν το “Mini-DRS” τελικά;",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "id": "20261009W",
+    "state": {
+      "actual": 12,
+      "expected": 12,
+      "current": "Από το Thomson Road στη σύγχρονη εποχή",
+      "expectedCurrent": "Από το Thomson Road στη σύγχρονη εποχή",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "id": "20261007G",
+    "state": {
+      "actual": 8,
+      "expected": 8,
+      "current": "Η πίστα άλλαξε, όχι η AMR26",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "id": "20260422G",
+    "state": {
+      "actual": 10,
+      "expected": 10,
+      "current": "Μονοκόκ",
+      "expectedCurrent": "Μονοκόκ",
+      "visible": true,
+      "inert": false,
+      "expectedVisible": true,
+      "overflow": false
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "editionInitialScriptMs": 17.599,
+    "searches": [
+      {
+        "query": "Senna",
+        "elapsedMs": 655,
+        "scriptMs": 2.503999999999999
+      },
+      {
+        "query": "Ferrari",
+        "elapsedMs": 41,
+        "scriptMs": 1.6229999999999993
+      },
+      {
+        "query": "Hamilton",
+        "elapsedMs": 28,
+        "scriptMs": 1.8290000000000008
+      },
+      {
+        "query": "zzzz-no-match",
+        "elapsedMs": 21,
+        "scriptMs": 1.4149999999999996
+      }
+    ]
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "baseline": "07ab7987",
+  "browser": "Chrome 155.0.8059.80",
+  "node": "v26.11.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "hardware": "Apple M3 Pro",
+  "cpuRate": 4,
+  "network": {
+    "latencyMs": 150,
+    "downloadMbps": 1.6,
+    "uploadKbps": 750
+  },
+  "viewports": [
+    390,
+    768,
+    1440
+  ],
+  "height": 900,
+  "scrollSteps": 45,
+  "pairsPerViewport": 3,
+  "thirdPartyRequests": "blocked identically",
+  "serviceWorkers": "blocked",
+  "runtime": "source-instrumented; same public build for both variants"
+}

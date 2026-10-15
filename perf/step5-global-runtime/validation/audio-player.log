@@ -1,0 +1,5 @@
+
+> f1stories-site@1.0.0 qa:audio-player
+> node scripts/perf/audio-player-qa.mjs --root=dist
+
+audio-player-qa: 106 checks passed, 0 failed.

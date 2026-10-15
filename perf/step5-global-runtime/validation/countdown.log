@@ -1,0 +1,5 @@
+
+> f1stories-site@1.0.0 qa:countdown
+> node scripts/perf/countdown-qa.mjs --root=dist
+
+countdown-qa: 23 checks passed, 0 failed

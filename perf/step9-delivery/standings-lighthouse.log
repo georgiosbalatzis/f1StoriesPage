@@ -1,0 +1,11 @@
+Serving dist at http://127.0.0.1:51664
+
+Lighthouse route budgets:
+
+route      perf  a11y    bp   seo      lcp     cls      tbt  status
+------------------------------------------------------------------
+Standings    98   100   100   100   2253ms   0.000      0ms  ok
+  Standings resources: JS 36.0KB, CSS 33.7KB, DOM 1664, 3P 2
+
+All Lighthouse budgets passed.
+Lighthouse JSON written to ../../../../tmp/f1-step9-lighthouse

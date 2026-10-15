@@ -111,6 +111,11 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         const update = () => {
             frame = 0;
             const show = cover.getBoundingClientRect().bottom < 90 && !(end && end.getBoundingClientRect().top < window.innerHeight * 0.6);
+            // Read geometry before changing the bar so section reads do not flush its style updates.
+            const body = articleContent.getBoundingClientRect();
+            const read = Math.min(1, Math.max(0, (window.innerHeight * 0.35 - body.top) / Math.max(1, body.height)));
+            let now = -1;
+            sections.forEach((section, index) => { if (section.getBoundingClientRect().top < window.innerHeight * 0.3) now = index; });
             if (show !== shown) {
                 shown = show;
                 bar.classList.toggle('is-visible', show);
@@ -118,15 +123,11 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
                 bar.inert = !show; // a hidden bar's share button must not take focus
                 document.body.classList.toggle('rr-bar-on', show);
             }
-            const body = articleContent.getBoundingClientRect();
-            const read = Math.min(1, Math.max(0, (window.innerHeight * 0.35 - body.top) / Math.max(1, body.height)));
             bar.style.setProperty('--read', read.toFixed(4));
             if (meter && Math.round(read * 100) !== percent) {
                 percent = Math.round(read * 100);
                 meter.setAttribute('aria-valuenow', String(percent));
             }
-            let now = -1;
-            sections.forEach((section, index) => { if (section.getBoundingClientRect().top < window.innerHeight * 0.3) now = index; });
             if (now === active) return;
             active = now;
             if (current) current.textContent = now >= 0 ? sections[now].textContent.replace(/\s+/g, ' ').trim() : title;

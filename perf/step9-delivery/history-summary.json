@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "variants": [
+    "baseline",
+    "candidate"
+  ],
+  "widths": [
+    390,
+    768,
+    1440
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "sequenceCount": 24,
+  "restoreChecks": 96,
+  "backChecks": 48,
+  "forwardChecks": 48,
+  "allPersisted": true,
+  "allNullNotRestoredReasons": true,
+  "totalRestoreBodyBytes": 0,
+  "allCacheCalibrationsPassed": true,
+  "cacheRevalidations": 36,
+  "freshCacheNetworkRequests": 0,
+  "protocols": [
+    "h2"
+  ]
+}

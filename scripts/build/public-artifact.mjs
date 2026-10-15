@@ -8,7 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
+import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
+import { inlineHeadStylesheets } from './inline-head-css.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
 import { preservedPublicMedia, assertPreservedPublicMedia, rewriteOptimizedImageWidths } from './public-media-integrity.mjs';
 
@@ -416,8 +417,10 @@ async function copyFile(relPath) {
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
-        // Each page gets the CSP of its profile (public or an author tool).
-        fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8')), relPath), 'utf8');
+        // Each page gets the CSP of its profile (public or an author tool); public pages inline their head CSS.
+        let html = rewritePublicLogoRefs(fs.readFileSync(src, 'utf8'));
+        if (cspProfileForPath(relPath) === 'public') html = inlineHeadStylesheets(html, relPath, rel => fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8'));
+        fs.writeFileSync(dest, injectSecurityMeta(html, relPath), 'utf8');
         return null;
     }
     const optimized = Object.hasOwn(preservedPublicMedia, relPath) ? null : await optimizePublicArticleImage(src, dest, relPath);

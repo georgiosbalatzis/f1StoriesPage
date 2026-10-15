@@ -1,0 +1,51 @@
+{
+  "thresholdPercent": 10,
+  "budgetsChanged": false,
+  "failures": [
+    {
+      "path": "standings/standings.css",
+      "baselineBytes": 29860,
+      "candidateBytes": 29860
+    },
+    {
+      "path": "standings/standings.js",
+      "baselineBytes": 84004,
+      "candidateBytes": 84004
+    },
+    {
+      "path": "standings/core/format.js",
+      "baselineBytes": 1583,
+      "candidateBytes": 1583
+    },
+    {
+      "path": "scripts/shared-nav.js",
+      "baselineBytes": 35239,
+      "candidateBytes": 35239
+    },
+    {
+      "path": "blog-module/build/embed-render.js",
+      "baselineBytes": 19453,
+      "candidateBytes": 19453
+    },
+    {
+      "path": "standings/standings.min.css",
+      "baselineBytes": 23688,
+      "candidateBytes": 23688
+    },
+    {
+      "path": "standings/standings.min.js",
+      "baselineBytes": 49097,
+      "candidateBytes": 49097
+    },
+    {
+      "path": "scripts/shared-nav.min.js",
+      "baselineBytes": 17619,
+      "candidateBytes": 17619
+    },
+    {
+      "path": "scripts/sw-cleanup.min.js",
+      "baselineBytes": 809,
+      "candidateBytes": 809
+    }
+  ]
+}

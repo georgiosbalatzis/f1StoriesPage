@@ -1,0 +1,16 @@
+
+> f1stories-site@1.0.0 quality:static
+> node scripts/quality/static-source-guard.mjs && node scripts/quality/important-guard.mjs && npm run quality:rendering && npm run check:tokens
+
+Static source guard passed: JS/CSS syntax, secret, inline handler, CSP source, duplicate asset, and source-boundary checks are clean.
+✓ source CSS !important usage: 100/100
+
+> f1stories-site@1.0.0 quality:rendering
+> node scripts/quality/rendering-sink-guard.mjs
+
+Rendering sink guard passed: 2 files are within the reviewed raw HTML baseline.
+
+> f1stories-site@1.0.0 check:tokens
+> node scripts/quality/design-token-guard.mjs
+
+Design tokens synchronized: core light/dark, reading overrides, typography, geometry, aliases and specification.

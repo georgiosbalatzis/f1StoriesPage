@@ -1,0 +1,12 @@
+slow4g 390 #1: load JS 35.7ms, interaction JS 23.1ms, scroll JS 7.0ms, long tasks 0
+fast4g 390 #1: load JS 33.2ms, interaction JS 19.1ms, scroll JS 7.9ms, long tasks 0
+slow4g 390 #1: load JS 36.8ms, interaction JS 26.5ms, scroll JS 15.3ms, long tasks 0
+fast4g 390 #1: load JS 34.9ms, interaction JS 17.2ms, scroll JS 7.1ms, long tasks 0
+slow4g 390 #1: load JS 38.7ms, interaction JS 43.8ms, scroll JS 27.8ms, long tasks 0
+fast4g 390 #1: load JS 40.4ms, interaction JS 26.9ms, scroll JS 11.1ms, long tasks 0
+slow4g 390 #1: load JS 41.7ms, interaction JS 31.9ms, scroll JS 21.1ms, long tasks 0
+fast4g 390 #1: load JS 37.5ms, interaction JS 19.6ms, scroll JS 9.3ms, long tasks 0
+slow4g 390 #1: load JS 42.8ms, interaction JS 22.9ms, scroll JS 10.4ms, long tasks 0
+fast4g 390 #1: load JS 36.0ms, interaction JS 24.3ms, scroll JS 13.4ms, long tasks 0
+slow4g 390 #1: load JS 46.9ms, interaction JS 24.7ms, scroll JS 14.1ms, long tasks 0
+fast4g 390 #1: load JS 34.9ms, interaction JS 24.4ms, scroll JS 9.9ms, long tasks 0
