@@ -1,0 +1,10 @@
+blog-module/blog-entries/**/article.html  →  402 file(s), inline runtime markup migrated
+
+✓ stamped 87 reference(s), 2 critical block(s), 0 stylesheet(s) async-preloaded, 0 font swap(s), 0 preconnect(s) dropped, 45 sprite op(s), 0 FA CDN drop(s), 0 Bootstrap CSS swap(s), 0 Bootstrap CSS drop(s), 0 Bootstrap JS drop(s), 0 jsDelivr preconnect drop(s), 0 GTM dns-prefetch drop(s), 804 article runtime script stamp(s) across 49 shell file(s).
+
+> f1stories-site@1.0.0 build:data-contracts
+> node scripts/build/validate-data-contracts.mjs
+
+Data contracts validated: blog data, standings caches, YouTube snapshot, asset manifest, and sitemap.
+✓ public artifact: 3600 files, 180.69 MB → dist/; optimized 10 article image(s) (10 reused, 0 encoded), saved 2.64 MB
+✓ public artifact validated: 3600 files, 180.69 MB

@@ -1,0 +1,25 @@
+
+> f1stories-site@1.0.0 test:consent
+> node --test scripts/perf/__tests__/analytics-events.test.mjs && node scripts/perf/consent-guard.mjs
+
+✔ click analytics stays consent-gated and records safe internal and outbound fields (2.941084ms)
+✔ Journal clients receive the actual consent contract, never a boolean analytics property (0.405375ms)
+✔ article engagement requires consent, 30 visible seconds, and 50% scroll depth (0.467958ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 75.726708
+┌─────────┬────────────────────────────────┬───────────────────────────┐
+│ (index) │ route                          │ status                    │
+├─────────┼────────────────────────────────┼───────────────────────────┤
+│ 0       │ '/'                            │ 'ok'                      │
+│ 1       │ '/blog-module/blog/index.html' │ 'ok'                      │
+│ 2       │ '/standings/'                  │ 'ok'                      │
+│ 3       │ '/'                            │ 'reject blocks analytics' │
+│ 4       │ '/'                            │ 'accept loads gtag'       │
+└─────────┴────────────────────────────────┴───────────────────────────┘
+Consent analytics guard passed.

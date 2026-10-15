@@ -31,6 +31,11 @@ try {
             localStorage.setItem('f1stories-cookie-consent-v1', JSON.stringify({ ts: Date.now(), essential: true, analytics: false }));
             const query = Document.prototype.querySelectorAll;
             window.__cueScans = 0;
+            window.__cueDisconnects = 0;
+            const Observer = window.ResizeObserver;
+            window.ResizeObserver = class extends Observer {
+                disconnect() { window.__cueDisconnects++; super.disconnect(); }
+            };
             Document.prototype.querySelectorAll = function (selector) {
                 if (String(selector).includes('tyre-pace-chart-scroll')) window.__cueScans++;
                 return query.call(this, selector);
@@ -75,7 +80,7 @@ try {
         await scroller.evaluate(node => { node.style.width = '800px'; });
         await fixture.locator('.horizontal-scroll-cue[hidden]').waitFor({ state: 'attached' });
         await fixture.evaluate(node => node.remove());
-        await page.waitForTimeout(100);
+        await page.waitForFunction(() => window.__cueDisconnects === 1);
         assert.equal(await page.locator('#cue-fixture').count(), 0, 'removed region is cleaned up without reinsertion');
         await page.evaluate(() => { window.dispatchEvent(new Event('resize')); });
         console.log(`PASS dynamic cue insertion, unrelated mutation, descendant mutation, scroll, resize, removal: ${width}px ${theme}`);
