@@ -374,6 +374,13 @@ export function routeMetrics(lhr) {
     return metrics;
 }
 
+// Uncompressed bytes of the CSS a document carries inline. route-css-bytes counts only external stylesheet transfers
+// (compressed), which reads near zero once public-artifact.mjs inlines the head stylesheets (inline-head-css.mjs).
+export function inlineCssBytes(html) {
+    return [...String(html || '').matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]
+        .reduce((sum, match) => sum + Buffer.byteLength(match[1]), 0);
+}
+
 // Median per metric across runs; Lighthouse varies run to run.
 function medianMetrics(runs) {
     const median = values => {
@@ -398,6 +405,7 @@ export function evaluateRoute(route, metrics) {
             || id === 'dom-size'
             || id === 'initial-js-bytes'
             || id === 'route-css-bytes'
+            || id === 'inline-css-bytes'
             || id === 'third-party-requests';
         if (maxMetric && actual > threshold) failures.push(`${id}: ${actual.toFixed(3)} > ${threshold}`);
         if (!maxMetric && actual < threshold) failures.push(`${id}: ${actual} < ${threshold}`);
@@ -417,7 +425,7 @@ function printTable(rows) {
         console.log(
             `${row.route.name.padEnd(nameW)}  ${fmtScore(m.performance).padStart(4)}  ${fmtScore(m.accessibility).padStart(4)}  ${fmtScore(m['best-practices']).padStart(4)}  ${fmtScore(m.seo).padStart(4)}  ${fmtMs(m['largest-contentful-paint']).padStart(7)}  ${fmtCls(m['cumulative-layout-shift']).padStart(6)}  ${fmtMs(m['total-blocking-time']).padStart(7)}  ${status}`
         );
-        console.log(`  ${row.route.name} resources: JS ${fmtBytes(m['initial-js-bytes'])}, CSS ${fmtBytes(m['route-css-bytes'])}, DOM ${m['dom-size'] == null ? '-' : Math.round(m['dom-size'])}, 3P ${m['third-party-requests'] == null ? '-' : m['third-party-requests']}`);
+        console.log(`  ${row.route.name} resources: JS ${fmtBytes(m['initial-js-bytes'])}, CSS ${fmtBytes(m['route-css-bytes'])} transferred + ${fmtBytes(m['inline-css-bytes'])} inline (uncompressed), DOM ${m['dom-size'] == null ? '-' : Math.round(m['dom-size'])}, 3P ${m['third-party-requests'] == null ? '-' : m['third-party-requests']}`);
     });
     console.log('');
 }
@@ -448,6 +456,7 @@ async function main() {
                 perRun.push(routeMetrics(await runLighthouse(route, started.origin, budget, tempDir, chrome.port, run)));
             }
             const metrics = medianMetrics(perRun);
+            metrics['inline-css-bytes'] = inlineCssBytes(fs.readFileSync(resolveRequest(args.root, route.path), 'utf8'));
             rows.push({ route, metrics, ...evaluateRoute(route, metrics) });
         }
 

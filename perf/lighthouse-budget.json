@@ -1,5 +1,5 @@
 {
-  "description": "Route-level Lighthouse budgets for the public dist artifact. Scores are percentages; timings are milliseconds.",
+  "description": "Route-level Lighthouse budgets for the public dist artifact. Scores are percentages; timings are milliseconds. route-css-bytes is external stylesheet transfer size; inline-css-bytes is uncompressed CSS source inside the HTML style elements. The CSS byte metrics are separate and must not be added together.",
   "preset": "mobile",
   "throttlingMethod": "simulate",
   "onlyCategories": [
@@ -23,6 +23,7 @@
         ,"dom-size": 1400,
         "initial-js-bytes": 180000,
         "route-css-bytes": 180000,
+        "inline-css-bytes": 140000,
         "third-party-requests": 8
       }
     },
@@ -40,6 +41,7 @@
         ,"dom-size": 1800,
         "initial-js-bytes": 220000,
         "route-css-bytes": 220000,
+        "inline-css-bytes": 99000,
         "third-party-requests": 8
       }
     },
@@ -57,6 +59,7 @@
         ,"dom-size": 1800,
         "initial-js-bytes": 180000,
         "route-css-bytes": 220000,
+        "inline-css-bytes": 162000,
         "third-party-requests": 8
       }
     },
@@ -74,6 +77,7 @@
         ,"dom-size": 1800,
         "initial-js-bytes": 220000,
         "route-css-bytes": 220000,
+        "inline-css-bytes": 215000,
         "third-party-requests": 8
       }
     }

@@ -136,7 +136,23 @@ Kept as implemented; no code change from this experiment.
 
 - `dist/` grows from 179.3 MB to 256.9 MB (+78 MB, mostly 399 articles × ~190 KB raw CSS). Page weight on the wire
   is about +27–39 KB gz per HTML response, offset by 5–8 fewer requests.
-- The Lighthouse guard's `route-css-bytes` now reads near 0; the bytes moved into the document.
+- The Lighthouse guard's `route-css-bytes` counts only external stylesheet transfers (compressed), so it now reads
+  near 0. The bytes moved into the document. The guard therefore also reports `inline-css-bytes`: the uncompressed
+  CSS inside `<style>` elements of the served HTML, read from the artifact. Its budgets are about 10% above the
+  inlined sizes measured on 2026-10-15, rounded up to 1,000 B:
+
+  | Route | Measured | Budget |
+  |---|---|---|
+  | Home | 126,407 B | 140,000 |
+  | Blog | 89,131 B | 99,000 |
+  | Standings | 146,634 B | 162,000 |
+  | Article | 194,743 B | 215,000 |
+
+  The existing `route-css-bytes` budgets are unchanged. The two metrics stay separate: one is compressed transfer,
+  the other uncompressed source size.
+  Rebuilding against current main confirmed these sizes, including the latest article `20261014W`.
+  The metric tests cover UTF-8 source bytes, multiple style blocks, independent failures of both CSS budgets,
+  and rejection of a missing inline metric. The public artifact build and validation pass.
 
 ## Regression checks (inlined `dist/`)
 
