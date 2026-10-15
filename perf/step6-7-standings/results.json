@@ -1,0 +1,1101 @@
+{
+  "profiles": {
+    "slow4g": {
+      "offline": false,
+      "latency": 150,
+      "downloadThroughput": 209715.2,
+      "uploadThroughput": 96000
+    },
+    "fast4g": {
+      "offline": false,
+      "latency": 40,
+      "downloadThroughput": 1179648,
+      "uploadThroughput": 196608
+    }
+  },
+  "fixtureScope": "Unchanged latest-race API responses; full year session list; snapshot-backed live standings",
+  "results": [
+    {
+      "network": "slow4g",
+      "variant": "baseline",
+      "run": 0,
+      "firstRenderMs": 2422,
+      "initialScriptMs": 55.963,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 129.9000000357628,
+          "longTasks": [
+            {
+              "start": 6805.200000047684,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.718000000000001,
+          "layoutMs": 7.739999999999997,
+          "taskMs": 135.47600000000003
+        },
+        {
+          "presentedMs": 130.80000001192093,
+          "longTasks": [
+            {
+              "start": 7284.100000023842,
+              "duration": 82
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.394999999999998,
+          "layoutMs": 8.578000000000003,
+          "taskMs": 135.77799999999996
+        },
+        {
+          "presentedMs": 178.80000001192093,
+          "longTasks": [
+            {
+              "start": 7719.600000023842,
+              "duration": 63
+            },
+            {
+              "start": 7785.100000023842,
+              "duration": 110
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 8.941999999999991,
+          "layoutMs": 18.544000000000004,
+          "taskMs": 188.2840000000001
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "candidate",
+      "run": 0,
+      "firstRenderMs": 2401,
+      "initialScriptMs": 53.225,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 55.10000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.1539999999999973,
+          "layoutMs": 5.493999999999999,
+          "taskMs": 60.04100000000001
+        },
+        {
+          "presentedMs": 52.700000047683716,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.7589999999999977,
+          "layoutMs": 4.142000000000007,
+          "taskMs": 57.4110000000001
+        },
+        {
+          "presentedMs": 54.39999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.7490000000000014,
+          "layoutMs": 4.758000000000012,
+          "taskMs": 60.392
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "candidate",
+      "run": 1,
+      "firstRenderMs": 2496,
+      "initialScriptMs": 58.102000000000004,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 55.89999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.495999999999999,
+          "layoutMs": 4.2919999999999625,
+          "taskMs": 61.853000000000044
+        },
+        {
+          "presentedMs": 53.700000047683716,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.174999999999997,
+          "layoutMs": 4.1319999999999695,
+          "taskMs": 58.63699999999994
+        },
+        {
+          "presentedMs": 54.69999998807907,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.827999999999998,
+          "layoutMs": 4.2039999999999855,
+          "taskMs": 57.94100000000002
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "baseline",
+      "run": 1,
+      "firstRenderMs": 2389,
+      "initialScriptMs": 56.058,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 129.5999999642372,
+          "longTasks": [
+            {
+              "start": 6740.5,
+              "duration": 82
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.006999999999992,
+          "layoutMs": 7.258000000000014,
+          "taskMs": 134.31800000000004
+        },
+        {
+          "presentedMs": 162,
+          "longTasks": [
+            {
+              "start": 7175.700000047684,
+              "duration": 64
+            },
+            {
+              "start": 7240.100000023842,
+              "duration": 97
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 10.600999999999999,
+          "layoutMs": 11.78599999999999,
+          "taskMs": 170.83800000000005
+        },
+        {
+          "presentedMs": 134.30000001192093,
+          "longTasks": [
+            {
+              "start": 7732.900000035763,
+              "duration": 86
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 7.536000000000001,
+          "layoutMs": 8.053000000000004,
+          "taskMs": 139.837
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "baseline",
+      "run": 2,
+      "firstRenderMs": 2467,
+      "initialScriptMs": 50.958000000000006,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 131.89999997615814,
+          "longTasks": [
+            {
+              "start": 6822.300000011921,
+              "duration": 83
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 4.985000000000003,
+          "layoutMs": 8.312999999999986,
+          "taskMs": 138.90899999999993
+        },
+        {
+          "presentedMs": 128.5,
+          "longTasks": [
+            {
+              "start": 7301.5,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.465999999999999,
+          "layoutMs": 8.149999999999991,
+          "taskMs": 134.67499999999998
+        },
+        {
+          "presentedMs": 129.70000004768372,
+          "longTasks": [
+            {
+              "start": 7775.600000023842,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.771999999999999,
+          "layoutMs": 9.021,
+          "taskMs": 134.94699999999992
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "candidate",
+      "run": 2,
+      "firstRenderMs": 2381,
+      "initialScriptMs": 51.422000000000004,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 55,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.8410000000000033,
+          "layoutMs": 4.411999999999999,
+          "taskMs": 60.118
+        },
+        {
+          "presentedMs": 53.5,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.7760000000000007,
+          "layoutMs": 4.666999999999977,
+          "taskMs": 57.69500000000005
+        },
+        {
+          "presentedMs": 53.5,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.6380000000000017,
+          "layoutMs": 4.827999999999999,
+          "taskMs": 57.814000000000036
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "candidate",
+      "run": 3,
+      "firstRenderMs": 2377,
+      "initialScriptMs": 53.797,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 56.10000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.688999999999998,
+          "layoutMs": 5.029000000000005,
+          "taskMs": 60.48100000000001
+        },
+        {
+          "presentedMs": 53.59999996423721,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.798999999999997,
+          "layoutMs": 4.403000000000018,
+          "taskMs": 57.64800000000003
+        },
+        {
+          "presentedMs": 54.89999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.403000000000003,
+          "layoutMs": 4.677000000000015,
+          "taskMs": 59.70600000000004
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "baseline",
+      "run": 3,
+      "firstRenderMs": 2400,
+      "initialScriptMs": 49.805,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 130.30000001192093,
+          "longTasks": [
+            {
+              "start": 6748.800000011921,
+              "duration": 82
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.479999999999999,
+          "layoutMs": 9.296,
+          "taskMs": 136.23300000000006
+        },
+        {
+          "presentedMs": 128.39999997615814,
+          "longTasks": [
+            {
+              "start": 7225.100000023842,
+              "duration": 80
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.673999999999999,
+          "layoutMs": 8.024000000000003,
+          "taskMs": 133.26000000000005
+        },
+        {
+          "presentedMs": 128.19999998807907,
+          "longTasks": [
+            {
+              "start": 7701.300000011921,
+              "duration": 79
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.450999999999998,
+          "layoutMs": 6.8249999999999975,
+          "taskMs": 133.42900000000003
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "baseline",
+      "run": 4,
+      "firstRenderMs": 2470,
+      "initialScriptMs": 54.578,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 132.5,
+          "longTasks": [
+            {
+              "start": 6822.5,
+              "duration": 84
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 7.627999999999996,
+          "layoutMs": 7.498000000000005,
+          "taskMs": 137.89400000000006
+        },
+        {
+          "presentedMs": 130.60000002384186,
+          "longTasks": [
+            {
+              "start": 7301.299999952316,
+              "duration": 83
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.868000000000012,
+          "layoutMs": 7.824999999999998,
+          "taskMs": 136.44400000000002
+        },
+        {
+          "presentedMs": 130.10000002384186,
+          "longTasks": [
+            {
+              "start": 7777.699999988079,
+              "duration": 82
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.194999999999992,
+          "layoutMs": 7.724000000000009,
+          "taskMs": 133.85899999999995
+        }
+      ]
+    },
+    {
+      "network": "slow4g",
+      "variant": "candidate",
+      "run": 4,
+      "firstRenderMs": 2465,
+      "initialScriptMs": 50.653999999999996,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 54.89999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.7190000000000003,
+          "layoutMs": 5.096000000000017,
+          "taskMs": 59.83400000000005
+        },
+        {
+          "presentedMs": 52.69999998807907,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.465000000000003,
+          "layoutMs": 4.084000000000004,
+          "taskMs": 57.01999999999996
+        },
+        {
+          "presentedMs": 53.10000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.227999999999995,
+          "layoutMs": 4.315000000000014,
+          "taskMs": 56.091
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "baseline",
+      "run": 0,
+      "firstRenderMs": 858,
+      "initialScriptMs": 54.697,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 133,
+          "longTasks": [
+            {
+              "start": 5215.400000035763,
+              "duration": 84
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.920000000000002,
+          "layoutMs": 9.587999999999985,
+          "taskMs": 139.803
+        },
+        {
+          "presentedMs": 132.69999998807907,
+          "longTasks": [
+            {
+              "start": 5697.5,
+              "duration": 84
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.048999999999999,
+          "layoutMs": 8.265999999999995,
+          "taskMs": 139.49199999999996
+        },
+        {
+          "presentedMs": 132.80000001192093,
+          "longTasks": [
+            {
+              "start": 6177.600000023842,
+              "duration": 83
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.756999999999999,
+          "layoutMs": 8.259000000000016,
+          "taskMs": 137.88899999999992
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "candidate",
+      "run": 0,
+      "firstRenderMs": 838,
+      "initialScriptMs": 53.582,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 54.19999998807907,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.607999999999999,
+          "layoutMs": 4.647000000000013,
+          "taskMs": 60.28
+        },
+        {
+          "presentedMs": 52.60000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.9740000000000055,
+          "layoutMs": 4.1859999999999955,
+          "taskMs": 57.27799999999994
+        },
+        {
+          "presentedMs": 55.60000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.8929999999999936,
+          "layoutMs": 4.59699999999999,
+          "taskMs": 62.96100000000004
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "candidate",
+      "run": 1,
+      "firstRenderMs": 858,
+      "initialScriptMs": 52.882,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 54.39999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.0480000000000023,
+          "layoutMs": 4.496,
+          "taskMs": 59.06
+        },
+        {
+          "presentedMs": 52.19999998807907,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.5090000000000043,
+          "layoutMs": 3.910999999999998,
+          "taskMs": 58.482999999999954
+        },
+        {
+          "presentedMs": 53.60000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.6240000000000014,
+          "layoutMs": 4.545000000000021,
+          "taskMs": 57.15799999999993
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "baseline",
+      "run": 1,
+      "firstRenderMs": 852,
+      "initialScriptMs": 53.466,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 128.9000000357628,
+          "longTasks": [
+            {
+              "start": 5204.399999976158,
+              "duration": 80
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.4620000000000015,
+          "layoutMs": 8.42900000000002,
+          "taskMs": 136.7069999999999
+        },
+        {
+          "presentedMs": 129.60000002384186,
+          "longTasks": [
+            {
+              "start": 5678.399999976158,
+              "duration": 82
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.890999999999994,
+          "layoutMs": 7.84399999999999,
+          "taskMs": 136.08399999999997
+        },
+        {
+          "presentedMs": 128.5,
+          "longTasks": [
+            {
+              "start": 6155.699999988079,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.28300000000001,
+          "layoutMs": 7.80599999999998,
+          "taskMs": 133.00400000000002
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "baseline",
+      "run": 2,
+      "firstRenderMs": 887,
+      "initialScriptMs": 52.589,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 128.0999999642372,
+          "longTasks": [
+            {
+              "start": 5236.599999964237,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.245000000000007,
+          "layoutMs": 6.758000000000014,
+          "taskMs": 134.45699999999994
+        },
+        {
+          "presentedMs": 127.70000004768372,
+          "longTasks": [
+            {
+              "start": 5710.399999976158,
+              "duration": 80
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.2429999999999986,
+          "layoutMs": 8.015000000000022,
+          "taskMs": 133.40800000000007
+        },
+        {
+          "presentedMs": 128.80000001192093,
+          "longTasks": [
+            {
+              "start": 6184,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 4.749000000000003,
+          "layoutMs": 7.251000000000007,
+          "taskMs": 135.15499999999992
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "candidate",
+      "run": 2,
+      "firstRenderMs": 853,
+      "initialScriptMs": 55.044999999999995,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 53,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.777000000000002,
+          "layoutMs": 4.545000000000021,
+          "taskMs": 58.312999999999946
+        },
+        {
+          "presentedMs": 53.59999996423721,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.276000000000001,
+          "layoutMs": 4.635,
+          "taskMs": 57.922000000000025
+        },
+        {
+          "presentedMs": 54.30000001192093,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.8539999999999957,
+          "layoutMs": 4.2859999999999845,
+          "taskMs": 60.168
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "candidate",
+      "run": 3,
+      "firstRenderMs": 842,
+      "initialScriptMs": 55.378,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 54.10000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.832000000000001,
+          "layoutMs": 4.392000000000007,
+          "taskMs": 59.856999999999935
+        },
+        {
+          "presentedMs": 54.30000001192093,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 3.1909999999999994,
+          "layoutMs": 5.091000000000012,
+          "taskMs": 59.92399999999998
+        },
+        {
+          "presentedMs": 52.89999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 4.337000000000008,
+          "layoutMs": 4.212999999999995,
+          "taskMs": 57.66700000000002
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "baseline",
+      "run": 3,
+      "firstRenderMs": 869,
+      "initialScriptMs": 52.786,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 129.10000002384186,
+          "longTasks": [
+            {
+              "start": 5221.600000023842,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.606999999999994,
+          "layoutMs": 8.266999999999996,
+          "taskMs": 136.51100000000005
+        },
+        {
+          "presentedMs": 127.59999996423721,
+          "longTasks": [
+            {
+              "start": 5696.900000035763,
+              "duration": 80
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.692000000000003,
+          "layoutMs": 7.551000000000002,
+          "taskMs": 134.55799999999996
+        },
+        {
+          "presentedMs": 127.90000003576279,
+          "longTasks": [
+            {
+              "start": 6171.5,
+              "duration": 80
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.224999999999994,
+          "layoutMs": 7.3070000000000075,
+          "taskMs": 133.17699999999988
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "baseline",
+      "run": 4,
+      "firstRenderMs": 854,
+      "initialScriptMs": 52.742999999999995,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 172.4000000357628,
+          "longTasks": [
+            {
+              "start": 5161.200000047684,
+              "duration": 59
+            },
+            {
+              "start": 5222.900000035763,
+              "duration": 109
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 8.903000000000008,
+          "layoutMs": 13.821,
+          "taskMs": 183.543
+        },
+        {
+          "presentedMs": 129,
+          "longTasks": [
+            {
+              "start": 5733.100000023842,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 6.275000000000003,
+          "layoutMs": 8.572999999999997,
+          "taskMs": 133.64
+        },
+        {
+          "presentedMs": 128.30000001192093,
+          "longTasks": [
+            {
+              "start": 6208,
+              "duration": 81
+            }
+          ],
+          "retained": false,
+          "scrollLeft": 0,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 5.262000000000003,
+          "layoutMs": 6.984000000000018,
+          "taskMs": 133.56100000000004
+        }
+      ]
+    },
+    {
+      "network": "fast4g",
+      "variant": "candidate",
+      "run": 4,
+      "firstRenderMs": 853,
+      "initialScriptMs": 51.878,
+      "chartHash": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+      "switches": [
+        {
+          "presentedMs": 57.89999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 4.218999999999993,
+          "layoutMs": 6.11600000000001,
+          "taskMs": 63.451999999999956
+        },
+        {
+          "presentedMs": 55.60000002384186,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 4.947999999999994,
+          "layoutMs": 4.6540000000000195,
+          "taskMs": 60.76300000000001
+        },
+        {
+          "presentedMs": 53.39999997615814,
+          "longTasks": [],
+          "retained": true,
+          "scrollLeft": 160,
+          "drivers": 22,
+          "dots": 1118,
+          "session": "11388",
+          "scriptMs": 2.5550000000000015,
+          "layoutMs": 4.833000000000004,
+          "taskMs": 59.04200000000004
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1240 @@
+{
+  "initial": [
+    {
+      "url": "http://127.0.0.1:59350/standings/",
+      "type": "Document",
+      "start": 481648.332967,
+      "initiator": "other",
+      "status": 200,
+      "mime": "text/html",
+      "transfer": 14471
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/perf/error-beacon.min.js?v=59367e85",
+      "type": "Script",
+      "start": 481648.394086,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1010
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings.min.js?v=f572190b",
+      "type": "Script",
+      "start": 481648.395195,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 14247
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-L3PCYZ5N.min.js",
+      "type": "Script",
+      "start": 481648.395226,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 2514
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-LMW46ZBV.min.js",
+      "type": "Script",
+      "start": 481648.395258,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 677
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js",
+      "type": "Script",
+      "start": 481648.395575,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 4333
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-cache.json",
+      "type": "Other",
+      "start": 481648.395603,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 2866
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/home-fonts.min.css?v=bc876546",
+      "type": "Stylesheet",
+      "start": 481648.395642,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 687
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/vendor/bootstrap.slim.min.css?v=673c392e",
+      "type": "Stylesheet",
+      "start": 481648.395679,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 3823
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb",
+      "type": "Font",
+      "start": 481648.395711,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 15083
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63",
+      "type": "Font",
+      "start": 481648.395738,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 16491
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles.min.css?v=73f302cc",
+      "type": "Stylesheet",
+      "start": 481648.395761,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 5415
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/shared-nav.min.css?v=187f9b13",
+      "type": "Stylesheet",
+      "start": 481648.396459,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 3359
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/analytics.min.js?v=bdd2c3f4",
+      "type": "Script",
+      "start": 481648.396484,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 2720
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/perf/web-vitals-beacon.min.js?v=402b419a",
+      "type": "Script",
+      "start": 481648.396502,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1329
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings.min.css?v=ffc5c0c7",
+      "type": "Stylesheet",
+      "start": 481648.396519,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 5516
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-polish.min.css?v=feddf245",
+      "type": "Stylesheet",
+      "start": 481648.396803,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 2045
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/editorial.min.css?v=b3dda432",
+      "type": "Stylesheet",
+      "start": 481648.396826,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 6427
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-editorial.min.css?v=7efb8f0c",
+      "type": "Stylesheet",
+      "start": 481648.396859,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 6907
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/theme-init.min.js?v=d8c05277",
+      "type": "Script",
+      "start": 481648.396882,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 688
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/logo-nav.webp",
+      "type": "Image",
+      "start": 481648.555609,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 2886
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa",
+      "type": "Script",
+      "start": 481648.560269,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 6266
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/cookie-consent.min.js?v=217b6a3e",
+      "type": "Script",
+      "start": 481648.560313,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1897
+    },
+    {
+      "url": "data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url%28%23n%29' opacity='.65' d='M0 0h180v180H0z'/%3E%3C/svg%3E",
+      "type": "Image",
+      "start": 481648.576144,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "image/svg+xml",
+      "transfer": 0
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600.woff2?v=056e4e24",
+      "type": "Font",
+      "start": 481648.576852,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 40435
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600-arrows.woff2?v=4acc9231",
+      "type": "Font",
+      "start": 481648.576885,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 3634
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/sw-cleanup.min.js?v=d00bcfb3",
+      "type": "Script",
+      "start": 481648.682312,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 639
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026.json",
+      "type": "Fetch",
+      "start": 481648.753553,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 3276
+    },
+    {
+      "url": "https://anchor.fm/s/101588098/podcast/rss",
+      "type": "Fetch",
+      "start": 481648.795372,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/plain",
+      "transfer": 11714
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/antonelli.webp",
+      "type": "Image",
+      "start": 481648.818663,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 5981
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/russell.webp",
+      "type": "Image",
+      "start": 481648.819013,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3568
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/hamilton.webp",
+      "type": "Image",
+      "start": 481648.819036,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3308
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/verstappen.webp",
+      "type": "Image",
+      "start": 481648.819058,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3392
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/leclerc.webp",
+      "type": "Image",
+      "start": 481648.819084,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3390
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/norris.webp",
+      "type": "Image",
+      "start": 481648.819108,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3608
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/piastri.webp",
+      "type": "Image",
+      "start": 481648.819138,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3714
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/hadjar.webp",
+      "type": "Image",
+      "start": 481648.819159,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3874
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/lawson.webp",
+      "type": "Image",
+      "start": 481648.819175,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3658
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/gasly.webp",
+      "type": "Image",
+      "start": 481648.819818,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3446
+    },
+    {
+      "url": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
+      "type": "Image",
+      "start": 481648.848192,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/gif",
+      "transfer": 34
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481648.849622,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481648.8518,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
+      "type": "Fetch",
+      "start": 481652.321017,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 2290
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=30",
+      "type": "Fetch",
+      "start": 481652.321982,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 1008
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:59350/standings/",
+      "type": "Document",
+      "start": 481648.332967,
+      "initiator": "other",
+      "status": 200,
+      "mime": "text/html",
+      "transfer": 14471
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/perf/error-beacon.min.js?v=59367e85",
+      "type": "Script",
+      "start": 481648.394086,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1010
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings.min.js?v=f572190b",
+      "type": "Script",
+      "start": 481648.395195,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 14247
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-L3PCYZ5N.min.js",
+      "type": "Script",
+      "start": 481648.395226,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 2514
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-LMW46ZBV.min.js",
+      "type": "Script",
+      "start": 481648.395258,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 677
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js",
+      "type": "Script",
+      "start": 481648.395575,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 4333
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-cache.json",
+      "type": "Other",
+      "start": 481648.395603,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 2866
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/home-fonts.min.css?v=bc876546",
+      "type": "Stylesheet",
+      "start": 481648.395642,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 687
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/vendor/bootstrap.slim.min.css?v=673c392e",
+      "type": "Stylesheet",
+      "start": 481648.395679,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 3823
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb",
+      "type": "Font",
+      "start": 481648.395711,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 15083
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63",
+      "type": "Font",
+      "start": 481648.395738,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 16491
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles.min.css?v=73f302cc",
+      "type": "Stylesheet",
+      "start": 481648.395761,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 5415
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/shared-nav.min.css?v=187f9b13",
+      "type": "Stylesheet",
+      "start": 481648.396459,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 3359
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/analytics.min.js?v=bdd2c3f4",
+      "type": "Script",
+      "start": 481648.396484,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 2720
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/perf/web-vitals-beacon.min.js?v=402b419a",
+      "type": "Script",
+      "start": 481648.396502,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1329
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings.min.css?v=ffc5c0c7",
+      "type": "Stylesheet",
+      "start": 481648.396519,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 5516
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-polish.min.css?v=feddf245",
+      "type": "Stylesheet",
+      "start": 481648.396803,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 2045
+    },
+    {
+      "url": "http://127.0.0.1:59350/styles/editorial.min.css?v=b3dda432",
+      "type": "Stylesheet",
+      "start": 481648.396826,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 6427
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-editorial.min.css?v=7efb8f0c",
+      "type": "Stylesheet",
+      "start": 481648.396859,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 6907
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/theme-init.min.js?v=d8c05277",
+      "type": "Script",
+      "start": 481648.396882,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 688
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/logo-nav.webp",
+      "type": "Image",
+      "start": 481648.555609,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 2886
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa",
+      "type": "Script",
+      "start": 481648.560269,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 6266
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/cookie-consent.min.js?v=217b6a3e",
+      "type": "Script",
+      "start": 481648.560313,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1897
+    },
+    {
+      "url": "data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url%28%23n%29' opacity='.65' d='M0 0h180v180H0z'/%3E%3C/svg%3E",
+      "type": "Image",
+      "start": 481648.576144,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "image/svg+xml",
+      "transfer": 0
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600.woff2?v=056e4e24",
+      "type": "Font",
+      "start": 481648.576852,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 40435
+    },
+    {
+      "url": "http://127.0.0.1:59350/assets/fonts/ibm-plex-sans-400-600-arrows.woff2?v=4acc9231",
+      "type": "Font",
+      "start": 481648.576885,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "font/woff2",
+      "transfer": 3634
+    },
+    {
+      "url": "http://127.0.0.1:59350/scripts/sw-cleanup.min.js?v=d00bcfb3",
+      "type": "Script",
+      "start": 481648.682312,
+      "initiator": "parser",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 639
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026.json",
+      "type": "Fetch",
+      "start": 481648.753553,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 3276
+    },
+    {
+      "url": "https://anchor.fm/s/101588098/podcast/rss",
+      "type": "Fetch",
+      "start": 481648.795372,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/plain",
+      "transfer": 11714
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/antonelli.webp",
+      "type": "Image",
+      "start": 481648.818663,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 5981
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/russell.webp",
+      "type": "Image",
+      "start": 481648.819013,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3568
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/hamilton.webp",
+      "type": "Image",
+      "start": 481648.819036,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3308
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/verstappen.webp",
+      "type": "Image",
+      "start": 481648.819058,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3392
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/leclerc.webp",
+      "type": "Image",
+      "start": 481648.819084,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3390
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/norris.webp",
+      "type": "Image",
+      "start": 481648.819108,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3608
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/piastri.webp",
+      "type": "Image",
+      "start": 481648.819138,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3714
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/hadjar.webp",
+      "type": "Image",
+      "start": 481648.819159,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3874
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/lawson.webp",
+      "type": "Image",
+      "start": 481648.819175,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3658
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/drivers/gasly.webp",
+      "type": "Image",
+      "start": 481648.819818,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/webp",
+      "transfer": 3446
+    },
+    {
+      "url": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
+      "type": "Image",
+      "start": 481648.848192,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/gif",
+      "transfer": 34
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481648.849622,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481648.8518,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
+      "type": "Fetch",
+      "start": 481652.321017,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 2290
+    },
+    {
+      "url": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=30",
+      "type": "Fetch",
+      "start": 481652.321982,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 1008
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/tyre-pace.min.css",
+      "type": "Stylesheet",
+      "start": 481653.840948,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 1956
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481653.852237,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/tyre-pace.min.js",
+      "type": "Script",
+      "start": 481653.869592,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 6253
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-SIR3E2BT.min.js",
+      "type": "Script",
+      "start": 481653.91776,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 1094
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/chunks/chunk-FKUEVNEX.min.js",
+      "type": "Script",
+      "start": 481653.917795,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 586
+    },
+    {
+      "url": "https://api.openf1.org/v1/sessions?year=2026",
+      "type": "Fetch",
+      "start": 481653.969956,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 3534
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/standings-cache.json",
+      "type": "Fetch",
+      "start": 481654.150838,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 2866
+    },
+    {
+      "url": "https://api.openf1.org/v1/drivers?session_key=11388",
+      "type": "Fetch",
+      "start": 481654.15094,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 1989
+    },
+    {
+      "url": "https://api.openf1.org/v1/laps?session_key=11388",
+      "type": "Fetch",
+      "start": 481654.150991,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 48057
+    },
+    {
+      "url": "https://api.openf1.org/v1/stints?session_key=11388",
+      "type": "Fetch",
+      "start": 481654.15171,
+      "initiator": "script",
+      "status": 429,
+      "mime": "application/json",
+      "transfer": 440
+    },
+    {
+      "url": "https://api.openf1.org/v1/stints?session_key=11388",
+      "type": "Fetch",
+      "start": 481654.644936,
+      "initiator": "script",
+      "status": 429,
+      "mime": "application/json",
+      "transfer": 440
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481654.904162,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481655.316928,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "https://api.openf1.org/v1/stints?session_key=11388",
+      "type": "Fetch",
+      "start": 481655.394169,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 879
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/dirty-air.min.css",
+      "type": "Stylesheet",
+      "start": 481656.326007,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 2474
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/dirty-air.min.js",
+      "type": "Script",
+      "start": 481656.338774,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 9630
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481656.342143,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/dirty-air/index.json",
+      "type": "Fetch",
+      "start": 481656.394359,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 1068
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/dirty-air/11388.json",
+      "type": "Fetch",
+      "start": 481656.442447,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 16900
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481656.532908,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/debrief.min.css",
+      "type": "Stylesheet",
+      "start": 481657.35556,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/css",
+      "transfer": 3502
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/tabs/debrief.min.js",
+      "type": "Script",
+      "start": 481657.364165,
+      "initiator": "script",
+      "status": 200,
+      "mime": "text/javascript",
+      "transfer": 7931
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481657.367751,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    },
+    {
+      "url": "http://127.0.0.1:59350/standings/debrief-cache.json",
+      "type": "Fetch",
+      "start": 481657.417706,
+      "initiator": "script",
+      "status": 200,
+      "mime": "application/json",
+      "transfer": 61734
+    },
+    {
+      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "type": "Other",
+      "start": 481657.577995,
+      "initiator": "other",
+      "status": 200,
+      "mime": "image/png",
+      "transfer": 2734
+    }
+  ],
+  "errors": [],
+  "longTasks": [
+    {
+      "start": 228.60000002384186,
+      "duration": 116
+    },
+    {
+      "start": 7122.900000035763,
+      "duration": 109
+    },
+    {
+      "start": 9186.400000035763,
+      "duration": 52
+    }
+  ],
+  "top": [
+    [
+      "(idle) :-1",
+      9144225
+    ],
+    [
+      "(program) :-1",
+      461527
+    ],
+    [
+      "o http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa:0",
+      86731
+    ],
+    [
+      "L http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      48906
+    ],
+    [
+      "Ie http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa:0",
+      25909
+    ],
+    [
+      "fn http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      23205
+    ],
+    [
+      " http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      22656
+    ],
+    [
+      "query :5815",
+      21841
+    ],
+    [
+      " http://127.0.0.1:59350/standings/tabs/tyre-pace.min.js:0",
+      20684
+    ],
+    [
+      "querySelectorAll :-1",
+      15357
+    ],
+    [
+      "(garbage collector) :-1",
+      14380
+    ],
+    [
+      "hn http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      11694
+    ],
+    [
+      " :1",
+      5382
+    ],
+    [
+      " :0",
+      4669
+    ],
+    [
+      "InjectedScript :6968",
+      4610
+    ],
+    [
+      "fetch :-1",
+      4075
+    ],
+    [
+      "ge http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa:0",
+      3920
+    ],
+    [
+      "H http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      3212
+    ],
+    [
+      " http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      3060
+    ],
+    [
+      " http://127.0.0.1:59350/standings/tabs/debrief.min.js:0",
+      2763
+    ],
+    [
+      "an http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      2634
+    ],
+    [
+      " http://127.0.0.1:59350/standings/tabs/debrief.min.js:1",
+      2625
+    ],
+    [
+      "k http://127.0.0.1:59350/standings/chunks/chunk-L3PCYZ5N.min.js:0",
+      2567
+    ],
+    [
+      "Re http://127.0.0.1:59350/standings/tabs/dirty-air.min.js:0",
+      2421
+    ],
+    [
+      "De http://127.0.0.1:59350/standings/tabs/tyre-pace.min.js:0",
+      2235
+    ],
+    [
+      "previewNode :7985",
+      2218
+    ],
+    [
+      "dispatchEvent :-1",
+      2204
+    ],
+    [
+      " http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa:0",
+      2189
+    ],
+    [
+      "appendChild :-1",
+      2107
+    ],
+    [
+      "J http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      1569
+    ],
+    [
+      "d http://127.0.0.1:59350/scripts/analytics.min.js?v=bdd2c3f4:0",
+      1545
+    ],
+    [
+      "$n http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      1525
+    ],
+    [
+      "t http://127.0.0.1:59350/scripts/shared-nav.min.js?v=8df896aa:0",
+      1517
+    ],
+    [
+      "i http://127.0.0.1:59350/standings/tabs/debrief.min.js:0",
+      1508
+    ],
+    [
+      "p http://127.0.0.1:59350/standings/chunks/chunk-SIR3E2BT.min.js:0",
+      1504
+    ],
+    [
+      "ht http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      1504
+    ],
+    [
+      "we http://127.0.0.1:59350/standings/tabs/tyre-pace.min.js:0",
+      1454
+    ],
+    [
+      "Sn http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      1449
+    ],
+    [
+      "nt http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      1439
+    ],
+    [
+      "a http://127.0.0.1:59350/standings/tabs/debrief.min.js:0",
+      1420
+    ],
+    [
+      "j http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      1391
+    ],
+    [
+      " http://127.0.0.1:59350/scripts/sw-cleanup.min.js?v=d00bcfb3:0",
+      1372
+    ],
+    [
+      "selectOptions :7606",
+      1352
+    ],
+    [
+      "serialize :202",
+      1349
+    ],
+    [
+      "$t http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      1319
+    ],
+    [
+      "computeElementStyleVisibilityVisible :3154",
+      1311
+    ],
+    [
+      " http://127.0.0.1:59350/standings/chunks/chunk-LMW46ZBV.min.js:0",
+      1305
+    ],
+    [
+      "setTimeout :-1",
+      1273
+    ],
+    [
+      "cn http://127.0.0.1:59350/standings/chunks/chunk-ZQWBTM33.min.js:0",
+      1261
+    ],
+    [
+      "En http://127.0.0.1:59350/standings/standings.min.js?v=f572190b:0",
+      1260
+    ]
+  ]
+}
