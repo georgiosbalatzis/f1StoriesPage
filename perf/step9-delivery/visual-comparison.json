@@ -1,0 +1,222 @@
+{
+  "captures": 24,
+  "exactMatches": 19,
+  "results": [
+    {
+      "file": "dark-desktop-blog.png",
+      "width": 1440,
+      "height": 3020,
+      "candidateWidth": 1440,
+      "candidateHeight": 3020,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-desktop-home.png",
+      "width": 1440,
+      "height": 9955,
+      "candidateWidth": 1440,
+      "candidateHeight": 9955,
+      "changedPixels": 85578,
+      "maxChannelDelta": 131
+    },
+    {
+      "file": "dark-desktop-latest-article.png",
+      "width": 1440,
+      "height": 13340,
+      "candidateWidth": 1440,
+      "candidateHeight": 13340,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-desktop-standings-drivers.png",
+      "width": 1440,
+      "height": 3718,
+      "candidateWidth": 1440,
+      "candidateHeight": 3718,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-mobile-blog.png",
+      "width": 390,
+      "height": 5826,
+      "candidateWidth": 390,
+      "candidateHeight": 5826,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-mobile-home.png",
+      "width": 390,
+      "height": 11797,
+      "candidateWidth": 390,
+      "candidateHeight": 11797,
+      "changedPixels": 12,
+      "maxChannelDelta": 131
+    },
+    {
+      "file": "dark-mobile-latest-article.png",
+      "width": 390,
+      "height": 18496,
+      "candidateWidth": 390,
+      "candidateHeight": 18496,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-mobile-standings-drivers.png",
+      "width": 390,
+      "height": 4240,
+      "candidateWidth": 390,
+      "candidateHeight": 4240,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-tablet-blog.png",
+      "width": 768,
+      "height": 4289,
+      "candidateWidth": 768,
+      "candidateHeight": 4289,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-tablet-home.png",
+      "width": 768,
+      "height": 11175,
+      "candidateWidth": 768,
+      "candidateHeight": 11175,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-tablet-latest-article.png",
+      "width": 768,
+      "height": 14526,
+      "candidateWidth": 768,
+      "candidateHeight": 14526,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "dark-tablet-standings-drivers.png",
+      "width": 768,
+      "height": 4005,
+      "candidateWidth": 768,
+      "candidateHeight": 4005,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-desktop-blog.png",
+      "width": 1440,
+      "height": 3020,
+      "candidateWidth": 1440,
+      "candidateHeight": 3020,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-desktop-home.png",
+      "width": 1440,
+      "height": 9955,
+      "candidateWidth": 1440,
+      "candidateHeight": 9955,
+      "changedPixels": 9,
+      "maxChannelDelta": 128
+    },
+    {
+      "file": "light-desktop-latest-article.png",
+      "width": 1440,
+      "height": 13340,
+      "candidateWidth": 1440,
+      "candidateHeight": 13340,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-desktop-standings-drivers.png",
+      "width": 1440,
+      "height": 3718,
+      "candidateWidth": 1440,
+      "candidateHeight": 3718,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-mobile-blog.png",
+      "width": 390,
+      "height": 5826,
+      "candidateWidth": 390,
+      "candidateHeight": 5826,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-mobile-home.png",
+      "width": 390,
+      "height": 11797,
+      "candidateWidth": 390,
+      "candidateHeight": 11797,
+      "changedPixels": 3,
+      "maxChannelDelta": 69
+    },
+    {
+      "file": "light-mobile-latest-article.png",
+      "width": 390,
+      "height": 18496,
+      "candidateWidth": 390,
+      "candidateHeight": 18496,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-mobile-standings-drivers.png",
+      "width": 390,
+      "height": 4240,
+      "candidateWidth": 390,
+      "candidateHeight": 4240,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-tablet-blog.png",
+      "width": 768,
+      "height": 4289,
+      "candidateWidth": 768,
+      "candidateHeight": 4289,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-tablet-home.png",
+      "width": 768,
+      "height": 11175,
+      "candidateWidth": 768,
+      "candidateHeight": 11175,
+      "changedPixels": 6,
+      "maxChannelDelta": 69
+    },
+    {
+      "file": "light-tablet-latest-article.png",
+      "width": 768,
+      "height": 14526,
+      "candidateWidth": 768,
+      "candidateHeight": 14526,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    },
+    {
+      "file": "light-tablet-standings-drivers.png",
+      "width": 768,
+      "height": 4005,
+      "candidateWidth": 768,
+      "candidateHeight": 4005,
+      "changedPixels": 0,
+      "maxChannelDelta": 0
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "home",
+    "identityBytes": 88071,
+    "productionGzipBytes": 19418,
+    "localBrotli11Bytes": 15762,
+    "theoreticalSavingBytes": 3656,
+    "theoreticalSavingPercent": 18.8
+  },
+  {
+    "name": "article",
+    "identityBytes": 75541,
+    "productionGzipBytes": 20516,
+    "localBrotli11Bytes": 16782,
+    "theoreticalSavingBytes": 3734,
+    "theoreticalSavingPercent": 18.2
+  },
+  {
+    "name": "standings",
+    "identityBytes": 60416,
+    "productionGzipBytes": 14379,
+    "localBrotli11Bytes": 11960,
+    "theoreticalSavingBytes": 2419,
+    "theoreticalSavingPercent": 16.8
+  },
+  {
+    "name": "css",
+    "identityBytes": 21165,
+    "productionGzipBytes": 5240,
+    "localBrotli11Bytes": 4626,
+    "theoreticalSavingBytes": 614,
+    "theoreticalSavingPercent": 11.7
+  },
+  {
+    "name": "js",
+    "identityBytes": 13593,
+    "productionGzipBytes": 4611,
+    "localBrotli11Bytes": 4021,
+    "theoreticalSavingBytes": 590,
+    "theoreticalSavingPercent": 12.8
+  },
+  {
+    "name": "json",
+    "identityBytes": 26407,
+    "productionGzipBytes": 2739,
+    "localBrotli11Bytes": 2003,
+    "theoreticalSavingBytes": 736,
+    "theoreticalSavingPercent": 26.9
+  }
+]

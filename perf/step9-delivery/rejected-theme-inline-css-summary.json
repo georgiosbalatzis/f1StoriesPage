@@ -1,0 +1,432 @@
+[
+  {
+    "profile": "fast",
+    "scenario": "cold",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 816,
+      "lcp": 992,
+      "bytes": 198362,
+      "requests": 19,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 580,
+      "lcp": 1112,
+      "bytes": 198326,
+      "requests": 18,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [
+          57
+        ],
+        [
+          52
+        ],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "cold",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 716,
+      "lcp": 864,
+      "bytes": 199611,
+      "requests": 20,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 524,
+      "lcp": 1036,
+      "bytes": 199585,
+      "requests": 19,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "cold",
+    "transition": "article-article"
+  },
+  {
+    "profile": "fast",
+    "scenario": "warm",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 308,
+      "lcp": 364,
+      "bytes": 73583,
+      "requests": 6,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 308,
+      "lcp": 380,
+      "bytes": 74012,
+      "requests": 6,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "warm",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 368,
+      "lcp": 428,
+      "bytes": 59223,
+      "requests": 2,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 372,
+      "lcp": 412,
+      "bytes": 59662,
+      "requests": 2,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "warm",
+    "transition": "article-article"
+  },
+  {
+    "profile": "fast",
+    "scenario": "expired",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 612,
+      "lcp": 612,
+      "bytes": 48719,
+      "requests": 20,
+      "revalidated": 17,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 448,
+      "lcp": 448,
+      "bytes": 49148,
+      "requests": 19,
+      "revalidated": 16,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "expired",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 652,
+      "lcp": 652,
+      "bytes": 59223,
+      "requests": 20,
+      "revalidated": 18,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 392,
+      "lcp": 472,
+      "bytes": 59662,
+      "requests": 19,
+      "revalidated": 17,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "fast",
+    "scenario": "expired",
+    "transition": "article-article"
+  },
+  {
+    "profile": "slow",
+    "scenario": "cold",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 1636,
+      "lcp": 3740,
+      "bytes": 224030,
+      "requests": 22,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 1104,
+      "lcp": 3792,
+      "bytes": 223994,
+      "requests": 21,
+      "revalidated": 0,
+      "maxCls": 0.00572636710189775,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "cold",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 2056,
+      "lcp": 2440,
+      "bytes": 199611,
+      "requests": 20,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 1664,
+      "lcp": 2780,
+      "bytes": 199585,
+      "requests": 19,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "cold",
+    "transition": "article-article"
+  },
+  {
+    "profile": "slow",
+    "scenario": "warm",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 756,
+      "lcp": 868,
+      "bytes": 99251,
+      "requests": 9,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 756,
+      "lcp": 864,
+      "bytes": 99680,
+      "requests": 9,
+      "revalidated": 0,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "warm",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 952,
+      "lcp": 1068,
+      "bytes": 59223,
+      "requests": 2,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 956,
+      "lcp": 1056,
+      "bytes": 59662,
+      "requests": 2,
+      "revalidated": 0,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "warm",
+    "transition": "article-article"
+  },
+  {
+    "profile": "slow",
+    "scenario": "expired",
+    "transition": "home",
+    "baseline": {
+      "n": 3,
+      "fcp": 1372,
+      "lcp": 1372,
+      "bytes": 48719,
+      "requests": 23,
+      "revalidated": 20,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 908,
+      "lcp": 1020,
+      "bytes": 49148,
+      "requests": 22,
+      "revalidated": 19,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "expired",
+    "transition": "home-article",
+    "baseline": {
+      "n": 3,
+      "fcp": 1472,
+      "lcp": 1472,
+      "bytes": 59223,
+      "requests": 20,
+      "revalidated": 18,
+      "maxCls": 0,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    },
+    "candidate": {
+      "n": 3,
+      "fcp": 1060,
+      "lcp": 1180,
+      "bytes": 59662,
+      "requests": 19,
+      "revalidated": 17,
+      "maxCls": 0.0037759424535468425,
+      "longtasks": [
+        [],
+        [],
+        []
+      ]
+    }
+  },
+  {
+    "profile": "slow",
+    "scenario": "expired",
+    "transition": "article-article"
+  }
+]

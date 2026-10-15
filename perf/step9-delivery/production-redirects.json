@@ -1,0 +1,62 @@
+[
+  {
+    "url": "http://f1-stories.gr/",
+    "url_effective": "https://f1-stories.gr/",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 1,
+    "time_redirect": 0.0364,
+    "time_total": 0.091928,
+    "size_download": 19418
+  },
+  {
+    "url": "https://www.f1-stories.gr/",
+    "url_effective": "https://f1-stories.gr/",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 1,
+    "time_redirect": 0.453147,
+    "time_total": 0.512627,
+    "size_download": 19418
+  },
+  {
+    "url": "https://f1-stories.gr/standings",
+    "url_effective": "https://f1-stories.gr/standings/",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 1,
+    "time_redirect": 0.200576,
+    "time_total": 0.216836,
+    "size_download": 14379
+  },
+  {
+    "url": "https://f1-stories.gr/standings/",
+    "url_effective": "https://f1-stories.gr/standings/",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 0,
+    "time_redirect": 0.0,
+    "time_total": 0.061774,
+    "size_download": 14379
+  },
+  {
+    "url": "https://f1-stories.gr/index.html",
+    "url_effective": "https://f1-stories.gr/index.html",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 0,
+    "time_redirect": 0.0,
+    "time_total": 0.26751,
+    "size_download": 19418
+  },
+  {
+    "url": "https://f1-stories.gr/blog-module/blog-entries/20261015G/article.html",
+    "url_effective": "https://f1-stories.gr/blog-module/blog-entries/20261015G/article.html",
+    "http_version": "2",
+    "response_code": 200,
+    "num_redirects": 0,
+    "time_redirect": 0.0,
+    "time_total": 0.059226,
+    "size_download": 20516
+  }
+]

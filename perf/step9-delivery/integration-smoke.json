@@ -1,0 +1,152 @@
+{
+  "fixture": "Actual public provider responses. Browser routing derives a two-race/one-qualifying session subset and one-round schedule; no complete-season correctness claim. Location samples cover11388 Ferrari16/44 fastestlaps only.",
+  "root": "/Users/giorgos/WebstormProjects/f1StoriesPage-perf-integration-verify/dist",
+  "results": [
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 21
+    },
+    {
+      "navigation": {
+        "status": "pass",
+        "checks": [
+          "deep link",
+          "back/forward",
+          "embedded tyre",
+          "pinned round",
+          "tyre failure/retry",
+          "snapshot fallback"
+        ]
+      },
+      "status": "pass"
+    }
+  ]
+}

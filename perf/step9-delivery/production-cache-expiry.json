@@ -1,0 +1,129 @@
+{
+  "scenarios": [
+    {
+      "scenario": "cold",
+      "elapsedMs": 182,
+      "durationMs": 175.20000004768372,
+      "transferBytes": 5540,
+      "retainedEncodedBodyBytes": 5240,
+      "protocol": "h2",
+      "etag": "W/\"6ad0ae91-52ad\""
+    },
+    {
+      "scenario": "fresh",
+      "elapsedMs": 184,
+      "durationMs": 0.699999988079071,
+      "transferBytes": 0,
+      "retainedEncodedBodyBytes": 5240,
+      "protocol": "h2",
+      "etag": "W/\"6ad0ae91-52ad\""
+    },
+    {
+      "scenario": "forced-revalidation",
+      "elapsedMs": 199,
+      "durationMs": 12.700000047683716,
+      "transferBytes": 300,
+      "retainedEncodedBodyBytes": 5240,
+      "protocol": "h2",
+      "etag": "W/\"6ad0ae91-52ad\""
+    },
+    {
+      "scenario": "expired",
+      "elapsedMs": 630453,
+      "durationMs": 194.69999998807907,
+      "transferBytes": 300,
+      "retainedEncodedBodyBytes": 5240,
+      "protocol": "h2",
+      "etag": "W/\"6ad0ae91-52ad\""
+    },
+    {
+      "scenario": "restored-fresh",
+      "elapsedMs": 630456,
+      "durationMs": 0.7999999523162842,
+      "transferBytes": 0,
+      "retainedEncodedBodyBytes": 5240,
+      "protocol": "h2",
+      "etag": "W/\"6ad0ae91-52ad\""
+    }
+  ],
+  "wire": [
+    {
+      "type": "responseReceivedExtraInfo",
+      "requestId": "31313.2",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "Fetch",
+      "requestId": "31313.2",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "loadingFinished",
+      "requestId": "31313.2",
+      "status": null,
+      "encodedDataLength": 5402
+    },
+    {
+      "type": "Fetch",
+      "requestId": "31313.4",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "loadingFinished",
+      "requestId": "31313.4",
+      "status": null,
+      "encodedDataLength": 0
+    },
+    {
+      "type": "responseReceivedExtraInfo",
+      "requestId": "31313.5",
+      "status": 304,
+      "encodedDataLength": null
+    },
+    {
+      "type": "Fetch",
+      "requestId": "31313.5",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "loadingFinished",
+      "requestId": "31313.5",
+      "status": null,
+      "encodedDataLength": 88
+    },
+    {
+      "type": "responseReceivedExtraInfo",
+      "requestId": "31313.6",
+      "status": 304,
+      "encodedDataLength": null
+    },
+    {
+      "type": "Fetch",
+      "requestId": "31313.6",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "loadingFinished",
+      "requestId": "31313.6",
+      "status": null,
+      "encodedDataLength": 231
+    },
+    {
+      "type": "Fetch",
+      "requestId": "31313.7",
+      "status": 200,
+      "encodedDataLength": null
+    },
+    {
+      "type": "loadingFinished",
+      "requestId": "31313.7",
+      "status": null,
+      "encodedDataLength": 0
+    }
+  ]
+}
