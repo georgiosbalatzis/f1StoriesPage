@@ -80,6 +80,10 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
+      - name: Run tablet CLS regression (both themes, edition font swap)
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: node --test scripts/build/__tests__/tablet-cls.test.mjs && npm run perf:cls-tablet -- --widths 768
+
       - name: Run security policy tests
         run: npm run test:security
 
