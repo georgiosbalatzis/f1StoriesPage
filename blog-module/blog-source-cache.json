@@ -1,6 +1,43 @@
 {
   "posts": [
     {
+      "id": "20261015G",
+      "title": "Όσο περισσότερο πιέζουν, τόσο πιο αργοί γίνονται;",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-15",
+      "dateISO": "2026-10-15",
+      "displayDate": "15 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261015G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261015G/1.webp",
+      "excerpt": "Στη Σιγκαπούρη, ο Lewis Hamilton έκανε κάτι που ακουγόταν απολύτως λογικό. Το αυτοκίνητο ήταν γρήγορο στο Q1, ακόμη καλύτερο στο Q2, και ο ίδιος ένιωθε ότι μπορούσε να βρει κι άλλο χρόνο. Για να το...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261015G/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Ferrari",
+        "Audi",
+        "McLaren",
+        "Alpine",
+        "Mercedes",
+        "RedBull",
+        "RacingBulls",
+        "Williams",
+        "Cadillac",
+        "AstonMartin",
+        "2026"
+      ],
+      "wordCount": 2095,
+      "readingTime": "11 min",
+      "imageWidth": 1050,
+      "imageHeight": 791,
+      "backgroundImageWidth": 1050,
+      "backgroundImageHeight": 791
+    },
+    {
       "id": "20261014W",
       "title": "Hockenheim: Ένα χρόνο μετά",
       "author": "Themis Charvalis",
@@ -10595,5 +10632,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-14T20:05:50.836Z"
+  "lastUpdated": "2026-10-15T10:43:07.517Z"
 }
