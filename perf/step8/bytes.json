@@ -1,0 +1,10 @@
+{
+  "baseline": {
+    "minifiedBytes": 17136,
+    "gzipBytes": 5842
+  },
+  "candidate": {
+    "minifiedBytes": 17130,
+    "gzipBytes": 5838
+  }
+}
