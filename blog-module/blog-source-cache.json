@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261014W",
+      "title": "Hockenheim: Ένα χρόνο μετά",
+      "author": "Themis Charvalis",
+      "date": "2026-10-14",
+      "dateISO": "2026-10-14",
+      "displayDate": "14 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261014W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261014W/2.webp",
+      "excerpt": "Η επιστροφή του Vettel στον τόπο ενός από τα πιο οδυνηρά λάθη της καριέρας του. Ιούλιος του 2018. Ο Sebastian Vettel βρίσκεται στην κορυφή του Γερμανικού Grand Prix. Μπροστά του βρίσκεται το απόλυτο...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261014W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Sebastian Vettel",
+        "F1",
+        "Hockenheim",
+        "2019",
+        "Ferrari Sf 90"
+      ],
+      "wordCount": 512,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 743
+    },
+    {
       "id": "20261014F",
       "title": "Amber Alert :  Safety Car !",
       "author": "F1 Stories Team",
@@ -10564,5 +10595,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-14T13:57:08.177Z"
+  "lastUpdated": "2026-10-14T20:05:50.836Z"
 }
