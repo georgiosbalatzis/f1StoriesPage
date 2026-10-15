@@ -5,6 +5,14 @@ Base: current `origin/main` at `f08cd0df`, independent of Step 5 and drafts
 templates changed. The only product change is eight added lines in
 `standings/tabs/tyre-pace.js`.
 
+Main subsequently advanced to `30c27779` with the new article #288 and generated
+content only; none of these runtime files changed. That main revision was merged
+into this branch as `f1eb665e`, preserving the measured implementation. The public
+build/validator, 18 standings tests, generated-drift check, and a current-artifact
+390px smoke covering all nine reports plus URL/embed/retry/fallback checks passed
+again. The paired performance evidence below remains explicitly based on the
+original identical `f08cd0df` artifacts; no broad comparison was repeated.
+
 ## Demonstrated bottleneck
 
 A real production-artifact CDP sweep at CPU x4 found interaction long tasks of
