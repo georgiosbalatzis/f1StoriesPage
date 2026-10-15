@@ -1,0 +1,12 @@
+{
+  "candidate_commit": "454a032d",
+  "baseline_source": "original main f08cd0df shared-nav.min.js",
+  "differences": [
+    "scripts/shared-nav.min.js"
+  ],
+  "sha256": {
+    "baseline": "8df896aa76a55077e9a82340c68a31c711ff98b2d7f0fe09a23240891693f785",
+    "candidate": "492c8a03358cbef51b4dd8b5402df82170e7dc2b529d8a351d14553c02da16cc"
+  },
+  "main_content_commit": "30c27779"
+}

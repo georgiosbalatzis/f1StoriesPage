@@ -1,0 +1,71 @@
+[
+  {
+    "file": "openf1-sessions-2026.json",
+    "uncompressedBytes": 48130,
+    "sha256": "f76bc38e3326eec1d43b5108e323dc197f1b690cd9e505c47210414de819e61b",
+    "name": "openf1-sessions-2026",
+    "url": "https://api.openf1.org/v1/sessions?year=2026",
+    "httpStatus": 200,
+    "curlExit": 0,
+    "seconds": 0.22997,
+    "bytes": 48130,
+    "capturedAt": "2026-10-15T08:06:41.822175+00:00",
+    "jsonType": "list",
+    "records": 131
+  },
+  {
+    "file": "openf1-drivers-11388.json",
+    "uncompressedBytes": 9166,
+    "sha256": "1b8985237ed4c04f1afccc454e94228c3ed578560041c4a24ca0a379525b1532",
+    "name": "openf1-drivers-11388",
+    "url": "https://api.openf1.org/v1/drivers?session_key=11388",
+    "httpStatus": 200,
+    "curlExit": 0,
+    "seconds": 0.151409,
+    "bytes": 9166,
+    "capturedAt": "2026-10-15T08:07:02.639403+00:00",
+    "jsonType": "list",
+    "records": 22
+  },
+  {
+    "file": "openf1-laps-11388.json",
+    "uncompressedBytes": 596077,
+    "sha256": "d811348c4d1628ce01bbe1d7552a3f0b27657906e86bc0902313df7b312ffd8a",
+    "name": "openf1-laps-11388",
+    "url": "https://api.openf1.org/v1/laps?session_key=11388",
+    "httpStatus": 200,
+    "curlExit": 0,
+    "seconds": 1.533167,
+    "bytes": 596077,
+    "capturedAt": "2026-10-15T08:07:04.024431+00:00",
+    "jsonType": "list",
+    "records": 1240
+  },
+  {
+    "file": "openf1-stints-11388.json",
+    "uncompressedBytes": 6824,
+    "sha256": "1eeb6d2d3f31419aed17bda4a57d5284a60d28d2321760f2a52eb934511af766",
+    "name": "openf1-stints-11388",
+    "url": "https://api.openf1.org/v1/stints?session_key=11388",
+    "httpStatus": 200,
+    "curlExit": 0,
+    "seconds": 0.163034,
+    "bytes": 6824,
+    "capturedAt": "2026-10-15T08:07:08.437685+00:00",
+    "jsonType": "list",
+    "records": 47
+  },
+  {
+    "file": "jolpica-schedule-2026.json",
+    "uncompressedBytes": 14292,
+    "sha256": "4cb49ba79da78562a35a328ad5d0d69d34da32b1a4a5000d9b60a7f9d66ffa82",
+    "name": "jolpica-schedule-2026",
+    "url": "https://api.jolpi.ca/ergast/f1/2026.json?limit=30",
+    "httpStatus": 200,
+    "curlExit": 0,
+    "seconds": 0.292949,
+    "bytes": 14292,
+    "capturedAt": "2026-10-15T08:06:41.886360+00:00",
+    "jsonType": "dict"
+  }
+]
