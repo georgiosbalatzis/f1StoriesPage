@@ -109,6 +109,8 @@
 .home-page #hero::before { display: none; }
 .home-page .cover-edition { display: flex; justify-content: space-between; gap: 16px; padding-block: 14px 12px; color: var(--on-deep-2); font: 700 .9375rem/1.1 var(--cond); letter-spacing: .16em; }
 .home-page .cover-edition > span:first-child { color: var(--on-deep); }
+/* Preserve the intended single-line labels while fonts load; fallback wrapping shifts the cover at tablet widths. */
+.home-page .cover-edition > span { white-space: nowrap; }
 /* The right-hand span is the build's season/round line; without standings data it stays empty. */
 .home-page .cover-edition > span:empty { display: none; }
 .home-page .cover-strip { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3px; height: clamp(320px, 39vw, 600px); }
