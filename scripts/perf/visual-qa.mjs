@@ -777,7 +777,7 @@ export async function checkCompactFocusRings(page, routeSlug) {
 
 async function checkArticleLightbox(page) {
     const issues = [];
-    const trigger = page.locator('.article-header picture').first();
+    const trigger = page.locator('.rr-cover__media, .article-header picture').first();
     if (!(await trigger.count())) return [{ type: 'image-viewer', detail: 'article image trigger missing' }];
     await trigger.scrollIntoViewIfNeeded();
     await trigger.focus();
