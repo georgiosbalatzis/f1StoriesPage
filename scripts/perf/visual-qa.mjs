@@ -6,6 +6,7 @@ import http from 'node:http';
 import path from 'node:path';
 import process from 'node:process';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
@@ -708,7 +709,7 @@ async function checkGridRowFocus(page) {
 }
 
 // Pixel checks include descendants and adjacent controls: computed outlines alone can be obscured.
-async function checkCompactFocusRings(page, routeSlug) {
+export async function checkCompactFocusRings(page, routeSlug) {
     const selectors = routeSlug === 'home'
         ? [['.home-video-facade', '.episode__play'], ['.blog-nav-link', null]]
         : routeSlug === 'latest-article' ? [['.share-btn.facebook', null], ['.share-btn.whatsapp', null]] : [];
@@ -720,11 +721,24 @@ async function checkCompactFocusRings(page, routeSlug) {
         await control.evaluate(el => el.scrollIntoView({ block: 'center' }));
         await page.keyboard.press('Tab');
         await control.focus();
-        // The play control scales on focus; measure its final painted box before comparing frames.
-        await page.waitForTimeout(400);
+        // Focus scaling and late embed resizes can move the painted box after scrolling.
         const target = child ? control.locator(child) : control;
-        const r = await target.boundingBox();
         const view = page.viewportSize();
+        const inView = box => box && box.x >= 0 && box.y >= 0 &&
+            box.x + box.width <= view.width && box.y + box.height <= view.height;
+        let r = null;
+        let settled = false;
+        for (let tries = 0; tries < 10; tries += 1) {
+            await page.waitForTimeout(400);
+            const box = await target.boundingBox();
+            if (inView(box) && JSON.stringify(box) === JSON.stringify(r)) { settled = true; break; }
+            if (box && !inView(box)) await control.evaluate(el => el.scrollIntoView({ block: 'center' }));
+            r = inView(box) ? box : null;
+        }
+        if (!settled) {
+            issues.push({ type: 'control-focus', selector, detail: 'focused control did not settle inside the viewport' });
+            continue;
+        }
         const x = Math.max(0, Math.floor(r.x - 10)), y = Math.max(0, Math.floor(r.y - 10));
         const clip = { x, y, width: Math.min(view.width, Math.ceil(r.x + r.width + 10)) - x, height: Math.min(view.height, Math.ceil(r.y + r.height + 10)) - y };
         const decode = async () => sharp(await page.screenshot({ clip, type: 'png' })).raw().toBuffer({ resolveWithObject: true });
@@ -763,7 +777,7 @@ async function checkCompactFocusRings(page, routeSlug) {
 
 async function checkArticleLightbox(page) {
     const issues = [];
-    const trigger = page.locator('.article-header picture').first();
+    const trigger = page.locator('.rr-cover__media, .article-header picture').first();
     if (!(await trigger.count())) return [{ type: 'image-viewer', detail: 'article image trigger missing' }];
     await trigger.scrollIntoViewIfNeeded();
     await trigger.focus();
@@ -1149,7 +1163,9 @@ async function main() {
     }
 }
 
-main().catch(error => {
-    console.error(error);
-    process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+    main().catch(error => {
+        console.error(error);
+        process.exitCode = 1;
+    });
+}

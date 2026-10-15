@@ -80,6 +80,10 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
+      - name: Run visual focus capture regression
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs
+
       - name: Run security policy tests
         run: npm run test:security
 
