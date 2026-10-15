@@ -39,6 +39,7 @@ const state = {
 let onRendered = null;
 let onSessionChange = null;
 let listenersBound = false;
+let lastRender = null;
 
 export function initTyrePace(options) {
     if (options && typeof options.onRendered === 'function') onRendered = options.onRendered;
@@ -69,6 +70,12 @@ export function ensureLoaded(forceReload) {
     if (!tyrePaceTable) return;
     if (state.loading) return;
     if (state.loaded && !forceReload) {
+        if (lastRender && lastRender.data === state.cache[String(state.selectedSessionKey)]
+            && lastRender.sessionKey === String(state.selectedSessionKey)
+            && tyrePaceTable.firstElementChild === lastRender.node) {
+            fireRendered();
+            return;
+        }
         renderSelectedSession(false);
         return;
     }
@@ -567,6 +574,7 @@ function renderTyrePace(data, session) {
     html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
+    lastRender = { data: data, sessionKey: String(session.session_key), node: tyrePaceTable.firstElementChild };
     fireRendered();
 }
 
