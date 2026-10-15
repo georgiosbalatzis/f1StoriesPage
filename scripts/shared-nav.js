@@ -465,7 +465,17 @@
             });
         }
         scan();
-        new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+        new MutationObserver(function (records) {
+            var relevant = records.some(function (record) {
+                if (record.target.nodeType === 1 && record.target.closest(selector)) return true;
+                return Array.prototype.some.call(record.addedNodes, containsScroller) ||
+                    Array.prototype.some.call(record.removedNodes, containsScroller);
+            });
+            if (relevant) scan();
+        }).observe(document.body, { childList: true, subtree: true });
+        function containsScroller(node) {
+            return node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector));
+        }
         window.addEventListener('resize', scan);
         if (document.fonts) document.fonts.ready.then(scan);
     }
