@@ -1,0 +1,146 @@
+[
+  {
+    "profile": "Fast4G",
+    "scenario": "cold",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 107.30000001192093,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Fast4G",
+    "scenario": "cold",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 107.19999998807907,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Fast4G",
+    "scenario": "warm",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 105.69999998807907,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Fast4G",
+    "scenario": "warm",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 52.5,
+    "bodyBytesMedian": 0,
+    "transferMedian": 300,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Fast4G",
+    "scenario": "expired",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 106,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Fast4G",
+    "scenario": "expired",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 53.30000001192093,
+    "bodyBytesMedian": 0,
+    "transferMedian": 300,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "cold",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 477.4000000357628,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "cold",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 477,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "warm",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 473.0999999642372,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "warm",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 163.80000001192093,
+    "bodyBytesMedian": 0,
+    "transferMedian": 300,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "expired",
+    "variant": "baseline",
+    "runs": 3,
+    "durationMedian": 474.30000001192093,
+    "bodyBytesMedian": 61509,
+    "transferMedian": 61809,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  },
+  {
+    "profile": "Slow4G",
+    "scenario": "expired",
+    "variant": "candidate",
+    "runs": 3,
+    "durationMedian": 169.39999997615814,
+    "bodyBytesMedian": 0,
+    "transferMedian": 300,
+    "hashes": [
+      "217b76025c4c6fc6ec7292902c050c1c2e985b3376a4d4107d7517dad97e3a91"
+    ]
+  }
+]

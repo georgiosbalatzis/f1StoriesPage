@@ -1,0 +1,42 @@
+[
+  {
+    "network": "slow4g",
+    "variant": "baseline",
+    "firstRenderMs": 2401,
+    "initialScriptMs": 54.516000000000005,
+    "switchScriptMs": 5.9759999999999955,
+    "switchPresentedMs": 132.10000002384186,
+    "switchLayoutMs": 8.152999999999993,
+    "longTasks": 9
+  },
+  {
+    "network": "slow4g",
+    "variant": "candidate",
+    "firstRenderMs": 2402,
+    "initialScriptMs": 49.376000000000005,
+    "switchScriptMs": 2.364999999999992,
+    "switchPresentedMs": 53.80000001192093,
+    "switchLayoutMs": 4.432999999999993,
+    "longTasks": 0
+  },
+  {
+    "network": "fast4g",
+    "variant": "baseline",
+    "firstRenderMs": 859,
+    "initialScriptMs": 53.098,
+    "switchScriptMs": 5.937000000000012,
+    "switchPresentedMs": 133.5999999642372,
+    "switchLayoutMs": 7.730000000000015,
+    "longTasks": 9
+  },
+  {
+    "network": "fast4g",
+    "variant": "candidate",
+    "firstRenderMs": 864,
+    "initialScriptMs": 51.575,
+    "switchScriptMs": 1.9349999999999992,
+    "switchPresentedMs": 55.40000003576279,
+    "switchLayoutMs": 4.5399999999999885,
+    "longTasks": 0
+  }
+]

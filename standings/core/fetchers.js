@@ -14,7 +14,9 @@ const FETCH_CACHE_TTL = 60 * 60 * 1000;
 const inFlight = new Map();
 
 function performNoCacheFetch(url, timeoutMs) {
-    return fetchJSONWithTimeout(url, timeoutMs, { cache: 'no-store' });
+    // Revalidate local snapshots on every read while allowing unchanged bodies to return 304.
+    const local = window.location && new URL(url, window.location.href).origin === window.location.origin;
+    return fetchJSONWithTimeout(url, timeoutMs, { cache: local ? 'no-cache' : 'no-store' });
 }
 
 export function readCachedResponse(url) {

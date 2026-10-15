@@ -1,0 +1,144 @@
+[
+  {
+    "profile": "slow4g",
+    "width": 390,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 38.89,
+    "interactionScriptMs": 25.798999999999996,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "slow4g",
+    "width": 390,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 37.317,
+    "interactionScriptMs": 24.855,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "slow4g",
+    "width": 768,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 39.163000000000004,
+    "interactionScriptMs": 19.441,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "slow4g",
+    "width": 768,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 39.147,
+    "interactionScriptMs": 23.430999999999994,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "slow4g",
+    "width": 1440,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 38.231,
+    "interactionScriptMs": 17.099999999999998,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "slow4g",
+    "width": 1440,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 38.726,
+    "interactionScriptMs": 18.077,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 390,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 36.17,
+    "interactionScriptMs": 24.636,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 390,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 38.303999999999995,
+    "interactionScriptMs": 18.616,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 768,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 35.92,
+    "interactionScriptMs": 19.658999999999995,
+    "clickEventMs": 32,
+    "longTasks": [
+      {
+        "start": 559.6999999880791,
+        "duration": 57
+      }
+    ],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 768,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 37.391,
+    "interactionScriptMs": 21.981,
+    "clickEventMs": 32,
+    "longTasks": [
+      {
+        "start": 1329.8999999761581,
+        "duration": 55
+      }
+    ],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 1440,
+    "variant": "baseline",
+    "runs": 3,
+    "loadScriptMs": 37.912,
+    "interactionScriptMs": 22.217999999999996,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  },
+  {
+    "profile": "fast4g",
+    "width": 1440,
+    "variant": "candidate",
+    "runs": 3,
+    "loadScriptMs": 38.574,
+    "interactionScriptMs": 17.377000000000002,
+    "clickEventMs": 32,
+    "longTasks": [],
+    "pageErrors": []
+  }
+]

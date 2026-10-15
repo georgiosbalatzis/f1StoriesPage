@@ -1,0 +1,19 @@
+diff --git a/scripts/perf/standings-interactions-qa.mjs b/scripts/perf/standings-interactions-qa.mjs
+index 8fb51b72..98462fbb 100644
+--- a/scripts/perf/standings-interactions-qa.mjs
++++ b/scripts/perf/standings-interactions-qa.mjs
+@@ -228,6 +228,14 @@ async function matrixChecks(browser, origin, width, theme) {
+         await page.locator('#standings-clear-cache').click();
+         await page.waitForFunction(() => !document.getElementById('standings-clear-cache').disabled);
+         check('cache clear removes stored responses', await cacheSize() === 0);
++        const beforeRestore = state.requests.length;
++        await page.goto(`${origin}/standings/?tab=tyre-pace&tyreSession=11388`, { waitUntil: 'load' });
++        await ready(page, 'tyre-pace');
++        check('cleared cache refetches provider responses', state.requests.length > beforeRestore);
++        check('cleared cache repopulates IndexedDB', await cacheSize() > 0);
++        const restored = await page.locator('#tyre-pace-table .tyre-pace-svg').evaluateAll(nodes => nodes.map(node => node.outerHTML).join(''));
++        check('restored chart matches original data', hash(restored) === tyre.svgSha256);
++
+         check('no uncaught page or fixture errors', state.errors.length === 0, state.errors.join('; '));
+         return { width, theme, status: 'pass', tabs: Object.keys(tabs), tyre, providerRequests: state.requests.length };
+     } finally { await state.context.close(); }
