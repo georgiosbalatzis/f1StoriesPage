@@ -66,25 +66,25 @@
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/history/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/history/page/2/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/history/page/3/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/history/page/4/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -245,6 +245,12 @@
     <loc>https://f1-stories.gr/privacy/terms.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/blog-module/blog-entries/20261015W/article.html</loc>
+    <lastmod>2026-10-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog-entries/20261015G/article.html</loc>

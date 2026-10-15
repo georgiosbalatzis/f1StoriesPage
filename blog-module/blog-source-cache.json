@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261015W",
+      "title": "The fast Freddy",
+      "author": "Themis Charvalis",
+      "date": "2026-10-15",
+      "dateISO": "2026-10-15",
+      "displayDate": "15 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261015W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261015W/2.webp",
+      "excerpt": "O Freddy Loix, έπρεπε να αποδείξει από την πρώτη στιγμή ότι άξιζαν να βρίσκονται στο υψηλότερο επίπεδο. Ο Βέλγος είχε ήδη αποκτήσει το παρατσούκλι «Fast Freddy» όταν η Toyota του έδωσε την ευκαιρία...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261015W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "WRC",
+        "Freddy Loix",
+        "Toyota",
+        "Mitsubishi",
+        "Peugeot",
+        "Hyundai"
+      ],
+      "wordCount": 462,
+      "readingTime": "3 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 677,
+      "backgroundImageHeight": 453
+    },
+    {
       "id": "20261015G",
       "title": "Όσο περισσότερο πιέζουν, τόσο πιο αργοί γίνονται;",
       "author": "Georgios Balatzis",
@@ -10632,5 +10664,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-15T10:43:07.517Z"
+  "lastUpdated": "2026-10-15T16:55:30.359Z"
 }
