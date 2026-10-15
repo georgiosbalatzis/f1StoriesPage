@@ -15,7 +15,7 @@ const inFlight = new Map();
 
 function performNoCacheFetch(url, timeoutMs) {
     // Revalidate local snapshots on every read while allowing unchanged bodies to return 304.
-    const local = new URL(url, window.location.href).origin === window.location.origin;
+    const local = window.location && new URL(url, window.location.href).origin === window.location.origin;
     return fetchJSONWithTimeout(url, timeoutMs, { cache: local ? 'no-cache' : 'no-store' });
 }
 

@@ -24,4 +24,8 @@ test('local snapshots always revalidate; provider requests still bypass the HTTP
     // No application-cache reuse is introduced: the next read still calls fetch.
     await fetchJSONNoCache('standings-cache.json');
     assert.equal(fetch.mock.callCount(), 6);
+    // The existing tab lifecycle tests run with a minimal window stub.
+    delete window.location;
+    await fetchJSONNoCache('standings-cache.json');
+    assert.equal(fetch.mock.calls.at(-1).arguments[1].cache, 'no-store');
 });
