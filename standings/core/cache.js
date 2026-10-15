@@ -276,12 +276,6 @@ export async function cacheSet(key, value) {
     removeSessionKey(logicalKey);
 }
 
-export async function cacheDelete(key) {
-    const logicalKey = key == null ? '' : String(key);
-    await deleteRecord(versionedKey(logicalKey));
-    removeSessionKey(logicalKey);
-}
-
 export async function cacheClear() {
     await clearVersionedRecords();
     sessionKeysMatching([LEGACY_FETCH_CACHE_PREFIX]).forEach(function(key) {

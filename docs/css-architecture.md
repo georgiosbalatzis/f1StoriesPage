@@ -11,7 +11,6 @@ The site is split by runtime surface. Each rule has one owner: put a selector in
 - `home.css`: homepage cover, journal, podcast/data links, team, sponsors and contact.
 - `blog-module/blog/archive-editorial.css`: the Journal (`/blog-module/blog/`): masthead, front page, recent list, long reads, archive tools and ledger. It depends on no legacy stylesheet and no Bootstrap.
 - `blog-module/blog/article-styles.css`: article structural layout (legacy layer, shrinking).
-- `blog-module/blog/article-rail.css`: desktop/tablet article rail.
 - `blog-module/blog/article-editorial.css`: article cover, long-form typography, figures, embeds, related stories and the closing author card.
 - `standings/standings.css`, `standings/standings-polish.css`, `standings/standings-editorial.css`: standings shell, interaction polish, editorial skin.
 - `styles/authors.css`: `/authors/`.
@@ -46,7 +45,7 @@ Load order per public route (minified, `?v=` stamped). `scripts/perf/error-beaco
 |---|---|
 | `/` | bootstrap.slim → `styles` → `styles/editorial` → `home` → `styles/shared-nav` → `styles/home-fonts` |
 | `/blog-module/blog/` | home-fonts → `styles` → shared-nav → editorial → `blog/archive-editorial` |
-| article (`template.html`) | home-fonts → bootstrap.slim → `styles` → `blog/article-styles` → `blog/article-rail` → shared-nav → editorial → `blog/article-editorial` |
+| article (`template.html`) | home-fonts → bootstrap.slim → `styles` → `blog/article-styles` → shared-nav → editorial → `blog/article-editorial` |
 | `/standings/` | home-fonts → bootstrap.slim → `styles` → shared-nav → `standings` → `standings-polish` → editorial → `standings-editorial` (+ lazy `standings/tabs/*.css`) |
 | `/authors/` | `styles` → home-fonts → editorial → shared-nav → `styles/authors` |
 | `/privacy/*.html` | home-fonts → bootstrap.slim → `styles` → shared-nav → editorial → `styles/legal.css` (unminified, no `?v=`) |
