@@ -80,12 +80,12 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
-      - name: Run tablet CLS regression (both themes, edition font swap)
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: node --test scripts/build/__tests__/tablet-cls.test.mjs && npm run perf:cls-tablet -- --widths 768
-
       - name: Run security policy tests
         run: npm run test:security
 
       - name: Run publishing regression tests
         run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs
+
+      - name: Run tablet CLS regression (both themes, edition font swap)
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: node --test scripts/build/__tests__/tablet-cls.test.mjs && npm run perf:cls-tablet -- --widths 768
