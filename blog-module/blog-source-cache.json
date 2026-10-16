@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261016W",
+      "title": "Mika Salo: Ένα παιδί από το Ελσίνκι",
+      "author": "Themis Charvalis",
+      "date": "2026-10-16",
+      "dateISO": "2026-10-16",
+      "displayDate": "16 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261016W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261016W/2.webp",
+      "excerpt": "Υπήρξε κάποτε ένα παιδί από το Ελσίνκι που μεγάλωσε έχοντας απέναντί του έναν άλλο Mika. Τον Χάκινεν. Τον άνθρωπο που θα γινόταν 2 φορές παγκόσμιος πρωταθλητής. Ο Salo όμως είχε τη δική του διαδρομή,...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261016W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Mika Salo",
+        "Ferrari",
+        "Hockenheim 1999",
+        "Lotus",
+        "Toyota",
+        "Sauber"
+      ],
+      "wordCount": 582,
+      "readingTime": "3 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 739,
+      "backgroundImageHeight": 415
+    },
+    {
       "id": "20261015W",
       "title": "The fast Freddy",
       "author": "Themis Charvalis",
@@ -10664,5 +10696,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-15T16:55:30.359Z"
+  "lastUpdated": "2026-10-16T17:38:58.812Z"
 }
