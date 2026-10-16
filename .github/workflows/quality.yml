@@ -54,6 +54,9 @@ jobs:
       - name: Run static source guard
         run: npm run quality:static
 
+      - name: Verify asset size budgets
+        run: npm run perf:budget
+
       - name: Verify generated editorial media
         run: npm run qa:media -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
 
@@ -82,7 +85,7 @@ jobs:
 
       - name: Run visual focus capture regression
         if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs
+        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs
 
       - name: Run security policy tests
         run: npm run test:security

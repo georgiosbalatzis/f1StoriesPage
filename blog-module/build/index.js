@@ -21,8 +21,8 @@ const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
-    PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
-    formatReadingTime, CARD_SIZES, athensDay
+    PUBLIC_CATEGORIES, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    formatReadingTime, athensDay
 } = require('../taxonomy');
 const { buildPages, writeDiscoveryPages } = require('./discovery');
 

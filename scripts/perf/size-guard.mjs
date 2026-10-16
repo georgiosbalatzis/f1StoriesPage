@@ -160,7 +160,8 @@ function loadBudget() {
 // while shared code lives in hashed chunks. Keep route budgets independent of
 // the content hash so a new chunk cannot silently regress page startup.
 const STANDINGS_BUNDLE_BUDGET = {
-    shellBytes: 45 * 1024,
+    // Released embed controls bring the 57b1231a shell to 49,097 bytes; keep a tight 48 KiB ceiling.
+    shellBytes: 48 * 1024,
     initialGraphBytes: 68 * 1024,
     lazyEntryBytes: 34 * 1024,
     sharedChunkBytes: 12 * 1024,

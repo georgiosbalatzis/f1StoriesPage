@@ -62,8 +62,6 @@ export const DRIVER_HEADSHOT_POSITIONS = {
     'arvid_lidblad': 'center top'
 };
 
-export const PREFER_LOCAL_HEADSHOT = true;
-
 export function normalizeDriverLookupKey(value) {
     let normalized = String(value || '').trim().toLowerCase();
     if (normalized.normalize) normalized = normalized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -119,19 +117,10 @@ export function getLocalHeadshot(driverId, fallbackName) {
     return '';
 }
 
-export function shouldPreferLocalHeadshot(driverId, fallbackName) {
-    if (PREFER_LOCAL_HEADSHOT === true) return Boolean(getLocalHeadshot(driverId, fallbackName));
-    const candidates = getDriverLookupCandidates(driverId, fallbackName);
-    for (let i = 0; i < candidates.length; i++) {
-        if (PREFER_LOCAL_HEADSHOT[candidates[i]]) return true;
-    }
-    return false;
-}
-
 export function getPreferredHeadshot(driverId, fallbackName, sourceHeadshot) {
     const localHeadshot = getLocalHeadshot(driverId, fallbackName);
     const externalHeadshot = getHeadshot(driverId, fallbackName);
-    if (localHeadshot && shouldPreferLocalHeadshot(driverId, fallbackName)) return localHeadshot;
+    if (localHeadshot) return localHeadshot;
     return normalizeHeadshotUrl(sourceHeadshot || externalHeadshot || '');
 }
 

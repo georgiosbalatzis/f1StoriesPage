@@ -179,10 +179,6 @@ body {
 }
 
 /* ── Touch targets ─────────────────────────────── */
-@media (pointer: coarse) {
-    .toc-item { min-height: 44px; display: flex; align-items: center; padding: 0.5rem 0.6rem; }
-    .toc-toggle { min-height: 48px; padding: 0.75rem 1.5rem; }
-}
 
 /* ── Performance ───────────────────────────────── */
 #about, #contact, footer {
@@ -199,7 +195,7 @@ body {
 
 /* ── Print ─────────────────────────────────────── */
 @media print {
-    .blog-nav, .theme-toggle-btn, .scroll-to-top-btn, .article-toc, .cookie-consent, .cookie-banner, footer, .blog-nav-mobile, #cookie-consent, .hero-overlay, .background, .streak { display: none !important; }
+    .blog-nav, .theme-toggle-btn, .scroll-to-top-btn, .cookie-consent, .cookie-banner, footer, .blog-nav-mobile, #cookie-consent, .hero-overlay, .background, .streak { display: none !important; }
     .article-container { box-shadow: none !important; border: none !important; }
     .article-content { padding: 0 !important; font-size: 11pt; line-height: 1.6; color: #000 !important; }
     .article-content img { max-width: 100%; break-inside: avoid; }

@@ -112,28 +112,16 @@
     text-shadow: 0 1px 8px rgba(0,0,0,0.24) !important;
 }
 
-[data-theme="light"] .hero-subtitle {
-    color: rgba(255,255,255,0.86) !important;
-}
-
 [data-theme="light"] .hero-brand-lockup {
     background: rgba(8,10,14,0.68) !important;
     border-color: rgba(255,255,255,0.2) !important;
     color: #fff !important;
 }
 
-[data-theme="light"] .hero-brand-mark {
-    filter: none !important;
-}
-
 @media (max-width: 767.98px) {
     [data-theme="light"] #hero::before {
         background: linear-gradient(180deg, rgba(8,10,14,0.18) 0%, rgba(8,10,14,0.46) 42%, rgba(8,10,14,0.72) 100%) !important;
     }
-}
-
-[data-theme="light"] .hero-platforms__label {
-    color: #86868b !important;
 }
 
 /* ── CTA Buttons ─────────────────────────────── */
@@ -143,23 +131,6 @@
 
 [data-theme="light"] .cta-button::before {
     display: none !important;
-}
-
-[data-theme="light"] .cta-button.cta-primary,
-[data-theme="light"] .cta-primary {
-    background: #41B6E6 !important;
-    background-image: none !important;
-    color: #0B0D12 !important;
-    border: none !important;
-    border-radius: 8px !important;
-    box-shadow: 0 1px 3px rgba(65,182,230,0.2) !important;
-}
-
-[data-theme="light"] .cta-button.cta-primary:hover,
-[data-theme="light"] .cta-primary:hover {
-    background: #DB3EB1 !important;
-    box-shadow: 0 4px 12px rgba(65,182,230,0.25) !important;
-    transform: translateY(-2px) !important;
 }
 
 /* ── Sections ────────────────────────────────── */
@@ -203,29 +174,6 @@
 }
 
 /* ── Cards (Blog + Episode) — shadow-based depth ── */
-[data-theme="light"] .blog-card,
-[data-theme="light"] .episode-card {
-    background: #FFFFFF !important;
-    border: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: var(--shadow-sm) !important;
-}
-
-[data-theme="light"] .blog-card:hover,
-[data-theme="light"] .episode-card:hover {
-    box-shadow: 0 12px 28px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.04) !important;
-    border-color: rgba(0,0,0,0.08) !important;
-    transform: translateY(-4px) !important;
-}
-
-[data-theme="light"] .blog-card::before,
-[data-theme="light"] .episode-card::before {
-    display: none !important;
-}
-
-[data-theme="light"] .blog-title,
-[data-theme="light"] .video-title {
-    color: #1d1d1f !important;
-}
 
 /* ── Team Section ────────────────────────────── */
 [data-theme="light"] .persona {
@@ -265,8 +213,7 @@
 
 /* ── Contact Form ────────────────────────────── */
 
-[data-theme="light"] .contact-form label,
-[data-theme="light"] .form-label {
+[data-theme="light"] .contact-form label {
     color: #6e6e73 !important;
 }
 
@@ -287,51 +234,39 @@
 
 [data-theme="light"] footer,
 [data-theme="light"] footer p,
-[data-theme="light"] footer h4,
-[data-theme="light"] .footer-col__title,
-[data-theme="light"] .footer-bottom p {
+[data-theme="light"] footer h4 {
     color: #5f5f67 !important;
 }
 
-[data-theme="light"] .footer-links-list a,
 [data-theme="light"] .footer-link,
 [data-theme="light"] footer a {
     color: #6e6e73 !important;
 }
 
-[data-theme="light"] .footer-links-list a:hover,
 [data-theme="light"] .footer-link:hover,
 [data-theme="light"] footer a:hover {
     color: #41B6E6 !important;
 }
 
-[data-theme="light"] .footer-social a,
 [data-theme="light"] .social-media a {
     color: #5f5f67 !important;
     background: rgba(0,0,0,0.04) !important;
     border-color: transparent !important;
 }
 
-[data-theme="light"] .footer-social a i,
 [data-theme="light"] .social-media a i,
-[data-theme="light"] .footer-social a i::before,
 [data-theme="light"] .social-media a i::before,
-[data-theme="light"] footer .footer-social a i,
 [data-theme="light"] footer .social-media a i {
     color: #5f5f67 !important;
 }
 
-[data-theme="light"] .footer-social a:hover,
 [data-theme="light"] .social-media a:hover {
     color: #41B6E6 !important;
     background: rgba(65,182,230,0.06) !important;
 }
 
-[data-theme="light"] .footer-social a:hover i,
 [data-theme="light"] .social-media a:hover i,
-[data-theme="light"] .footer-social a:hover i::before,
 [data-theme="light"] .social-media a:hover i::before,
-[data-theme="light"] footer .footer-social a:hover i,
 [data-theme="light"] footer .social-media a:hover i {
     color: #41B6E6 !important;
 }
@@ -472,12 +407,7 @@ body,
 .navbar,
 section,
 footer,
-.blog-card,
-.episode-card,
 .persona,
-.contact-container,
-.contact-block,
-.listen-block,
 .cookie-banner,
 .cookie-consent,
 .form-control,
@@ -573,27 +503,10 @@ h1, h2, h3, h4, p, a, span {
         transform: none !important;
     }
 
-    [data-theme="light"] .hero-ctas .cta-button.cta-primary,
-    [data-theme="light"] .hero-ctas .cta-button.cta-primary:hover,
-    [data-theme="light"] .hero-ctas .cta-button.cta-primary:active {
-        background: #DB3EB1 !important;
-        border: 1px solid #DB3EB1 !important;
-        border-radius: 0 !important;
-        color: #0b0d12 !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
-
-    [data-theme="light"] .hero-ctas .cta-button.cta-primary:hover {
-        background: #e955c2 !important;
-        border-color: #e955c2 !important;
-    }
-
     [data-theme="light"] .sponsor-strip-home {
         background: transparent;
     }
 
-    [data-theme="light"] .sponsor-strip-heading,
     [data-theme="light"] .sponsor-strip-home .sponsor-logos {
         border-top-color: rgba(29,29,31,0.12);
         border-bottom-color: rgba(29,29,31,0.12);
@@ -612,11 +525,6 @@ h1, h2, h3, h4, p, a, span {
         border-radius: 0;
         box-shadow: none;
         transform: none;
-    }
-
-    [data-theme="light"] .team-row {
-        border-top-color: rgba(29,29,31,0.12);
-        border-bottom-color: rgba(29,29,31,0.12);
     }
 }
 

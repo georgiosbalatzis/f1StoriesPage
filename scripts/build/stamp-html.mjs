@@ -136,7 +136,6 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'styles/vendor/bootstrap.slim.css',
     'theme-overrides.css',
     'blog-module/blog-styles.css',
-    'blog-module/blog/article-rail.css',
     'blog-module/blog/article-styles.css',
     'scripts/theme-init.js',
     'scripts/analytics.js',
@@ -144,7 +143,6 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'scripts/shared-nav.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
-    'blog-module/blog/article-rail.js',
     'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
@@ -763,30 +761,6 @@ function ensureArticleEmbedsScript(html, embedsInfo) {
     );
 }
 
-function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
-    let result = String(html || '');
-    // Race Report pages (P3B) have no side rail; only older page shapes still carry one.
-    if (!/\bdata-rail-related\b/.test(result)) return result;
-
-    if (railCssInfo && railCssInfo.min && railCssInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.css(?:\?v=[a-f0-9]+)?/i.test(result)) {
-        const railCssHref = `/${railCssInfo.min}?v=${railCssInfo.hash}`;
-        result = result.replace(
-            /(<link\s+rel=["']stylesheet["']\s+href=["']\/blog-module\/blog\/article-styles(?:\.min)?\.css(?:\?v=[a-f0-9]+)?["']>)/i,
-            `$1\n    <link rel="stylesheet" href="${railCssHref}">`
-        );
-    }
-
-    if (railJsInfo && railJsInfo.min && railJsInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(result)) {
-        const railJsSrc = `/${railJsInfo.min}?v=${railJsInfo.hash}`;
-        result = result.replace(
-            /(<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
-            `$1\n<script defer src="${railJsSrc}"></script>`
-        );
-    }
-
-    return result;
-}
-
 // The site no longer has a service worker. Articles swap the old registration script
 // for the one that removes returning visitors' workers; it goes last so it never
 // delays the article's own deferred scripts.
@@ -951,7 +925,7 @@ function ensureLazyIframes(html) {
     ));
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo, embedsInfo) {
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, swInfo, embedsInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
@@ -974,7 +948,6 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
         '<span data-current-year>2026</span>'
     );
     result = ensureArticleMiniBar(result);
-    result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleEmbedsScript(result, embedsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
     result = ensureSwCleanupScript(result, swInfo);
@@ -990,7 +963,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     return result;
 }
 
-function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, manifest) {
+function stampArticleRuntimeMarkup(commentsInfo, dry, manifest) {
     const assetHref = source => {
         const entry = manifest[source];
         if (!entry) throw new Error(`Editorial asset missing: ${source}`);
@@ -1005,7 +978,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.
@@ -1217,14 +1190,6 @@ function main() {
     if (!articleCommentsInfo) {
         throw new Error('manifest missing entry for blog-module/blog/article-comments.js — run build:assets:minify');
     }
-    const articleRailCssInfo = manifest['blog-module/blog/article-rail.css'];
-    if (!articleRailCssInfo) {
-        throw new Error('manifest missing entry for blog-module/blog/article-rail.css — run build:assets:minify');
-    }
-    const articleRailJsInfo = manifest['blog-module/blog/article-rail.js'];
-    if (!articleRailJsInfo) {
-        throw new Error('manifest missing entry for blog-module/blog/article-rail.js — run build:assets:minify');
-    }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
@@ -1382,7 +1347,7 @@ function main() {
         );
     }
 
-    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, articleRailCssInfo, articleRailJsInfo, dry, manifest);
+    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, dry, manifest);
     if (articleRuntimeMarkup.files) {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntimeMarkup.files} file(s), inline runtime markup migrated`
