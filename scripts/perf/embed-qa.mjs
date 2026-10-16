@@ -24,6 +24,7 @@ import http from 'node:http';
 import path from 'node:path';
 import process from 'node:process';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
@@ -118,9 +119,9 @@ function budgetFor(target, width) {
 }
 
 // Runs inside the page. Returns plain data; all judgement happens in assess().
-function measurePage(gutter) {
+export function measurePage(gutter) {
     const vw = document.documentElement.clientWidth;
-    const visible = el => el.offsetParent !== null || getComputedStyle(el).position === 'fixed';
+    const visible = el => el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
     const scrollers = [...document.querySelectorAll('*')].filter(el => ['auto', 'scroll'].includes(getComputedStyle(el).overflowX) && el.scrollWidth > el.clientWidth + 2 && visible(el));
     const panel = document.querySelector('.standings-panel.active');
     const offenders = [];
@@ -143,7 +144,7 @@ function measurePage(gutter) {
         height: Math.ceil(document.body.getBoundingClientRect().height),
         offenders: [...new Set(offenders)].slice(0, 6),
         scrollers: scrollers.map(el => (typeof el.className === 'string' && el.className ? '.' + el.className.split(' ')[0] : el.tagName.toLowerCase())),
-        hint: !!panel && [...panel.querySelectorAll('[class*="scroll-hint"]')].some(visible),
+        hint: !!panel && [...panel.querySelectorAll('[class*="scroll-hint"], .horizontal-scroll-cue')].some(visible),
         selects: count('select'),
         viewTabs: count('[class*="view-tab"], [class*="view-switch"]'),
         interactiveRows: document.querySelectorAll('.st-row[role="button"], .st-detail-row').length,
@@ -166,7 +167,7 @@ function parseRgb(value) {
     return m ? { rgb: [Number(m[1]), Number(m[2]), Number(m[3])], alpha: m[4] == null ? 1 : Number(m[4]) } : null;
 }
 
-function assess(target, width, theme, m, errors) {
+export function assess(target, width, theme, m, errors) {
     const issues = [];
     const budget = budgetFor(target, width);
     if (m.height > budget) issues.push(`height ${m.height}px exceeds ${budget}px`);
@@ -310,7 +311,9 @@ async function main() {
     }
 }
 
-main().catch(error => {
-    console.error(error);
-    process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+    main().catch(error => {
+        console.error(error);
+        process.exitCode = 1;
+    });
+}
