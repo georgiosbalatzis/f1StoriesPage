@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261017W",
+      "title": "Nicholas Latifi: Η εντυπωσιακή του παρουσία στις μικρές κατηγορίες",
+      "author": "Themis Charvalis",
+      "date": "2026-10-17",
+      "dateISO": "2026-10-17",
+      "displayDate": "17 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261017W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261017W/2.webp",
+      "excerpt": "Ο Νίκολας Λατίφι (Nicholas Latifi) υπήρξε ένας από τους οδηγούς που κατάφεραν να φτάσουν στην κορυφή του μηχανοκίνητου αθλητισμού, περνώντας από τις απαιτητικές κατηγορίες εξέλιξης μέχρι το κορυφαίο...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261017W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Nicholas Latifi",
+        "Florida winter series",
+        "F2",
+        "Williams"
+      ],
+      "wordCount": 1162,
+      "readingTime": "6 min",
+      "imageWidth": 739,
+      "imageHeight": 415,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261016W",
       "title": "Mika Salo: Ένα παιδί από το Ελσίνκι",
       "author": "Themis Charvalis",
@@ -10696,5 +10726,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-16T17:38:58.812Z"
+  "lastUpdated": "2026-10-17T20:31:16.322Z"
 }
