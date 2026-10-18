@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261018W",
+      "title": "Troy Corser: Συνεπής ομαλός και πολύ γρήγορος",
+      "author": "Themis Charvalis",
+      "date": "2026-10-18",
+      "dateISO": "2026-10-18",
+      "displayDate": "18 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261018W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261018W/2.webp",
+      "excerpt": "Ο Troy Corser δεν ήταν από εκείνους που έδιναν την εντύπωση ότι πολεμούσαν με τη μοτοσυκλέτα τους. Δεν υπήρχαν θεαματικές κινήσεις, περιττές διορθώσεις ή εκείνη η αίσθηση ότι κάθε στροφή ήταν μια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261018W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Troy Corser",
+        "Sbk",
+        "Champion"
+      ],
+      "wordCount": 503,
+      "readingTime": "3 min",
+      "imageWidth": 1330,
+      "imageHeight": 600,
+      "backgroundImageWidth": 490,
+      "backgroundImageHeight": 626
+    },
+    {
       "id": "20261017W",
       "title": "Nicholas Latifi: Η εντυπωσιακή του παρουσία στις μικρές κατηγορίες",
       "author": "Themis Charvalis",
@@ -10726,5 +10755,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-17T20:31:16.322Z"
+  "lastUpdated": "2026-10-18T18:24:32.246Z"
 }
