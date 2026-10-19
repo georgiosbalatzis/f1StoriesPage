@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261019W",
+      "title": "Toyota:Νίκη τίτλου στο WEC",
+      "author": "Themis Charvalis",
+      "date": "2026-10-19",
+      "dateISO": "2026-10-19",
+      "displayDate": "19 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261019W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261019W/2.webp",
+      "excerpt": "Εκείνο το απόγευμα, η Βαρκελώνη έμοιαζε να δοκιμάζει τα όρια όλων. Η βροχή είχε μετατρέψει την πίστα σε μια απαιτητική δοκιμασία, εκεί όπου η ταχύτητα από μόνη της δεν αρκούσε και το παραμικρό λάθος...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261019W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "WEC",
+        "Toyota",
+        "Champions"
+      ],
+      "wordCount": 412,
+      "readingTime": "3 min",
+      "imageWidth": 739,
+      "imageHeight": 415,
+      "backgroundImageWidth": 596,
+      "backgroundImageHeight": 335
+    },
+    {
       "id": "20261018W",
       "title": "Troy Corser: Συνεπής ομαλός και πολύ γρήγορος",
       "author": "Themis Charvalis",
@@ -10755,5 +10784,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-18T18:24:32.246Z"
+  "lastUpdated": "2026-10-19T19:46:58.324Z"
 }
