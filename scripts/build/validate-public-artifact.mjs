@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
+import { buildSync } from 'esbuild';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -182,12 +183,30 @@ function distPathExistsForPublicPath(relPath) {
     return false;
 }
 
-function assertLocalRefExists(errors, fromRelPath, ref) {
-    const rel = resolvePublicPath(fromRelPath, ref);
+function assertLocalRefExists(errors, fromRelPath, ref, { distRoot = DIST_ROOT, requireFile = false } = {}) {
+    let rel;
+    try {
+        if (requireFile) {
+            const url = new URL(ref, `${SITE_ORIGIN}/${fromRelPath}`);
+            if (url.protocol !== 'https:' || url.origin !== SITE_ORIGIN) return;
+            rel = decodeURIComponent(url.pathname).slice(1) || '.';
+        } else {
+            rel = resolvePublicPath(fromRelPath, ref);
+        }
+    } catch (_) {
+        errors.push(`${fromRelPath}: invalid local reference ${ref}`);
+        return;
+    }
     if (!rel) return;
-    const abs = path.join(DIST_ROOT, rel);
-    if (fs.existsSync(abs)) return;
-    if (!path.posix.extname(rel) && fs.existsSync(path.join(DIST_ROOT, rel, 'index.html'))) return;
+    const abs = path.resolve(distRoot, rel);
+    const outside = path.relative(distRoot, abs);
+    if (requireFile) {
+        if (!outside.startsWith(`..${path.sep}`) && !path.isAbsolute(outside)
+            && fs.statSync(abs, { throwIfNoEntry: false })?.isFile()) return;
+    } else {
+        if (fs.existsSync(abs)) return;
+        if (!path.posix.extname(rel) && fs.existsSync(path.join(distRoot, rel, 'index.html'))) return;
+    }
     errors.push(`${fromRelPath}: missing local reference ${ref}`);
 }
 
@@ -202,20 +221,63 @@ function assertSiteUrlExists(errors, fromRelPath, value, label) {
     }
 }
 
-function validateHtmlRefs(errors, abs, relPath) {
+export function validateHtmlRefs(errors, abs, relPath, distRoot = DIST_ROOT) {
+    // Inspect opening tags, never script bodies or commented-out markup.
     const html = fs.readFileSync(abs, 'utf8')
-        .replace(/<script\b[\s\S]*?<\/script>/gi, '');
+        .replace(/<!--[\s\S]*?-->|<script\b((?:"[^"]*"|'[^']*'|[^'">])*)>[\s\S]*?<\/script\s*>/gi, (_, attributes) => {
+            if (attributes !== undefined) {
+                const attrs = /([^\s"'=<>`]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+                for (const match of attributes.matchAll(attrs)) {
+                    if (match[1].toLowerCase() === 'src') {
+                        assertLocalRefExists(errors, relPath, match[2] ?? match[3] ?? match[4] ?? '', { distRoot, requireFile: true });
+                        break;
+                    }
+                }
+            }
+            return '';
+        });
     const attrPattern = /\b(?:href|src|data-src)=["']([^"']+)["']/gi;
     for (const match of html.matchAll(attrPattern)) {
-        assertLocalRefExists(errors, relPath, match[1]);
+        assertLocalRefExists(errors, relPath, match[1], { distRoot });
     }
 
     const srcsetPattern = /\bsrcset=["']([^"']+)["']/gi;
     for (const match of html.matchAll(srcsetPattern)) {
         match[1].split(',').forEach(part => {
             const ref = part.trim().split(/\s+/)[0];
-            assertLocalRefExists(errors, relPath, ref);
+            assertLocalRefExists(errors, relPath, ref, { distRoot });
         });
+    }
+}
+
+export function validateJsRefs(errors, files, distRoot = DIST_ROOT) {
+    const entryPoints = files.filter(file => /\.js$/i.test(file));
+    if (!entryPoints.length) return;
+    try {
+        // Parse emitted files once; no bundling, resolution, execution or output writes.
+        const { metafile } = buildSync({
+            absWorkingDir: distRoot,
+            entryPoints,
+            outbase: distRoot,
+            outdir: path.join(distRoot, '__validate__'),
+            bundle: false,
+            write: false,
+            metafile: true,
+            sourcemap: false,
+            logLevel: 'silent'
+        });
+        for (const output of Object.values(metafile.outputs)) {
+            for (const dependency of output.imports) {
+                if (!['import-statement', 'dynamic-import'].includes(dependency.kind)) continue;
+                // With bundling disabled, even local imports are marked external.
+                if (!/^(?:\.{1,2}\/|\/|https?:\/\/)/i.test(dependency.path)) continue;
+                assertLocalRefExists(errors, toPosix(output.entryPoint), dependency.path, { distRoot, requireFile: true });
+            }
+        }
+    } catch (error) {
+        for (const detail of error.errors || [{ text: error.message }]) {
+            errors.push(`${detail.location?.file || 'JavaScript'}: ${detail.text}`);
+        }
     }
 }
 
@@ -761,6 +823,7 @@ function main() {
         }
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
+    validateJsRefs(errors, files);
 
     if (errors.length) {
         console.error('✗ public artifact validation failed:');
