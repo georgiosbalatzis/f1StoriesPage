@@ -169,7 +169,7 @@ npm run verify
 |---|---|---|
 | `/` | `index.html` | Αρχική σελίδα με cover story, journal με τα πιο πρόσφατα άρθρα, videos, ομάδα, sponsors και φόρμα επικοινωνίας (Formspree). Το build του blog γράφει το κύριο άρθρο κατευθείαν μέσα στο HTML. |
 | `/blog-module/blog/` | `blog-module/blog/index.html` | Αρχείο άρθρων με αναζήτηση, φίλτρα κατηγορίας και σελιδοποίηση. Η πρώτη σελίδα γράφεται στο HTML στο build time. Οι επόμενες φορτώνουν από τα JSON. |
-| `/blog-module/blog-entries/<id>/article.html` | παράγεται από `template.html` | Σελίδα άρθρου με hero, rail, σχετικά άρθρα, προηγούμενο/επόμενο και σχόλια Disqus. |
+| `/blog-module/blog-entries/<id>/article.html` | παράγεται από `template.html` | Σελίδα άρθρου με hero, rail, σχετικά άρθρα, προηγούμενο/επόμενο. |
 | `/standings/` | `standings/index.html` | Βαθμολογίες οδηγών και κατασκευαστών και 8 tabs αναλύσεων (ενότητα 8). |
 | `/authors/` | `authors/index.html` | Οι συντάκτες. |
 | `/privacy/privacy.html`, `/privacy/terms.html` | `privacy/` | Νομικές σελίδες. |
@@ -914,7 +914,6 @@ npm run quality:rendering:update
 | YouTube RSS | Snapshot των πρόσφατων videos | build |
 | Google Analytics 4 | Analytics και Web Vitals (`web_vital` event), μόνο μετά από συγκατάθεση | browser |
 | Formspree | Φόρμα επικοινωνίας της αρχικής | browser |
-| Disqus (`f1stories-gr`) | Σχόλια άρθρων | browser |
 | YouTube, Spotify, X, Instagram, Threads, Facebook κ.λπ. | Embeds μέσα στα άρθρα | browser |
 | GitHub REST API | Δημοσίευση από τα εργαλεία συντακτών | εργαλείο συντακτών |
 

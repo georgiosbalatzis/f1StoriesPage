@@ -108,7 +108,7 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
     --blog-border-strong: rgba(0,0,0,0.1);
 }
 
-.article-container, .article-content, .article-comments,
+.article-container, .article-content,
 .article-nav-link {
     transition: background var(--blog-transition), color var(--blog-transition),
                 border-color var(--blog-transition), box-shadow var(--blog-transition);
@@ -661,26 +661,7 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
     opacity: 1;
 }
 
-/* ── Comments / Nav / Related ────────────────── */
-.article-comments {
-    max-width: 760px;
-    margin: 2.4rem auto 0;
-    padding: 1.5rem 0 0;
-    background: transparent;
-    border: 0;
-    border-top: 1px solid var(--blog-border);
-}
-
-.article-comments h2 {
-    font-family: 'Outfit','DM Sans',sans-serif;
-    color: var(--blog-text-primary);
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    padding-bottom: 0;
-    border-bottom: 0;
-}
-
+/* ── Nav / Related ────────────────── */
 .article-navigation {
     max-width: 760px;
     margin: 1.75rem auto 0;
@@ -1137,10 +1118,6 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
         margin: 0;
         width: 100%;
         justify-content: center;
-    }
-
-    .article-comments {
-        padding: 1rem 0 0;
     }
 
     .sponsor-logos {

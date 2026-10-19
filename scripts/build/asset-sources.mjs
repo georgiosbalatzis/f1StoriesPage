@@ -48,7 +48,6 @@ export const JS_INPUTS = [
     'blog-module/blog-index.js',
     'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
-    'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
     // Author tools (generate.html, housekeeping.html).
     'scripts/author/session-token.js',

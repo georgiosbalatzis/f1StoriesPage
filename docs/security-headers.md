@@ -16,7 +16,7 @@ from `security-policy.mjs`.
 
 | Profile | Pages | Why it differs |
 |---|---|---|
-| `public` | every public page (home, archive, articles, standings, authors, legal, 404) | analytics after consent, Disqus, social embeds, F1 data APIs, Formspree |
+| `public` | every public page (home, archive, articles, standings, authors, legal, 404) | analytics after consent, social embeds, F1 data APIs, Formspree |
 | `author-tools` | `housekeeping.html` | holds the GitHub token; talks only to `api.github.com`; runs no third-party code |
 | `author-generate` | `generate.html` | as `author-tools`, plus the live preview: YouTube and whitelisted iframes, and the X, Instagram, Threads and Facebook embed SDKs |
 
