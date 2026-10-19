@@ -1,0 +1,143 @@
+[
+  {
+    "name": "article-provider-failures",
+    "cmd": "node /tmp/f1-step4-evidence/fallback-check.cjs",
+    "status": 0,
+    "signal": null,
+    "seconds": 6.936,
+    "log": "article-provider-failures-rerun.log"
+  },
+  {
+    "name": "assets",
+    "cmd": "npm run check:assets",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.264
+  },
+  {
+    "name": "blog",
+    "cmd": "npm run test:blog",
+    "status": 0,
+    "signal": null,
+    "seconds": 2.803
+  },
+  {
+    "name": "security",
+    "cmd": "npm run test:security",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.422
+  },
+  {
+    "name": "runtime",
+    "cmd": "npm run audit:runtime",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.512
+  },
+  {
+    "name": "media",
+    "cmd": "npm run qa:media",
+    "status": 0,
+    "signal": null,
+    "seconds": 1.251
+  },
+  {
+    "name": "size-budgets",
+    "cmd": "npm run perf:budget",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.25
+  },
+  {
+    "name": "article-media",
+    "cmd": "npm run perf:article-media",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.286
+  },
+  {
+    "name": "public-images",
+    "cmd": "npm run perf:images",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.278
+  },
+  {
+    "name": "consent",
+    "cmd": "npm run test:consent",
+    "status": 0,
+    "signal": null,
+    "seconds": 46.727
+  },
+  {
+    "name": "embed-and-visual-tests",
+    "cmd": "node --test scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/size-budget.test.mjs",
+    "status": 0,
+    "signal": null,
+    "seconds": 7.549
+  },
+  {
+    "name": "public-artifact-tests",
+    "cmd": "node --test scripts/build/__tests__/public-artifact-refs.test.mjs scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.78
+  },
+  {
+    "name": "static",
+    "cmd": "npm run quality:static",
+    "status": 0,
+    "signal": null,
+    "seconds": 21.715
+  },
+  {
+    "name": "author",
+    "cmd": "npm run test:author",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.368
+  },
+  {
+    "name": "standings",
+    "cmd": "npm run test:standings",
+    "status": 0,
+    "signal": null,
+    "seconds": 0.419
+  },
+  {
+    "name": "standings-recorded-interactions",
+    "cmd": "node scripts/perf/standings-interactions-qa.mjs --root=dist --widths=390,1440 --themes=dark,light --output=/tmp/f1-step4-evidence/checks/standings-interactions.json",
+    "status": 0,
+    "signal": null,
+    "seconds": 12.976
+  },
+  {
+    "name": "embed-dialog",
+    "cmd": "npm run qa:embed-dialog -- --root=dist",
+    "status": 0,
+    "signal": null,
+    "seconds": 33.915
+  },
+  {
+    "name": "visual",
+    "cmd": "npm run qa:visual -- --output-dir=/tmp/f1-step4-evidence/checks/visual",
+    "status": 0,
+    "signal": null,
+    "seconds": 365.115
+  },
+  {
+    "name": "lighthouse",
+    "cmd": "npm run perf:lighthouse -- --output-dir /tmp/f1-step4-evidence/checks/lighthouse --keep-json",
+    "status": 0,
+    "signal": null,
+    "seconds": 119.578
+  },
+  {
+    "name": "tablet-cls",
+    "cmd": "npm run perf:cls-tablet -- --widths 768",
+    "status": 0,
+    "signal": null,
+    "seconds": 14.805
+  }
+]

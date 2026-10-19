@@ -1,0 +1,162 @@
+[
+  {
+    "file": "20260423G-accepted-dark-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-accepted-dark-390-0-baseline-embed.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-accepted-dark-390-0-baseline-instagram.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-accepted-dark-390-0-baseline-youtube.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 320289,
+    "percent": 10.811662008344474,
+    "maxChannelDelta": 249
+  },
+  {
+    "file": "20260423G-declined-light-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-declined-light-390-0-baseline-embed.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-declined-light-390-0-baseline-instagram.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20260423G-declined-light-390-0-baseline-youtube.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 112877,
+    "percent": 3.810271262877898,
+    "maxChannelDelta": 69
+  },
+  {
+    "file": "20261007G-accepted-dark-1440-0-baseline-cold.png",
+    "width": 1440,
+    "height": 1000,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-dark-1440-0-baseline-embed.png",
+    "width": 1440,
+    "height": 1000,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-dark-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-dark-390-0-baseline-embed.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-light-1440-0-baseline-cold.png",
+    "width": 1440,
+    "height": 1000,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-light-1440-0-baseline-embed.png",
+    "width": 1440,
+    "height": 1000,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-light-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-accepted-light-390-0-baseline-embed.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-declined-dark-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261007G-declined-dark-390-0-baseline-embed.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261019W-accepted-dark-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  },
+  {
+    "file": "20261019W-declined-light-390-0-baseline-cold.png",
+    "width": 1170,
+    "height": 2532,
+    "differentPixels": 0,
+    "percent": 0,
+    "maxChannelDelta": 0
+  }
+]

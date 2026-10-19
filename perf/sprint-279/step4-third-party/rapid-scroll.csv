@@ -1,0 +1,7 @@
+pair,variant,near_at_ms,usable_at_ms,activation_ms,history_return_ms,bfcache,repeat_google_sdk_requests,errors
+1,baseline,2876,5168,2292,220,True,0,0
+1,candidate,2497,4858,2361,212,True,0,0
+2,candidate,2367,4571,2204,209,True,0,0
+2,baseline,2748,5209,2461,222,True,0,0
+3,baseline,2746,5133,2387,216,True,0,0
+3,candidate,2369,4770,2401,220,True,0,0
