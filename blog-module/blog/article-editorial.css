@@ -516,11 +516,6 @@
 :root:not([data-theme="light"]) .article-page .sponsor-strip .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
 :root:not([data-theme="light"]) .article-page .sponsor-strip .sponsor-logo:focus-visible { outline: 2px solid var(--accent-readable); outline-offset: 2px; }
 
-.article-page .article-comments { max-width: 968px; margin: 64px auto 0; padding-top: 28px; border-color: var(--border); }
-.article-page .article-comments h2 { font: 400 2rem/1.25 var(--font-editorial); }
-.article-page .article-comments h2 .icon { display: none; }
-.article-page .comments-load-btn { min-height: 44px; padding: 10px 16px; font-size: .875rem; }
-.article-page #disqus_thread:focus { outline: none; }
 .article-page .article-navigation { max-width: 968px; margin: 40px auto 0; flex-direction: row; gap: 20px; padding-block: 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .article-page .article-nav-link { width: auto; padding: 10px 0; border: 0; border-radius: 0; background: none; color: var(--text-primary); font: 500 .875rem/1.4 var(--font-body); box-shadow: none; }
 .article-page .article-nav-link.next { margin-left: auto; }
@@ -540,7 +535,7 @@
     .article-page .article-page-wrapper { margin-top: 68px; }
     .article-page .article-header { padding-inline: 28px; }
     .article-page .article-title { max-width: none; font-size: clamp(2rem, 4.5vw, 3rem); }
-    .article-page :is(.article-comments, .article-navigation, .article-related-section) { max-width: 740px; }
+    .article-page :is(.article-navigation, .article-related-section) { max-width: 740px; }
 }
 @media (max-width: 767px) {
     .article-page .article-page-wrapper { margin-top: 68px; padding-bottom: 48px; }
@@ -576,7 +571,6 @@
     .article-page .author-card__portrait { width: 64px; height: 64px; }
     .article-page .author-card__name { font-size: 1.2rem; overflow-wrap: anywhere; }
 
-    .article-page .article-comments { margin-top: 44px; }
     .article-page .article-navigation { margin-top: 30px; gap: 16px; }
     .article-page .article-nav-link { font-size: .75rem; }
     /* The link wraps a single card element, so the two columns belong on the card. */
@@ -1262,10 +1256,7 @@
 }
 @media (max-width: 767px) { .article-page .rr-partners__layout { padding: 0 22px; overflow-x: clip; } }
 
-/* Comments and NEXT UP. ------------------------------------------------------------------------------------- */
-.article-page .rr .rr-comments { width: min(var(--measure), 100% - 2 * var(--gutter)); max-width: none; margin: 64px auto 0; padding: 0; border: 0; background: none; }
-.article-page .rr .rr-comments h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; color: var(--text-primary); font: 600 2rem/1.1 var(--font-body); letter-spacing: -.03em; }
-.article-page .rr .rr-comments h2 .icon { width: .8em; height: .8em; }
+/* NEXT UP. ------------------------------------------------------------------------------------- */
 .article-page .rr-next { max-width: 1476px; margin: 0 auto; padding: 72px var(--gutter) 104px; }
 .article-page .rr-next__mast { margin: 0 0 28px; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); color: var(--text-primary); font: 700 clamp(4rem, 11vw, 10rem)/.8 var(--cond); letter-spacing: -.012em; }
 .article-page .rr-next__mast span { color: var(--signal); }

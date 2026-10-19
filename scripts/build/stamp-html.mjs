@@ -29,6 +29,7 @@ import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { applyArticleEditorial } from './article-editorial.mjs';
+import { removeRetiredComments } from './remove-retired-comments.mjs';
 import { resolveArticleScope } from './article-scope.mjs';
 
 const { replaceYouTubeIframes } = createRequire(import.meta.url)('../../blog-module/build/youtube-facade.js');
@@ -145,7 +146,6 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
-    'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
     'scripts/sw-cleanup.js'
 ]);
@@ -722,30 +722,6 @@ function stampArticleGtmDnsPrefetch(dry) {
     return totals;
 }
 
-function articleIdFromRel(relPath) {
-    const parts = relPath.split('/');
-    return parts.length >= 3 ? parts[2] : '';
-}
-
-function dropLegacyArticleCommentsScript(html) {
-    return String(html || '').replace(
-        /\n?[ \t]*<script>\s*document\.addEventListener\(['"]DOMContentLoaded['"],\s*function\s*\(\)\s*\{[\s\S]*?observer\.observe\(disqusThread\);\s*\}\);\s*<\/script>\s*/g,
-        '\n'
-    );
-}
-
-function ensureArticleCommentsScript(html, commentsInfo) {
-    if (!commentsInfo || !commentsInfo.min || !commentsInfo.hash) return html;
-    if (!/id=["']disqus_thread["']/i.test(html)) return html;
-    if (/\/blog-module\/blog\/article-comments(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
-
-    const commentsSrc = `/${commentsInfo.min}?v=${commentsInfo.hash}`;
-    return String(html || '').replace(
-        /(<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
-        `$1\n<script defer src="${commentsSrc}"></script>`
-    );
-}
-
 // article-embeds.js (BetCast/standings/telemetry adapters, ~12 KB min) is shipped only to articles that carry a
 // managed embed; the markers mirror MANAGED_EMBED_SELECTOR in article-script.js. It precedes article-script so
 // both deferred scripts run, in order, before DOMContentLoaded.
@@ -925,9 +901,8 @@ function ensureLazyIframes(html) {
     ));
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, swInfo, embedsInfo) {
-    const articleId = articleIdFromRel(relPath);
-    let result = String(html || '');
+function normalizeArticleRuntimeMarkup(html, relPath, swInfo, embedsInfo) {
+    let result = removeRetiredComments(html);
     result = asyncifyStylesheets(result, relPath).result;
     result = dropLegacyCsvTableScripts(result);
     result = result.replace(
@@ -939,17 +914,11 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, swInfo, embe
         ' data-show-on-error="author-initial"'
     );
     result = result.replace(
-        /<div id="disqus_thread"(?:\s+data-article-id="[^"]*")?\s*><\/div>/g,
-        `<div id="disqus_thread" data-article-id="${articleId}"></div>`
-    );
-    result = dropLegacyArticleCommentsScript(result);
-    result = result.replace(
         /<script>document\.write\(new Date\(\)\.getFullYear\(\)\)<\/script>/g,
         '<span data-current-year>2026</span>'
     );
     result = ensureArticleMiniBar(result);
     result = ensureArticleEmbedsScript(result, embedsInfo);
-    result = ensureArticleCommentsScript(result, commentsInfo);
     result = ensureSwCleanupScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
     result = ensureArticleCookieSettings(result);
@@ -963,7 +932,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, swInfo, embe
     return result;
 }
 
-function stampArticleRuntimeMarkup(commentsInfo, dry, manifest) {
+function stampArticleRuntimeMarkup(dry, manifest) {
     const assetHref = source => {
         const entry = manifest[source];
         if (!entry) throw new Error(`Editorial asset missing: ${source}`);
@@ -978,7 +947,7 @@ function stampArticleRuntimeMarkup(commentsInfo, dry, manifest) {
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.
@@ -1186,10 +1155,6 @@ function main() {
     if (!themeInfo) {
         throw new Error('manifest missing entry for scripts/theme-init.js — run build:assets:minify');
     }
-    const articleCommentsInfo = manifest['blog-module/blog/article-comments.js'];
-    if (!articleCommentsInfo) {
-        throw new Error('manifest missing entry for blog-module/blog/article-comments.js — run build:assets:minify');
-    }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
@@ -1347,7 +1312,7 @@ function main() {
         );
     }
 
-    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, dry, manifest);
+    const articleRuntimeMarkup = stampArticleRuntimeMarkup(dry, manifest);
     if (articleRuntimeMarkup.files) {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntimeMarkup.files} file(s), inline runtime markup migrated`

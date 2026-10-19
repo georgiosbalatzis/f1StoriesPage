@@ -55,7 +55,6 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/index.html',
     'blog-module/blog/archive-editorial.min.css',
     'blog-module/blog/article-editorial.min.css',
-    'blog-module/blog/article-comments.min.js',
     'blog-module/blog/article-embeds.min.js',
     'blog-module/blog/article-script.min.js',
     'blog-module/blog/article-styles.min.css',

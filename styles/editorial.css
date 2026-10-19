@@ -653,7 +653,7 @@ body.editorial-page :is(.cta-primary, .contact-submit, .cookie-btn.accept-btn, .
     box-shadow: none;
     transform: none;
 }
-body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .comments-load-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn) {
+body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn) {
     color: var(--text-primary);
     background: var(--bg-base);
     border: 1px solid var(--border);
@@ -666,7 +666,7 @@ body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .f
     -webkit-backdrop-filter: none;
     transition: color .25s, border-color .25s;
 }
-body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .comments-load-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn):is(:hover, :focus-visible):not(:disabled) {
+body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn):is(:hover, :focus-visible):not(:disabled) {
     color: var(--accent-readable);
     background: var(--bg-base);
     border-color: var(--accent-readable);

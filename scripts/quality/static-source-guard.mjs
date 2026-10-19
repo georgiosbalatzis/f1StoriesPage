@@ -218,8 +218,6 @@ const INLINE_SCRIPT_TYPES = new Set([
 
 const APPROVED_CSP_EXTERNAL_SOURCES = new Set([
     'https:',
-    'https://*.disqus.com',
-    'https://*.disquscdn.com',
     'https://*.twitter.com',
     'https://*.x.com',
     'https://analytics.google.com',
@@ -232,9 +230,7 @@ const APPROVED_CSP_EXTERNAL_SOURCES = new Set([
     'https://codepen.io',
     'https://connect.facebook.net',
     'https://datawrapper.dwcdn.net',
-    'https://disqus.com',
     'https://facebook.com',
-    'https://f1stories-gr.disqus.com',
     'https://f1-stories.gr',
     'https://formspree.io',
     'https://georgiosbalatzis.github.io',
