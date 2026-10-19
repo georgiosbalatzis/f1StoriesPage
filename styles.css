@@ -292,8 +292,8 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 *:focus:not(:focus-visible) { outline: none; }
 
-.cta-button:focus-visible, .cookie-btn:focus-visible, .latest-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 4px var(--accent-muted); }
-a.ep-card:focus-visible, .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cta-button:focus-visible, .cookie-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 4px var(--accent-muted); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .social-media a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 4px var(--accent-muted); }
 .form-control:focus-visible, .contact-form input:focus-visible, .contact-form textarea:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); outline: none; }
 .toggle-switch input:focus-visible + .toggle-slider { box-shadow: 0 0 0 3px var(--accent-muted); }
@@ -320,9 +320,8 @@ a.ep-card:focus-visible, .card:focus-visible { outline: 2px solid var(--accent);
    PERFORMANCE (from polish.css)
    ============================================================ */
 
-.avatar, .ep-card__thumb img { will-change: transform; transform: translateZ(0); }
-a, button, .cta-button, .latest-tab, .toggle-switch, .scroll-to-top-btn, .close-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-.ep-card__thumb { aspect-ratio: 16 / 9; overflow: hidden; }
+.avatar { will-change: transform; transform: translateZ(0); }
+a, button, .cta-button, .toggle-switch, .scroll-to-top-btn, .close-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .persona .avatar { aspect-ratio: 1; }
 .navbar, .cookie-banner, .cookie-consent, .scroll-to-top-btn { contain: layout style; }
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
