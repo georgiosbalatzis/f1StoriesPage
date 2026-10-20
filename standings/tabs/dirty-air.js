@@ -187,6 +187,8 @@ function handleTableClick(event) {
     event.stopImmediatePropagation();
     state.activeView = nextView;
     applyViewState();
+    // The existing report now represents this view; keep it on the next tab visit.
+    if (lastRender && dirtyAirTable.firstElementChild === lastRender.node) lastRender.key = renderKey();
 }
 
 function handleSessionChange(event) {

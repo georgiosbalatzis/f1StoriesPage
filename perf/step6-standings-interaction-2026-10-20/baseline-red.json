@@ -1,0 +1,26 @@
+{
+  "fixture": "Actual public provider responses. Browser routing derives a two-race/one-qualifying session subset and one-round schedule; no complete-season correctness claim. Location samples cover11388 Ferrari16/44 fastestlaps only.",
+  "root": "/tmp/f1-step6-baseline-dist",
+  "results": [
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": "fail",
+      "error": "AssertionError [ERR_ASSERTION]: dirty-air view change retains report on revisit\n    at check (file:///private/tmp/f1-standings-step6/scripts/perf/standings-interactions-qa.mjs:41:53)\n    at matrixChecks (file:///private/tmp/f1-standings-step6/scripts/perf/standings-interactions-qa.mjs:216:9)\n    at async main (file:///private/tmp/f1-standings-step6/scripts/perf/standings-interactions-qa.mjs:333:32)"
+    },
+    {
+      "navigation": {
+        "status": "pass",
+        "checks": [
+          "deep link",
+          "back/forward",
+          "embedded tyre",
+          "pinned round",
+          "tyre failure/retry",
+          "snapshot fallback"
+        ]
+      },
+      "status": "pass"
+    }
+  ]
+}

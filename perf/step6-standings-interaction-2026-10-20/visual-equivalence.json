@@ -1,0 +1,518 @@
+{
+  "svg": [
+    {
+      "width": 390,
+      "theme": "dark",
+      "equal": true
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "equal": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "equal": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "equal": true
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "equal": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "equal": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "dark-1440-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "28f93ca38f1744aaccf0f711b5b1e17d86109884c0435b090d93c982ece101b8",
+      "candidatePngSha256": "28f93ca38f1744aaccf0f711b5b1e17d86109884c0435b090d93c982ece101b8"
+    },
+    {
+      "file": "dark-1440-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "ee98be76c889333cee8aefdf08005ea85255b67a682e6d70af7f68a61322435b",
+      "candidatePngSha256": "ee98be76c889333cee8aefdf08005ea85255b67a682e6d70af7f68a61322435b"
+    },
+    {
+      "file": "dark-1440-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "3d011331e1354c6d820de30b048737d7a291ba3da515936049a99802d35342db",
+      "candidatePngSha256": "3d011331e1354c6d820de30b048737d7a291ba3da515936049a99802d35342db"
+    },
+    {
+      "file": "dark-1440-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "15b2a9a4a272b3599647390bc80a904b686149413ce2b2b7d554e6ec3e846c4f",
+      "candidatePngSha256": "15b2a9a4a272b3599647390bc80a904b686149413ce2b2b7d554e6ec3e846c4f"
+    },
+    {
+      "file": "dark-1440-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "4ec1112e1722d78da0901d3fdb9dea04307e8c99f8db21292e2b87d451258e55",
+      "candidatePngSha256": "4ec1112e1722d78da0901d3fdb9dea04307e8c99f8db21292e2b87d451258e55"
+    },
+    {
+      "file": "dark-1440-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "8e9dd2786f1db713b6df37f34c941360a0423e3439c703b05975f24a638743c5",
+      "candidatePngSha256": "8e9dd2786f1db713b6df37f34c941360a0423e3439c703b05975f24a638743c5"
+    },
+    {
+      "file": "dark-1440-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "6508b5a7393adfb5f2a2cc4664a2ad473a29934d4adbd998ccce078c81cca5a4",
+      "candidatePngSha256": "6508b5a7393adfb5f2a2cc4664a2ad473a29934d4adbd998ccce078c81cca5a4"
+    },
+    {
+      "file": "dark-1440-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "bdec50d03d256a6dc0c40af555b5ab066d24c56d80ebf54be8d34c3505e84890",
+      "candidatePngSha256": "bdec50d03d256a6dc0c40af555b5ab066d24c56d80ebf54be8d34c3505e84890"
+    },
+    {
+      "file": "dark-1440-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "348da05f521aa9fbfbf8e37bd05ae3eed809f91e8e61cdbc365f4e3f1f9dd86d",
+      "candidatePngSha256": "348da05f521aa9fbfbf8e37bd05ae3eed809f91e8e61cdbc365f4e3f1f9dd86d"
+    },
+    {
+      "file": "dark-390-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "1be30bb4d8c4cf13ef4a9f2187bfa927dbd4879a2706030df5742e2b9a2efa39",
+      "candidatePngSha256": "1be30bb4d8c4cf13ef4a9f2187bfa927dbd4879a2706030df5742e2b9a2efa39"
+    },
+    {
+      "file": "dark-390-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "2ea784118687e55d8a655a568d969bb4a27547a04a0a8be6d9dc5d88b213d95c",
+      "candidatePngSha256": "2ea784118687e55d8a655a568d969bb4a27547a04a0a8be6d9dc5d88b213d95c"
+    },
+    {
+      "file": "dark-390-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "2374efc3ad8d26b243d7f3caf7063f2f45cfa0c5981d5aa1bfa0e14cf8fdc45c",
+      "candidatePngSha256": "2374efc3ad8d26b243d7f3caf7063f2f45cfa0c5981d5aa1bfa0e14cf8fdc45c"
+    },
+    {
+      "file": "dark-390-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "3b6af3d42ddbbbf2d891d4d92da0edbf13f2d53b8c6a33d58f13e32d6a3634f2",
+      "candidatePngSha256": "3b6af3d42ddbbbf2d891d4d92da0edbf13f2d53b8c6a33d58f13e32d6a3634f2"
+    },
+    {
+      "file": "dark-390-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "18fb50ccb9bc4b7885be4c714afc30679b8a2a64f7d70431bd3793fcce873314",
+      "candidatePngSha256": "18fb50ccb9bc4b7885be4c714afc30679b8a2a64f7d70431bd3793fcce873314"
+    },
+    {
+      "file": "dark-390-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "48350f131ac2ac8f9991c98f7ebacca53555b25bcaee51c4c2c24be2411c1a64",
+      "candidatePngSha256": "48350f131ac2ac8f9991c98f7ebacca53555b25bcaee51c4c2c24be2411c1a64"
+    },
+    {
+      "file": "dark-390-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "eb0ab5058ff6319b50f82a1d64bee31b0eb2547f572625035438ac15d5b98710",
+      "candidatePngSha256": "eb0ab5058ff6319b50f82a1d64bee31b0eb2547f572625035438ac15d5b98710"
+    },
+    {
+      "file": "dark-390-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "1e56ae809a6d18e3adca0f9e151ff136aa5b0b16e1494a192564587cc5bd2a30",
+      "candidatePngSha256": "1e56ae809a6d18e3adca0f9e151ff136aa5b0b16e1494a192564587cc5bd2a30"
+    },
+    {
+      "file": "dark-390-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "6042887f80ad7bb9068d2631155eafd08eb8a36aac36446fcf106a7347e6d493",
+      "candidatePngSha256": "6042887f80ad7bb9068d2631155eafd08eb8a36aac36446fcf106a7347e6d493"
+    },
+    {
+      "file": "dark-768-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "3ac0188d00bf07f562097dc94ffca2c76ca04294b8ac4497313608c6ffe68349",
+      "candidatePngSha256": "3ac0188d00bf07f562097dc94ffca2c76ca04294b8ac4497313608c6ffe68349"
+    },
+    {
+      "file": "dark-768-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "b9814f68475c0c4e1d1cfe8e6e200efece0e986089163e7c438e11d573e796a3",
+      "candidatePngSha256": "b9814f68475c0c4e1d1cfe8e6e200efece0e986089163e7c438e11d573e796a3"
+    },
+    {
+      "file": "dark-768-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "d590f63991bc168fb18f310f2ebc1b9d85d451d36fd418025199115a38ead3a2",
+      "candidatePngSha256": "d590f63991bc168fb18f310f2ebc1b9d85d451d36fd418025199115a38ead3a2"
+    },
+    {
+      "file": "dark-768-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "5aa2b7d310eab46ed916e0456d4043d1c99d79f575c2a8a560ee696706a820b2",
+      "candidatePngSha256": "5aa2b7d310eab46ed916e0456d4043d1c99d79f575c2a8a560ee696706a820b2"
+    },
+    {
+      "file": "dark-768-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "0cd2065a4d8a07a19fb7b85f0cc0b41b755fdff086d44477d0b1069aef00606d",
+      "candidatePngSha256": "0cd2065a4d8a07a19fb7b85f0cc0b41b755fdff086d44477d0b1069aef00606d"
+    },
+    {
+      "file": "dark-768-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "00cfced848d8a48d18395b27c06f9b999a49f0982fcb6e6b3ef70569330e493e",
+      "candidatePngSha256": "00cfced848d8a48d18395b27c06f9b999a49f0982fcb6e6b3ef70569330e493e"
+    },
+    {
+      "file": "dark-768-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "59eee6cfd1fd467aa7d3532b892fdeec756eaab1d639ebc434f36241eba8a7d0",
+      "candidatePngSha256": "59eee6cfd1fd467aa7d3532b892fdeec756eaab1d639ebc434f36241eba8a7d0"
+    },
+    {
+      "file": "dark-768-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "021d38fa600a58df8de93d533235bf090858c154414865a2c2f8b7de5a177f1c",
+      "candidatePngSha256": "021d38fa600a58df8de93d533235bf090858c154414865a2c2f8b7de5a177f1c"
+    },
+    {
+      "file": "dark-768-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "4c8dcdd202216928be2239b88bce804820065ed026be50121ccf146bdce93569",
+      "candidatePngSha256": "4c8dcdd202216928be2239b88bce804820065ed026be50121ccf146bdce93569"
+    },
+    {
+      "file": "light-1440-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "480de5f0ec911073b0cb9255e5c66b90349ae8398c773a520c378b673f86db72",
+      "candidatePngSha256": "480de5f0ec911073b0cb9255e5c66b90349ae8398c773a520c378b673f86db72"
+    },
+    {
+      "file": "light-1440-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "ef1ce75013f6a871f725593013a3a7abb1f7da21f31ea1fc1af1da7bb821aa0c",
+      "candidatePngSha256": "ef1ce75013f6a871f725593013a3a7abb1f7da21f31ea1fc1af1da7bb821aa0c"
+    },
+    {
+      "file": "light-1440-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "d075b74dc18ec124ffe179b45b4dc6ca4ef8eb65c70ad33f635c27a1bb1a8d5a",
+      "candidatePngSha256": "d075b74dc18ec124ffe179b45b4dc6ca4ef8eb65c70ad33f635c27a1bb1a8d5a"
+    },
+    {
+      "file": "light-1440-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "93b8b596c08c470870042012190943c3926f67eab1834aad981a2349ea417ba7",
+      "candidatePngSha256": "93b8b596c08c470870042012190943c3926f67eab1834aad981a2349ea417ba7"
+    },
+    {
+      "file": "light-1440-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "ce2a26a3cb36ac68bedd5e05c2a57a9bcbcf62b0f9df7ac5fa38b76dde00029c",
+      "candidatePngSha256": "ce2a26a3cb36ac68bedd5e05c2a57a9bcbcf62b0f9df7ac5fa38b76dde00029c"
+    },
+    {
+      "file": "light-1440-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "66cc156da980078e9527420420e23500d62df7b82ae13019a373b5c157143a0a",
+      "candidatePngSha256": "66cc156da980078e9527420420e23500d62df7b82ae13019a373b5c157143a0a"
+    },
+    {
+      "file": "light-1440-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "5c2e8acb6007107e5d825a01178794c9f0f8eb300b00669e88dc41f6613daab1",
+      "candidatePngSha256": "5c2e8acb6007107e5d825a01178794c9f0f8eb300b00669e88dc41f6613daab1"
+    },
+    {
+      "file": "light-1440-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "2d4782222b7028beafe72fb298c4d5182e5834232c445dff2d483046f5d51ffc",
+      "candidatePngSha256": "2d4782222b7028beafe72fb298c4d5182e5834232c445dff2d483046f5d51ffc"
+    },
+    {
+      "file": "light-1440-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "557a7dc8cd495f3dbe6f450234695d5a0e011215761e5ca7c00c808547679a86",
+      "candidatePngSha256": "557a7dc8cd495f3dbe6f450234695d5a0e011215761e5ca7c00c808547679a86"
+    },
+    {
+      "file": "light-390-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "656a1930f4d7d5bb5576f65266b7aa25461b62526a949723c5e17abaf9297e4e",
+      "candidatePngSha256": "656a1930f4d7d5bb5576f65266b7aa25461b62526a949723c5e17abaf9297e4e"
+    },
+    {
+      "file": "light-390-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "0bf91cc5063e3c879a814fd483bba991e4dfe702c14f54944fc4ae5aeb3c81af",
+      "candidatePngSha256": "0bf91cc5063e3c879a814fd483bba991e4dfe702c14f54944fc4ae5aeb3c81af"
+    },
+    {
+      "file": "light-390-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "3f3caea5cdf92aa8f586e3ab485e6ab097fee74608d52df0943fb8c313f7d8d1",
+      "candidatePngSha256": "3f3caea5cdf92aa8f586e3ab485e6ab097fee74608d52df0943fb8c313f7d8d1"
+    },
+    {
+      "file": "light-390-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "989db2a5f9848cc76b2379cc65f83778e25ce02d7d9f8c600068347d42270547",
+      "candidatePngSha256": "989db2a5f9848cc76b2379cc65f83778e25ce02d7d9f8c600068347d42270547"
+    },
+    {
+      "file": "light-390-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "f1e7d3156f43e5430e31ab6c9fed80af98424e0756349b9f80f0f5e3038ed1f3",
+      "candidatePngSha256": "f1e7d3156f43e5430e31ab6c9fed80af98424e0756349b9f80f0f5e3038ed1f3"
+    },
+    {
+      "file": "light-390-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "70b46bd305a6fcb01ef81b993fdb5867e4bd422cd0d6ad1520f3c62a837a701c",
+      "candidatePngSha256": "70b46bd305a6fcb01ef81b993fdb5867e4bd422cd0d6ad1520f3c62a837a701c"
+    },
+    {
+      "file": "light-390-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "cc2e6d162f12a2b3401aa3bede2537f861af131b4cca1bbfe808831f64f0e267",
+      "candidatePngSha256": "cc2e6d162f12a2b3401aa3bede2537f861af131b4cca1bbfe808831f64f0e267"
+    },
+    {
+      "file": "light-390-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "9294185bfe3f18e8f8a549b0350d3e038cbc3ece085170acf3fb387b8ff03396",
+      "candidatePngSha256": "9294185bfe3f18e8f8a549b0350d3e038cbc3ece085170acf3fb387b8ff03396"
+    },
+    {
+      "file": "light-390-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "073ddf2518915c44518d9901b8d707cb0c07563dc42eeb99f964c51e30ef20ed",
+      "candidatePngSha256": "073ddf2518915c44518d9901b8d707cb0c07563dc42eeb99f964c51e30ef20ed"
+    },
+    {
+      "file": "light-768-constructors.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "8771565b09bb79bcaf299b28840e4c82e7d7a586f36062c5581a5e78c1f0217f",
+      "candidatePngSha256": "8771565b09bb79bcaf299b28840e4c82e7d7a586f36062c5581a5e78c1f0217f"
+    },
+    {
+      "file": "light-768-debrief.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "9a958ea23034d64463897eb338e466ca00734fb75b984293ab1c31e46b806a7a",
+      "candidatePngSha256": "9a958ea23034d64463897eb338e466ca00734fb75b984293ab1c31e46b806a7a"
+    },
+    {
+      "file": "light-768-dirty-air.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "2185f29da93d0105eaa3e29fc34e5e795b0bc66ac85dc91c3588cd3b4fa2c194",
+      "candidatePngSha256": "2185f29da93d0105eaa3e29fc34e5e795b0bc66ac85dc91c3588cd3b4fa2c194"
+    },
+    {
+      "file": "light-768-drivers.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "63aa60a2770f67de5930b8c369f07f37fd5a97a015826cb93a6f22e3dea75720",
+      "candidatePngSha256": "63aa60a2770f67de5930b8c369f07f37fd5a97a015826cb93a6f22e3dea75720"
+    },
+    {
+      "file": "light-768-lap1-gains.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "e51c00119a83a16f0df48091a3fe6d68f0c3428f3d5a3080b69980599c9115a6",
+      "candidatePngSha256": "e51c00119a83a16f0df48091a3fe6d68f0c3428f3d5a3080b69980599c9115a6"
+    },
+    {
+      "file": "light-768-pit-stops.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "765e7f04d0c1f342f6f25bbf936218fe535706f98315a2b1e8f5a4c05bf8a01d",
+      "candidatePngSha256": "765e7f04d0c1f342f6f25bbf936218fe535706f98315a2b1e8f5a4c05bf8a01d"
+    },
+    {
+      "file": "light-768-quali-gaps.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "aaad2db46919e0e302bf632e97e89e9e8cb3e3999de8b7cece1a1723207fa598",
+      "candidatePngSha256": "aaad2db46919e0e302bf632e97e89e9e8cb3e3999de8b7cece1a1723207fa598"
+    },
+    {
+      "file": "light-768-track-dominance.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "06c54d1a1682bcb1a346779101fc5d46b239c55038164ccf9276c2e83707fda8",
+      "candidatePngSha256": "06c54d1a1682bcb1a346779101fc5d46b239c55038164ccf9276c2e83707fda8"
+    },
+    {
+      "file": "light-768-tyre-pace.png",
+      "sameDimensions": true,
+      "differentPixels": 0,
+      "maxDelta": 0,
+      "baselinePngSha256": "3eaa3d6c77fedfdbb57e0a16f96297eb2bbf5bfc9767f407a0f610991ec992d1",
+      "candidatePngSha256": "3eaa3d6c77fedfdbb57e0a16f96297eb2bbf5bfc9767f407a0f610991ec992d1"
+    }
+  ],
+  "timeline": [
+    {
+      "theme": "dark",
+      "width": 390,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "a6674fe0fdd5d92afa39e8a5bdead705c82b1dbb011dca7fe7f17bcd9db5402b",
+      "candidatePngSha256": "a6674fe0fdd5d92afa39e8a5bdead705c82b1dbb011dca7fe7f17bcd9db5402b"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "ae5ae86358fde3590b1927e28af9c38de2374062be39ab279ae63a75a125a062",
+      "candidatePngSha256": "ae5ae86358fde3590b1927e28af9c38de2374062be39ab279ae63a75a125a062"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "d46aad6dccde8a806c42c8bcdfe6ef5962d53c1201d71bf568b5b28ecd79849f",
+      "candidatePngSha256": "d46aad6dccde8a806c42c8bcdfe6ef5962d53c1201d71bf568b5b28ecd79849f"
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "165155d8d599255232b3f8f37089294fae589a0c38db651f971e580f8af252be",
+      "candidatePngSha256": "165155d8d599255232b3f8f37089294fae589a0c38db651f971e580f8af252be"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "d22bdd478c4a1feba3a7949e4786e8843c0db30bd088bd058ceec385749752f5",
+      "candidatePngSha256": "d22bdd478c4a1feba3a7949e4786e8843c0db30bd088bd058ceec385749752f5"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "sameDimensions": true,
+      "identicalPixels": true,
+      "baselinePngSha256": "bfc6831043e777ccf6dc2278326bafadfcf3e0ed5c1a48ff538e49de8be7e1cb",
+      "candidatePngSha256": "bfc6831043e777ccf6dc2278326bafadfcf3e0ed5c1a48ff538e49de8be7e1cb"
+    }
+  ]
+}
