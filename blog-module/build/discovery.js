@@ -17,6 +17,41 @@ const SITE = 'https://f1-stories.gr';
 const { page: PAGE_SIZE, front: FRONT_SIZE } = T.EDITION_LAYOUT;
 const GENERATED_ROOTS = ['section', 'archive'];
 
+const SECTION_METADATA = {
+    News: {
+        title: 'Ειδήσεις Formula 1',
+        description: 'Ειδήσεις από τη Formula 1 και τον μηχανοκίνητο αθλητισμό: αγώνες, οδηγοί, ομάδες και εξελίξεις από το paddock.'
+    },
+    Analysis: {
+        title: 'Αναλύσεις Formula 1',
+        description: 'Αναλύσεις αγώνων Formula 1, στρατηγικής και αγωνιστικού ρυθμού από το F1 Stories.'
+    },
+    Technical: {
+        title: 'Τεχνική Ανάλυση Formula 1',
+        description: 'Τεχνική ανάλυση της Formula 1: μονοθέσια, αεροδυναμική, ελαστικά και κανονισμοί μέσα από τα άρθρα του F1 Stories.'
+    },
+    History: {
+        title: 'Ιστορία των Αγώνων',
+        description: 'Ιστορίες από τη Formula 1 και τον μηχανοκίνητο αθλητισμό, με ιστορικούς αγώνες, πρόσωπα και στιγμές που άφησαν εποχή.'
+    },
+    Opinion: {
+        title: 'Άρθρα Γνώμης για τη Formula 1',
+        description: 'Άρθρα γνώμης και προσωπικές ματιές στη Formula 1 και τον μηχανοκίνητο αθλητισμό από τους συντάκτες του F1 Stories.'
+    },
+    Betting: {
+        title: 'BetCast & Στοίχημα Formula 1',
+        description: 'Τα άρθρα BetCast του F1 Stories, με συζητήσεις για τα Grand Prix, αγωνιστικές εκτιμήσεις και στοιχηματικές προσεγγίσεις.'
+    },
+    Drivers: {
+        title: 'Ιστορίες Οδηγών',
+        description: 'Πορτρέτα, διαδρομές και ιστορίες οδηγών της Formula 1 και του μηχανοκίνητου αθλητισμού από το F1 Stories.'
+    },
+    Teams: {
+        title: 'Ομάδες Formula 1',
+        description: 'Ιστορίες και αναλύσεις για τις ομάδες της Formula 1, τα μονοθέσια και την πορεία τους στους αγώνες.'
+    }
+};
+
 const route = {
     index: `${BLOG}/index.html`,
     section: (kind, page = 1) => `${BLOG}/section/${kind}/${page > 1 ? `page/${page}/` : ''}`,
@@ -309,15 +344,15 @@ function headHtml({ title, description, path: pagePath, canonical = SITE + pageP
         `    <meta property="og:title" content="${esc(title)}">`,
         `    <meta property="og:description" content="${esc(description)}">`,
         `    <meta property="og:image" content="${SITE}/images/icons/icon-512.png">`,
-        `    <meta property="og:url" content="${SITE}${pagePath}">`,
+        `    <meta property="og:url" content="${esc(canonical)}">`,
         '    <meta property="og:type" content="website">',
         '    <meta name="twitter:card" content="summary">',
         `    <meta name="twitter:title" content="${esc(title)}">`,
         `    <meta name="twitter:description" content="${esc(description)}">`,
         `    <meta name="twitter:image" content="${SITE}/images/icons/icon-512.png">`,
-        `    <link rel="canonical" href="${canonical}">`,
-        prev && `    <link rel="prev" href="${SITE}${prev}">`,
-        next && `    <link rel="next" href="${SITE}${next}">`,
+        `    <link rel="canonical" href="${esc(canonical)}">`,
+        prev && `    <link rel="prev" href="${esc(SITE + prev)}">`,
+        next && `    <link rel="next" href="${esc(SITE + next)}">`,
         preload && `    ${preload}`
     ].filter(Boolean).join('\n');
 }
@@ -334,8 +369,8 @@ function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
     pages.push({
         file: 'index.html', path: route.index, canonical: `${SITE}${route.index}`, lastmod: model.reference,
         head: headHtml({
-            title: 'F1 Stories — Αρχείο Άρθρων', path: BLOG + '/', canonical: `${SITE}${route.index}`,
-            description: 'Το ευρετήριο του F1 Stories: οι ιστορίες της εβδομάδας, οι ενότητες, το αρχείο ανά μήνα και οι υπογραφές. Τεχνικές αναλύσεις, γνώμες και ιστορικά αφιερώματα για τη Formula 1.',
+            title: 'Άρθρα Formula 1, Αναλύσεις & Ιστορίες | F1 Stories', path: BLOG + '/', canonical: `${SITE}${route.index}`,
+            description: 'Διαβάστε νέα, τεχνικές αναλύσεις, γνώμες και ιστορικά αφιερώματα. Περιηγηθείτε στα άρθρα του F1 Stories ανά ενότητα, συντάκτη ή μήνα.',
             preload: preload || (leadImage ? `<link rel="preload" as="image" href="${esc(leadImage)}"${leadSrcset ? ` imagesrcset="${esc(leadSrcset)}" imagesizes="${T.CARD_SIZES.editionWeek}"` : ''} fetchpriority="high">` : '')
         }),
         // The rail stays hidden here; blog-index.js shows it for a ?category= view (a section on a phone).
@@ -343,13 +378,13 @@ function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
     });
     model.sections.forEach(section => {
         const total = sectionPageCount(section);
+        const metadata = SECTION_METADATA[section.name];
         for (let page = 1; page <= total; page += 1) {
-            const range = rangeText(section.posts);
             pages.push({
                 file: path.posix.join('section', section.kind, page > 1 ? `page/${page}` : '', 'index.html'), path: route.section(section.kind, page), lastmod: latestDay(section.posts), changefreq: 'weekly', priority: page > 1 ? '0.4' : '0.7',
                 head: headHtml({
-                    title: page === 1 ? `${section.label} — Άρθρα F1 Stories` : `${section.label} · Σελίδα ${page} — F1 Stories`,
-                    description: `${section.label} στο F1 Stories: ${T.plural(section.posts.length, 'ιστορία', 'ιστορίες')}${range ? ` (${range})` : ''}${page > 1 ? `, σελίδα ${page} από ${total}` : ''}. Οι πιο πρόσφατες πρώτες, με πλήρες αρχείο της ενότητας.`,
+                    title: `${metadata.title}${page > 1 ? ` · Σελίδα ${page}` : ''} | F1 Stories`,
+                    description: `${metadata.description}${page > 1 ? ` Σελίδα ${page} από ${total}.` : ''}`,
                     path: route.section(section.kind, page),
                     prev: page > 1 ? route.section(section.kind, page - 1) : '', next: page < total ? route.section(section.kind, page + 1) : ''
                 }),
@@ -362,7 +397,7 @@ function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
             file: path.posix.join('archive', key.slice(0, 4), key.slice(5, 7), 'index.html'), path: route.month(key), lastmod: latestDay(model.months.get(key)), changefreq: 'monthly', priority: '0.5',
             head: headHtml({
                 title: `${T.monthName(key)} — Αρχείο F1 Stories`,
-                description: `Οι ${T.plural(model.months.get(key).length, 'ιστορία', 'ιστορίες')} του F1 Stories τον ${T.monthName(key)}, από τις πιο πρόσφατες στις παλαιότερες.`,
+                description: `Αρχείο F1 Stories — ${T.monthName(key)}: ${T.plural(model.months.get(key).length, 'ιστορία', 'ιστορίες')}. Περιηγηθείτε στα άρθρα του μήνα, από τα νεότερα στα παλαιότερα.`,
                 path: route.month(key)
             }),
             main: mainHtml('ed-page ed-page--archive', mastheadHtml(ctx, 'archive', false) + '\n' + monthBody(ctx, key))
@@ -373,7 +408,7 @@ function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
             file: path.posix.join('archive', 'index.html'), path: route.archive, lastmod: model.reference, changefreq: 'monthly', priority: '0.5',
             head: headHtml({
                 title: 'Αρχείο ανά μήνα — F1 Stories',
-                description: `Όλες οι ιστορίες του F1 Stories ανά μήνα: ${T.plural(model.published.length, 'ιστορία', 'ιστορίες')} σε ${T.plural(model.monthKeys.length, 'μήνα', 'μήνες')}.`,
+                description: `Αναζητήστε παλαιότερα άρθρα στο μηνιαίο αρχείο του F1 Stories: ${T.plural(model.published.length, 'ιστορία', 'ιστορίες')} σε ${T.plural(model.monthKeys.length, 'μήνα', 'μήνες')}, με ειδήσεις, αναλύσεις και αφιερώματα.`,
                 path: route.archive
             }),
             main: mainHtml('ed-page ed-page--archive', mastheadHtml(ctx, 'archive', false) + '\n' + archiveBody(ctx))
@@ -435,5 +470,5 @@ function writeDiscoveryPages(blogDir, pagesResult) {
 
 module.exports = {
     BLOG, SITE, route, buildModel, buildPages, composePage, writeDiscoveryPages, listGeneratedFiles,
-    sectionPageCount, pagination, rowHtml, leadHtml, monthGroups, kicker
+    sectionPageCount, pagination, rowHtml, leadHtml, monthGroups, kicker, headHtml
 };
