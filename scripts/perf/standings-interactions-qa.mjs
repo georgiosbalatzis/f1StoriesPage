@@ -17,6 +17,7 @@ const root = path.resolve(repo, argument('root') || 'dist');
 const widths = (argument('widths') || '390,768,1440').split(',').map(Number);
 const themes = (argument('themes') || 'dark,light').split(',');
 const output = path.resolve(repo, argument('output') || 'perf/step6-7-regressions.json');
+const screenshots = argument('screenshots');
 const fixture = JSON.parse(gunzipSync(fs.readFileSync(path.join(repo, 'scripts/perf/fixtures/standings-2026-10-15.json.gz'))));
 const response = name => {
     const record = fixture.responses[name];
@@ -40,12 +41,12 @@ const results = [];
 const check = (name, condition, detail) => { assert.ok(condition, `${name}${detail ? `: ${detail}` : ''}`); };
 const hash = text => crypto.createHash('sha256').update(text).digest('hex');
 
-function startServer() {
+function startServer(artifactRoot = root) {
     const server = http.createServer((request, res) => {
         let pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
         if (pathname.endsWith('/')) pathname += 'index.html';
-        const file = path.resolve(root, `.${pathname}`);
-        if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) { res.writeHead(404).end('not found'); return; }
+        const file = path.resolve(artifactRoot, `.${pathname}`);
+        if (!file.startsWith(artifactRoot + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) { res.writeHead(404).end('not found'); return; }
         res.writeHead(200, { 'content-type': `${mime.get(path.extname(file)) || 'application/octet-stream'}; charset=utf-8`, 'cache-control': 'no-store' });
         fs.createReadStream(file).pipe(res);
     });
@@ -162,11 +163,17 @@ async function matrixChecks(browser, origin, width, theme) {
     const state = await open(browser, origin, width, theme);
     const { page } = state;
     try {
+        const svgHashes = {};
         for (const tab of Object.keys(tabs)) {
             await selectTab(page, tab);
             check(`${tab}: exactly one selected tab`, await page.locator('.standings-tab[aria-selected="true"]').count() === 1);
             check(`${tab}: active panel is not hidden`, await page.locator(`#panel-${tab}`).getAttribute('hidden') === null);
             check(`${tab}: URL state`, new URL(page.url()).searchParams.get('tab') === tab || tab === 'drivers');
+            svgHashes[tab] = hash(await page.locator(`#panel-${tab} svg`).evaluateAll(nodes => nodes.map(node => node.outerHTML).join('')));
+            if (screenshots) {
+                fs.mkdirSync(screenshots, { recursive: true });
+                await page.locator(`#panel-${tab}`).screenshot({ path: path.join(screenshots, `${theme}-${width}-${tab}.png`), animations: 'disabled' });
+            }
         }
         const actualTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
         check('theme persistence', actualTheme === theme);
@@ -195,8 +202,43 @@ async function matrixChecks(browser, origin, width, theme) {
         await selectTab(page, 'dirty-air');
         await page.locator('[data-dirty-air-view="timeline"]').click();
         check('dirty-air timeline populated', await page.locator('[data-dirty-air-panel="timeline"] .dirty-air-timeline-segment').count() > 0);
+        const dirtyMarkup = await page.locator('[data-dirty-air-panel="timeline"]').innerHTML();
+        const dirtyRequests = state.requests.length;
+        const dirtyScroll = await page.evaluate(() => {
+            window.__dirtyReport = document.querySelector('#dirty-air-table').firstElementChild;
+            window.__dirtyTimeline = document.querySelector('.dirty-air-timeline-body');
+            const scroller = document.querySelector('.dirty-air-timeline-scroll');
+            scroller.scrollLeft = 123;
+            return scroller.scrollLeft;
+        });
+        await selectTab(page, 'drivers');
+        await selectTab(page, 'dirty-air');
+        check('dirty-air view change retains report on revisit', await page.evaluate(() => document.querySelector('#dirty-air-table').firstElementChild === window.__dirtyReport));
+        check('dirty-air view change retains timeline on revisit', await page.evaluate(() => document.querySelector('.dirty-air-timeline-body') === window.__dirtyTimeline));
+        check('dirty-air revisit retains exact chart markup', await page.locator('[data-dirty-air-panel="timeline"]').innerHTML() === dirtyMarkup);
+        check('dirty-air revisit retains scroll', await page.locator('.dirty-air-timeline-scroll').evaluate(el => el.scrollLeft) === dirtyScroll);
+        check('dirty-air revisit needs no provider requests', state.requests.length === dirtyRequests);
         await page.locator('[data-dirty-air-view="summary"]').click();
         check('dirty-air summary restored', await page.locator('[data-dirty-air-panel="summary"]').isVisible());
+        await selectTab(page, 'drivers');
+        await selectTab(page, 'dirty-air');
+        check('dirty-air summary change retains report on revisit', await page.evaluate(() => document.querySelector('#dirty-air-table').firstElementChild === window.__dirtyReport));
+        await page.locator('[data-dirty-air-view="timeline"]').focus();
+        await page.keyboard.press('Enter');
+        check('dirty-air keyboard toggle reuses the timeline', await page.evaluate(() => document.querySelector('.dirty-air-timeline-body') === window.__dirtyTimeline));
+        check('dirty-air keyboard toggle shows timeline', await page.locator('[data-dirty-air-panel="timeline"]').isVisible());
+        for (let toggle = 0; toggle < 2; toggle++) {
+            await page.locator('button.theme-toggle-btn:visible').first().click();
+            check('dirty-air theme toggle retains timeline', await page.evaluate(() => document.querySelector('.dirty-air-timeline-body') === window.__dirtyTimeline));
+        }
+        check('dirty-air theme toggles restore original theme', await page.evaluate(() => document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark') === theme);
+        const dirtySession = await page.inputValue('[data-dirty-air-select]');
+        const otherDirtySession = await page.locator('[data-dirty-air-select] option').evaluateAll((options, selected) => options.find(option => option.value !== selected)?.value, dirtySession);
+        check('dirty-air has a second recorded session', !!otherDirtySession);
+        await page.selectOption('[data-dirty-air-select]', otherDirtySession);
+        await page.locator('.dirty-air-timeline-body').waitFor({ state: 'attached' });
+        check('dirty-air changed session replaces report', await page.evaluate(() => document.querySelector('#dirty-air-table').firstElementChild !== window.__dirtyReport));
+        check('dirty-air changed session updates URL', new URL(page.url()).searchParams.get('dirtyAirSession') === otherDirtySession);
         await selectTab(page, 'track-dominance');
         check('track default map retains full segment count', await page.locator('.track-dom-segment').count() === 219);
         const segment = page.locator('.track-dom-segment').first();
@@ -229,7 +271,7 @@ async function matrixChecks(browser, origin, width, theme) {
         await page.waitForFunction(() => !document.getElementById('standings-clear-cache').disabled);
         check('cache clear removes stored responses', await cacheSize() === 0);
         check('no uncaught page or fixture errors', state.errors.length === 0, state.errors.join('; '));
-        return { width, theme, status: 'pass', tabs: Object.keys(tabs), tyre, providerRequests: state.requests.length };
+        return { width, theme, status: 'pass', tabs: Object.keys(tabs), svgHashes, tyre, providerRequests: state.requests.length };
     } finally { await state.context.close(); }
 }
 
@@ -248,7 +290,7 @@ async function navigationChecks(browser, origin) {
         check('forward restores selected tab', await state.page.locator('#tab-constructors').getAttribute('aria-selected') === 'true');
         check('navigation page errors', state.errors.length === 0, state.errors.join('; '));
     } finally { await state.context.close(); }
-    for (const query of ['?tab=tyre-pace&tyreSession=11388&embed=1&focus=panel-tyre-pace', '?tab=drivers&embed=1&season=2026&round=1&focus=drivers-chart']) {
+    for (const query of ['?tab=tyre-pace&tyreSession=11388&embed=1&focus=panel-tyre-pace', '?tab=drivers&embed=1&season=2026&round=1&focus=drivers-chart', '?tab=dirty-air&dirtyAirSession=11388&embed=1&focus=panel-dirty-air']) {
         const embedded = await open(browser, origin, 390, 'dark', query);
         try {
             const tab = new URLSearchParams(query).get('tab');
@@ -259,7 +301,8 @@ async function navigationChecks(browser, origin) {
             if (tab === 'drivers') {
                 check('pinned round stays pinned', await embedded.page.locator('#round-num').textContent() === '1');
                 check('pinned footer names today', /Σημερινή/.test(await embedded.page.locator('#embed-footer-link').textContent()));
-            } else check('embedded tyre session', await embedded.page.inputValue('[data-tyre-pace-select]') === '11388');
+            } else if (tab === 'tyre-pace') check('embedded tyre session', await embedded.page.inputValue('[data-tyre-pace-select]') === '11388');
+            else check('embedded dirty-air session', await embedded.page.inputValue('[data-dirty-air-select]') === '11388');
             check('embed page errors', embedded.errors.length === 0, embedded.errors.join('; '));
         } finally { await embedded.context.close(); }
     }
@@ -303,4 +346,8 @@ async function main() {
     console.log(`${results.filter(result => result.status === 'pass').length}/${results.length} checks passed; ${output}`);
     if (results.some(result => result.status === 'fail')) process.exitCode = 1;
 }
-main().catch(error => { console.error(error); process.exitCode = 1; });
+export { startServer, providerPayload, selectTab, ready };
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    main().catch(error => { console.error(error); process.exitCode = 1; });
+}

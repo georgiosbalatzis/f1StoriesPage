@@ -1,0 +1,54 @@
+[
+  {
+    "width": 390,
+    "variant": "baseline",
+    "firstSummaryMs": 404,
+    "firstTimelineMs": 184.59999999403954,
+    "presentedMs": 246.29999999701977,
+    "scriptMs": 3.8649999999999936,
+    "layoutMs": 24.865,
+    "styleMs": 145.61100000000002,
+    "taskMs": 287.0539999999999,
+    "transferredBytes": 2749,
+    "longTasks": 10
+  },
+  {
+    "width": 390,
+    "variant": "candidate",
+    "firstSummaryMs": 407,
+    "firstTimelineMs": 184.59999999403954,
+    "presentedMs": 125.3999999910593,
+    "scriptMs": 2.7719999999999967,
+    "layoutMs": 12.688999999999979,
+    "styleMs": 74.129,
+    "taskMs": 162.08999999999995,
+    "transferredBytes": 2749,
+    "longTasks": 5
+  },
+  {
+    "width": 1440,
+    "variant": "baseline",
+    "firstSummaryMs": 366,
+    "firstTimelineMs": 181.80000001192093,
+    "presentedMs": 232.8999999910593,
+    "scriptMs": 4.602999999999996,
+    "layoutMs": 25.411000000000016,
+    "styleMs": 142.949,
+    "taskMs": 286.43099999999987,
+    "transferredBytes": 2749,
+    "longTasks": 10
+  },
+  {
+    "width": 1440,
+    "variant": "candidate",
+    "firstSummaryMs": 367,
+    "firstTimelineMs": 185.79999999701977,
+    "presentedMs": 117.20000000298023,
+    "scriptMs": 3.3279999999999976,
+    "layoutMs": 13.515000000000013,
+    "styleMs": 72.07000000000002,
+    "taskMs": 160.141,
+    "transferredBytes": 2749,
+    "longTasks": 5
+  }
+]

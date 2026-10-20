@@ -1,0 +1,218 @@
+{
+  "fixture": "Actual public provider responses. Browser routing derives a two-race/one-qualifying session subset and one-round schedule; no complete-season correctness claim. Location samples cover11388 Ferrari16/44 fastestlaps only.",
+  "root": "/private/tmp/f1-standings-step6/dist",
+  "results": [
+    {
+      "width": 390,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "8f0189ede32947669709b83d13e9c5d907360ef9fa67154b46a666111b16b281",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "8f0189ede32947669709b83d13e9c5d907360ef9fa67154b46a666111b16b281",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "8f0189ede32947669709b83d13e9c5d907360ef9fa67154b46a666111b16b281",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "179f4c30b883ade41042882a196fc383de875528f43f55a32d85112e730087d2",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "179f4c30b883ade41042882a196fc383de875528f43f55a32d85112e730087d2",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "status": "pass",
+      "tabs": [
+        "drivers",
+        "constructors",
+        "quali-gaps",
+        "lap1-gains",
+        "tyre-pace",
+        "dirty-air",
+        "track-dominance",
+        "pit-stops",
+        "debrief"
+      ],
+      "svgHashes": {
+        "drivers": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "constructors": "bd6342e98cbfd78a915cdf6770364cd1a021cdc1992f1c1445cae4b77f300308",
+        "quali-gaps": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "lap1-gains": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "tyre-pace": "ada62a51c3a618af98f4d7a2ecff41757f0489985d68875d3df4c2e7dd945c04",
+        "dirty-air": "e68fee8d276992552504d3058f65320002f14fa39d6c3b378e8f25b6dcfc2b08",
+        "track-dominance": "179f4c30b883ade41042882a196fc383de875528f43f55a32d85112e730087d2",
+        "pit-stops": "99c2e853a2ffae89ab1c4364d0c47e341fefcc01a9daabd54ccb1a617c0c7368",
+        "debrief": "37dcbc1307d03192f8791b0b91bc8c0573ee5eb5d971051f0c18132223ac5e3a"
+      },
+      "tyre": {
+        "svgSha256": "5e819b3cc4168ce36c01fb9418f06845d7848afe9d2620ef30fe6e49fb9195be",
+        "scrollLeft": 123,
+        "lapMarkers": 1118
+      },
+      "providerRequests": 23
+    },
+    {
+      "navigation": {
+        "status": "pass",
+        "checks": [
+          "deep link",
+          "back/forward",
+          "embedded tyre",
+          "pinned round",
+          "tyre failure/retry",
+          "snapshot fallback"
+        ]
+      },
+      "status": "pass"
+    }
+  ]
+}
