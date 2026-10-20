@@ -62,6 +62,9 @@ const REQUIRED_EXACT = [
     'standings/standings-editorial.min.css',
     'styles/layers.css',
     'scripts/perf/error-beacon.min.js',
+    'scripts/perf/web-vitals-beacon.min.js',
+    'scripts/perf/web-vitals-collector.min.js',
+    'assets/licenses/web-vitals-Apache-2.0.txt',
     'scripts/sw-cleanup.min.js',
     'node_modules/jszip/dist/jszip.min.js',
     'scripts/author/article-index.js',
@@ -108,7 +111,7 @@ function forbiddenReason(relPath) {
     if (/\.(?:bak|docx|map|odt)$/i.test(relPath)) return 'source/backup artifact';
     if (/\.sql$/i.test(relPath)) return 'database/source artifact';
     const isFontLicense = /^assets\/fonts\/licenses\/(?:barlowcondensed|gfsdidot|ibmplexsans)-OFL\.txt$/.test(relPath);
-    if (/\.txt$/i.test(relPath) && relPath !== 'robots.txt' && !isFontLicense) return 'raw text artifact';
+    if (/\.txt$/i.test(relPath) && relPath !== 'robots.txt' && !isFontLicense && relPath !== 'assets/licenses/web-vitals-Apache-2.0.txt') return 'raw text artifact';
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';

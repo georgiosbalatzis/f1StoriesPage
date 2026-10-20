@@ -42,6 +42,7 @@ export const JS_INPUTS = [
     'scripts/sw-cleanup.js',
     'scripts/f1-optimized.js',
     'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-collector.js', // Build first: the loader embeds its content hash.
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/taxonomy.js',
     'blog-module/inline-markup.js',

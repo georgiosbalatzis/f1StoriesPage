@@ -83,6 +83,10 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
+      - name: Run consent and RUM regressions
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:consent && npm run test:rum:browser
+
       - name: Run visual focus capture regression
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs

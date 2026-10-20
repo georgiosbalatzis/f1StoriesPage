@@ -378,6 +378,7 @@ function shouldCopy(relPath) {
     }
 
     if (relPath.startsWith('assets/')) {
+        if (relPath === 'assets/licenses/web-vitals-Apache-2.0.txt') return true;
         if (/^assets\/fonts\/licenses\/(?:barlowcondensed|gfsdidot|ibmplexsans)-OFL\.txt$/.test(relPath)) return true;
         return /\.(?:json|woff2)$/i.test(relPath);
     }
