@@ -37,9 +37,9 @@ async function withEntry(files, masterWidth, fn, ratio = 16 / 9) {
     }
 }
 
-function render(files, hero) {
+function render(files, hero, html = shell) {
     return withEntry(files, hero.heroImageWidth, temp => {
-        fs.writeFileSync(path.join(temp, 'index.html'), shell);
+        fs.writeFileSync(path.join(temp, 'index.html'), html);
         injectHomepageHero({ id: 's1', title: 'T', heroImage: '/blog-module/blog-entries/s1/1.webp', heroAvif: '/blog-module/blog-entries/s1/1.avif', ...hero });
         return fs.readFileSync(path.join(temp, 'index.html'), 'utf8');
     });
@@ -108,4 +108,14 @@ test('frame preloads mirror the AVIF source when there is one, and the WebP cand
     assert.equal(attr(webp.preload, 'link', 'imagesizes'), attr(webp.frame, 'img', 'sizes'));
 
     assert.equal((await framePreload(['1.webp'])).preload, '', 'no card, no candidates, no preload');
+});
+
+
+test('changing the homepage lead preserves the stable branded social fallback', async () => {
+    const social = '<meta property="og:image" content="https://f1-stories.gr/images/icons/icon-512.png">'
+        + '<meta property="og:image:width" content="512"><meta property="og:image:height" content="512">'
+        + '<meta name="twitter:image" content="https://f1-stories.gr/images/icons/icon-512.png">';
+    const html = await render(all, { heroImageWidth: 1600, heroImageHeight: 900 }, social + shell);
+    assert.ok(html.startsWith(social));
+    assert.match(html, /id="hero-image"[^>]*src="\/blog-module\/blog-entries\/s1\/1.webp"/);
 });

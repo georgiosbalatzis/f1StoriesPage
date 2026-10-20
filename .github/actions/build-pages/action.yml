@@ -31,7 +31,7 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .build/public-images
-        key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif') }}
+        key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif', 'blog-module/blog-source-cache.json', 'blog-module/taxonomy.js', 'blog-module/media-metadata.json', 'blog-module/build/media-meta.js', 'scripts/build/social-cards.mjs', 'scripts/build/assets/*', 'docs/design-tokens.json', 'images/logo-256.webp') }}
         restore-keys: |
           public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
 
@@ -58,7 +58,7 @@ runs:
 
     - name: Verify release media and primary domain
       shell: bash
-      run: node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs
+      run: node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs scripts/build/__tests__/social-cards-release.test.mjs
 
     - name: Audit runtime dependencies
       shell: bash

@@ -567,16 +567,6 @@ function updateElementById(html, id, update) {
     return html.replace(elementPattern, (match, attributes, closing) => update(attributes) + closing);
 }
 
-function updateMetaContent(html, attributeName, attributeValue, value) {
-    const attributeNamePattern = escapeRegExp(attributeName);
-    const attributeValuePattern = escapeRegExp(attributeValue);
-    const metaPattern = new RegExp(
-        `(<meta\\b[^>]*\\b${attributeNamePattern}="${attributeValuePattern}"[^>]*\\bcontent=")[^"]*(")`,
-        'i'
-    );
-    return html.replace(metaPattern, `$1${escapeHtmlAttribute(value)}$2`);
-}
-
 function getHomepageHeroVariant(image, extension) {
     const marker = '/blog-module/blog-entries/';
     if (!image || !image.startsWith(marker)) return '';
@@ -675,7 +665,6 @@ function injectHomepageHero(hero) {
     }
     // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
     const imageSizes = '(max-width: 1099px) 100vw, 50vw';
-    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1-stories.gr${image}`;
     // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file. The
     // cover is the story's 1.webp or its separate 2.webp cover; AVIF only as a complete set (mobile copy and master).
     const base = (/\/blog-module\/blog-entries\/[^/]+\/([12])\.webp$/.exec(image) || [])[1];
@@ -773,10 +762,7 @@ function injectHomepageHero(hero) {
         updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
         return updated;
     });
-    html = updateMetaContent(html, 'property', 'og:image', imageUrl);
-    html = updateMetaContent(html, 'name', 'twitter:image', imageUrl);
-    html = updateMetaContent(html, 'property', 'og:image:width', width);
-    html = updateMetaContent(html, 'property', 'og:image:height', height);
+    // Social cards are assembled separately; the source homepage keeps its stable brand fallback.
 
     if (html !== original) {
         fs.writeFileSync(indexHtmlPath, html);

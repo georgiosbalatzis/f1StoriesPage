@@ -12,6 +12,7 @@ import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './se
 import { inlineHeadStylesheets } from './inline-head-css.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
 import { preservedPublicMedia, assertPreservedPublicMedia, rewriteOptimizedImageWidths } from './public-media-integrity.mjs';
+import { buildSocialCards } from './social-cards.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -460,7 +461,9 @@ async function main() {
     }
     assertPreservedPublicMedia(DIST_ROOT);
 
-    const publicFiles = copied.concat(writeSecurityHeadersFile()).sort();
+    const social = await buildSocialCards({ repoRoot: REPO_ROOT, distRoot: DIST_ROOT, htmlFiles: copied, maxBytes: PUBLIC_IMAGE_MAX_BYTES });
+    const publicFiles = copied.concat(social.files, writeSecurityHeadersFile()).sort();
+    console.log(`✓ social cards: ${social.files.length} JPEG files, ${social.records.filter(r => r.cacheHit).length} reused, ${social.records.filter(r => r.error).length} fallbacks, ${social.elapsedMs}ms`);
     const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
     const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);
     const reused = optimizedImages.filter(image => image.cacheHit).length;
