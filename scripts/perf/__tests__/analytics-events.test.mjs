@@ -9,11 +9,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const SOURCE = fs.readFileSync(path.join(ROOT, 'scripts/analytics.js'), 'utf8');
 const CONSENT_KEY = 'f1stories-cookie-consent-v1';
 
-function boot(pathname = '/', search = '?email=private@example.com&utm_source=weekly', scrollY = 0) {
+function boot(pathname = '/', search = '?email=private@example.com&utm_source=weekly', scrollY = 0, options = {}) {
     const listeners = { window: {}, document: {} };
     const timers = new Map();
     const dataLayer = [];
     const stored = new Map();
+    const scripts = [];
+    if (options.analytics != null) stored.set(CONSENT_KEY, JSON.stringify({ analytics: options.analytics }));
     const location = new URL(`https://f1-stories.gr${pathname}${search}`);
     let timerId = 0;
 
@@ -33,17 +35,21 @@ function boot(pathname = '/', search = '?email=private@example.com&utm_source=we
         clearInterval(id) { timers.delete(id); }
     };
     const document = {
+        readyState: options.readyState || 'complete',
         cookie: '',
         documentElement: { scrollHeight: 2000, scrollTop: scrollY },
         visibilityState: 'visible',
-        head: { appendChild() {} },
+        head: { appendChild(script) { scripts.push(script); } },
         createElement() { return {}; },
         addEventListener(name, callback) {
             (listeners.document[name] ||= []).push(callback);
         }
     };
     const localStorage = {
-        getItem(key) { return stored.has(key) ? stored.get(key) : null; },
+        getItem(key) {
+            if (options.storageUnavailable) throw new Error('Storage unavailable');
+            return stored.has(key) ? stored.get(key) : null;
+        },
         setItem(key, value) { stored.set(key, String(value)); }
     };
 
@@ -72,8 +78,8 @@ function boot(pathname = '/', search = '?email=private@example.com&utm_source=we
         listeners.document.click.forEach(callback => callback(event));
     }
 
-    function consent() {
-        const value = { ts: Date.now(), essential: true, analytics: true };
+    function consent(analytics = true) {
+        const value = { ts: Date.now(), essential: true, analytics };
         localStorage.setItem(CONSENT_KEY, JSON.stringify(value));
         listeners.window['f1stories:cookie-consent-changed'].forEach(callback => callback({ detail: value }));
     }
@@ -84,8 +90,53 @@ function boot(pathname = '/', search = '?email=private@example.com&utm_source=we
             .map(command => ({ name: command[1], params: command[2] }));
     }
 
-    return { window, document, dataLayer, listeners, timers, click, consent, events };
+    function load() {
+        document.readyState = 'complete';
+        (listeners.window.load || []).forEach(callback => callback());
+    }
+
+    return { window, document, dataLayer, listeners, timers, click, consent, events, scripts, load };
 }
+
+test('opted-in articles queue events while images load and inject analytics once after load', () => {
+    const page = boot('/blog-module/blog-entries/20261007G/article.html', '', 0, { analytics: true, readyState: 'interactive' });
+    assert.equal(page.scripts.length, 0);
+    page.click('/blog-module/blog/');
+    page.consent();
+    assert.equal(page.events()[0].name, 'internal_page_click');
+    assert.equal(page.scripts.length, 0);
+    page.load();
+    page.consent();
+    assert.equal(page.scripts.length, 1);
+    assert.match(page.scripts[0].src, /^https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=/);
+    assert.equal(page.dataLayer.filter(command => command[0] === 'config').length, 1);
+});
+
+test('article load rechecks revoked consent and still allows a later opt-in', () => {
+    const page = boot('/blog-module/blog-entries/20261007G/article.html', '', 0, { analytics: true, readyState: 'loading' });
+    page.consent(false);
+    page.load();
+    assert.equal(page.scripts.length, 0);
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics_storage, 'denied');
+    page.consent();
+    assert.equal(page.scripts.length, 1);
+});
+
+test('explicit consent before article load still works when storage cannot be read', () => {
+    const page = boot('/blog-module/blog-entries/20261007G/article.html', '', 0, { readyState: 'loading', storageUnavailable: true });
+    page.consent();
+    assert.equal(page.scripts.length, 0);
+    page.load();
+    assert.equal(page.scripts.length, 1);
+});
+
+test('loaded articles and other pages keep immediate opted-in analytics; declined articles never inject', () => {
+    assert.equal(boot('/blog-module/blog-entries/20261007G/article.html', '', 0, { analytics: true }).scripts.length, 1);
+    assert.equal(boot('/', '', 0, { analytics: true, readyState: 'loading' }).scripts.length, 1);
+    const declined = boot('/blog-module/blog-entries/20261007G/article.html', '', 0, { analytics: false, readyState: 'loading' });
+    declined.load();
+    assert.equal(declined.scripts.length, 0);
+});
 
 test('click analytics stays consent-gated and records safe internal and outbound fields', () => {
     const page = boot();

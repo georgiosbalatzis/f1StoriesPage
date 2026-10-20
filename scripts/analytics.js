@@ -6,6 +6,7 @@
     var STORAGE_KEY = 'f1stories-cookie-consent-v1';
     var SCRIPT_SRC = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(TRACKING_ID);
     var scriptInjected = false;
+    var articleLoading = detectPageType(window.location.pathname) === 'article' && document.readyState !== 'complete';
     var consentInitialized = false;
     var analyticsConfigured = false;
     var clickTrackingBound = false;
@@ -62,7 +63,7 @@
     }
 
     function injectScript() {
-        if (scriptInjected) return;
+        if (scriptInjected || articleLoading) return;
         scriptInjected = true;
 
         var script = document.createElement('script');
@@ -308,6 +309,12 @@
             return buildConsentState(readConsent());
         }
     };
+
+    // Keep article images ahead of the opted-in analytics download.
+    if (articleLoading) window.addEventListener('load', function () {
+        articleLoading = false;
+        if (window['ga-disable-' + TRACKING_ID] === false) injectScript();
+    }, { once: true });
 
     configureAnalytics(readConsent());
     bindInternalClickTracking();
