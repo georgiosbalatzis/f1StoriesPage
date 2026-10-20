@@ -55,7 +55,8 @@
     "qa:audio-player": "node scripts/perf/audio-player-qa.mjs",
     "qa:embed-dialog": "node scripts/perf/embed-dialog-qa.mjs",
     "qa:author-images": "node scripts/perf/author-image-ingest-check.mjs",
-    "test:consent": "node --test scripts/perf/__tests__/analytics-events.test.mjs && node scripts/perf/consent-guard.mjs",
+    "test:consent": "node --test scripts/perf/__tests__/analytics-events.test.mjs scripts/perf/__tests__/web-vitals.test.mjs && node scripts/perf/consent-guard.mjs",
+    "test:rum:browser": "node scripts/perf/web-vitals-browser.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
     "perf:cls-tablet": "node scripts/perf/tablet-cls-guard.mjs",
     "verify": "npm run build:public && npm run qa:media && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run qa:edition && npm run test:author && npm run test:standings && npm run test:security && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run qa:author-images && npm run test:consent && npm run qa:visual && npm run perf:lighthouse && npm run perf:cls-tablet",
@@ -83,6 +84,7 @@
     "lightningcss": "^1.33.0",
     "playwright-core": "^1.64.1",
     "puppeteer-core": "^25.14.0",
-    "sass": "^1.105.2"
+    "sass": "^1.105.2",
+    "web-vitals": "6.2.3"
   }
 }

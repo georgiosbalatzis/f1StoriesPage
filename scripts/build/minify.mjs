@@ -153,7 +153,28 @@ async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
     const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
+    if (rel === 'scripts/perf/web-vitals-collector.js') {
+        const outRel = minPathFor(rel);
+        await esbuildBuild({
+            absWorkingDir: REPO_ROOT,
+            entryPoints: [rel],
+            outfile: path.join(REPO_ROOT, outRel),
+            bundle: true,
+            format: 'esm',
+            platform: 'browser',
+            minify: true,
+            sourcemap: 'linked',
+            target: ['es2019'],
+            legalComments: 'inline',
+            banner: { js: '/*! web-vitals 6.2.3 | Copyright Google LLC | Apache-2.0: /assets/licenses/web-vitals-Apache-2.0.txt */' }
+        });
+        return { outRel, sourceBytes: Buffer.byteLength(source), bytes: fs.statSync(path.join(REPO_ROOT, outRel)).size };
+    }
+    const collector = 'scripts/perf/web-vitals-collector.min.js';
     const result = await esbuildTransform(source, {
+        define: rel === 'scripts/perf/web-vitals-beacon.js' ? {
+            RUM_COLLECTOR_URL: JSON.stringify('/' + collector + '?v=' + sha256Short(fs.readFileSync(path.join(REPO_ROOT, collector))))
+        } : {},
         loader: 'js',
         minify: true,
         sourcemap: inlineSourceMap ? 'external' : false,
