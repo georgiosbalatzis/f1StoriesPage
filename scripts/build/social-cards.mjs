@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
@@ -45,6 +46,7 @@ async function textLayer(text, { size, width, height = Infinity, color = tokens[
 }
 
 export async function renderSocialCard({ title, category = '', author = '', image, disclosure = '', home = false }, maxBytes = 300 * 1024) {
+    fs.mkdirSync(path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'fontconfig'), { recursive: true });
     const layers = [];
     const addText = async (text, left, top, options) => {
         const layer = await textLayer(text, options);
