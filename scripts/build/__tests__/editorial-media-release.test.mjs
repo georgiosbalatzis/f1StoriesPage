@@ -11,6 +11,7 @@ const root = fileURLToPath(new URL('../../../', import.meta.url));
 const fixture = JSON.parse(fs.readFileSync(new URL('./fixtures/editorial-media-release.json', import.meta.url)));
 const media = JSON.parse(fs.readFileSync(path.join(root, 'blog-module/media-metadata.json'))).images;
 const posts = JSON.parse(fs.readFileSync(path.join(root, 'blog-module/blog-source-cache.json'))).posts;
+const socialCards = JSON.parse(fs.readFileSync(path.join(root, '.build/public-images/social-cards/report.json'))).records;
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const read = rel => fs.readFileSync(path.join(root, rel));
 const walk = dir => fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).flatMap(e =>
@@ -58,9 +59,12 @@ for (const item of fixture.cases) {
         assert.equal(digest(bodyText(html)), item.bodyTextSha256, 'article explanation changed');
         const post = posts.find(p => p.id === item.id);
         for (const [key, value] of Object.entries(item.editorial)) assert.deepEqual(post[key], value, `${item.id}: ${key}`);
+        const socialCard = socialCards.find(record => record.page === article);
+        assert.ok(socialCard, 'social-card provenance must be recorded');
+        assert.equal(socialCard.source, item.social, 'card must derive from the approved social source');
         for (const marker of ['property="og:image"', 'name="twitter:image"']) {
             const tag = (html.match(/<meta\b[^>]+>/g) || []).find(tag => tag.includes(marker));
-            assert.ok(tag?.includes(`content="${item.social}"`), marker);
+            assert.ok(tag?.includes(`content="${socialCard.error ? item.social : socialCard.url}"`), marker);
         }
         const ld = JSON.parse(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)[1]);
         assert.ok(JSON.stringify(ld).includes(item.social), 'JSON-LD image changed');
