@@ -4,7 +4,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const T = require('../../taxonomy');
-const { buildModel, buildPages, composePage, writeDiscoveryPages, route, sectionPageCount, monthGroups, leadHtml, SITE } = require('../discovery');
+const { buildModel, buildPages, composePage, writeDiscoveryPages, route, sectionPageCount, monthGroups, leadHtml, SITE, headHtml } = require('../discovery');
 
 const REPO = path.resolve(__dirname, '..', '..', '..');
 const deps = {
@@ -196,11 +196,74 @@ test('every page has its own canonical; the blog index keeps its established one
 test('paginated and month pages say what they are in title and description', () => {
     const { pages } = build(realPosts());
     const files = byFile({ pages });
-    assert.match(files['section/news/index.html'].head, /<title>Ειδήσεις — Άρθρα F1 Stories<\/title>/);
-    assert.match(files['section/news/page/2/index.html'].head, /<title>Ειδήσεις · Σελίδα 2 — F1 Stories<\/title>/);
+    assert.match(files['section/news/index.html'].head, /<title>Ειδήσεις Formula 1 \| F1 Stories<\/title>/);
+    assert.match(files['section/news/page/2/index.html'].head, /<title>Ειδήσεις Formula 1 · Σελίδα 2 \| F1 Stories<\/title>/);
     assert.match(files['section/news/page/2/index.html'].head, /rel="prev" href="https:\/\/f1-stories\.gr\/blog-module\/blog\/section\/news\/"/);
     assert.match(files['archive/2026/10/index.html'].head, /<title>Οκτώβριος 2026 — Αρχείο F1 Stories<\/title>/);
     assert.equal(new Set(pages.map(page => /<title>(.*)<\/title>/.exec(page.head)[1])).size, pages.length, 'unique titles');
+});
+
+test('home and composed discovery pages have one aligned metadata set and distinct descriptions', () => {
+    const home = fs.readFileSync(path.join(REPO, 'index.html'), 'utf8');
+    const shell = fs.readFileSync(path.join(REPO, 'blog-module/blog/index.html'), 'utf8');
+    const { pages } = build(realPosts());
+    const descriptions = [];
+    for (const html of [home, ...pages.map(page => composePage(shell, page))]) {
+        const titles = [...html.matchAll(/<title>([^<]*)<\/title>/g)];
+        assert.equal(titles.length, 1);
+        const meta = key => {
+            const tags = (html.match(/<meta\b[^>]*>/g) || [])
+                .filter(tag => tag.includes(`name="${key}"`) || tag.includes(`property="${key}"`));
+            assert.equal(tags.length, 1, key);
+            const value = /content="([^"]*)"/.exec(tags[0])?.[1];
+            assert.ok(value, key);
+            return value;
+        };
+        const description = meta('description');
+        descriptions.push(description);
+        assert.equal(meta('og:title'), titles[0][1]);
+        assert.equal(meta('twitter:title'), titles[0][1]);
+        assert.equal(meta('og:description'), description);
+        assert.equal(meta('twitter:description'), description);
+        const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]*)">/g)];
+        assert.equal(canonicals.length, 1);
+        assert.equal(meta('og:url'), canonicals[0][1]);
+    }
+    assert.equal(new Set(descriptions).size, descriptions.length);
+    assert.match(home, /<title>F1 Stories \| Νέα Formula 1, Τεχνικές Αναλύσεις &amp; Podcast<\/title>/);
+});
+
+test('monthly descriptions handle all Greek month names and a single story naturally', () => {
+    const posts = Array.from({ length: 12 }, (_, index) => post(`m${index}`, `2026-${String(index + 1).padStart(2, '0')}-01`));
+    const { pages } = build(posts, { today: '2026-12-31' });
+    for (const page of pages.filter(item => /^archive\/2026\//.test(item.file))) {
+        assert.match(page.head, /: 1 ιστορία\. Περιηγηθείτε/);
+        assert.doesNotMatch(page.head, /τον [Α-Ω]/);
+    }
+    assert.equal(pages.filter(item => /^archive\/2026\//.test(item.file)).length, 12);
+});
+
+test('metadata escapes Greek, apostrophes, quotes and long input without truncation or extra elements', () => {
+    const title = `Ελληνικά "Formula 1" & τ' αγωνιστικά <script>alert('x')</script> ${'μεγάλος τίτλος '.repeat(100)}`;
+    const description = `Η άποψη του O'Connor: "νέα" & <μονοθέσια>.`;
+    const canonical = `${SITE}/?q="Ελλάδα"&author=O'Connor`;
+    const html = headHtml({ title, description, path: '/', canonical, prev: '/?q="πριν"&page=1', next: '/?q="μετά"&page=3' });
+    // Parse the generated head as XML with explicitly closed HTML void elements.
+    const { XMLParser } = require('fast-xml-parser');
+    const parsed = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '', trimValues: false })
+        .parse(`<head>${html.replace(/<(meta|link)([^>]*?)>/g, '<$1$2/>')}</head>`).head;
+    assert.equal(parsed.title, title);
+    const meta = key => parsed.meta.find(item => item.name === key || item.property === key).content;
+    for (const key of ['og:title', 'twitter:title']) assert.equal(meta(key), title);
+    for (const key of ['description', 'og:description', 'twitter:description']) assert.equal(meta(key), description);
+    assert.equal(meta('og:url'), canonical);
+    assert.equal(parsed.link.find(item => item.rel === 'canonical').href, canonical);
+    assert.equal(parsed.link.find(item => item.rel === 'prev').href, `${SITE}/?q="πριν"&page=1`);
+    assert.equal(parsed.link.find(item => item.rel === 'next').href, `${SITE}/?q="μετά"&page=3`);
+    assert.equal((html.match(/<title>/g) || []).length, 1);
+    assert.equal((html.match(/<meta /g) || []).length, 10);
+    assert.equal((html.match(/<link /g) || []).length, 3);
+    assert.doesNotMatch(html, /<script>|<μονοθέσια>/);
 });
 
 test('every generated route is a sitemap entry; later section pages rank below the first', () => {
@@ -311,7 +374,7 @@ test('pages are written into the shell and pages that no longer exist are remove
         assert.ok(fs.existsSync(path.join(dir, 'archive', '2026', '02', 'index.html')));
         assert.ok(fs.existsSync(path.join(dir, 'section', 'betting', 'index.html')));
         const written = fs.readFileSync(path.join(dir, 'section', 'news', 'index.html'), 'utf8');
-        assert.match(written, /<title>Ειδήσεις — Άρθρα F1 Stories<\/title>/);
+        assert.match(written, /<title>Ειδήσεις Formula 1 \| F1 Stories<\/title>/);
         assert.equal((written.match(/<main /g) || []).length, 1);
         assert.equal(written, composePage(shell, byFile(first)['section/news/index.html']), 'the shell around <main> is untouched');
         const second = build([post('a', '2026-10-12')]);
