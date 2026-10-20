@@ -27,7 +27,7 @@ On Node 22.23.3 with the locked sharp dependency, using main `d42a9d5b` as basel
 | HTML metadata growth | 178,038 bytes across 409 pages |
 | Largest JPEG | 122,165 bytes |
 | Median JPEG | 76,914 bytes |
-| Cold social-card stage | 31.8 seconds |
+| Cold social-card stage | 32.6 seconds |
 | Warm stage, 409 cache hits | 1.6 seconds |
 | Generation fallbacks | 0 |
 
