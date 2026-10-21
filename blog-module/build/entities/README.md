@@ -85,6 +85,10 @@ The report separates candidate publication dates from qualifying subject dates. 
 
 P1.2 may consume only human-approved subject associations, independently apply publication/draft and hub eligibility rules, and reuse `discovery.js` rendering/sitemap components. Human-reviewed contextual mentions are not subject membership. Hub generation, route allowlists, search and related scoring remain separate changes. Do not import these datasets into the existing public index just to expose entity IDs.
 
+## P1.1d Norris editorial preparation
+
+Norris now has a proposed Greek introduction in `hub.introduction.text`, with `review.status: pending`. Hub publication remains separately pending; no human reviewer/date is recorded for either decision. See [the editorial preparation](norris-editorial-preparation.md) for the proposed heading, wording adjustment, statement-level source evidence, verified publication dates, outstanding decisions and the bounded next P1.2 scope. The six article approvals and all other association decisions are unchanged. No public page generation is implemented.
+
 ## Original P1.1 validation
 
 - Entity tests: 22 passed; taxonomy tests: 44 passed; build tests: 131 passed. Final blog suite: 286 passed and golden snapshots matched.

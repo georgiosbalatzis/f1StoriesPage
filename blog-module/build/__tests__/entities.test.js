@@ -297,10 +297,30 @@ test('all seeded hubs remain disabled despite the six approved subjects', () => 
     assert.deepEqual(report.entities.filter(entity => entity.substantiveSubjects > 0).map(entity => [entity.id, entity.substantiveSubjects]), [
         ['driver:lando-norris', 4], ['driver:lewis-hamilton', 2]
     ]);
-    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending' && !entity.hub.introduction));
+    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending'
+        && (!entity.hub.introduction || entity.hub.introduction.review.status === 'pending')));
     const before = clone(seed);
     renderCoverage(report);
     assert.deepEqual(seed, before, 'reporting cannot mutate editorial decisions');
+});
+
+test('the prepared Norris introduction requires its own approval and separate hub approval', () => {
+    const data = clone(seed);
+    const entity = data.registry.entities.find(item => item.id === 'driver:lando-norris');
+    assert.ok(entity.hub.introduction.text.trim());
+    assert.deepEqual(entity.hub.introduction.review, { status: 'pending' });
+    const eligibility = () => coverageReport(data.registry, data.manifest, data.articles).entities.find(item => item.id === entity.id);
+    const human = { status: 'approved', kind: 'human', by: 'fixture-editor', date: '2026-10-21' };
+    entity.hub.review = human;
+    validate(data);
+    assert.equal(eligibility().provisionalHubEligibility, false, 'hub approval alone cannot approve the introduction');
+    entity.hub.review = { status: 'pending' };
+    entity.hub.introduction.review = human;
+    validate(data);
+    assert.equal(eligibility().provisionalHubEligibility, false, 'introduction approval alone cannot authorize publication');
+    entity.hub.review = human;
+    validate(data);
+    assert.equal(eligibility().provisionalHubEligibility, true, 'both approvals are required in addition to the existing subjects');
 });
 
 test('the standalone JSON CLI produces the same deterministic report as the module', () => {
