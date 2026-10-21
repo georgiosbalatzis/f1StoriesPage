@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import hubs from '../../blog-module/build/entities/hubs.js';
 import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 import { inlineHeadStylesheets } from './inline-head-css.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
@@ -83,6 +84,8 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings-polish.min.js',
     'standings/standings.min.js'
 ]);
+
+const ENTITY_PUBLIC_FILES = hubs.publicHubFiles();
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
 const PUBLIC_IMAGE_REFS = collectPublicImageRefs();
@@ -370,6 +373,7 @@ function shouldCopy(relPath) {
     if (AUTHOR_TOOL_FILES.has(relPath)) return true;
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
+    if (ENTITY_PUBLIC_FILES.has(relPath)) return true;
     // The Edition Index's static section and month pages (blog-module/build/discovery.js).
     if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
