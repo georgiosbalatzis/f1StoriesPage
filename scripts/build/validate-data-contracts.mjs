@@ -4,8 +4,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { XMLParser } from 'fast-xml-parser';
+import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import taxonomy from '../../blog-module/taxonomy.js';
+import feed from '../../blog-module/build/feed.js';
 
 const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
@@ -21,6 +22,7 @@ const FILE_LIMITS = {
     'blog-module/home-latest.json': 16 * 1024,
     'scripts/build/asset-manifest.json': 256 * 1024,
     'sitemap.xml': 256 * 1024,
+    'feed.xml': 128 * 1024,
     'standings/debrief-cache.json': 1024 * 1024,
     'standings/dirty-air-cache.json': 4 * 1024 * 1024,
     'standings/dirty-air/index.json': 32 * 1024,
@@ -603,6 +605,36 @@ function validateSitemap() {
     });
 }
 
+function validateFeed() {
+    const relPath = 'feed.xml';
+    if (!validateFileSize(relPath)) return;
+    const xml = fs.readFileSync(relAbs(relPath), 'utf8');
+    const valid = XMLValidator.validate(xml);
+    if (valid !== true) { addError(relPath, `invalid XML: ${valid.err.msg}`); return; }
+    const parsed = new XMLParser({ ignoreAttributes: false, isArray: name => name === 'item' }).parse(xml);
+    assertCondition(parsed?.rss?.['@_version'] === '2.0', relPath, 'must be RSS 2.0');
+    const channel = parsed?.rss?.channel;
+    assertCondition(channel?.['atom:link']?.['@_href'] === feed.FEED_URL, relPath, 'missing self link');
+    const items = requireArray(channel?.item || [], relPath, { maxLength: feed.FEED_LIMIT, allowEmpty: true });
+    const seen = new Set();
+    let previousDate = Infinity;
+    items.forEach((item, index) => {
+        const label = `${relPath}.item[${index}]`;
+        requireString(item, 'title', label);
+        requireString(item, 'description', label);
+        const url = requireString(item, 'link', label);
+        validateSameOriginPublicUrl(label, url);
+        assertCondition(item.guid?.['#text'] === url && String(item.guid?.['@_isPermaLink']) === 'true', label, 'GUID must be the canonical URL');
+        assertCondition(!seen.has(url), label, 'duplicate GUID');
+        seen.add(url);
+        const date = Date.parse(item.pubDate);
+        assertCondition(Number.isFinite(date) && date <= previousDate && date <= Date.now(), label, 'invalid, future or unordered publication date');
+        previousDate = date;
+    });
+    const posts = JSON.parse(fs.readFileSync(relAbs('blog-module/blog-source-cache.json'), 'utf8')).posts;
+    assertCondition(xml === feed.renderFeed(posts), relPath, 'must match the authoritative publishing metadata');
+}
+
 function main() {
     validateCompactBlogIndex();
     validateHomeLatest();
@@ -615,6 +647,7 @@ function main() {
     validateDebriefCache();
     validateAssetManifest();
     validateSitemap();
+    validateFeed();
 
     if (errors.length) {
         console.error('Data contract validation failed:');
@@ -623,7 +656,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Data contracts validated: blog data, standings caches, YouTube snapshot, asset manifest, and sitemap.');
+    console.log('Data contracts validated: blog data, standings caches, YouTube snapshot, asset manifest, sitemap, and RSS feed.');
 }
 
 main();

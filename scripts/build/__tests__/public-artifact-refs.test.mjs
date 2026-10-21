@@ -200,6 +200,7 @@ function cliFixture(t) {
     write(dist, 'blog-module/home-latest.json', JSON.stringify([{ slug: 'story', title: 'Lead', heroImage: '/hero.webp' }]));
     write(dist, 'robots.txt', 'Sitemap: https://f1-stories.gr/sitemap.xml\n');
     write(dist, 'CNAME', 'f1-stories.gr');
+    write(dist, 'feed.xml', '<rss version="2.0"><channel><title>F1 Stories</title></channel></rss>');
     write(dist, '_headers', securityHeadersText());
     write(dist, 'sitemap.xml', `<urlset>${Object.keys(pages).map(file =>
         `<url><loc>https://f1-stories.gr/${file.replace(/index\.html$/, '')}</loc></url>`).join('')}</urlset>`);

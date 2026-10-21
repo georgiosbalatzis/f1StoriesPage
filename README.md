@@ -1,5 +1,7 @@
 # F1 Stories
 
+Publication RSS: [feed.xml](https://f1-stories.gr/feed.xml) · [Build and retention policy](docs/rss-feed.md).
+
 Αυτό είναι το αποθετήριο του δημόσιου site [f1-stories.gr](https://f1-stories.gr). Το F1 Stories είναι ελληνικό podcast και editorial project για τη Formula 1. Το site περιλαμβάνει αρχική σελίδα, blog με άρθρα, βαθμολογίες, σελίδα συντακτών και τοπικά εργαλεία συγγραφής άρθρων.
 
 Είναι ένα static site. Δεν έχει backend, βάση δεδομένων ή frontend framework. Είναι γραμμένο σε HTML, CSS και vanilla JavaScript. Τα Node.js scripts παράγουν ό,τι χρειάζεται στο build time, όπως τα άρθρα, τα JSON feeds, τα cache δεδομένων, τα minified assets και το τελικό artifact. Το GitHub Actions κάνει τα builds, τα merges των άρθρων, την ανανέωση δεδομένων και το deploy στο GitHub Pages.

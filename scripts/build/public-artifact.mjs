@@ -28,6 +28,7 @@ const ROOT_FILES = new Set([
     'index.html',
     'robots.txt',
     'sitemap.xml',
+    'feed.xml',
     'sw.js',
     'home.min.css',
     'styles.min.css',
