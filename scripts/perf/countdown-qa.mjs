@@ -50,11 +50,12 @@ function startServer() {
     return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve({ server, origin: `http://127.0.0.1:${server.address().port}` })));
 }
 
-async function readCountdown(browser, origin, { now, schedule, timezoneId = 'UTC' }) {
+async function readCountdown(browser, origin, { now, schedule, cached, timezoneId = 'UTC' }) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, timezoneId, locale: 'el-GR' });
     const page = await context.newPage();
     await page.route(SCHEDULE_URL, route => (schedule ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(schedule) }) : route.abort()));
     await page.clock.setFixedTime(new Date(now));
+    if (cached) await page.addInitScript(value => sessionStorage.setItem('f1s-schedule-v2', JSON.stringify(value)), cached);
     await page.goto(`${origin}/`, { waitUntil: 'load' });
     await page.waitForTimeout(500);
     const state = await page.evaluate(() => {
@@ -110,10 +111,27 @@ try {
     const flagState = await readCountdown(browser, origin, { now: '2026-10-01T00:00:00Z', schedule: live });
     check('live Malaysia round gets its flag, not the generic chequered flag', flagState.source === 'live' && flagState.name === 'Bahrain GP in Malaysia' && flagState.flag === '\u{1F1F2}\u{1F1FE}', flagState.flag);
 
+    const fixtureNow = '2026-10-21T00:00:00Z';
+    const us = liveRace(18, 'United States Grand Prix', 'USA', '2026-10-25', '20:00:00Z');
+    const mexico = liveRace(19, 'Mexico City Grand Prix', 'Mexico', '2026-11-01', '20:00:00Z');
+    const unordered = await readCountdown(browser, origin, { now: fixtureNow,
+        schedule: { MRData: { RaceTable: { Races: [mexico, us] } } } });
+    check('unordered live calendar still targets the nearest start', unordered.source === 'live' && unordered.name === 'United States GP', unordered.name);
+    const missingTime = await readCountdown(browser, origin, { now: fixtureNow,
+        schedule: { MRData: { RaceTable: { Races: [{ ...us, time: undefined }] } } } });
+    check('missing race time retains named fallback without a noon guess', missingTime.source === 'fallback' && missingTime.name === 'US GP' && missingTime.timer === '4d 20h 0m', JSON.stringify(missingTime));
+    for (const races of [[], [{}]]) {
+        const invalidCache = await readCountdown(browser, origin, { now: fixtureNow,
+            cached: { ts: Date.parse(fixtureNow) - 1000, races }, schedule: null });
+        check('invalid cache cannot replace fallback with false season end', invalidCache.source === 'fallback' && invalidCache.name === 'US GP', JSON.stringify(invalidCache));
+    }
+
     // after the final race: no stale target label
     const over = await readCountdown(browser, origin, { now: '2026-12-07T00:00:00Z', schedule: null });
     check('season end text', /ολοκληρώθηκε/.test(over.name), over.name);
     check('season end leaves no stale label', !over.label && !over.title, `${over.label}`);
+    const unknown = await readCountdown(browser, origin, { now: '2027-01-01T00:00:00Z', schedule: null });
+    check('unavailable next-season calendar is not reported as season complete', unknown.name === 'Πρόγραμμα μη διαθέσιμο' && unknown.mobileTimer === 'Αναμονή' && !unknown.label, JSON.stringify(unknown));
 } finally {
     server.close();
     await browser.close();

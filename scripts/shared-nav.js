@@ -591,10 +591,11 @@
     RACES.forEach(function (r) { r.ts = new Date(r.date).getTime(); });
 
     function getNextRace(now) {
+        var next = null;
         for (var i = 0; i < RACES.length; i++) {
-            if (RACES[i].ts > now) return RACES[i];
+            if (RACES[i].ts > now && (!next || RACES[i].ts < next.ts)) next = RACES[i];
         }
-        return null;
+        return next;
     }
 
     function fmtCountdown(ms) {
@@ -689,9 +690,11 @@
         var now = Date.now();
         var race = getNextRace(now);
         if (!race) {
-            if (countdownNameEl) countdownNameEl.textContent = 'Η σεζόν ολοκληρώθηκε';
-            if (countdownEl) countdownEl.textContent = '2027 προσεχώς';
-            if (countdownMobileEl) countdownMobileEl.textContent = 'Τέλος';
+            var year = new Date(now).getFullYear();
+            var seasonKnown = RACES.some(function (r) { return new Date(r.ts).getUTCFullYear() === year; });
+            if (countdownNameEl) countdownNameEl.textContent = seasonKnown ? 'Η σεζόν ολοκληρώθηκε' : 'Πρόγραμμα μη διαθέσιμο';
+            if (countdownEl) countdownEl.textContent = seasonKnown ? (year + 1) + ' προσεχώς' : 'Αναμονή προγράμματος';
+            if (countdownMobileEl) countdownMobileEl.textContent = seasonKnown ? 'Τέλος' : 'Αναμονή';
             setMobileFlag(null);
             ['nav-countdown', 'nav-countdown-mobile'].forEach(function (id) {
                 var el = document.getElementById(id);
@@ -710,24 +713,38 @@
     }
 
     // ── Fetch live schedule from Jolpica (Ergast replacement) ──
+    function validSchedule(races, year) {
+        return Array.isArray(races) && races.length > 0 && races.every(function (r) {
+            return r && typeof r.name === 'string' && r.name.trim()
+                && typeof r.flag === 'string' && typeof r.ts === 'number' && Number.isFinite(r.ts)
+                && new Date(r.ts).getUTCFullYear() === year;
+        });
+    }
+
     function parseJolpicaRaces(data) {
         try {
             var races = data.MRData.RaceTable.Races;
             return races.map(function (r) {
                 var country = r.Circuit.Location.country;
                 var flag = getCountryFlag(country);
-                var dateStr = r.date + 'T' + (r.time || '12:00:00Z');
-                return { name: r.raceName.replace('Grand Prix', 'GP'), flag: flag, ts: new Date(dateStr).getTime() };
-            }).filter(function (r) { return !isNaN(r.ts); });
+                // An unpublished start time cannot truthfully drive a countdown.
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(r.date) || !/^\d{2}:\d{2}:\d{2}Z$/.test(r.time)) return null;
+                var date = new Date(r.date + 'T' + r.time);
+                if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== r.date) return null;
+                return { name: r.raceName.replace('Grand Prix', 'GP'), flag: flag, ts: date.getTime() };
+            });
         } catch (_) { return null; }
     }
 
     function loadLiveSchedule() {
         var CACHE_KEY = 'f1s-schedule-v2';
         var CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+        var now = Date.now();
+        var year = new Date(now).getFullYear();
         try {
             var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
-            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.races) {
+            if (cached && typeof cached.ts === 'number' && now >= cached.ts && now - cached.ts < CACHE_TTL
+                && validSchedule(cached.races, year)) {
                 RACES = cached.races;
                 calendarSource = 'cache';
                 tickCountdown();
@@ -735,12 +752,11 @@
             }
         } catch (_) {}
 
-        var year = new Date().getFullYear();
         fetch('https://api.jolpi.ca/ergast/f1/' + year + '.json')
             .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
             .then(function (data) {
                 var parsed = parseJolpicaRaces(data);
-                if (parsed && parsed.length) {
+                if (validSchedule(parsed, year)) {
                     RACES = parsed;
                     calendarSource = 'live';
                     try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), races: parsed })); } catch (_) {}

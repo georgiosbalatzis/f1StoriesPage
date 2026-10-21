@@ -77,6 +77,9 @@ jobs:
       - name: Run blog module tests
         run: npm run test:blog
 
+      - name: Verify next-race countdown
+        run: node --test scripts/build/__tests__/countdown-schedule.test.mjs scripts/build/__tests__/race-calendar.test.mjs && npm run qa:countdown -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
+
       # ubuntu-latest supplies Chrome and its runtime libraries; use that browser
       # through chrome-launcher rather than downloading Playwright binaries.
       - name: Run Edition discovery regression
