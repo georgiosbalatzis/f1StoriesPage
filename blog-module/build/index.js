@@ -13,6 +13,7 @@ const {
 const { primeImageDimensions, truthfulSrcset, cardSrcset } = require('./image-sizes');
 const { mediaFor, slotOf, isContained, creditLineHtml, cardDisclosureHtml, mediaAttributes } = require('./media-meta');
 const { generateSitemap } = require('./sitemap');
+const { generateFeed } = require('./feed');
 const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
@@ -1140,6 +1141,7 @@ async function processBlogEntries(options = {}) {
     await injectHomePanels(undefined, blogPosts);
 
     generateSitemap(blogPosts, edition ? edition.pages.filter(page => page.file !== 'index.html') : []);
+    generateFeed(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);

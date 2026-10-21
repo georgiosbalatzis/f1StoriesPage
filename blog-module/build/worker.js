@@ -166,6 +166,7 @@ async function processBlogEntry(entryPath) {
         image: primaryImage,
         backgroundImage: headerImage,
         excerpt: metadata.excerpt || generatedExcerpt,
+        ...Object.fromEntries(['draft', 'published', 'status'].filter(key => metadata[key] !== undefined).map(key => [key, metadata[key]])),
         // Optional front matter contract for transparent article citations:
         // `sources: Label | https://example.com; Another source | https://…`
         // The renderer validates URLs before anything reaches public HTML.

@@ -12,6 +12,7 @@ const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.j
 
 const GENERATED_EXACT = new Set([
     '404.html',
+    'feed.xml',
     'assets/youtube-latest.json',
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',

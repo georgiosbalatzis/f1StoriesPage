@@ -38,6 +38,7 @@ const REQUIRED_EXACT = [
     'index.html',
     'robots.txt',
     'sitemap.xml',
+    'feed.xml',
     'sw.js',
     'assets/youtube-latest.json',
     'blog-module/blog-index-data.json',
