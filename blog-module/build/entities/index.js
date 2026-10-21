@@ -1,4 +1,4 @@
-// Standalone editorial tooling. Nothing in the publishing or browser pipeline imports this module.
+// Editorial validation is shared by standalone reports and the approval-gated static hub build.
 const fs = require('node:fs');
 const path = require('node:path');
 const { getPostTaxonomy, isDay } = require('../../taxonomy');

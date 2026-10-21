@@ -31,6 +31,8 @@
     "build:check": "node scripts/build/generated-drift-guard.mjs",
     "test:blog": "node --test blog-module/build/__tests__/*.test.js blog-module/widgets/betcast/widget.test.cjs && node blog-module/build/__tests__/run-golden.js",
     "test:taxonomy": "node --test blog-module/build/__tests__/taxonomy*.test.js",
+    "entities:preview": "node blog-module/build/entities/preview.js",
+    "test:entities": "node --test blog-module/build/__tests__/entities*.test.js",
     "entities:validate": "node blog-module/build/entities/index.js --validate",
     "entities:report": "node blog-module/build/entities/index.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",

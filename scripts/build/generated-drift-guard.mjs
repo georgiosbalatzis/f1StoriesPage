@@ -49,7 +49,7 @@ function loadManifestFiles() {
 function isGeneratedPath(relPath) {
     if (GENERATED_EXACT.has(relPath)) return true;
     if (/^blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return true;
-    if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
+    if (/^blog-module\/blog\/(?:section|archive|entities)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     return /\.min\.(?:css|js)$/i.test(relPath);
 }
 

@@ -26,6 +26,8 @@ const {
     formatReadingTime, athensDay
 } = require('../taxonomy');
 const { buildPages, writeDiscoveryPages } = require('./discovery');
+const { loadFoundation } = require('./entities');
+const { buildHubPages, writeHubPages } = require('./entities/hubs');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
 
@@ -1141,7 +1143,13 @@ async function processBlogEntries(options = {}) {
     injectHomeJournal(indexPosts, blogPosts, selection);
     await injectHomePanels(undefined, blogPosts);
 
-    generateSitemap(blogPosts, edition ? edition.pages.filter(page => page.file !== 'index.html') : []);
+    const { registry, manifest } = loadFoundation();
+    const entities = buildHubPages(registry, manifest, blogPosts, {
+        today: athensDay(), indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }
+    });
+    writeHubPages(CONFIG.OUTPUT_HTML_DIR, entities.pages);
+    console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
+    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages]);
     generateFeed(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
@@ -1159,6 +1167,8 @@ if (require.main === module) {
 }
 
 module.exports = {
+    storyImage,
+    renderStoryImage,
     parseBuildOptions,
     runWorker,
     runWorkerPool,

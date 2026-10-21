@@ -191,10 +191,13 @@ function listDiscoveryPages() {
         for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
             const abs = path.join(dir, entry.name);
             if (entry.isDirectory()) walk(abs);
-            else if (entry.name === 'index.html') pages.push(path.relative(REPO_ROOT, abs).split(path.sep).join('/'));
+            else if (entry.name === 'index.html') {
+                const rel = path.relative(REPO_ROOT, abs).split(path.sep).join('/');
+                if (!rel.startsWith('blog-module/blog/entities/') || /^blog-module\/blog\/entities\/(?:drivers|teams|circuits|grands-prix)\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:page\/(?:[2-9]|[1-9]\d+)\/)?index\.html$/.test(rel)) pages.push(rel);
+            }
         }
     }
-    ['section', 'archive'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
+    ['section', 'archive', 'entities'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
     return pages.sort();
 }
 for (const rel of listDiscoveryPages()) {
