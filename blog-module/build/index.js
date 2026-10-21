@@ -255,10 +255,10 @@ function storyReadingTime(post) {
     return formatReadingTime(readingTime);
 }
 
-// Story images sit inside a link that already carries the headline, so alt stays empty.
+// Linked thumbnails repeat their headline; standalone figures may supply a verified description.
 // The editors' media record (media-metadata.json) adds the crop's focal point, marks artwork and archival prints for
 // containment (data-media), and adds the AI label when the picture is documented as generated.
-function renderStoryImage(post, image, { sizes, full = false, eager = false, disclose = true }) {
+function renderStoryImage(post, image, { sizes, full = false, eager = false, disclose = true, alt = '' }) {
     const srcset = cardSrcset(image, full);
     const width = parseInt(post.thumbnailWidth, 10) || 400;
     const height = parseInt(post.thumbnailHeight, 10) || 188;
@@ -266,7 +266,7 @@ function renderStoryImage(post, image, { sizes, full = false, eager = false, dis
         + (srcset ? ` srcset="${escapeHtmlAttribute(srcset)}" sizes="${sizes}"` : '')
         + ` width="${width}" height="${height}"`
         + (eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"')
-        + ` decoding="async" alt=""${mediaAttributes(post.id, image)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
+        + ` decoding="async" alt="${escapeHtmlAttribute(alt)}"${mediaAttributes(post.id, image)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
         + (disclose ? cardDisclosureHtml(post.id, image) : '');
 }
 
@@ -386,7 +386,8 @@ function renderHomeJournal({ feature = null, voices = [], archive = [], wire = [
     // Only the analysis feature is wide enough to need the full-size variant (as the old Journal lead did).
     const picture = (post, sizes, full = false) => {
         const image = storyImage(post);
-        return image ? `<figure>${renderStoryImage(post, image, { sizes, full })}</figure>` : '';
+        const alt = mediaFor(post.id, slotOf(image))?.alt || '';
+        return image ? `<figure>${renderStoryImage(post, image, { sizes, full, alt })}</figure>` : '';
     };
     const blocks = [];
     if (feature) {
