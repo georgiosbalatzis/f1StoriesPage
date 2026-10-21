@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
+const { createHash } = require('node:crypto');
 const path = require('node:path');
 const test = require('node:test');
 const {
@@ -297,20 +298,24 @@ test('all seeded hubs remain disabled despite the six approved subjects', () => 
     assert.deepEqual(report.entities.filter(entity => entity.substantiveSubjects > 0).map(entity => [entity.id, entity.substantiveSubjects]), [
         ['driver:lando-norris', 4], ['driver:lewis-hamilton', 2]
     ]);
-    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending'
-        && (!entity.hub.introduction || entity.hub.introduction.review.status === 'pending')));
+    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending'));
     const before = clone(seed);
     renderCoverage(report);
     assert.deepEqual(seed, before, 'reporting cannot mutate editorial decisions');
 });
 
-test('the prepared Norris introduction requires its own approval and separate hub approval', () => {
+test('the exact approved Norris heading and introduction do not authorize hub publication', () => {
     const data = clone(seed);
     const entity = data.registry.entities.find(item => item.id === 'driver:lando-norris');
-    assert.ok(entity.hub.introduction.text.trim());
-    assert.deepEqual(entity.hub.introduction.review, { status: 'pending' });
+    assert.equal(entity.hub.introduction.heading, 'Λάντο Νόρις — Formula 1, αναλύσεις και ιστορίες');
+    assert.equal(createHash('sha256').update(entity.hub.introduction.text).digest('hex'), 'c22b63f39a6e9bd3eead29609d352bd1e3cc0a98623060634394dc5640e0c2d4');
+    assert.deepEqual(entity.hub.introduction.review, { status: 'approved', kind: 'human', by: 'georgiosbalatzis', date: '2026-10-21' });
+    assert.deepEqual(entity.hub.review, { status: 'pending' });
     const eligibility = () => coverageReport(data.registry, data.manifest, data.articles).entities.find(item => item.id === entity.id);
+    assert.equal(eligibility().provisionalHubEligibility, false);
+    assert.deepEqual(eligibility().reasons, ['Public hub approval pending']);
     const human = { status: 'approved', kind: 'human', by: 'fixture-editor', date: '2026-10-21' };
+    entity.hub.introduction.review = { status: 'pending' };
     entity.hub.review = human;
     validate(data);
     assert.equal(eligibility().provisionalHubEligibility, false, 'hub approval alone cannot approve the introduction');
@@ -321,6 +326,17 @@ test('the prepared Norris introduction requires its own approval and separate hu
     entity.hub.review = human;
     validate(data);
     assert.equal(eligibility().provisionalHubEligibility, true, 'both approvals are required in addition to the existing subjects');
+});
+
+test('an introduction heading is optional but must contain text when supplied', () => {
+    const registry = clone(seed.registry);
+    const introduction = registry.entities.find(item => item.id === 'driver:lando-norris').hub.introduction;
+    for (const heading of ['', '  ', 42, null]) {
+        introduction.heading = heading;
+        assert.throws(() => validateRegistry(registry), /heading must be nonempty text/);
+    }
+    delete introduction.heading;
+    validateRegistry(registry);
 });
 
 test('the standalone JSON CLI produces the same deterministic report as the module', () => {

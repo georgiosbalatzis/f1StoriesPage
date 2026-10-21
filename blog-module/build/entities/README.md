@@ -15,6 +15,8 @@ Commands read committed article metadata/source and write only to stdout. The re
 
 `registry.json` contains exactly six initial identities. `id` is the permanent reference key; changing a name, sponsor, provider ID or display label must not change it. `type` and `slug` provide a future route key, not a public URL. `labelEl` is display copy, also pending editorial review. `providerIds` is optional: the four driver/constructor Jolpica IDs are present in `standings/standings-cache.json`; no event or circuit provider IDs have been guessed. No grid membership or event-to-venue relationships are stored.
 
+`hub.introduction` contains `text`, an optional nonempty `heading`, and `review`. Its review applies to the exact heading/body pair when a heading is present. `hub.review` is the separate public publication decision; approving introduction copy never approves the hub. The optional heading is an additive schema extension; existing heading-free introduction fixtures remain valid.
+
 Each alias has `value` and `scope`. Resolution requires whole-string equality after case/Unicode/whitespace/Greek-accent normalization; hyphens, underscores and Unicode dash separators are the only supported punctuation equivalence. Commas, periods and slashes are not stripped or split by the alias resolver. Candidate extraction reuses `getPostTaxonomy()` for the existing tag parsing contract.
 
 - `article-tag`: explicitly named drivers, events or circuits.
@@ -52,7 +54,7 @@ Counts are article/entity pairs, not distinct articles. Proposals are not confir
 | Singapore Grand Prix | 3 | 2 | 1 | 0 | 0 | 0 |
 | Sepang International Circuit | 5 | 0 | 0 | 0 | 0 | 5 |
 
-Confirmed primary/secondary counts are **1/1 for Hamilton** and **3/1 for Norris**; all other confirmed role counts are zero. All public hub approvals are pending; no reviewed introductions exist. Therefore **none is provisionally eligible**. Norris meets the subject-count/date criteria only; Hamilton has two qualifying subjects and does not meet the three-subject minimum.
+Confirmed primary/secondary counts are **1/1 for Hamilton** and **3/1 for Norris**; all other confirmed role counts are zero. All public hub approvals are pending. Norris has an approved heading/introduction and meets the subject-count/date criteria, but still requires separate public hub approval. Therefore **none is provisionally eligible**. Hamilton has two qualifying subjects and does not meet the three-subject minimum.
 
 ## P1.1c human editorial approvals
 
@@ -67,7 +69,7 @@ Reviewer `georgiosbalatzis` explicitly authorized these six classifications on `
 | `driver:lando-norris` | `20260824W` | `primary` |
 | `driver:lando-norris` | `20260927G` | `secondary` |
 
-The six records and their source evidence were rechecked against PR #313 at `09c11df5d0f03ba1a64f589e032564977770219b`; no material source changes were found. This approves subject associations only, not every factual assertion in the articles. All other decisions and registry identities remain unchanged. Hamilton `20261007W`, `20261011J` and `20260619W` remain pending. Bahrain/Sepang flags remain intact. No introduction or public hub publication is approved, and no P1.2 integration is included.
+The six records and their source evidence were rechecked against PR #313 at `09c11df5d0f03ba1a64f589e032564977770219b`; no material source changes were found. This approves subject associations only, not every factual assertion in the articles. All other decisions and registry identities remain unchanged. Hamilton `20261007W`, `20261011J` and `20260619W` remain pending. Bahrain/Sepang flags remain intact. No introduction or public hub publication was approved in P1.1c, and no P1.2 integration is included.
 
 Important review questions:
 
@@ -87,7 +89,13 @@ P1.2 may consume only human-approved subject associations, independently apply p
 
 ## P1.1d Norris editorial preparation
 
-Norris now has a proposed Greek introduction in `hub.introduction.text`, with `review.status: pending`. Hub publication remains separately pending; no human reviewer/date is recorded for either decision. See [the editorial preparation](norris-editorial-preparation.md) for the proposed heading, wording adjustment, statement-level source evidence, verified publication dates, outstanding decisions and the bounded next P1.2 scope. The six article approvals and all other association decisions are unchanged. No public page generation is implemented.
+P1.1d prepared a proposed Greek introduction in `hub.introduction.text`, with `review.status: pending`. At that stage, neither decision had a human reviewer/date. Hub publication remains separately pending. See [the editorial preparation](norris-editorial-preparation.md) for the proposed heading, wording adjustment, statement-level source evidence, verified publication dates, outstanding decisions and the bounded next P1.2 scope. The six article approvals and all other association decisions are unchanged. No public page generation is implemented.
+
+## P1.1e Norris introduction approval
+
+The owner explicitly approved the exact Greek heading and body on `2026-10-21`. They are stored in `hub.introduction.heading` and the unchanged `hub.introduction.text`, with `review: { status: approved, kind: human, by: georgiosbalatzis, date: 2026-10-21 }`. This review covers both fields; it does not approve public hub publication. The optional heading field is validated as nonempty text when present.
+
+Norris meets the subject-count/date, discipline and introduction requirements. Its only remaining editorial eligibility blocker is `Public hub approval pending`; `hub.review` remains exactly `{ status: pending }`. The association manifest, all six article approvals, all 91 pending records, Hamilton and the other four entities are unchanged. No public hub generation, routes, sitemap/navigation changes or P1.2 implementation is included. See [the evidence and preparation record](norris-editorial-preparation.md) for source context and remaining decisions.
 
 ## Original P1.1 validation
 

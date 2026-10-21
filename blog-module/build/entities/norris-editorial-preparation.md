@@ -1,10 +1,10 @@
-# P1.1d — Norris hub editorial preparation
+# Norris hub editorial preparation and P1.1e introduction approval
 
-Entity: `driver:lando-norris`. Prepared from the editor's supplied Greek text on 2026-10-21. This document records source review, not human approval or permission to publish.
+Entity: `driver:lando-norris`. Prepared from the editor's supplied Greek text on 2026-10-21. P1.1d recorded source review; the P1.1e owner approval of the exact heading/body is now recorded below. Permission to publish is still pending.
 
-Proposed heading, pending editorial approval: **Λάντο Νόρις — Formula 1, αναλύσεις και ιστορίες**.
+Approved heading: **Λάντο Νόρις — Formula 1, αναλύσεις και ιστορίες**.
 
-The final proposed body is stored once in [registry.json](registry.json), under this entity's `hub.introduction.text`. Its review is exactly `{ "status": "pending" }`; `hub.review` also remains pending. No reviewer identity/date has been assigned to either decision.
+The exact approved heading and body are stored once in [registry.json](registry.json), under this entity's `hub.introduction.heading` and `hub.introduction.text`. Their shared introduction review is `{ "status": "approved", "kind": "human", "by": "georgiosbalatzis", "date": "2026-10-21" }`. The body is unchanged from the owner-approved text, including its paragraph break. The separate `hub.review` remains exactly `{ "status": "pending" }`; no publication reviewer/date is recorded.
 
 ## Editorial adjustment
 
@@ -38,18 +38,18 @@ The four articles are present in the public compact article index. Dates come fr
 | `20260824W` | `2026-08-24` | `primary` | 7 |
 | `20260927G` | `2026-09-27` | `secondary` | 30 |
 
-Norris meets the minimum of three approved substantive F1 subjects and two publication dates: four subjects across four dates. Its unresolved `20260928G` candidate is excluded from the qualifying set. It remains ineligible for a public hub until the owner explicitly approves the final introduction and separately approves hub publication.
+Norris meets the minimum of three approved substantive F1 subjects and two publication dates: four subjects across four dates. Its unresolved `20260928G` candidate is excluded from the qualifying set. The introduction requirement is now satisfied. It remains ineligible for a public hub until the owner separately approves hub publication.
 
 Hamilton remains pending with two approved substantive associations, below the three-subject minimum. Its registry entry is unchanged. All six article approvals, the other 91 pending associations, identities and Bahrain/Sepang flags are unchanged. No other introduction was added or approved.
 
 ## Outstanding publication decisions
 
-1. Owner approval of the final introduction wording and proposed heading. Supplying the source draft is not approval of the revised final copy.
-2. Separate owner approval to publish the Norris hub. Neither approval substitutes for the other or authorizes another entity's hub.
+1. **Completed:** explicit owner approval of the exact final introduction wording and heading in P1.1e, by human reviewer `georgiosbalatzis` on `2026-10-21`. No Greek copy was rewritten.
+2. **Pending:** separate owner approval to publish the Norris hub. Introduction approval does not authorize publication or another entity's hub.
 
 ## Exact next P1.2 implementation scope
 
-After those explicit decisions are recorded, implement one Norris hub only:
+After the remaining explicit publication decision is recorded, implement one Norris hub only:
 
 1. Select validated, human-approved primary/secondary, substantive F1 subjects from the currently published, non-draft, non-future article set. Start with the four verified articles above; never use pending proposals or mentions as membership.
 2. Define one canonical Norris route from the stable registry identity/slug, reuse the existing discovery shell/cards/page descriptors, and render the approved heading/introduction plus the qualifying articles in deterministic date/ID order. Do not generate Hamilton or other entity hubs.
@@ -71,3 +71,11 @@ The required [Quality gates job](https://github.com/georgiosbalatzis/f1StoriesPa
 - Structural checks confirm that the manifest is byte-identical to `8d26330f`, all other registry fields/entities are unchanged, and Norris's only registry change is the pending introduction. Counts remain 6 approved and 91 unresolved/pending; all six hubs remain ineligible. Repeated JSON reports are byte-identical.
 - `build:public` and `build:check` passed. Compared every public relative path and SHA-256 hash with the previous PR baseline: 4,082 files (456 HTML), zero additions/removals/changes. Tree digest remains `0c1c78c881bda4215b5fc4f7ce06b869900f98eca6c239295ede08fea85e465e`. No new public URLs, sitemap/navigation changes, article edits, search/related-ranking changes or generated-artifact drift.
 - Full `verify` and Lighthouse were not rerun for this editorial preparation; no production rendering or quality-gate code changed. The earlier Lighthouse failure remains documented above. No introduction or publication approval was recorded.
+
+## P1.1e approval validation
+
+- Fetched PR #313 at `600db9537f4879312987d1a6c303778c3c54b65b` before recording the owner's explicit heading/introduction approval. The stored body matched the authorized text exactly; it was not edited. The approved heading is now stored in the optional, validated `hub.introduction.heading` field. The existing introduction review covers the exact heading/body pair.
+- Entity validation/report passed; 25 focused entity tests and all 289 blog tests passed, with golden snapshots matching. The focused regression pins the exact heading, body SHA-256 (`c22b63f39a6e9bd3eead29609d352bd1e3cc0a98623060634394dc5640e0c2d4`) and human reviewer/date, and confirms independent publication approval is still required. Optional heading validation preserves existing heading-free fixture compatibility.
+- Structural comparison with `600db953` confirms that only Norris's introduction heading and review changed in the registry. All other registry fields/entities and the complete association manifest are unchanged: exactly six approved article associations and 91 unresolved/pending associations. Norris has four qualifying subjects and approved copy, but its remaining reason is `Public hub approval pending`; no hub is eligible. Repeated reports remain deterministic.
+- `build:public` and `build:check` passed. The public artifact comparison uses the prior PR's sorted relative-path/file-SHA-256 methodology: the same 4,082 files (456 HTML), zero additions, removals or byte changes. The tree digest remains `0c1c78c881bda4215b5fc4f7ce06b869900f98eca6c239295ede08fea85e465e`. No new public URLs or generated-artifact drift.
+- Article bodies, titles, excerpts, dates, authorship, metadata, canonical URLs, recommendations, search, sitemap and navigation are untouched. No hub generation or P1.2 implementation is included. Lighthouse thresholds remain unchanged; full `verify` and Lighthouse were not rerun, and the previously recorded local Lighthouse failures remain unresolved.

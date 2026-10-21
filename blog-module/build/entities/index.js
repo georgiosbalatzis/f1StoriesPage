@@ -54,6 +54,7 @@ function validateRegistry(registry) {
         validateReview(entity.hub?.review, `${entity.id} hub`);
         if (entity.hub.introduction !== undefined) {
             check(text(entity.hub.introduction?.text), `${entity.id}: introduction text required`);
+            if (entity.hub.introduction.heading !== undefined) check(text(entity.hub.introduction.heading), `${entity.id}: introduction heading must be nonempty text`);
             validateReview(entity.hub.introduction.review, `${entity.id} introduction`);
         }
     }
