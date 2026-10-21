@@ -1,0 +1,1986 @@
+{
+  "version": 1,
+  "baseline": "659074e6ff434538ff75f1cd3d178085a00015be",
+  "associations": [
+    {
+      "articleId": "20261006F",
+      "entityId": "circuit:sepang",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261006F/source.txt",
+        "line": 16,
+        "quote": "<iframe src=\"https://georgiosbalatzis.github.io/Tyres/embed/el/2026/sepang/3d/\" title=\"Τρισδιάστατη προβολή: Bahrain Grand Prix 2026 (F1 Stories TYRES)\" width=\"100%\" height=\"632\" loading=\"lazy\" style=\"border:0;width:100%;max-width:100%;display:block;\"></iframe>",
+        "note": "Embed URL uses sepang but embed title names Bahrain GP. Body says Malaysia; record conflict without silently correcting source or assigning a verified event-to-circuit relationship."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Sepang"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261006G",
+      "entityId": "circuit:sepang",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261006G/source.txt",
+        "line": 9,
+        "quote": "Στον όγδοο γύρο του Grand Prix του Μπαχρέιν στο Sepang, η Williams είχε κάνει σχεδόν όλα όσα θα ζητούσες από ένα pit wall σε έναν αγώνα με τόσο ασταθείς και περίεργες συνθήκες. Είχε διαβάσει σωστά την πίστα, είχε βάλει και τα δύο αυτοκίνητα σε Intermediates και είχε φέρει δύο μονοθέσια που ξεκίνησαν από μέτριες θέσεις ",
+        "note": "Source explicitly combines Bahrain GP and Sepang; withhold circuit subject confirmation and any event/venue relationship until human verification."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Sepang"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261007F",
+      "entityId": "circuit:sepang",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261007F/source.txt",
+        "line": 9,
+        "quote": "Το ημερολόγιο το ανακάτεψε ο πόλεμος στη Μέση Ανατολή, με το Grand Prix του Μπαχρέιν να καταλήγει τελικά στη Μαλαισία. Μέσα σε όλους αυτούς τους μήνες, τα νέα αυτοκίνητα είχαν δοκιμαστεί σχεδόν σε όλα. Σε ένα πράγμα όχι: στον κανονικό, βρεγμένο αγώνα.",
+        "note": "Source repeatedly identifies Sepang/Malaysia and asserts Bahrain GP relocation. Preserve source wording; event/venue claim needs human verification before accepting circuit subject association."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Sepang"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261007G",
+      "entityId": "circuit:sepang",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261007G/source.txt",
+        "line": 13,
+        "quote": "Το Sepang, μην παρεξηγηθούμε, έχει κι αυτό τις ευθείες του: δύο πολύ μεγάλες, δυνατά φρεναρίσματα και τέσσερις ζώνες Straight Mode. Έχει όμως και κάτι που στο Baku υπάρχει σε πολύ μικρότερη δόση, μεγάλες σειρές στροφών όπου η ισορροπία του σασί, η αλλαγή κατεύθυνσης και η ταχύτητα που κρατάς μέσα στη στροφή μετράνε πρα",
+        "note": "Body analyses Sepang track characteristics, but source tags, linked Bahrain naming and embed at line 17 mix event/circuit identities. Human verification required; no Bahrain-to-Sepang relationship inferred."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Sepang"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261007W",
+      "entityId": "circuit:sepang",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261007W/source.txt",
+        "line": 9,
+        "quote": "Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις. Για τον Lewis Hamilton, όμως, το  βάθρο στην Sepang ήταν πολύ περισσότερο από έναν ακόμη τερματισμό στην πρώτη τριάδα.",
+        "note": "Body says Sepang while source tag names Grand Prix Bahrain. Driver subject is clear, but venue/event association remains unresolved without verification."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Sepang circuit"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260725W",
+      "entityId": "driver:lando-norris",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260725W/source.txt",
+        "line": 7,
+        "quote": "Στις κατατακτήριες δοκιμές του Grand Prix Ουγγαρίας 2026, ο Lando Norris συγκέντρωσε όλα αυτά τα στοιχεία σε έναν γύρο που αποδείχθηκε αξεπέραστος. Σε μια πίστα με συνεχόμενες στροφές, ελάχιστες ευκαιρίες διόρθωσης και  μικρές διαφορές ανάμεσα στους κορυφαίους οδηγούς, ο Βρετανός εκμεταλλεύτηκε κάθε εκατοστό της ασφάλτ",
+        "note": "Article analyses Norris Hungary qualifying lap throughout; body identifies Lando while source tag misspells Landon."
+      },
+      "flags": [],
+      "tags": [
+        "Landon Norris"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260822W",
+      "entityId": "driver:lando-norris",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260822W/source.txt",
+        "line": 5,
+        "quote": "Δεύτερη συνεχόμενη pole position, 18η της καριέρας του και ένα μήνυμα προς τη Mercedes. Ο Λάντο Νόρις έχει πλέον μπροστά του μια μεγάλη ευκαιρία, να μετατρέψει την ταχύτητα της McLaren σε πραγματική αντεπίθεση στη μάχη του πρωταθλήματος, η τουλάχιστον να φέρει την McLaren σε κορυφαία δυναμική.",
+        "note": "Article analyses Norris Zandvoort pole, title challenge and race opportunity throughout."
+      },
+      "flags": [],
+      "tags": [
+        "Lando Norris"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260824W",
+      "entityId": "driver:lando-norris",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260824W/source.txt",
+        "line": 7,
+        "quote": "Ο Lando Norris έχει πλέον περάσει το πρώτο μεγάλο κατώφλι. Είναι παγκόσμιος πρωταθλητής και, μετά τις δύο τελευταίες εντυπωσιακές νίκες του, έχει φτάσει τις 13 νίκες και τις 18 pole positions στην καριέρα του. Αριθμοί που τον φέρνουν ήδη επικίνδυνα κοντά σε έναν από τους μεγαλύτερους θρύλους της McLaren: τον Mika Häkki",
+        "note": "Entire article compares Norris achievements and prospective McLaren legacy with Hakkinen; article claims are evidence of subject identity, not verified statistics."
+      },
+      "flags": [],
+      "tags": [
+        "Lando Norris"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260927G",
+      "entityId": "driver:lando-norris",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260927G/source.txt",
+        "line": 30,
+        "quote": "Ο Norris είχε πιο τραγικό τέλος, αλλά παρόμοια ιστορία. Έκανε 30 γύρους με Medium, μπήκε για Soft και ήταν σε καλή θέση για να κερδίσει έδαφος. Δεν πρόλαβε. Στην επανεκκίνηση βρέθηκε μπλεγμένος στη σύγκρουση των Gasly και Colapinto στο Turn 1 και κατέληξε στις μπαριέρες.",
+        "note": "Main subject is McLaren Baku weekend; several paragraphs discuss Norris pace, qualifying and retirement as a substantive supporting subject."
+      },
+      "flags": [],
+      "tags": [
+        "Norris"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260928G",
+      "entityId": "driver:lando-norris",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260928G/source.txt",
+        "line": 14,
+        "quote": "Κάπου εδώ, όμως, το Baku έγινε πολύ πιο ενδιαφέρον. Οι αναβαθμίσεις λειτούργησαν, αλλά δεν κατάφεραν να κρύψουν τις βασικές αδυναμίες της MCL40. Ο Stella παραδέχθηκε μετά τον αγώνα ότι το μονοθέσιο είχε υπερβολικό drag, δεν διέθετε αρκετή τελική ταχύτητα και ταυτόχρονα δεν ήταν αρκετά γρήγορο στις στροφές ώστε να αντισ",
+        "note": "Main subject is McLaren MCL40 upgrade package and development direction. Norris and Piastri results illustrate car limitations; no sustained Norris-specific analysis."
+      },
+      "flags": [],
+      "tags": [
+        "Norris"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260511W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260511W/source.txt",
+        "line": 53,
+        "quote": "Η W12 απαιτούσε πιο “χειρουργική” προσέγγιση. Ο Hamilton χρησιμοποιούσε την εκπληκτική σταθερότητα του μονοθεσίου για να διατηρεί τα ελαστικά ζωντανά και να χτίζει ρυθμό στους αγώνες.",
+        "note": "Technical comparison primarily concerns 2021 cars; a dedicated driver-car fit section and repeated Hamilton discussion support secondary subject status, scoped to historical season."
+      },
+      "flags": [
+        "historical-context"
+      ],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260608W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260608W/source.txt",
+        "line": 7,
+        "quote": "Ωστόσο, όσο η χρονιά προχωρά, ο επτάκις παγκόσμιος πρωταθλητής δείχνει να βρίσκει τον ρυθμό του. Η άνοδός του στη δεύτερη θέση του πρωταθλήματος δεν αποτελεί απλώς μια στατιστική επιτυχία. Είναι η απόδειξη ότι η συνεργασία Hamilton–Ferrari αρχίζει να λειτουργεί με τρόπο που μπορεί να αλλάξει τις ισορροπίες στο κορυφαίο",
+        "note": "Sustained analysis of Hamilton adaptation and performance is the central subject."
+      },
+      "flags": [],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260619W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260619W/source.txt",
+        "line": 19,
+        "quote": "Η πρώτη σεζόν του Hamilton στη Ferrari δεν εξελίχθηκε όπως ονειρεύονταν οι φίλοι της Scuderia. Η συνεργασία του με τον Riccardo Adami δεν βρήκε ποτέ τον ιδανικό ρυθμό και συχνά οι ραδιοεπικοινωνίες πρόδιδαν μια έλλειψη χημείας με τον Ιταλό πάντως να δείχνει κάποιες στιγμές τουλάχιστον αντιεπαγγελματιας ειδικά στον τελε",
+        "note": "Carlo Santi is the profile subject, but Hamilton partnership and its performance implications receive repeated substantive sections."
+      },
+      "flags": [],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260701W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260701W/source.txt",
+        "line": 7,
+        "quote": "Το 2022 η Formula 1 άλλαξε σελίδα. Η επιστροφή του ground effect και οι νέοι τεχνικοί κανονισμοί ανάγκασαν τις ομάδες να ξεκινήσουν σχεδόν από μηδενική βάση, αφήνοντας τους μηχανικούς να αναζητήσουν νέους δρόμους προς την απόδοση. Ανάμεσα σε όλες τις δημιουργίες που παρουσιάστηκαν εκείνη τη χρονιά, δύο μονοθέσια ξεχώρι",
+        "note": "Reviewed complete body: comparison of Ferrari F1-75 and Mercedes W13 engineering contains no Hamilton discussion. His source tag alone does not support association; exclude pending human confirmation."
+      },
+      "flags": [
+        "historical-context"
+      ],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "excluded",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260710W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260710W/source.txt",
+        "line": 5,
+        "quote": "Το Πρωτάθλημα Formula 1 του 2008 έχει μείνει στην ιστορία για τη τρομερή μάχη ανάμεσα στη McLaren και τη Ferrari, με τον Lewis Hamilton να κατακτά τον τίτλο στον τελευταίο γύρο του τελευταίου αγώνα. Ωστόσο, υπήρχε μια τρίτη δύναμη που για αρκετούς μήνες έδειχνε ικανή να ανατρέψει τις ισορροπίες: η BMW Sauber.",
+        "note": "Historical 2008 technical comparison concerns McLaren and BMW Sauber cars. Hamilton championship is background context; do not infer a Ferrari affiliation from present-day data."
+      },
+      "flags": [
+        "historical-context"
+      ],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260726W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260726W/source.txt",
+        "line": 17,
+        "quote": "Το πιο ανησυχητικό στοιχείο δεν είναι τόσο η τελική κατάταξη όσο η συνολική εικόνα της Ferrari καθ' όλη τη διάρκεια του τριημέρου. Η Scuderia δεν έδειξε ποτέ ότι είχε τον έλεγχο του αγώνα. Δεν κατάφερε να επιβάλει τον ρυθμό της στις κατατακτήριες δοκιμές, ούτε να ασκήσει ουσιαστική πίεση στους βασικούς αντιπάλους της τ",
+        "note": "Reviewed complete body: discusses Ferrari team performance without mentioning Hamilton or analysing his individual race. Driver occurs in taxonomy only; exclude from subject aggregation pending human review."
+      },
+      "flags": [],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "excluded",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260929-2G",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260929-2G/source.txt",
+        "line": 13,
+        "quote": "Ο Hamilton είχε το δικό του πρόβλημα, και μάλλον ήταν πιο ενοχλητικό. Από την Πέμπτη έλεγε ότι τα ελαστικά δεν δούλευαν με προβλέψιμο τρόπο: έναν γύρο δεν έφταναν στη σωστή θερμοκρασία, τον επόμενο ξαφνικά είχε πρόσφυση και αμέσως μετά χανόταν πάλι. Στον αγώνα η εικόνα ήταν η ίδια. Περιέγραψε ένα αυτοκίνητο που άλλαζε ",
+        "note": "Ferrari performance is the main subject; a full paragraph analyses Hamilton tyre behaviour and result as a supporting subject."
+      },
+      "flags": [],
+      "tags": [
+        "Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261007W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261007W/source.txt",
+        "line": 9,
+        "quote": "Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις. Για τον Lewis Hamilton, όμως, το  βάθρο στην Sepang ήταν πολύ περισσότερο από έναν ακόμη τερματισμό στην πρώτη τριάδα.",
+        "note": "The body is a sustained analysis of Hamilton recovery and podium; source venue/event naming requires review independently of driver identity."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261009W",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261009W/source.txt",
+        "line": 40,
+        "quote": "Ο Lewis Hamilton έχει επίσης γράψει τη δική του ιστορία, με τέσσερις νίκες στη Marina Bay. Η επιτυχία του το 2018 ήταν ιδιαίτερα σημαντική, καθώς η Ferrari του Sebastian Vettel αποτελούσε βασικό αντίπαλο στη μάχη του τίτλου. Ο Hamilton πραγματοποίησε έναν απίστευτο  γύρο στις κατατακτήριες( αξίζει να δείτε το οnboard) ",
+        "note": "One historical Hamilton paragraph inside a history of the Singapore event; not a Hamilton feature. Do not infer current team membership from historical wins."
+      },
+      "flags": [
+        "historical-context"
+      ],
+      "tags": [
+        "Leweis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261011J",
+      "entityId": "driver:lewis-hamilton",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261011J/source.txt",
+        "line": 11,
+        "quote": "Εδώ όμως, στη Σιγκαπούρη, τα πράγματα είναι σοβαρά... Ομάδα και Lewis... Μία ασυμβατότητα που φαίνεται να ξεχειλίζει από παντού.",
+        "note": "Opinion article repeatedly analyses Hamilton and Ferrari strategy, communications and public responsibility; Hamilton is a co-primary subject."
+      },
+      "flags": [],
+      "tags": [
+        "Lewis Hamilton"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261009W",
+      "entityId": "grand-prix:singapore",
+      "discipline": "mixed",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261009W/source.txt",
+        "line": 7,
+        "quote": "Από τους επικίνδυνους δρόμους του Thomson Road μέχρι τη φουτουριστική Marina Bay, το Grand Prix της Σιγκαπούρης εξελίχθηκε σε έναν από τους πιο ξεχωριστούς αγώνες του παγκόσμιου πρωταθλήματος. Μια διαδρομή γεμάτη ιστορικές νίκες, αμφιλεγόμενες στιγμές και μονομαχίες που έγραψαν τη δική τους ιστορία κάτω από το φως των ",
+        "note": "Full event-history feature explicitly spans Thomson Road and Marina Bay; event identity does not equate either venue or establish continuous F1 championship status. Historical pre-F1 material requires scoped treatment."
+      },
+      "flags": [
+        "event-circuit-distinction",
+        "historical-venue-review"
+      ],
+      "tags": [
+        "Grand prix Singapore"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261012W",
+      "entityId": "grand-prix:singapore",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261012W/source.txt",
+        "line": 13,
+        "quote": "Η σημασία της επιτυχίας δεν περιορίζεται, επομένως, στους βαθμούς που προστέθηκαν στη συγκομιδή του Verstappen. Η Σιγκαπούρη ήταν μια πίστα στην οποία ο Ολλανδός είχε καταφέρει να ανέβει στο βάθρο, αλλά δεν είχε βρει μέχρι σήμερα τον δρόμο προς τη νίκη. Η συγκεκριμένη διάκριση συμπλήρωσε ένα σημαντικό κενό στην αγωνιστ",
+        "note": "Main subject is Verstappen race execution and victory; the Singapore GP result is a substantive supporting event subject. Do not create a Marina Bay circuit association from event tag."
+      },
+      "flags": [
+        "event-circuit-distinction"
+      ],
+      "tags": [
+        "Singapore gp"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261014F",
+      "entityId": "grand-prix:singapore",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261014F/source.txt",
+        "line": 9,
+        "quote": "Για δεκατέσσερις αγώνες, στη Σιγκαπούρη μπορούσες να είσαι σίγουρος για ένα πράγμα πριν καν σβήσουν τα φώτα: κάποια στιγμή θα έβγαινε το Safety Car. Από το 2008 μέχρι το 2023, με εξαίρεση τα δύο χρόνια της πανδημίας που δεν έγινε αγώνας, βγήκε σε κάθε Grand Prix, 23 φορές συνολικά. Το 2024 δεν βγήκε. Το 2025 ούτε. Και ",
+        "note": "Safety Car history and strategy at the Singapore event are the central subject across editions; Marina Bay is a venue reference, not an event alias."
+      },
+      "flags": [
+        "event-circuit-distinction"
+      ],
+      "tags": [
+        "Singapore GP"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250410G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250410G/article.html",
+        "line": 196,
+        "quote": "Το νέο δάπεδο που θα δοκιμάσει η Ferrari στο Μπαχρέιν περιλαμβάνει",
+        "note": "Ferrari SF25 upgrade package is the subject; source explicitly names Bahrain International Circuit."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250423G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250423G/article.html",
+        "line": 196,
+        "quote": ". Η Ferrari αύξησε το μεταξόνιο, μετακινώντας το cockpit πιο πίσω και δίνοντας στον εμπρός άξονα περισσότερο \"χώρο\" να αναπνεύσει αεροδυναμικά. Αυτή η επιλογή:",
+        "note": "Ferrari SF25 aero and construction are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250425-1G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250425-1G/article.html",
+        "line": 198,
+        "quote": "Η Ferrari, για πρώτη φορά στην εποχή των ground effect μονοθεσίων, αποφάσισε να",
+        "note": "Ferrari SF25 suspension and handling are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250428G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250428G/article.html",
+        "line": 200,
+        "quote": "υβριδικό σύστημα της Ferrari",
+        "note": "Ferrari SF25 power-unit integration is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250429-1G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250429-1G/article.html",
+        "line": 198,
+        "quote": "Η ταχύτητα σε έναν γύρο είναι εντυπωσιακή. Η σταθερότητα σε αγωνιστικό ρυθμό όμως είναι αυτή που χαρίζει τίτλους. Και το 2025, η Ferrari έβαλε ως βασική της αποστολή να λύσει το «κατάρα» της φθοράς ελαστικών και της ευμετάβλητης απόδοσης.",
+        "note": "Ferrari SF25 tyre behavior and development are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250505-2GF",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250505-2GF/article.html",
+        "line": 196,
+        "quote": "Η Ferrari βρέθηκε ξανά στο επίκεντρο αρνητικής δημοσιότητας στο Grand Prix του Μαϊάμι 2025, καθώς η στρατηγική της ομάδας και η επικοινωνία με τους οδηγούς της, Lewis Hamilton και Charles Leclerc, προκάλεσαν έντονες αντιδράσεις και ερωτήματα για την ικανότητα της Scuderia να διαχειριστεί κρίσιμες καταστάσεις.",
+        "note": "Ferrari strategy and team communication are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250509W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250509W/article.html",
+        "line": 190,
+        "quote": "Η Ferrari του, κόκκινη και ταχύτατη, αγκάλιαζε τις στροφές με ακρίβεια χειρουργική.",
+        "note": "Lauda accident/recovery narrative mentions the Ferrari vehicle without independent team analysis."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250510W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250510W/article.html",
+        "line": 177,
+        "quote": "Εκείνο το διάστημα η Ferrari είχε φέρει αναβαθμίσεις στο πάτωμα (floor) για να διαχειρίζεται καλύτερα τη ροή του αέρα μετά τους νέους κανονισμούς του 2021 (κομμένο πάτωμα στο πίσω μέρος).",
+        "note": "Ferrari SF21 Silverstone technical performance is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250511W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250511W/article.html",
+        "line": 177,
+        "quote": "Η Ferrari φέτος ήταν στρωμένη  για τον Νίκι. Δεν ήταν εύκολα τα Grand Prix, τίποτα δεν ήταν πια εύκολο.",
+        "note": "Lauda comeback narrative includes explicit Ferrari performance and departure context."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250513W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250513W/article.html",
+        "line": 177,
+        "quote": "Ήταν η δεύτερη θητεία του Λάουντα στη McLaren, έχοντας επιστρέψει στη Formula 1 το 1982 έπειτα από την προσωρινή του αποχώρηση το 1979.",
+        "note": "Ferrari tag is unsupported by this body: it describes Lauda and McLaren in 1984. No historical affiliation is inferred."
+      },
+      "flags": [
+        "tag-body-mismatch"
+      ],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "excluded",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250517W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250517W/article.html",
+        "line": 194,
+        "quote": "Ήταν η Ferrari SF71H το καλύτερο μονοθέσιο του 2018;",
+        "note": "Ferrari SF71H technical competitiveness is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250523W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250523W/article.html",
+        "line": 177,
+        "quote": "του: pole position, ταχύτερος γύρος, ηγεσία σε κάθε γύρο του αγώνα και φυσικά, την καρό σημαία. Ήταν μια επιβλητική νίκη που επιβεβαίωσε την κυριαρχία του ίδιου και της Ferrari στο ξεκίνημα της σεζόν του 1976.",
+        "note": "Lauda race profile explicitly discusses Ferrari performance and its 1-2 result."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250805G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250805G/article.html",
+        "line": 212,
+        "quote": "Η σεζόν του 2025 για τη Formula 1 ξεκίνησε με έναν αέρα προσμονής που σπάνια συναντά κανείς, ακόμη και στον λαμπερό κόσμο των Grand Prix. Στο επίκεντρο αυτής της προσμονής βρισκόταν η Scuderia Ferrari. Η ανακοίνωση της μεταγραφής του επτάκις παγκόσμιου πρωταθλητή, Lewis Hamilton, για να πλαισιώσει τον «il Predestinato» (τον Προορισμένο) της",
+        "note": "Ferrari season analysis is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260319W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260319W/article.html",
+        "line": 195,
+        "quote": "Η επιλογή της Ferrari να τοποθετήσει τον κινητήρα με αυτό τον τρόπο συνδέεται άμεσα με τη συνολική φιλοσοφία της F2004, όσο το δυνατόν χαμηλότερο βάρος, μικρότερη αεροδυναμική αντίσταση και μέγιστη απόδοση σταθερότητας.",
+        "note": "Ferrari F2004 engine integration is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260324W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260324W/article.html",
+        "line": 177,
+        "quote": "Μετά το μέσο της σεζόν, η Ferrari εισήγαγε αλλαγές στην μπροστινή ανάρτηση και το σύστημα διεύθυνσης για να βοηθήσει τον Massa να θερμαίνει ταχύτερα τα ελαστικά του. Αυτό έκανε το μονοθέσιο πιο \"υποστροφικό\", κάτι που ο Raikkonen μισούσε, καθώς προτιμούσε ένα πολύ άμεσο και ακριβές μπροστινό μέρος.",
+        "note": "Raikkonen is primary; Ferrari setup changes are an explicit causal topic."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260401W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260401W/article.html",
+        "line": 177,
+        "quote": "Ήταν άνοιξη του 2002, τότε που οι Κυριακές μύριζαν βενζίνη, καμένο λάστιχο και απόλυτη κυριαρχία της Ferrari.",
+        "note": "Brazil race narrative explicitly describes Ferrari dominance and its drivers."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260414W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260414W/article.html",
+        "line": 177,
+        "quote": "Γιατί η Ferrari συνεχίζει να αντιμετωπίζει προβλήματα συνέπειας στα μονοθέσιά της στη Formula 1, μετά από τόσες σεζόν;",
+        "note": "Body directly questions Ferrari consistency across seasons."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260422G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260422G/source.txt",
+        "line": 11,
+        "quote": "Το monocoque της SF26 είναι ένα πραγματικό αριστούργημα μηχανικής. Όχι μόνο το βάρος του είναι 780 kg (15 kg λιγότερο από την SF25), αλλά η κατανομή του βάρους έχει αλλάξει ριζικά. Η Ferrari χρησιμοποίησε μια τεχνική που ονομάζεται \"weight stacking\" - τοποθέτησε τα βαρύτερα συστατικά (κινητήρας, μπαταρίες, ERS) όσο το δυνατόν πιο χαμηλά και",
+        "note": "Ferrari SF26 technical analysis is the subject. Source claims are not independently verified."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260506-2W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260506-2W/source.txt",
+        "line": 21,
+        "quote": "Στάθμευσε τη Ferrari, στάθηκε όρθιος, και με εκείνη την απλότητα που τον χαρακτήριζε πάντα, αφιέρωσε τη νίκη:",
+        "note": "Vettel/Bianchi tribute mentions the Ferrari vehicle; the team is not independently analyzed."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260525-2W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260525-2W/source.txt",
+        "line": 17,
+        "quote": "Το Zolder είχε παγώσει τον χρόνο, ο Enzo είχε αποσυρθεί ακόμα πιο βαθιά στον εαυτό του, και η πιο χαοτική  και πιο επικίνδυνη  Ferrari της turbo εποχής, έψαχνε άνθρωπο να την οδηγήσει.",
+        "note": "Tambay biography concentrates on the Ferrari recruitment and race episode."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260608W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260608W/source.txt",
+        "line": 11,
+        "quote": "Το ξεκίνημα της σεζόν δεν ήταν ιδανικό. Ο Hamilton έπρεπε να προσαρμοστεί στη φιλοσοφία της Ferrari, στις διαφορετικές διαδικασίες της ομάδας και στα ιδιαίτερα χαρακτηριστικά του μονοθεσίου. Παράλληλα, η Scuderia αναζητούσε τον ιδανικό τρόπο αξιοποίησης της εμπειρίας και του οδηγικού στυλ ενός από τους κορυφαίους οδηγούς στην ιστορία του αθλήματος.",
+        "note": "Hamilton is primary; adaptation between driver and Ferrari is a substantive theme."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari F1"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260619W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260619W/source.txt",
+        "line": 15,
+        "quote": "Τα επόμενα χρόνια ο Santi μετακινήθηκε σε ηγετικό ρόλο στο περίφημο «remote garage» της Ferrari. Από το Maranello συντόνιζε αναλύσεις δεδομένων σε πραγματικό χρόνο, υποστηρίζοντας τους μηχανικούς πίστας και τους οδηγούς κατά τη διάρκεια των Grand Prix. Ήταν μια θέση λιγότερο προβεβλημένη, αλλά εξαιρετικά κρίσιμη για τη λήψη αποφάσεων σε έναν κόσμο",
+        "note": "Santi biography describes his Ferrari engineering roles in detail."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260701W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260701W/source.txt",
+        "line": 9,
+        "quote": "Ήταν δύο αυτοκίνητα σχεδιασμένα για τον ίδιο σκοπό, αλλά μέσα από εντελώς διαφορετική οπτική. Η Ferrari επέλεξε τη λύση της αεροδυναμικής ισορροπίας και της μέγιστης μηχανικής πρόσφυσης. Η Mercedes, αντίθετα, τόλμησε μια σχεδόν επαναστατική προσέγγιση, παρουσιάζοντας το περίφημο πλέον concept των «zero sidepods», που προκάλεσε έκπληξη σε ολόκληρο",
+        "note": "Joint chassis comparison explicitly analyzes Ferrari F1-75."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari F1"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260706-2W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260706-2W/source.txt",
+        "line": 9,
+        "quote": "Η Ferrari δεν είναι απλώς η πιο επιτυχημένη ομάδα της Formula 1. Είναι η ίδια η ταυτότητα του σπορ. Από την πρώτη της εμφάνιση το 1950, δεν έχει λείψει ούτε από ένα Παγκόσμιο Πρωτάθλημα, αποτελώντας τη μοναδική ομάδα με αδιάλειπτη παρουσία στο θεσμό. Σε μια εποχή όπου ομάδες εμφανίζονται, αλλάζουν ιδιοκτησία ή εξαφανίζονται, η Ferrari παραμένει",
+        "note": "Ferrari F1 identity and wins are the article subject; evidence establishes coverage, not factual verification of totals."
+      },
+      "flags": [],
+      "tags": [
+        "Scuderia Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260708-2W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260708-2W/source.txt",
+        "line": 15,
+        "quote": "Ιδιαίτερη αναφορά έκανε και στον Felipe Massa, ο οποίος με τη δική του εμφάνιση βοήθησε καθοριστικά τη Ferrari να πετύχει το ιδανικό αποτέλεσμα.",
+        "note": "Raikkonen interview discusses Ferrari teamwork and the title result."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260726W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260726W/source.txt",
+        "line": 17,
+        "quote": "Το πιο ανησυχητικό στοιχείο δεν είναι τόσο η τελική κατάταξη όσο η συνολική εικόνα της Ferrari καθ' όλη τη διάρκεια του τριημέρου. Η Scuderia δεν έδειξε ποτέ ότι είχε τον έλεγχο του αγώνα. Δεν κατάφερε να επιβάλει τον ρυθμό της στις κατατακτήριες δοκιμές, ούτε να ασκήσει ουσιαστική πίεση στους βασικούς αντιπάλους της την Κυριακή. Αντίθετα, η",
+        "note": "Ferrari Hungary performance is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260730W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260730W/source.txt",
+        "line": 29,
+        "quote": "Το 1983 μετακινήθηκε στη Ferrari, όπου αγωνίστηκε με τη θρυλική 126C2B και αργότερα με τη 126C3. Εκεί πέτυχε σημαντικές νίκες και ολοκλήρωσε μία από τις καλύτερες σεζόν της καριέρας του, διεκδικώντας μέχρι αργά το Παγκόσμιο Πρωτάθλημα απέναντι στον Νέλσον Πικέ και τον Αλέν Προστ.",
+        "note": "Arnoux biography includes a dedicated substantial Ferrari period."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260815W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260815W/source.txt",
+        "line": 11,
+        "quote": "Η Ferrari F399 ακολούθησε διαφορετική φιλοσοφία. Οι μηχανικοί του Μαρανέλο προτίμησαν να θυσιάσουν ένα μικρό μέρος της απόλυτης ταχύτητας ώστε να αποκτήσουν μεγαλύτερη αξιοπιστία, καλύτερη ισορροπία και ευρύτερο παράθυρο λειτουργίας σε διαφορετικές πίστες και καιρικές συνθήκες. Ο κινητήρας Ferrari Tipo 048 V10 δεν υστερούσε σημαντικά σε ισχύ, όμως",
+        "note": "Joint comparison of Ferrari F399 and McLaren MP4/14; both are primary subjects."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260828W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260828W/source.txt",
+        "line": 29,
+        "quote": "Το 1961, με τη Ferrari 156, ο Hill βρέθηκε να διεκδικεί το Παγκόσμιο Πρωτάθλημα.",
+        "note": "Hill biography includes an explicit Ferrari championship episode."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260906W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260906W/source.txt",
+        "line": 68,
+        "quote": "Η Ferrari δεν του έδωσε όλα αυτά τα χρόνια ένα μονοθέσιο αντίστοιχο με εκείνα που είχαν στα χέρια τους οι πρωταθλητές.",
+        "note": "Leclerc is primary; Ferrari responsibility and retained trust receive substantive discussion."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260910-4G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260910-4G/source.txt",
+        "line": 17,
+        "quote": "Κι όμως ο Leclerc επέλεξε ξανά τη Ferrari. Ανανέωσε το συμβόλαιό του και εξήγησε πως η πίστη του στον Fred Vasseur ήταν ένας από τους βασικούς λόγους που δεν είχε αμφιβολία για την απόφασή του. Ίσως επειδή εξακολουθεί να πιστεύει σε αυτό που πίστευε και το 2019. Ότι κάποια στιγμή όλη αυτή η αναμονή θα αποκτήσει νόημα.",
+        "note": "Leclerc is primary; the Ferrari relationship is a substantive recurring theme."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260912W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260912W/source.txt",
+        "line": 57,
+        "quote": "Η Ferrari είχε δείξει ήδη στις ελεύθερες δοκιμές ότι διαθέτει πραγματικό ρυθμό. Στις κατατακτήριες δεν κατάφερε να φτάσει στις δύο πρώτες θέσεις, αλλά έβαλε και τα δύο αυτοκίνητά της στην πρώτη πεντάδα.",
+        "note": "Four-team preview contains an explicit Ferrari section; it is not solely about Ferrari."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260920W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260920W/source.txt",
+        "line": 15,
+        "quote": "Για τη Ferrari, μάλιστα, υπάρχει ένα επιπλέον πρόβλημα. Ο Schumacher αναγκάζεται να περιμένει πίσω από τον Massa κατά τη διάρκεια του pit stop, χάνοντας πολύτιμο χρόνο. Έτσι, παρά την ταχύτητα του μονοθεσίου, η δεύτερη Ferrari βρίσκεται πλέον σε δύσκολη θέση απέναντι στη Renault του Fernando Alonso.",
+        "note": "Massa/Schumacher race narrative gives substantive Ferrari strategy and performance analysis."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260928W",
+      "entityId": "team:ferrari",
+      "discipline": "mixed",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260928W/source.txt",
+        "line": 12,
+        "quote": "Η Renault είχε κατασκευάσει ένα μονοθέσιο αρκετά γρήγορο ώστε να αμφισβητήσει την κυριαρχία της Ferrari και, κυρίως, είχε έναν οδηγό μόλις 23 ετών που δεν φοβόταν να σταθεί απέναντι στον Σουμάχερ.",
+        "note": "Alonso is primary; Ferrari opposition and career periods are substantial historical context, explicitly present in source."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260929-2G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260929-2G/source.txt",
+        "line": 9,
+        "quote": "Στον αγώνα αυτό φάνηκε μέσα σε λίγους γύρους. Η Ferrari έβαλε Soft στον Leclerc για να επιτεθεί στον Russell στην εκκίνηση, όσο η μαλακή γόμα έδινε πρόσφυση και πριν η Mercedes πάρει τον έλεγχο του ρυθμού. Λογική επιλογή στα χαρτιά. Στην πράξη, ο Piastri τον πέρασε γρήγορα για τη δεύτερη θέση και λίγο μετά ήρθαν και οι Red Bull. Η Ferrari δεν",
+        "note": "Ferrari qualifying-versus-race performance is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260930G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260930G/source.txt",
+        "line": 21,
+        "quote": "Η Ferrari έπεσε στο ίδιο πρόβλημα από άλλη κατεύθυνση. Ο Leclerc ξεκίνησε δεύτερος, αλλά η SF-26 δεν μπορούσε να κρατήσει τη θέση όταν οι αντίπαλοι έφταναν στην ευθεία. Ο Fred Vasseur είπε αργότερα κάτι ακόμα πιο ενδιαφέρον. Όταν ξέρεις ότι υστερείς σε τελική ταχύτητα, μπαίνεις στον πειρασμό να κόψεις downforce για να μπορείς να αμυνθείς. Έτσι",
+        "note": "Ferrari is one of the explicit substantial examples in a general downforce analysis."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261004J",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261004J/source.txt",
+        "line": 7,
+        "quote": "Σε έναν αγώνα όπου η βροχή ήταν ο πρωταγωνιστής, το χάος ξεκίνησε από νωρίς και η κόκκινη σημαία βγήκε στον γύρο σχηματισμού. Τρομερό; Και όμως, πραγματικά τρομερό, αφού ένα ένα τα μονοθέσια παρουσίαζαν το ίδιο πρόβλημα. Οπότε το χάος ξεκίνησε από την αρχή και η Ferrari όπως πάντα... παίρνει τις σωστές επιλογές.",
+        "note": "Ferrari strategy and response to an initial tyre mistake are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261006G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261006G/source.txt",
+        "line": 11,
+        "quote": "Για μένα, αυτό είναι και το πιο ενδιαφέρον κομμάτι του αγώνα. Το ποια ομάδα «πέτυχε» τη στρατηγική και ποια την «έχασε» μετράει λιγότερο από το πόσο εύκολα σε ξεγελάει το τελικό αποτέλεσμα, όταν πας να κρίνεις μια απόφαση με βάση αυτό. Η Williams πήρε τη σωστή απόφαση και δεν ανταμείφθηκε. Η McLaren πήρε λάθος απόφαση, έχασε πάρα πολύ χρόνο, και",
+        "note": "Ferrari occurs in broad team tags, not as an explicit team in the body. Hamilton mentions cannot establish team identity from the current grid."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict",
+        "tag-body-mismatch"
+      ],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "excluded",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261007W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261007W/source.txt",
+        "line": 11,
+        "quote": "Ο Βρετανός βρέθηκε κάποια στιγμή στη 18η θέση, πληρώνοντας ακριβά τις δύσκολες συνθήκες και τις επιλογές του πρώτου κομματιού του αγώνα. Εκεί θα μπορούσε εύκολα να χαθεί ο αγώνας. Αντί γι' αυτό, η Ferrari και ο Hamilton άρχισαν να χτίζουν μια εντυπωσιακή αντεπίθεση.",
+        "note": "Hamilton is primary; Ferrari strategy is discussed explicitly. Bahrain tag conflicts with Sepang venue in the body."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261011J",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261011J/source.txt",
+        "line": 15,
+        "quote": "Ξεκινώντας από την αρχή του αγώνα, είχαμε διαφορετική στρατηγική για τους δύο οδηγούς της Ferrari. Σωστό call και κάτι ωραίο να βλέπεις! Δύο οδηγοί, δύο στρατηγικές, αποφυγή μάχης αναμεταξύ τους και όλα τα υπόλοιπα που σας έρχονται στο μυαλό. Σωστό call και για τον Lewis με τη μέση γόμα, ο οποίος δυσκολεύτηκε αρκετά με τα ελαστικά στις",
+        "note": "Ferrari strategy and communication are the sustained subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261015G",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261015G/source.txt",
+        "line": 9,
+        "quote": "Στη Σιγκαπούρη, ο Lewis Hamilton έκανε κάτι που ακουγόταν απολύτως λογικό. Το αυτοκίνητο ήταν γρήγορο στο Q1, ακόμη καλύτερο στο Q2, και ο ίδιος ένιωθε ότι μπορούσε να βρει κι άλλο χρόνο. Για να το πετύχει, η Ferrari πρόσθεσε λίγο φορτίο στην εμπρός πτέρυγα. Μια μικρή αλλαγή, όπως την περιέγραψε ο Hamilton, περίπου μία θέση ρύθμισης.",
+        "note": "General qualifying tyre analysis uses Ferrari as an extended worked example."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261016W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261016W/source.txt",
+        "line": 19,
+        "quote": "Η Ferrari του ζήτησε να αφήσει τον Irvine να περάσει, καθώς  ο Ιρλανδός βρισκόταν στη μάχη του πρωταθλήματος απέναντι στον Hakkinen. Ο Salo υπάκουσε και  δεν θα κέρδιζε τον αγώνα.",
+        "note": "Salo is primary; Ferrari orders and the 1999 stand-in period receive substantive discussion."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261020W",
+      "entityId": "team:ferrari",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261020W/source.txt",
+        "line": 7,
+        "quote": "Το μονοθέσιο του Τζον Μπάρναρντ συνδύασε την παραδοσιακή μηχανολογική φιλοσοφία της Ferrari με μια τεχνολογική καινοτομία που έμελλε να αλλάξει τον τρόπο με τον οποίο οδηγούνται τα μονοθέσια της Formula 1. Η Ferrari 640, η αλλιώς F1-89, γεννήθηκε μέσα από τις απαιτήσεις μιας νέας εποχής, αντιμετώπισε σοβαρά προβλήματα αξιοπιστίας αλλά κατάφερε να",
+        "note": "Historical Ferrari chassis and gearbox technology are the article subject."
+      },
+      "flags": [],
+      "tags": [
+        "Ferrari"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250328G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250328G/article.html",
+        "line": 196,
+        "quote": "Κατά τη διάρκεια της σεζόν 2024, η McLaren τάραξε τα νερά παρουσιάζοντας μια",
+        "note": "McLaren mini-DRS technical and regulatory analysis is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250407G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250407G/article.html",
+        "line": 226,
+        "quote": "Ο Andrea Stella (McLaren) το είπε ξεκάθαρα:",
+        "note": "Dirty air is the subject; Andrea Stella is cited explicitly as a McLaren source."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250412G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250412G/article.html",
+        "line": 200,
+        "quote": "είναι απολύτως κρίσιμη. Και η McLaren – μια ομάδα που φημίζεται για τη δημιουργικότητά της – το έμαθε καλά μέσα στο 2025. Η σεζόν μέχρι τώρα την ανάγκασε να ασχοληθεί σοβαρά με το",
+        "note": "McLaren brake cooling problem and solutions are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250424-2G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250424-2G/article.html",
+        "line": 196,
+        "quote": "Η MCL39 είναι η αγωνιστική πρόταση της McLaren για το Πρωτάθλημα Formula 1 του 2025 – ένα μονοθέσιο που συνδυάζει επιθετική τεχνολογική εξέλιξη με την ωριμότητα ενός concept που δοκιμάστηκε με επιτυχία το 2024. Ο επικεφαλής της ομάδας, Andrea Stella, τόνισε ότι σχεδόν",
+        "note": "McLaren MCL39 technical architecture is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250506G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250506G/article.html",
+        "line": 200,
+        "quote": "Ως πελατειακή ομάδα της Mercedes, η McLaren χρησιμοποιεί την τελευταία έκδοση του υβριδικού συστήματος ισχύος (PU) M14E. Η ενσωμάτωσή του στη MCL39 αποτελεί παράδειγμα αριστοτεχνικού packaging και μηχανολογικής συνεργασίας, καθώς το μονοθέσιο έχει σχεδιαστεί για να υποστηρίζει μια επιθετική αεροδυναμική φιλοσοφία με το μικρότερο δυνατό όγκο",
+        "note": "McLaren MCL39 power-unit packaging is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250507-1G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250507-1G/article.html",
+        "line": 200,
+        "quote": "Μετά το τέλος του Grand Prix Μαϊάμι 2025, η McLaren βρέθηκε στο επίκεντρο ενός ειδικού τεχνικού ελέγχου από τη FIA. Αιτία; Η",
+        "note": "FIA inspection of McLaren MCL39 is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250508-3G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250508-3G/article.html",
+        "line": 202,
+        "quote": "Η McLaren επανασχεδίασε το bulkhead για να υποστηρίξει την αυξημένη anti-dive γωνία και να διατηρήσει την ακαμψία του chassis υπό δυναμικά φορτία. Το αποτέλεσμα είναι",
+        "note": "McLaren MCL39 suspension and chassis are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250510-1G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250510-1G/article.html",
+        "line": 198,
+        "quote": "Στη σεζόν του 2025, η McLaren έκλεψε τις εντυπώσεις με ένα καινοτόμο, εντελώς παθητικό σύστημα διαχείρισης θερμοκρασίας ελαστικών. Με απλά λόγια, χρησιμοποίησε",
+        "note": "McLaren tyre thermal management is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250514-1G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250514-1G/article.html",
+        "line": 194,
+        "quote": "Η McLaren επιδιώκει αναβαθμίσεις ανά ~3 αγώνες, με στόχο την",
+        "note": "McLaren MCL39 brake/cockpit technical analysis is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250522G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250522G/article.html",
+        "line": 198,
+        "quote": "Μία από τις πιο ενδιαφέρουσες καινοτομίες της McLaren στο MCL39 είναι το σύστημα",
+        "note": "McLaren MCL39 brake thermal system is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250529W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250529W/article.html",
+        "line": 177,
+        "quote": "Κατά τη διάρκεια των κατατακτήριων δοκιμών του τελευταίου Grand Prix της σεζόν το 1995, ο Μίκα Χάκινεν είχε ένα σοβαρό ατύχημα με τη McLaren του. Ένα ελαστικό έσκασε σε ταχύτητα σχεδόν 200 χλμ/ώρα και το μονοθέσιο συνετρίβη στον τοίχο. Χτύπησε τόσο άσχημα που υπέστη βαριά κρανιοεγκεφαλική κάκωση, κατέρρευσε μέσα στο cockpit και δεν ανέπνεε.",
+        "note": "Hakkinen injury/recovery profile mentions McLaren as vehicle and teammate context."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250601W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250601W/article.html",
+        "line": 182,
+        "quote": "Η σεζόν της Formula 1 για το 2025 έχει μπει για τα καλά στο πιο καυτό της στάδιο και ένα νέο όνομα έχει αρχίσει να ξεχωρίζει στον παγκόσμιο μηχανοκίνητο αθλητισμό: ο Όσκαρ Πιάστρι. Ο νεαρός Αυστραλός οδηγός της McLaren εντυπωσιάζει με την απόδοσή του και, μετά τη νίκη του στο Grand Prix της Ισπανίας, προηγείται πλέον στη βαθμολογία των οδηγών,",
+        "note": "Piastri profile explicitly identifies his McLaren team; team identity is context rather than the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20250821G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20250821G/article.html",
+        "line": 202,
+        "quote": "Η σεζόν του 2025 στη Formula 1 δεν θα μείνει στην ιστορία απλώς ως άλλη μία χρονιά αγώνων. Θα καταγραφεί ως η χρονιά που η McLaren Racing, μετά από δεκαετίες αναμονής, πόνου και αναδόμησης, επέστρεψε όχι απλώς στην κορυφή, αλλά για να εγκαθιδρύσει μια νέα αυτοκρατορία. Η κυριαρχία των μονοθεσίων σε χρώμα papaya δεν ήταν κεραυνός εν αιθρία. Ήταν το",
+        "note": "McLaren season analysis is the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260427G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260427G/source.txt",
+        "line": 9,
+        "quote": "Το monocoque της MCL40 είναι ίσως το πιο τολμηρό κομμάτι σχεδιασμού στην ιστορία της McLaren. Ενώ όλες οι άλλες ομάδες στράφηκαν σε μείωση όγκου, η McLaren επέλεξε μια πιο ακραία προσέγγιση: την \"αποκέντρωση με έλεγχο\".",
+        "note": "McLaren MCL40 technical analysis is the subject. Source claims are not independently verified."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260508W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260508W/source.txt",
+        "line": 8,
+        "quote": "Με πέντε νίκες στο ενεργητικό του, η πιο εμβληματική του στιγμή ήρθε στο Long Beach το 1983, όταν ξεκίνησε από την (22η!!!) θέση και κατέκτησε τη νίκη, σε μια από τις πιο απίθανες ανατροπές στην ιστορία του σπορ.",
+        "note": "McLaren appears only in the tag line. The body describes Watson at Long Beach without naming his team; do not import outside history."
+      },
+      "flags": [
+        "tag-only-insufficient-context"
+      ],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "unresolved",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260603W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260603W/source.txt",
+        "line": 9,
+        "quote": "Μισό λεπτό νωρίτερα, είχες αφήσει πίσω σου τον teammate σου έναν δις παγκόσμιο πρωταθλητή, μέσα στην ίδια ακριβώς McLaren.",
+        "note": "Senna Monaco narrative mentions the shared McLaren vehicle as context."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260605W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260605W/source.txt",
+        "line": 38,
+        "quote": "Το 1974 πήγε στη McLaren και πήρε δεύτερο παγκόσμιο τίτλο.",
+        "note": "Fittipaldi biography mentions the 1974 McLaren move/title in one sentence."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260710W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260710W/source.txt",
+        "line": 7,
+        "quote": "Από τη μία πλευρά βρισκόταν η McLaren MP4-23, ένα μονοθέσιο σχεδιασμένο με μοναδικό στόχο την επιστροφή στην κορυφή. Από την άλλη, η BMW Sauber F1.08, το πιο ανταγωνιστικό αυτοκίνητο στην ιστορία της ομάδας, που απέδειξε ότι μπορούσε να κοιτάξει στα μάτια τα δύο μεγάλα εργοστάσια της εποχής.",
+        "note": "Joint comparison explicitly covers McLaren MP4-23; BMW Sauber remains a separate historic identity."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren F1"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260725W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260725W/source.txt",
+        "line": 9,
+        "quote": "Η εικόνα είχε διαμορφωθεί ήδη από τις ελεύθερες δοκιμές ειδικά στο Fp3. Η McLaren έδειχνε να διαθέτει ένα από τα πιο ισορροπημένα μονοθέσια του τριημέρου, με εξαιρετική πρόσφυση στο δεύτερο και τρίτο sector της πίστας, εκεί όπου η σωστή διαχείριση των ελαστικών και η σταθερότητα στις γρήγορες αλλαγές κατεύθυνσης παίζουν καθοριστικό ρόλο. Ωστόσο,",
+        "note": "Norris qualifying is primary; the McLaren chassis behavior receives explicit substantive discussion."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260815W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260815W/source.txt",
+        "line": 13,
+        "quote": "Το πλαίσιο της F399 ίσως να μην είχε την απόλυτη αεροδυναμική απόδοση της McLaren, όμως προσέφερε υποδειγματική σταθερότητα και εξαιρετική διαχείριση των ελαστικών κατά τη διάρκεια των αγώνων. Εκεί όπου η MP4/14 μπορούσε να είναι εκρηκτική αλλά απαιτητική, η Ferrari παρέμενε προβλέψιμη και σταθερή, δίνοντας στους οδηγούς μεγαλύτερη αυτοπεποίθηση",
+        "note": "Joint comparison of McLaren MP4/14 and Ferrari F399; both are primary subjects."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260822W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260822W/source.txt",
+        "line": 11,
+        "quote": "Δεν πρόκειται απλώς για μία ακόμη εξαιρετική εμφάνιση στις κατατακτήριες. Πρόκειται για την επιβεβαίωση ότι η McLaren έχει αρχίσει να βρίσκει ξανά τη δυναμική της, ακριβώς τη στιγμή που ο Νόρις χρειάζεται απεγνωσμένα ένα μεγάλο σερί αποτελεσμάτων.",
+        "note": "Norris is primary; McLaren competitive recovery receives substantive discussion."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260824W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260824W/source.txt",
+        "line": 25,
+        "quote": "Ο Mika Häkkinen έγινε θρύλος της McLaren επειδή βρέθηκε στο επίκεντρο μιας από τις μεγαλύτερες μονομαχίες της σύγχρονης Formula 1.",
+        "note": "Norris/Hakkinen comparison is explicitly framed around McLaren heritage."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren history"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260912W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260912W/source.txt",
+        "line": 19,
+        "quote": "Ο Oscar Piastri θα εκκινήσει μόλις έβδομος, γεγονός που σημαίνει ότι η McLaren δεν μπορεί να βασιστεί σε ένα εύκολο ομαδικό αποτέλεσμα. Ο Norris πρέπει να μετατρέψει την pole σε νίκη και ο Piastri να αρχίσει να ανεβαίνει θέσεις όσο εξελίσσεται ο αγώνας.",
+        "note": "Four-team preview contains a substantive McLaren section."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260913G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260913G/source.txt",
+        "line": 17,
+        "quote": "χειρουργική του ακρίβεια χάθηκε. Το ίδιο μοτίβο παρατήρησε αργότερα η McLaren σε COTA και Mexico το 2025, όπου ο Stella σημείωσε ότι ο Piastri έπρεπε να προσαρμόζει συνειδητά το στιλ του όταν η πρόσφυση χανόταν.",
+        "note": "Piastri adaptation is primary; McLaren supplies explicit contextual observations."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "mention",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260925W",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260925W/source.txt",
+        "line": 15,
+        "quote": "Στους πρώτους αγώνες η McLaren πράγματι έδειξε ανταγωνιστική. Όμως όσο εξελισσόταν η χρονιά, οι αναβαθμίσεις δεν απέδιδαν και το μονοθέσιο έχανε συνεχώς έδαφος.",
+        "note": "Joint comparison includes McLaren 2018 as a primary subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260927G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260927G/source.txt",
+        "line": 9,
+        "quote": "Η McLaren πήγε στο Baku με μεγάλο πακέτο αναβαθμίσεων: αλλαγές στο πάτωμα, στα sidepods, στο engine cover, στον diffuser και στην πίσω ανάρτηση. Τα πρώτα δοκιμαστικά όμως κόπηκαν από ένα πρόβλημα στα floorboards, και όταν τα δύο αυτοκίνητα έβγαλαν επιτέλους κανονικό πρόγραμμα, η εικόνα δεν ήταν και πολύ καλή. Στο FP2, Norris και Piastri ήταν",
+        "note": "McLaren Baku weekend failures and upgrades are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260928G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260928G/source.txt",
+        "line": 10,
+        "quote": "Γι' αυτό το Azerbaijan GP είχε μεγαλύτερη τεχνική σημασία από όση δείχνουν οι μηδενικοί βαθμοί της McLaren. Το Baku ήταν το τελευταίο πραγματικά μεγάλο τεστ της MCL40, μια ευκαιρία όχι μόνο να βρεθεί περισσότερη απόδοση για τους τελευταίους αγώνες, αλλά και να εξακριβωθεί αν η αεροδυναμική κατεύθυνση που ακολουθεί η ομάδα μπορεί να μεταφερθεί στο",
+        "note": "McLaren Baku upgrades and development direction are the subject."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "primary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260928W",
+      "entityId": "team:mclaren",
+      "discipline": "mixed",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260928W/source.txt",
+        "line": 23,
+        "quote": "Πήγε στη McLaren για το 2007, σε μια ομάδα που είχε όλα τα απαραίτητα για να συνεχίσει να πρωταγωνιστεί. Εκεί όμως βρέθηκε απέναντι σε έναν rookie που δεν συμπεριφερόταν καθόλου σαν rookie.",
+        "note": "Alonso biography explicitly discusses McLaren career periods; non-F1 achievements also occur."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20260930G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20260930G/source.txt",
+        "line": 17,
+        "quote": "Η McLaren δείχνει καλύτερα από όλους πόσο δύσκολο είναι αυτό. Στο Baku έφερε αλλαγές στα sidepods, στο engine cover, στην άκρη του πατώματος, στον diffuser και στην πίσω ανάρτηση, και πείραξε ακόμα και τη λειτουργία της πίσω πτέρυγας, ώστε στο Straight Mode το flap να ανοίγει σε διαφορετική θέση και να κόβει περισσότερο drag. Σύμφωνα με τα",
+        "note": "McLaren is an extended worked example within a general downforce analysis."
+      },
+      "flags": [],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261006G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261006G/source.txt",
+        "line": 11,
+        "quote": "Για μένα, αυτό είναι και το πιο ενδιαφέρον κομμάτι του αγώνα. Το ποια ομάδα «πέτυχε» τη στρατηγική και ποια την «έχασε» μετράει λιγότερο από το πόσο εύκολα σε ξεγελάει το τελικό αποτέλεσμα, όταν πας να κρίνεις μια απόφαση με βάση αυτό. Η Williams πήρε τη σωστή απόφαση και δεν ανταμείφθηκε. Η McLaren πήρε λάθος απόφαση, έχασε πάρα πολύ χρόνο, και",
+        "note": "Williams is the main example; McLaren strategy is an extended explicit comparison. Source also combines Bahrain and Sepang and requires review."
+      },
+      "flags": [
+        "bahrain-sepang-source-conflict"
+      ],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "secondary",
+      "review": {
+        "status": "pending"
+      }
+    },
+    {
+      "articleId": "20261015G",
+      "entityId": "team:mclaren",
+      "discipline": "f1",
+      "evidence": {
+        "path": "blog-module/blog-entries/20261015G/source.txt",
+        "line": 27,
+        "quote": "Στην Ουγγαρία, ο Norris πήρε την pole με την τελευταία του προσπάθεια, κατά μόλις 12 χιλιοστά από τον Hamilton. Η Ferrari είχε προηγηθεί στο πρώτο run του Q3, αλλά ούτε ο Hamilton ούτε ο Leclerc κατάφεραν να βελτιωθούν στη δεύτερη έξοδο. Από τους οδηγούς της πρώτης δεκάδας, μόνο ο Norris και ο Antonelli σημείωσαν καλύτερο χρόνο στη δεύτερη",
+        "note": "McLaren occurs in broad team tags, not explicitly as a team in the body. Norris references alone cannot establish identity from the current grid."
+      },
+      "flags": [
+        "tag-body-mismatch"
+      ],
+      "tags": [
+        "McLaren"
+      ],
+      "role": "unresolved",
+      "proposedRole": "excluded",
+      "review": {
+        "status": "pending"
+      }
+    }
+  ]
+}
