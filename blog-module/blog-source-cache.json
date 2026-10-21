@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261021W",
+      "title": "Olivier Panis: Μια νίκη ήταν αρκετή.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-21",
+      "dateISO": "2026-10-21",
+      "displayDate": "21 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261021W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261021W/2.webp",
+      "excerpt": "Ο Olivie Panis, o Γάλλος που δεν είχε ποτέ την πολυτέλεια ενός κορυφαίου μονοθεσίου. Δεν κατέκτησε pole position, δεν έγινε παγκόσμιος πρωταθλητής και στο τέλος της καριέρας του είχε μόλις μία νίκη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261021W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Olivier Panis",
+        "Ligier",
+        "Monaco legend"
+      ],
+      "wordCount": 366,
+      "readingTime": "2 min",
+      "imageWidth": 738,
+      "imageHeight": 415,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452
+    },
+    {
       "id": "20261020W",
       "title": "Ferrari 640 / F1-89: Η επανάσταση της Formula 1",
       "author": "Themis Charvalis",
@@ -10815,5 +10844,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-20T19:41:32.956Z"
+  "lastUpdated": "2026-10-21T20:19:50.229Z"
 }

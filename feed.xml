@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Mon, 19 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 20 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Olivier Panis: Μια νίκη ήταν αρκετή.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261021W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261021W/article.html</guid>
+      <pubDate>Tue, 20 Oct 2026 21:00:00 GMT</pubDate>
+      <description>Ο Olivie Panis, o Γάλλος που δεν είχε ποτέ την πολυτέλεια ενός κορυφαίου μονοθεσίου. Δεν κατέκτησε pole position, δεν έγινε παγκόσμιος πρωταθλητής και στο τέλος της καριέρας του είχε μόλις μία νίκη...</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Ferrari 640 / F1-89: Η επανάσταση της Formula 1</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261020W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Για χρόνια βρισκόταν τόσο κοντά όσο λίγοι. Πέντε φορές είχε τερματίσει δεύτερος στο Παγκόσμιο Πρωτάθλημα Ράλι, μεταξύ αυτών και το 2025, όταν έχασε τον τίτλο από τον Sébastien Ogier για μόλις...</description>
       <category>Άποψη</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο περιμέναμε! | F1</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261002J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261002J/article.html</guid>
-      <pubDate>Thu, 01 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Σε αχαρτογράφητα νερά, με παλιά δεδομένα και το μισό grid να μην έχει τρέξει ποτέ σε αυτήν την πίστα... Λοιπόν, καλώς ήρθατε στο Sepang International Circuit. Τα πρώτα FP έδειξαν ότι υπάρχει μεγάλος...</description>
-      <category>Στοίχημα</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>
