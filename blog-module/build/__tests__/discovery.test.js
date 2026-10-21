@@ -21,6 +21,50 @@ const build = (posts, options = {}) => buildPages(posts, { today: '2026-10-12', 
 const byFile = result => Object.fromEntries(result.pages.map(page => [page.file, page]));
 const links = html => new Set([...html.matchAll(/href="\/blog-module\/blog-entries\/([^/"]+)\/article\.html"/g)].map(match => match[1]));
 
+test('approved topic navigation follows the category table inside the unfiltered journal only', () => {
+    const topic = { href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 4 };
+    const baseline = build(synthetic(40));
+    const result = build(synthetic(40), { hubLinks: [topic] });
+    const html = result.pages[0].main;
+    const block = html.match(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/)[0];
+    assert.match(block, /<h2 class="ed-label" id="ed-topics-title">Θέματα<\/h2><ul/);
+    assert.ok(block.includes(`<li><a href="${topic.href}"><span>Λάντο Νόρις</span><span class="ed-num">4 άρθρα</span></a></li>`));
+    assert.equal(html.split(`href="${topic.href}"`).length - 1, 1);
+    assert.ok(html.includes(`</ol></section>${block}`), 'directly after the category table');
+    assert.ok(html.indexOf(block) > html.indexOf('id="journal-edition"'));
+    assert.ok(html.indexOf(block) < html.indexOf('id="journal-archive"'));
+    assert.equal(html.replace(block, ''), baseline.pages[0].main, 'the block is the only archive change');
+    assert.deepEqual(result.pages.slice(1), baseline.pages.slice(1), 'other discovery pages are unchanged');
+    const css = fs.readFileSync(path.join(REPO, 'blog-module/blog/archive-editorial.css'), 'utf8');
+    assert.match(css, /html\[data-journal-filtered\] \.edition #journal-edition \{ display: none; \}/);
+});
+
+test('zero approved topics omits the entire navigation landmark and heading', () => {
+    for (const options of [{}, { hubLinks: [] }]) {
+        assert.doesNotMatch(build(synthetic(4), options).pages[0].main, /ed-topics-title|Θέματα/);
+    }
+});
+
+test('multiple topics are deduplicated and ordered by canonical route without mutating descriptors', () => {
+    const a = { href: '/blog-module/blog/entities/drivers/a/', label: 'A', count: 3 };
+    const z = { href: '/blog-module/blog/entities/teams/z/', label: 'Z', count: 5 };
+    const hubLinks = [z, a, z];
+    const before = JSON.stringify(hubLinks);
+    const first = build(synthetic(4), { hubLinks }).pages[0].main;
+    const second = build(synthetic(4), { hubLinks: [a, z, a] }).pages[0].main;
+    assert.equal(first, second);
+    assert.ok(first.indexOf(`href="${a.href}"`) < first.indexOf(`href="${z.href}"`));
+    assert.equal(first.split(`href="${z.href}"`).length - 1, 1);
+    assert.equal(JSON.stringify(hubLinks), before);
+});
+
+test('topic navigation escapes dynamic labels and attributes', () => {
+    const html = build(synthetic(4), { hubLinks: [{ href: '/subject/"<&', label: '<Νόρις> & "οδηγός"', count: 4 }] }).pages[0].main;
+    assert.match(html, /href="\/subject\/&quot;&lt;&amp;"/);
+    assert.match(html, /<span>&lt;Νόρις&gt; &amp; &quot;οδηγός&quot;<\/span>/);
+    assert.doesNotMatch(html, /<Νόρις>/);
+});
+
 // The real archive, from the committed compact index (the same data the browser loads).
 function realPosts() {
     const data = JSON.parse(fs.readFileSync(path.join(REPO, 'blog-module', 'blog-index-data.json'), 'utf8'));

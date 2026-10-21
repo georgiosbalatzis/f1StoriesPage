@@ -237,6 +237,14 @@ function calendarYear(model, year, currentKey) {
 const yearsOf = model => Array.from(new Set(model.monthKeys.map(key => key.slice(0, 4)))).sort().reverse();
 
 // ── Page bodies ──────────────────────────────────────────
+function topicsHtml(links) {
+    const topics = [...new Map(links.map(link => [link.href, link])).values()]
+        .sort((a, b) => a.href < b.href ? -1 : a.href > b.href ? 1 : 0);
+    if (!topics.length) return '';
+    return '<nav class="ed-aside__block" aria-labelledby="ed-topics-title"><h2 class="ed-label" id="ed-topics-title">Θέματα</h2>'
+        + `<ul class="ed-aside__list">${topics.map(topic => `<li><a href="${esc(topic.href)}"><span>${esc(topic.label)}</span><span class="ed-num">${esc(T.plural(topic.count, 'άρθρο', 'άρθρα'))}</span></a></li>`).join('')}</ul></nav>`;
+}
+
 function indexBody(ctx) {
     const { model } = ctx;
     const weekPosts = model.week.slice(0, T.EDITION_LAYOUT.weekMax);
@@ -274,7 +282,7 @@ function indexBody(ctx) {
         + sechead('ed-cal-title', 'Το αρχείο ανά μήνα', '', `<a class="ed-sechead__more" href="${route.archive}">Άνοιγμα αρχείου →</a>`)
         + yearsOf(model).map(year => calendarYear(model, year, '')).join('') + '</section>';
     return `<div class="ed-front" id="journal-edition" data-story-ids="${esc(weekPosts.map(post => post.id).join(' '))}" data-total="${model.posts.length}">`
-        + `<div class="ed-front__grid">${week}<div class="ed-front__side">${table}${yearAgo}</div></div>${bylines}${calendar}</div>`
+        + `<div class="ed-front__grid">${week}<div class="ed-front__side">${table}${topicsHtml(ctx.hubLinks)}${yearAgo}</div></div>${bylines}${calendar}</div>`
         + `<section class="ed-view" id="journal-archive" aria-labelledby="journal-archive-title" data-view="all" data-category="" data-author="" data-query="" data-sort="newest" data-page="1" data-total="${model.posts.length}">`
         + '<div id="journal-view"></div></section>';
 }
@@ -359,9 +367,9 @@ function headHtml({ title, description, path: pagePath, canonical = SITE + pageP
 const mainHtml = (className, inner, attrs = '') => `<main id="main" class="edition ${className}"${attrs}>\n    <div class="container">\n${inner}\n    </div>\n</main>`;
 
 // The Edition Index's pages as { file, path, head, main }. `deps` supplies story images (build/index.js owns them).
-function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
+function buildPages(posts, { today, selection = {}, deps, preload = '', hubLinks = [] }) {
     const model = buildModel(posts, today, selection);
-    const ctx = { model, deps };
+    const ctx = { model, deps, hubLinks };
     const pages = [];
     const rail = current => railHtml(ctx, current);
     const leadImage = model.lead ? deps.storyImage(model.lead) : '';
