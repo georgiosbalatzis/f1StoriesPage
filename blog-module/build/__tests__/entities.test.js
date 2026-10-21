@@ -292,26 +292,29 @@ test('eligibility needs three substantive human-reviewed subjects, dates, introd
     assert.equal(eligibility().provisionalHubEligibility, false);
 });
 
-test('all seeded hubs remain disabled despite the six approved subjects', () => {
+test('only Norris has public approval and eligibility among the six seeded hubs', () => {
     const report = coverageReport(seed.registry, seed.manifest, seed.articles);
-    assert.ok(report.entities.every(entity => !entity.provisionalHubEligibility));
+    assert.deepEqual(report.entities.filter(entity => entity.provisionalHubEligibility).map(entity => entity.id), ['driver:lando-norris']);
     assert.deepEqual(report.entities.filter(entity => entity.substantiveSubjects > 0).map(entity => [entity.id, entity.substantiveSubjects]), [
         ['driver:lando-norris', 4], ['driver:lewis-hamilton', 2]
     ]);
-    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending'));
+    assert.ok(seed.registry.entities.filter(entity => entity.id !== 'driver:lando-norris').every(entity => entity.hub.review.status === 'pending'));
     const before = clone(seed);
     renderCoverage(report);
     assert.deepEqual(seed, before, 'reporting cannot mutate editorial decisions');
 });
 
-test('the exact approved Norris heading and introduction do not authorize hub publication', () => {
+test('Norris publication approval preserves the exact introduction and still requires both reviews', () => {
     const data = clone(seed);
     const entity = data.registry.entities.find(item => item.id === 'driver:lando-norris');
     assert.equal(entity.hub.introduction.heading, 'Λάντο Νόρις — Formula 1, αναλύσεις και ιστορίες');
     assert.equal(createHash('sha256').update(entity.hub.introduction.text).digest('hex'), 'c22b63f39a6e9bd3eead29609d352bd1e3cc0a98623060634394dc5640e0c2d4');
     assert.deepEqual(entity.hub.introduction.review, { status: 'approved', kind: 'human', by: 'georgiosbalatzis', date: '2026-10-21' });
-    assert.deepEqual(entity.hub.review, { status: 'pending' });
+    assert.deepEqual(entity.hub.review, { status: 'approved', kind: 'human', by: 'georgiosbalatzis', date: '2026-10-21' });
     const eligibility = () => coverageReport(data.registry, data.manifest, data.articles).entities.find(item => item.id === entity.id);
+    assert.equal(eligibility().provisionalHubEligibility, true);
+    assert.deepEqual(eligibility().reasons, []);
+    entity.hub.review = { status: 'pending' };
     assert.equal(eligibility().provisionalHubEligibility, false);
     assert.deepEqual(eligibility().reasons, ['Public hub approval pending']);
     const human = { status: 'approved', kind: 'human', by: 'fixture-editor', date: '2026-10-21' };

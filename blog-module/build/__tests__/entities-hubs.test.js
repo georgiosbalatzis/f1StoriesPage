@@ -181,13 +181,13 @@ test('rendering does not mutate article bodies, metadata, registry or associatio
     const f = fixture(); f.articles.forEach(post => post.content = '<p>Immutable original body.</p>');
     const original = JSON.stringify(f); build(f); assert.equal(JSON.stringify(f), original);
     const real = loadFoundation(), before = JSON.stringify(real);
-    assert.equal(buildHubPages(real.registry, real.manifest, real.articles, { today }).pages.length, 0);
-    assert.equal(JSON.stringify(real), before); assert.equal(publicHubFiles(undefined, { today }).size, 0);
+    assert.equal(buildHubPages(real.registry, real.manifest, real.articles, { today, deps }).pages.length, 1);
+    assert.equal(JSON.stringify(real), before); assert.equal(publicHubFiles(undefined, { today }).size, 1);
 });
-test('Norris local preview uses exact approved text and four articles, no production hub metadata', () => {
+test('Norris local preview remains noindex and local after public approval', () => {
     const d = loadFoundation(), hubs = selectHubs(d.registry, d.manifest, d.articles, { today });
     const norris = hubs.find(hub => hub.entity.id === 'driver:lando-norris');
-    assert.equal(norris.eligible, false); assert.deepEqual(norris.reasons, ['publication approval pending']);
+    assert.equal(norris.eligible, true); assert.deepEqual(norris.reasons, []);
     assert.deepEqual(norris.posts.map(post => post.id), ['20260927G', '20260824W', '20260822W', '20260725W']);
     const page = renderHub(norris, { deps, origin: 'http://127.0.0.1:4174', preview: true })[0];
     assert.match(page.head, /noindex, nofollow/); assert.match(page.head, /rel="canonical" href="http:\/\/127\.0\.0\.1:4174/);
@@ -197,6 +197,52 @@ test('Norris local preview uses exact approved text and four articles, no produc
     assert.doesNotMatch(html, /src="\/blog-module\/(?:taxonomy|blog-index)/);
     assert.match(html, /shared-nav/); assert.match(html, /cookie-consent/);
     for (const paragraph of norris.entity.hub.introduction.text.split('\n\n')) assert.ok(page.main.includes(paragraph));
+});
+
+test('approved Norris publication generates only four original articles and rolls back safely', t => {
+    const f = loadFoundation(), before = JSON.stringify(f);
+    const opts = { today, deps };
+    const { hubs, pages } = buildHubPages(f.registry, f.manifest, f.articles, opts);
+    assert.deepEqual(hubs.filter(hub => hub.eligible).map(hub => hub.entity.id), ['driver:lando-norris']);
+    const norris = hubs.find(hub => hub.eligible);
+    const ids = ['20260927G', '20260824W', '20260822W', '20260725W'];
+    assert.deepEqual(norris.posts.map(post => post.id), ids);
+    assert.ok(hubs.filter(hub => !hub.eligible).every(hub => hub.entity.hub.review.status === 'pending'));
+    assert.equal(pages.length, 1);
+    const page = pages[0], canonical = 'https://f1-stories.gr/blog-module/blog/entities/drivers/lando-norris/';
+    assert.equal(page.file, 'entities/drivers/lando-norris/index.html');
+    assert.equal(page.lastmod, today);
+    assert.deepEqual([...publicHubFiles(f, opts)], ['blog-module/blog/' + page.file]);
+    assert.match(page.head, new RegExp(`<link rel="canonical" href="${canonical}">`));
+    assert.doesNotMatch(page.head, /noindex|127\.0\.0\.1|localhost/);
+    const graph = schema(page)['@graph'];
+    assert.deepEqual(graph.find(node => node['@type'] === 'ItemList').itemListElement.map(item => item.url), norris.posts.map(articleUrl));
+    assert.equal(graph.find(node => node['@type'] === 'CollectionPage').dateModified, today);
+    assert.doesNotMatch(page.main, /20260928G/);
+    for (const post of norris.posts) {
+        const association = f.manifest.associations.find(item => item.entityId === norris.entity.id && item.articleId === post.id);
+        assert.equal(association.role, post.id === '20260927G' ? 'secondary' : 'primary');
+        assert.equal(association.discipline, 'f1');
+        assert.equal(association.substantive, true);
+        assert.deepEqual(association.review, { status: 'approved', kind: 'human', by: 'georgiosbalatzis', date: today });
+        assert.equal(articleIsPublic(post), true);
+        assert.ok(page.main.includes(post.title));
+        assert.ok(page.main.includes(formatDate(post.date)));
+        assert.ok(page.main.includes(articleUrl(post)));
+    }
+    const dir = temp(t), shell = fs.readFileSync(path.join(ROOT, 'blog-module/blog/index.html'), 'utf8');
+    writeHubPages(dir, pages, shell);
+    const generated = path.join(dir, page.file), html = fs.readFileSync(generated, 'utf8');
+    writeHubPages(dir, buildHubPages(f.registry, f.manifest, f.articles, opts).pages, shell);
+    assert.equal(fs.readFileSync(generated, 'utf8'), html);
+    assert.equal(JSON.stringify(f), before);
+    norris.entity.hub.review = { status: 'pending' };
+    const rollback = buildHubPages(f.registry, f.manifest, f.articles, opts).pages;
+    assert.equal(rollback.length, 0);
+    assert.equal(publicHubFiles(f, opts).size, 0);
+    assert.equal(renderSitemap(f.articles, pages, { today }).replace(hubSitemap(pages), ''), renderSitemap(f.articles, rollback, { today }));
+    writeHubPages(dir, rollback, shell);
+    assert.equal(fs.existsSync(generated), false);
 });
 
 test('membership removal updates lastmod while excluded articles stay out of membership', () => {
