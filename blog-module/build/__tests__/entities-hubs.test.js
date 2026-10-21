@@ -231,7 +231,7 @@ test('a dangling output symlink cannot create an external target', t => {
     assert.equal(fs.existsSync(destination), false);
 });
 
-test('all four entity routes use the real stamper without validating transient article evidence', t => {
+function stampingFixture(t) {
     const { spawnSync } = require('node:child_process');
     const dir = temp(t);
     const copy = rel => {
@@ -243,12 +243,19 @@ test('all four entity routes use the real stamper without validating transient a
     copy('images/icons/sprite.svg');
     const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/build/asset-manifest.json'), 'utf8'));
     for (const info of Object.values(manifest.files)) if (info.min) copy(info.min);
+    return { dir, stamp: () => {
+        const result = spawnSync(process.execPath, ['scripts/build/stamp-html.mjs'], { cwd: dir, encoding: 'utf8' });
+        assert.equal(result.status, 0, result.stderr);
+    } };
+}
+
+test('all four entity routes use the real stamper without validating transient article evidence', t => {
+    const { dir, stamp } = stampingFixture(t);
     const shell = fs.readFileSync(path.join(ROOT, 'blog-module/blog/index.html'), 'utf8');
     const pages = Object.keys(TYPES).flatMap(type => build(fixture(type)).pages);
     for (const page of pages) write(dir, `blog-module/blog/${page.file}`, composeHubPage(shell, page));
     const run = () => {
-        const result = spawnSync(process.execPath, ['scripts/build/stamp-html.mjs'], { cwd: dir, encoding: 'utf8' });
-        assert.equal(result.status, 0, result.stderr);
+        stamp();
         return pages.map(page => fs.readFileSync(path.join(dir, 'blog-module/blog', page.file), 'utf8'));
     };
     const first = run();
@@ -260,3 +267,19 @@ test('all four entity routes use the real stamper without validating transient a
     });
     assert.deepEqual(run(), first, 'entity stamping is idempotent');
 });
+
+for (const boundary of ['entities', 'entities/drivers', 'entities/drivers/fixture', 'entities/drivers/fixture/index.html']) {
+    test(`entity stamper preserves external HTML through ${boundary} symlinks`, t => {
+        const { dir, stamp } = stampingFixture(t), outside = temp(t);
+        const route = 'entities/drivers/fixture/index.html';
+        const original = '<html><head><link rel="stylesheet" href="/styles/editorial.css"></head><body>External content.</body></html>';
+        const fileLink = boundary === route;
+        const target = write(outside, fileLink ? 'external.html' : route.slice(boundary.length + 1), original);
+        const link = path.join(dir, 'blog-module/blog', boundary);
+        fs.mkdirSync(path.dirname(link), { recursive: true });
+        fs.symlinkSync(fileLink ? target : outside, link);
+        stamp();
+        assert.equal(fs.readFileSync(target, 'utf8'), original, 'stamping must not follow an entity symlink');
+        assert.ok(fs.lstatSync(link).isSymbolicLink(), 'the original symlink is preserved');
+    });
+}

@@ -187,11 +187,11 @@ const FONT_PRELOADS = {
 function listDiscoveryPages() {
     const pages = [];
     function walk(dir) {
-        if (!fs.existsSync(dir)) return;
+        if (!fs.existsSync(dir) || !fs.lstatSync(dir).isDirectory()) return;
         for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
             const abs = path.join(dir, entry.name);
             if (entry.isDirectory()) walk(abs);
-            else if (entry.name === 'index.html') {
+            else if (entry.isFile() && entry.name === 'index.html') {
                 const rel = path.relative(REPO_ROOT, abs).split(path.sep).join('/');
                 if (!rel.startsWith('blog-module/blog/entities/') || /^blog-module\/blog\/entities\/(?:drivers|teams|circuits|grands-prix)\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:page\/(?:[2-9]|[1-9]\d+)\/)?index\.html$/.test(rel)) pages.push(rel);
             }
