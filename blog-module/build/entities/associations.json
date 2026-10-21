@@ -126,11 +126,15 @@
       "tags": [
         "Landon Norris"
       ],
-      "role": "unresolved",
+      "role": "primary",
       "proposedRole": "primary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20260822W",
@@ -146,11 +150,15 @@
       "tags": [
         "Lando Norris"
       ],
-      "role": "unresolved",
+      "role": "primary",
       "proposedRole": "primary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20260824W",
@@ -166,11 +174,15 @@
       "tags": [
         "Lando Norris"
       ],
-      "role": "unresolved",
+      "role": "primary",
       "proposedRole": "primary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20260927G",
@@ -186,11 +198,15 @@
       "tags": [
         "Norris"
       ],
-      "role": "unresolved",
+      "role": "secondary",
       "proposedRole": "secondary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20260928G",
@@ -248,11 +264,15 @@
       "tags": [
         "Lewis Hamilton"
       ],
-      "role": "unresolved",
+      "role": "primary",
       "proposedRole": "primary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20260619W",
@@ -352,11 +372,15 @@
       "tags": [
         "Hamilton"
       ],
-      "role": "unresolved",
+      "role": "secondary",
       "proposedRole": "secondary",
       "review": {
-        "status": "pending"
-      }
+        "status": "approved",
+        "kind": "human",
+        "by": "georgiosbalatzis",
+        "date": "2026-10-21"
+      },
+      "substantive": true
     },
     {
       "articleId": "20261007W",

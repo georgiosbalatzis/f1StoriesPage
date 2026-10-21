@@ -12,6 +12,9 @@ const clone = value => structuredClone(value);
 function fixture() {
     const data = clone(seed);
     data.manifest.associations = [data.manifest.associations.find(item => item.articleId === '20260608W' && item.entityId === 'driver:lewis-hamilton')];
+    data.manifest.associations[0].role = 'unresolved';
+    data.manifest.associations[0].review = { status: 'pending' };
+    delete data.manifest.associations[0].substantive;
     return data;
 }
 const validate = data => validateAssociations(data.registry, data.manifest, data.articles);
@@ -172,7 +175,25 @@ test('agent proposals cannot claim confirmed membership or approval', () => {
     assert.throws(() => validate(data), /pending review cannot confirm/);
     data.manifest.associations[0].review = { status: 'approved', kind: 'agent', by: 'automation', date: '2026-10-21' };
     assert.throws(() => validate(data), /human reviewer/);
-    assert.ok(seed.manifest.associations.every(item => item.role === 'unresolved' && item.review.status === 'pending'));
+});
+
+test('only the six authorized subject classifications have human approval', () => {
+    const approved = seed.manifest.associations.filter(item => item.review.status === 'approved');
+    assert.deepEqual(approved.map(item => [item.entityId, item.articleId, item.role]), [
+        ['driver:lando-norris', '20260725W', 'primary'],
+        ['driver:lando-norris', '20260822W', 'primary'],
+        ['driver:lando-norris', '20260824W', 'primary'],
+        ['driver:lando-norris', '20260927G', 'secondary'],
+        ['driver:lewis-hamilton', '20260608W', 'primary'],
+        ['driver:lewis-hamilton', '20260929-2G', 'secondary']
+    ]);
+    for (const item of approved) {
+        assert.equal(item.substantive, true);
+        assert.deepEqual(item.review, { status: 'approved', kind: 'human', by: 'georgiosbalatzis', date: '2026-10-21' });
+    }
+    const pending = seed.manifest.associations.filter(item => item.review.status === 'pending');
+    assert.equal(pending.length, 91);
+    assert.ok(pending.every(item => item.role === 'unresolved' && item.substantive === undefined));
 });
 
 test('explicit human exclusions override tag candidates and do not count toward hubs', () => {
@@ -247,6 +268,11 @@ test('a taxonomy tag alone cannot serve as article-context evidence, even with h
 test('eligibility needs three substantive human-reviewed subjects, dates, introduction and approval', () => {
     const data = clone(seed);
     const entity = data.registry.entities.find(item => item.id === 'driver:lewis-hamilton');
+    for (const item of data.manifest.associations.filter(item => item.entityId === entity.id)) {
+        item.role = 'unresolved';
+        item.review = { status: 'pending' };
+        delete item.substantive;
+    }
     const items = data.manifest.associations.filter(item => item.entityId === entity.id && item.proposedRole === 'primary');
     assert.equal(items.length, 3);
     items.forEach(item => approve(item, 'primary'));
@@ -265,10 +291,13 @@ test('eligibility needs three substantive human-reviewed subjects, dates, introd
     assert.equal(eligibility().provisionalHubEligibility, false);
 });
 
-test('all seeded hubs remain disabled regardless of proposal counts', () => {
+test('all seeded hubs remain disabled despite the six approved subjects', () => {
     const report = coverageReport(seed.registry, seed.manifest, seed.articles);
-    assert.ok(report.entities.every(entity => !entity.provisionalHubEligibility && entity.substantiveSubjects === 0));
-    assert.ok(report.entities.every(entity => entity.counts.primary === 0 && entity.counts.secondary === 0));
+    assert.ok(report.entities.every(entity => !entity.provisionalHubEligibility));
+    assert.deepEqual(report.entities.filter(entity => entity.substantiveSubjects > 0).map(entity => [entity.id, entity.substantiveSubjects]), [
+        ['driver:lando-norris', 4], ['driver:lewis-hamilton', 2]
+    ]);
+    assert.ok(seed.registry.entities.every(entity => entity.hub.review.status === 'pending' && !entity.hub.introduction));
     const before = clone(seed);
     renderCoverage(report);
     assert.deepEqual(seed, before, 'reporting cannot mutate editorial decisions');

@@ -35,7 +35,7 @@ The candidate scanner checks both tag scopes to build a review queue. A match in
 | `flags` | Editorial questions; they do not create relationships or silently repair source claims |
 | `substantive` | Human assessment required when confirming a primary/secondary subject |
 
-**All 97 seeded associations have `role: unresolved` and `review.status: pending`.** The source reading and proposed roles were produced by agents, not approved by a human editor. Historical factual claims have not been independently fact-checked. The validator verifies that evidence still occurs on the quoted source line; it cannot certify that the claim is true or that a reviewer identity represents a real approval.
+The original 97 associations were seeded as unresolved agent proposals. **Six subject classifications now have explicit human approval; the remaining 91 retain `role: unresolved` and `review.status: pending`.** Historical factual claims have not been independently fact-checked. The validator verifies that evidence still occurs on the quoted source line; it cannot certify that the claim is true or that a reviewer identity represents a real approval.
 
 To confirm an association, a human editor checks the source and context, selects `role`, adds their review identity/date and (for subjects) `substantive`. An exclusion is an explicit human decision and cannot be overridden by tag matching. Several primary/secondary subjects in one article are valid; two decisions for the same article/entity pair are not. Tag-only matches remain unresolved or become explicit exclusions after human review.
 
@@ -52,7 +52,22 @@ Counts are article/entity pairs, not distinct articles. Proposals are not confir
 | Singapore Grand Prix | 3 | 2 | 1 | 0 | 0 | 0 |
 | Sepang International Circuit | 5 | 0 | 0 | 0 | 0 | 5 |
 
-Confirmed primary/secondary/mention/exclusion counts are **zero for every entity**. All public hub approvals are pending; no reviewed introductions exist. Therefore **none is provisionally eligible**.
+Confirmed primary/secondary counts are **1/1 for Hamilton** and **3/1 for Norris**; all other confirmed role counts are zero. All public hub approvals are pending; no reviewed introductions exist. Therefore **none is provisionally eligible**. Norris meets the subject-count/date criteria only; Hamilton has two qualifying subjects and does not meet the three-subject minimum.
+
+## P1.1c human editorial approvals
+
+Reviewer `georgiosbalatzis` explicitly authorized these six classifications on `2026-10-21`. Each has `review.status: approved`, `review.kind: human`, the reviewer/date above and `substantive: true`:
+
+| Entity | Article | Role |
+| --- | --- | --- |
+| `driver:lewis-hamilton` | `20260608W` | `primary` |
+| `driver:lewis-hamilton` | `20260929-2G` | `secondary` |
+| `driver:lando-norris` | `20260725W` | `primary` |
+| `driver:lando-norris` | `20260822W` | `primary` |
+| `driver:lando-norris` | `20260824W` | `primary` |
+| `driver:lando-norris` | `20260927G` | `secondary` |
+
+The six records and their source evidence were rechecked against PR #313 at `09c11df5d0f03ba1a64f589e032564977770219b`; no material source changes were found. This approves subject associations only, not every factual assertion in the articles. All other decisions and registry identities remain unchanged. Hamilton `20261007W`, `20261011J` and `20260619W` remain pending. Bahrain/Sepang flags remain intact. No introduction or public hub publication is approved, and no P1.2 integration is included.
 
 Important review questions:
 
@@ -70,9 +85,17 @@ The report separates candidate publication dates from qualifying subject dates. 
 
 P1.2 may consume only human-approved subject associations, independently apply publication/draft and hub eligibility rules, and reuse `discovery.js` rendering/sitemap components. Human-reviewed contextual mentions are not subject membership. Hub generation, route allowlists, search and related scoring remain separate changes. Do not import these datasets into the existing public index just to expose entity IDs.
 
-## P1.1 validation
+## Original P1.1 validation
 
 - Entity tests: 22 passed; taxonomy tests: 44 passed; build tests: 131 passed. Final blog suite: 286 passed and golden snapshots matched.
 - `npm run verify` passed public build/validation, generated-drift, static/runtime, blog, Edition browser (358 checks), author, standings, security, asset/image budgets, consent and all 72 visual cases. It stopped at the unchanged Lighthouse LCP gate: Home 2927 ms and Article 2702 ms exceed 2500 ms. The clean `659074e6` baseline and a separate candidate retry reproduced Home 2928 ms and Article 2702 ms. The remaining tablet CLS gate passed separately in both themes at both viewports. This PR does not fix that existing local Lighthouse failure or adjust thresholds.
 - Separate clean baseline/candidate `build:public` outputs contain the same 4,082 files, including 456 HTML files. Every relative path and SHA-256 hash matched: zero additions, removals or byte changes. No entity data/tooling ships publicly.
 - Baseline public tree digest (SHA-256 over the sorted path-to-file-hash JSON): `0c1c78c881bda4215b5fc4f7ce06b869900f98eca6c239295ede08fea85e465e`.
+
+## P1.1c validation
+
+- `entities:validate` and `entities:report` passed: exactly 6 approved and 91 pending associations; all other association fields/decisions and the registry match the previous PR commit. The six reviewed article directories are byte-identical to that commit.
+- Focused entity tests: 23 passed; taxonomy: 44 passed; blog: 287 passed with matching golden snapshots; build: 131 passed. Tests retain pending-review fixtures and assert the exact authorized approvals, reviewer/date, remaining queue and disabled hubs.
+- `build:public` passed in separate candidate, previous-PR (`09c11df5`) and clean-main (`659074e6`) worktrees. The existing comparison of every relative path and SHA-256 file hash found the same 4,082 files (456 HTML), with zero additions, removals or changes against either baseline. The public tree digest matches the original P1.1 digest above. `build:check` passed; no generated artifacts changed and no new public URLs exist.
+- Fresh Lighthouse runs used the unchanged budgets and three audits per route. Median LCP (candidate / clean main): Home **2927 / 2928 ms**, Article **2926 / 2703 ms**. Both exceed the **2500 ms** limit in both runs; Blog and Standings passed. The candidate Article median was 223 ms higher despite byte-identical public output. The performance gate remains failed; no threshold was changed and the PR remains draft.
+- The full `verify` suite was not rerun for this data-only follow-up; its original run is recorded above. No merge, deployment, hub publication or P1.2 implementation is included.
