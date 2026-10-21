@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "entities": [
+    {
+      "id": "driver:lewis-hamilton",
+      "type": "driver",
+      "slug": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "labelEl": "Λιούις Χάμιλτον",
+      "aliases": [
+        { "value": "Lewis Hamilton", "scope": "article-tag" },
+        { "value": "Leweis Hamilton", "scope": "article-tag" },
+        { "value": "Λιούις Χάμιλτον", "scope": "article-tag" },
+        { "value": "Hamilton", "scope": "f1-tag" }
+      ],
+      "providerIds": { "jolpica": "hamilton" },
+      "hub": { "review": { "status": "pending" } }
+    },
+    {
+      "id": "driver:lando-norris",
+      "type": "driver",
+      "slug": "lando-norris",
+      "name": "Lando Norris",
+      "labelEl": "Λάντο Νόρις",
+      "aliases": [
+        { "value": "Lando Norris", "scope": "article-tag" },
+        { "value": "Landon Norris", "scope": "article-tag" },
+        { "value": "Λάντο Νόρις", "scope": "article-tag" },
+        { "value": "Norris", "scope": "f1-tag" }
+      ],
+      "providerIds": { "jolpica": "norris" },
+      "hub": {
+        "review": { "status": "pending" },
+        "introduction": {
+          "heading": "Λάντο Νόρις — Formula 1, αναλύσεις και ιστορίες",
+          "text": "Η ταχύτητα του Λάντο Νόρις δεν αμφισβητείται εύκολα. Το μεγαλύτερο ερώτημα είναι πόσο συχνά μπορεί να τη μετατρέψει σε αποτέλεσμα όταν οι λεπτομέρειες κάνουν τη διαφορά. Στα άρθρα του F1 Stories για τη σεζόν 2026, οι κατατακτήριες δοκιμές στην Ουγγαρία και στο Zandvoort αποτελούν δύο διαφορετικές αφετηρίες για την ίδια συζήτηση: την ακρίβεια στον γρήγορο γύρο, την πίεση της βαθμολογίας και τη δυσκολία να μετατραπεί η ταχύτητα των κατατακτήριων σε αποτέλεσμα στον αγώνα.\n\nΗ εικόνα συμπληρώνεται από μια ιστορική σύγκριση με τον Mika Häkkinen, που εξετάζει τη θέση του Νόρις στην πορεία της McLaren, αλλά και από την ανάλυση ενός δύσκολου αγωνιστικού Σαββατοκύριακου για την ομάδα στο Baku. Μέσα από αυτά τα κείμενα, η παρουσία του Βρετανού οδηγού εξετάζεται πέρα από έναν μεμονωμένο χρόνο ή αποτέλεσμα, με έμφαση στη σχέση ανάμεσα στην απόδοση του οδηγού, τις δυνατότητες του μονοθεσίου και τις αποφάσεις που καθορίζουν έναν αγώνα.",
+          "review": { "status": "approved", "kind": "human", "by": "georgiosbalatzis", "date": "2026-10-21" }
+        }
+      }
+    },
+    {
+      "id": "team:ferrari",
+      "type": "team",
+      "slug": "ferrari",
+      "name": "Scuderia Ferrari",
+      "labelEl": "Ferrari στη Formula 1",
+      "aliases": [
+        { "value": "Ferrari", "scope": "f1-tag" },
+        { "value": "Ferrari F1", "scope": "f1-tag" },
+        { "value": "Scuderia Ferrari", "scope": "f1-tag" }
+      ],
+      "providerIds": { "jolpica": "ferrari" },
+      "hub": { "review": { "status": "pending" } }
+    },
+    {
+      "id": "team:mclaren",
+      "type": "team",
+      "slug": "mclaren",
+      "name": "McLaren",
+      "labelEl": "McLaren στη Formula 1",
+      "aliases": [
+        { "value": "McLaren", "scope": "f1-tag" },
+        { "value": "McLaren F1", "scope": "f1-tag" },
+        { "value": "McLaren history", "scope": "f1-tag" }
+      ],
+      "providerIds": { "jolpica": "mclaren" },
+      "hub": { "review": { "status": "pending" } }
+    },
+    {
+      "id": "grand-prix:singapore",
+      "type": "grand-prix",
+      "slug": "singapore",
+      "name": "Singapore Grand Prix",
+      "labelEl": "Grand Prix Σιγκαπούρης",
+      "aliases": [
+        { "value": "Singapore Grand Prix", "scope": "article-tag" },
+        { "value": "Singapore GP", "scope": "article-tag" },
+        { "value": "Grand prix Singapore", "scope": "article-tag" },
+        { "value": "Grand Prix Σιγκαπούρης", "scope": "article-tag" }
+      ],
+      "hub": { "review": { "status": "pending" } }
+    },
+    {
+      "id": "circuit:sepang",
+      "type": "circuit",
+      "slug": "sepang",
+      "name": "Sepang International Circuit",
+      "labelEl": "Διεθνής πίστα Sepang",
+      "aliases": [
+        { "value": "Sepang International Circuit", "scope": "article-tag" },
+        { "value": "Sepang circuit", "scope": "article-tag" },
+        { "value": "Sepang", "scope": "article-tag" }
+      ],
+      "hub": { "review": { "status": "pending" } }
+    }
+  ]
+}
