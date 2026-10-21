@@ -1,6 +1,18 @@
 {
   "_about": "P3D media contract (blog-module/build/media-meta.js). Keys are \"<article id>/<slot>\" (1 card, 2 cover background, 3+ body). Only verified facts: type and focus are presentation; credit comes from the file's own metadata or text printed in the image; synthetic is set only when the file documents AI generation. Unresolved provenance and rights questions live in the editorial audit, not here.",
   "images": {
+    "20261020W/2": {
+      "alt": "Κόκκινη Ferrari 640 με τον αριθμό 28, φωτογραφημένη από μπροστά σε στροφή της πίστας."
+    },
+    "20261020W/3": {
+      "alt": "Πλάγια όψη της Ferrari 640 με τον αριθμό 28, με ορατές τις εμπρός και πίσω πτέρυγες."
+    },
+    "20261020W/4": {
+      "alt": "Κόκκινο μονοθέσιο Ferrari σε κίνηση, σε πλάγια όψη δίπλα στα προστατευτικά της πίστας."
+    },
+    "20261015G/1": {
+      "alt": "Εξαρτήματα μονοθεσίου Mercedes κρεμασμένα σε διάταξη αποσυναρμολόγησης, με το πλαίσιο και τους τροχούς στο κάτω μέρος."
+    },
     "20250412G/7": {
       "type": "graphic",
       "alt": "F1 Stories — ΤΕΧΝΙΚΑ. Η τεχνική εικόνα δεν είναι διαθέσιμη.",
@@ -338,7 +350,8 @@
       "focus": "55% 50%"
     },
     "20261011J/1": {
-      "type": "poster"
+      "type": "poster",
+      "alt": "Σύνθεση με τους Lewis Hamilton και Frédéric Vasseur, μονοθέσιο Ferrari και τη φράση «Ferrari, τι αμαρτίες…»."
     },
     "20261011W/1": {
       "focus": "42% 38%"
