@@ -8,6 +8,8 @@ const { formatDate } = require('../../taxonomy');
 const { loadFoundation } = require('../entities');
 const { TYPES, PAGE_SIZE, selectHubs, renderHub, buildHubPages, writeHubPages, composeHubPage, articleUrl, articleIsPublic, hubSitemap, publicHubFiles } = require('../entities/hubs');
 const { renderSitemap } = require('../sitemap');
+const { buildHubLinks } = require('../index');
+const { buildPages } = require('../discovery');
 const ROOT = path.resolve(__dirname, '../../..');
 const today = '2026-10-21';
 const review = () => ({ status: 'approved', kind: 'human', by: 'fixture-editor', date: '2026-10-20' });
@@ -26,6 +28,46 @@ const build = (f, opts = {}) => buildHubPages(f.registry, f.manifest, f.articles
 const schema = page => JSON.parse(page.head.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
 const temp = t => { const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'entity-hubs-test-')); t.after(() => fs.rmSync(dir, { recursive: true, force: true })); return dir; };
 const write = (root, rel, text) => { const file = path.join(root, rel); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, text); return file; };
+
+test('real archive topic descriptors come only from approved generated hubs and four approved members', () => {
+    const f = loadFoundation(), before = JSON.stringify(f);
+    const result = buildHubPages(f.registry, f.manifest, f.articles, { today, deps });
+    assert.deepEqual(buildHubLinks(result), [{ href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 4 }]);
+    assert.ok(!result.hubs.find(hub => hub.eligible).posts.some(post => post.id === '20260928G'));
+    assert.deepEqual(buildHubLinks({ ...result, pages: [] }), [], 'an eligible hub without a generated first page is not linked');
+    assert.equal(JSON.stringify(f), before, 'selection and descriptors do not mutate editorial inputs');
+});
+
+test('future approved fixtures appear automatically, while withdrawal removes the hub and archive navigation', () => {
+    const f = fixture('team');
+    const archive = result => buildPages(f.articles, { today, deps, hubLinks: buildHubLinks(result) }).pages[0].main;
+    const approved = build(f);
+    assert.deepEqual(buildHubLinks(approved), [{ href: '/blog-module/blog/entities/teams/fixture/', label: f.entity.labelEl, count: 3 }]);
+    assert.ok(archive(approved).includes('href="/blog-module/blog/entities/teams/fixture/"'));
+    f.entity.hub.review = { status: 'pending' };
+    const withdrawn = build(f);
+    assert.deepEqual(withdrawn.pages, []);
+    assert.deepEqual(buildHubLinks(withdrawn), []);
+    assert.doesNotMatch(archive(withdrawn), /ed-topics-title|entities\/teams\/fixture/);
+});
+
+test('artifact reference validation rejects a topic link until its real first-page output exists', async t => {
+    const { validateHtmlRefs } = await import('../../../scripts/build/validate-public-artifact.mjs');
+    const f = fixture(), result = build(f), dir = temp(t);
+    const page = result.pages[0];
+    const archive = buildPages(f.articles, { today, deps, hubLinks: buildHubLinks(result) }).pages[0].main;
+    const file = write(dir, 'blog-module/blog/index.html', archive);
+    // Keep the real navigation block; unrelated discovery destinations are outside this fixture.
+    const block = archive.match(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/)[0];
+    fs.writeFileSync(file, block);
+    const errors = [];
+    validateHtmlRefs(errors, file, 'blog-module/blog/index.html', dir);
+    assert.deepEqual(errors, [`blog-module/blog/index.html: missing local reference ${page.path}`]);
+    write(dir, 'blog-module/blog/' + page.file, '<h1>Published fixture</h1>');
+    const valid = [];
+    validateHtmlRefs(valid, file, 'blog-module/blog/index.html', dir);
+    assert.deepEqual(valid, []);
+});
 
 for (const type of Object.keys(TYPES)) test(`approved ${type} renders native static hub and metadata`, () => {
     const f = fixture(type), result = build(f), page = result.pages[0];

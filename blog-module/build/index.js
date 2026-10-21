@@ -27,7 +27,7 @@ const {
 } = require('../taxonomy');
 const { buildPages, writeDiscoveryPages } = require('./discovery');
 const { loadFoundation } = require('./entities');
-const { buildHubPages, writeHubPages } = require('./entities/hubs');
+const { buildHubPages, writeHubPages, hubPath } = require('./entities/hubs');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
 
@@ -210,15 +210,21 @@ function buildCompactIndexData(posts) {
     };
 }
 
+function buildHubLinks({ hubs, pages }) {
+    const generated = new Set(pages.map(page => page.path));
+    return hubs.filter(hub => hub.eligible && generated.has(hubPath(hub.entity)))
+        .map(hub => ({ href: hubPath(hub.entity), label: hub.entity.labelEl, count: hub.posts.length }));
+}
+
 // The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
 // pages are static files; blog-index.js only renders the ?category= / ?author= / ?q= views on top of them.
-function injectEdition(indexPosts, selection = {}) {
+function injectEdition(indexPosts, selection = {}, { today = athensDay(), hubLinks = [] } = {}) {
     const blogDir = CONFIG.OUTPUT_HTML_DIR;
     if (!fs.existsSync(path.join(blogDir, 'index.html'))) {
         console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
         return null;
     }
-    const edition = buildPages(indexPosts, { today: athensDay(), selection, deps: { storyImage, renderStoryImage, cardSrcset } });
+    const edition = buildPages(indexPosts, { today, selection, hubLinks, deps: { storyImage, renderStoryImage, cardSrcset } });
     edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
     writeDiscoveryPages(blogDir, edition);
     console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
@@ -1130,8 +1136,13 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
+    const today = athensDay();
+    const { registry, manifest } = loadFoundation();
+    const entities = buildHubPages(registry, manifest, blogPosts, {
+        today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }
+    });
     const selection = loadEditorialSelection();
-    const edition = injectEdition(indexPosts, selection);
+    const edition = injectEdition(indexPosts, selection, { today, hubLinks: buildHubLinks(entities) });
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1143,10 +1154,6 @@ async function processBlogEntries(options = {}) {
     injectHomeJournal(indexPosts, blogPosts, selection);
     await injectHomePanels(undefined, blogPosts);
 
-    const { registry, manifest } = loadFoundation();
-    const entities = buildHubPages(registry, manifest, blogPosts, {
-        today: athensDay(), indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }
-    });
     writeHubPages(CONFIG.OUTPUT_HTML_DIR, entities.pages);
     console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
     generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages]);
@@ -1176,6 +1183,7 @@ module.exports = {
     buildIndexPosts,
     buildCompactIndexData,
     loadEditorialSelection,
+    buildHubLinks,
     injectEdition,
     renderHomeJournal,
     selectPaddock,
