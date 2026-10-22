@@ -17,6 +17,7 @@
 //   - scripts/build/asset-manifest.json (path → { hash, bytes, sourceBytes })
 
 import { CSS_INPUTS, CSS_DEPENDENCIES, JS_INPUTS, STANDINGS_TAB_ENTRIES } from './asset-sources.mjs';
+import { buildAuthorPreview } from './author-preview.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -152,6 +153,11 @@ async function minifyCss(rel) {
 async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
+    if (rel === 'scripts/author/article-preview.js') {
+        const outRel = minPathFor(rel);
+        await buildAuthorPreview(REPO_ROOT, outRel);
+        return { outRel, sourceBytes: Buffer.byteLength(source), bytes: fs.statSync(path.join(REPO_ROOT, outRel)).size };
+    }
     const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
     if (rel === 'scripts/perf/web-vitals-collector.js') {
         const outRel = minPathFor(rel);

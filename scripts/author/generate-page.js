@@ -49,9 +49,6 @@
     var reviewFolder      = byId('gen-review-folder');
     var progressList      = byId('gen-progress');
     var resultBox         = byId('gen-result');
-    var whenGroup         = byId('gen-when-group');
-    var scheduleBox       = byId('gen-schedule-box');
-    var scheduleInput     = byId('gen-schedule-at');
     var previewFrame      = byId('gen-preview-frame');
     var mobileProgress    = byId('gen-mobile-progress');
     var mobileProgressLbl = byId('gen-mobile-progress-label');
@@ -65,6 +62,7 @@
     var sessionTokens = window.F1S_AUTHOR_SESSION_TOKEN;
     var imageTools = window.F1S_AUTHOR_IMAGE_TOOLS;
     var sourceMetadata = {};
+    var editorEpoch = 0;
 
     if (!authorDom) {
         throw new Error('Author DOM helper failed to load.');
@@ -144,78 +142,18 @@
     function getAuthor() { return checkedValue('gen-author', DEFAULT_AUTHOR); }
     function getCategory() { return checkedValue('gen-category', DEFAULT_CATEGORY); }
 
-    // ── Scheduled publishing ──────────────────────────────
-    // The PR opens now under author/scheduled/…, which Publish Article ignores;
-    // Scheduled Publish merges it once the time in the PR body has passed.
-    var SCHEDULE_MIN_LEAD_MS = 10 * 60 * 1000;
-    var SCHEDULE_LABEL = 'scheduled';
-    // Scheduled Publish runs on the hour at these Europe/Athens hours (see the
-    // cron slots in .github/workflows/scheduled-publish.yml); keep in sync.
-    var PUBLISH_HOURS_ATHENS = [9, 18];
-
-    function isScheduled() { return checkedValue('gen-when', 'now') === 'schedule'; }
-
-    // datetime-local values carry no offset, so Date parses them as the author's local time.
-    function scheduledDate() {
-        if (!isScheduled() || !scheduleInput.value) return null;
-        var date = new Date(scheduleInput.value);
-        return isNaN(date.getTime()) ? null : date;
-    }
-
-    function scheduleIssue() {
-        if (!isScheduled()) return null;
-        var date = scheduledDate();
-        if (!date) return 'Λείπει η ημερομηνία και ώρα δημοσίευσης';
-        if (date.getTime() < Date.now() + SCHEDULE_MIN_LEAD_MS) return 'Η ώρα δημοσίευσης πρέπει να είναι τουλάχιστον 10 λεπτά από τώρα';
-        return null;
-    }
-
-    function athensHour(date) {
-        return Number(date.toLocaleString('en-GB', { timeZone: 'Europe/Athens', hour: '2-digit', hourCycle: 'h23' }));
-    }
-
-    // The first Scheduled Publish run at or after the requested time actually merges it.
-    // Athens is a whole-hour offset from UTC, so stepping UTC hours finds its hours.
-    function nextPublishSlot(date) {
-        var slot = new Date(date.getTime());
-        slot.setUTCMinutes(0, 0, 0);
-        if (slot < date) slot.setUTCHours(slot.getUTCHours() + 1);
-        for (var i = 0; i < 48; i++) {
-            if (PUBLISH_HOURS_ATHENS.indexOf(athensHour(slot)) !== -1) return slot;
-            slot.setUTCHours(slot.getUTCHours() + 1);
-        }
-        return date;
-    }
-
-    function formatAthens(date) {
-        return date.toLocaleString('el-GR', { timeZone: 'Europe/Athens', dateStyle: 'medium', timeStyle: 'short' }) + ' (ώρα Ελλάδας)';
-    }
-
-    function toLocalInputValue(date) {
-        return date.getFullYear() + '-' + pad2(date.getMonth() + 1) + '-' + pad2(date.getDate()) +
-            'T' + pad2(date.getHours()) + ':' + pad2(date.getMinutes());
-    }
-
-    function syncScheduleUi() {
-        var scheduled = isScheduled();
-        scheduleBox.hidden = !scheduled;
-        scheduleInput.min = toLocalInputValue(new Date());
-        if (scheduled && !scheduleInput.value) {
-            var tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(10, 0, 0, 0);
-            scheduleInput.value = toLocalInputValue(tomorrow);
-        }
-        setPublishReady();
-    }
-
     function setExportReady() {
-        authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP αντί για PR');
+        authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP');
     }
 
     function setPublishReady() {
-        authorDom.setIconText(publishBtn, 'fa-rocket', isScheduled() ? 'Προγραμματισμός δημοσίευσης' : 'Άνοιγμα Pull Request');
+        authorDom.setIconText(publishBtn, 'fa-rocket', 'Δημοσίευση τώρα');
     }
+
+    var restoredHeroFile = null;
+    var restoredHeaderFile = null;
+    function getHeroFile() { return (heroInput.files && heroInput.files[0]) || restoredHeroFile; }
+    function getHeaderFile() { return (headerInput.files && headerInput.files[0]) || restoredHeaderFile; }
 
     var heroObjectUrl = null;
     var heroImageMeta = { width: 848, height: 400 };
@@ -261,20 +199,25 @@
     var HERO_EMPTY = 'Κάρτα στο blog και header αν δεν υπάρχει banner';
     var HEADER_EMPTY = 'Στην κορυφή του άρθρου· αλλιώς η κεντρική';
     function paintHero() {
-        var file = heroInput.files && heroInput.files[0];
+        var file = getHeroFile();
         paintDrop(fileLabel, heroThumb, fileText, heroObjectUrl, file ? file.name : '', HERO_EMPTY, 'fa-image');
     }
     function paintHeader() {
-        var file = headerInput.files && headerInput.files[0];
+        var file = getHeaderFile();
         paintDrop(headerLabel, headerThumb, headerText, headerObjectUrl, file ? file.name : '', HEADER_EMPTY, 'fa-layer-group');
     }
 
     // ── Hero image handler ────────────────────────────────
     heroInput.addEventListener('change', async function () {
-        if (heroInput.files && heroInput.files[0]) {
+        if (getHeroFile()) {
+            if (heroInput.files && heroInput.files[0]) restoredHeroFile = null;
             if (heroObjectUrl) URL.revokeObjectURL(heroObjectUrl);
-            heroObjectUrl = URL.createObjectURL(heroInput.files[0]);
-            heroImageMeta = await readImageMeta(heroObjectUrl);
+            heroObjectUrl = URL.createObjectURL(getHeroFile());
+            var epoch = editorEpoch;
+            var pendingUrl = heroObjectUrl;
+            var meta = await readImageMeta(pendingUrl);
+            if (epoch !== editorEpoch || pendingUrl !== heroObjectUrl) return;
+            heroImageMeta = meta;
             paintHero();
             refresh();
         }
@@ -282,10 +225,15 @@
 
     // ── Article banner (slot 2) handler ───────────────────
     headerInput.addEventListener('change', async function () {
-        if (headerInput.files && headerInput.files[0]) {
+        if (getHeaderFile()) {
+            if (headerInput.files && headerInput.files[0]) restoredHeaderFile = null;
             if (headerObjectUrl) URL.revokeObjectURL(headerObjectUrl);
-            headerObjectUrl = URL.createObjectURL(headerInput.files[0]);
-            headerImageMeta = await readImageMeta(headerObjectUrl);
+            headerObjectUrl = URL.createObjectURL(getHeaderFile());
+            var epoch = editorEpoch;
+            var pendingUrl = headerObjectUrl;
+            var meta = await readImageMeta(pendingUrl);
+            if (epoch !== editorEpoch || pendingUrl !== headerObjectUrl) return;
+            headerImageMeta = meta;
             paintHeader();
             refresh();
         }
@@ -383,10 +331,13 @@
 
     contentInput.addEventListener('change', async function () {
         if (!contentInput.files || !contentInput.files.length) return;
-        for (var i = 0; i < contentInput.files.length; i++) {
-            var f = contentInput.files[i];
+        var epoch = editorEpoch;
+        var files = Array.from(contentInput.files);
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
             var url = URL.createObjectURL(f);
             var meta = await readImageMeta(url);
+            if (epoch !== editorEpoch) { URL.revokeObjectURL(url); return; }
             contentImageFiles.push({ file: f, url: url, width: meta.width, height: meta.height });
         }
         // Reset so picking the same file again still fires 'change'
@@ -418,7 +369,7 @@
     contentArea.addEventListener('input', renderContentImagesList);
 
     // ── Steps ─────────────────────────────────────────────
-    var STEP_TITLES = ['Βασικά', 'Κείμενο', 'Εικόνες', 'Προεπισκόπηση', 'Έλεγχος & PR'];
+    var STEP_TITLES = ['Βασικά', 'Κείμενο', 'Εικόνες', 'Προεπισκόπηση', 'Έλεγχος & Δημοσίευση'];
     var currentStep = 0;
     var visited = { 0: true };
 
@@ -437,17 +388,15 @@
         if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true });
         articleSource.titleWarnings(title, body).forEach(function (text) { issues.push({ step: 0, text: text }); });
         if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true });
-        if (!(heroInput.files && heroInput.files[0])) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
+        if (!(getHeroFile())) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
         if (markers > images) issues.push({ step: 2, text: plural(markers - images, 'δείκτης', 'δείκτες') + ' χωρίς εικόνα — κενή θέση στο άρθρο' });
         if (images > markers) issues.push({ step: 2, text: plural(images - markers, 'εικόνα', 'εικόνες') + ' χωρίς δείκτη → carousel στο τέλος' });
-        var scheduleProblem = scheduleIssue();
-        if (scheduleProblem) issues.push({ step: 4, text: scheduleProblem, block: true });
         return issues;
     }
 
-    // The folder name carries the article date: the publish date when scheduled.
+    // The folder date is always the date of the explicit publish action.
     function articleDateYYYYMMDD() {
-        return dateYYYYMMDD(scheduledDate() || new Date());
+        return dateYYYYMMDD(new Date());
     }
 
     function folderPreview() {
@@ -457,6 +406,7 @@
     function goToStep(step, focusHeading) {
         if (step < 0 || step >= panels.length) return;
         currentStep = step;
+        ++previewRevision;
         visited[step] = true;
         panels.forEach(function (panel, index) { panel.hidden = index !== step; });
         if (step === 3) renderPreview();
@@ -473,6 +423,7 @@
     });
     prevBtn.addEventListener('click', function () { goToStep(currentStep - 1); });
     function finishAndClose() {
+        closing = true;
         // Empty the form first so the unsaved-work guard does not ask to confirm.
         resetForm();
         window.close();
@@ -498,6 +449,7 @@
         button.addEventListener('click', function () {
             deviceButtons.forEach(function (other) { other.setAttribute('aria-pressed', String(other === button)); });
             previewFrame.classList.toggle('is-phone', button.dataset.device === 'phone');
+            byId('gen-article-preview').width = button.dataset.device === 'phone' ? 390 : 1440;
         });
     });
 
@@ -520,7 +472,7 @@
             authorDom.setIconText(nextBtn, 'fa-check', 'Τέλος');
             nextBtn.classList.add('gb-nav-publish');
         } else if (currentStep === panels.length - 1) {
-            authorDom.setIconText(nextBtn, 'fa-rocket', isScheduled() ? 'Προγραμματισμός' : 'Άνοιγμα PR');
+            authorDom.setIconText(nextBtn, 'fa-rocket', 'Δημοσίευση τώρα');
             nextBtn.classList.add('gb-nav-publish');
         } else {
             nextBtn.replaceChildren(document.createTextNode('Επόμενο: ' + STEP_TITLES[currentStep + 1] + ' '), authorDom.createSvgIcon('fa-arrow-right'));
@@ -539,11 +491,6 @@
         if (!issues.some(function (issue) { return issue.step === 2; })) {
             rows.push({ ok: true, text: 'Εικόνες: 1.webp' + (headerObjectUrl ? ', 2.webp' : '') + (contentImageFiles.length ? ' + ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') + ' κειμένου' : ''), step: 2 });
         }
-        if (isScheduled()) {
-            var scheduleProblem = scheduleIssue();
-            rows.push({ ok: !scheduleProblem, text: scheduleProblem || 'Προγραμματισμένη δημοσίευση: ' + formatAthens(scheduledDate()) +
-                ' · βγαίνει στον επόμενο έλεγχο, ~' + formatAthens(nextPublishSlot(scheduledDate())), step: 4 });
-        }
         reviewList.replaceChildren.apply(reviewList, rows.map(function (row) {
             var li = el('li', 'gb-review-row ' + (row.ok ? 'is-ok' : 'is-warn'));
             li.appendChild(el('span', 'gb-review-text', row.text));
@@ -561,7 +508,7 @@
         var author = getAuthor();
         var tags = taxonomy.normalizeTags(tagInput.value);
         byId('gen-card-img').src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
-        byId('gen-card-meta').textContent = getCategory() + ' · ' + (scheduledDate() || new Date()).toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
+        byId('gen-card-meta').textContent = getCategory() + ' · ' + new Date().toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
         byId('gen-card-title').textContent = titleInput.value.trim() || 'Χωρίς τίτλο';
         byId('gen-card-author').textContent = 'Γράφει ' + author;
         byId('gen-fact-folder').textContent = folderPreview();
@@ -581,35 +528,38 @@
 
     var publishing = false;
     var published = false;
+    var closing = false;
     function refresh() {
         var issues = collectIssues();
         renderSteps(issues);
         renderReview(issues);
         renderSummary();
+        if (drafts) drafts.changed();
     }
 
     titleInput.addEventListener('input', function () { renderTitleWarnings(); refresh(); });
     tagInput.addEventListener('input', refresh);
     authorGroup.addEventListener('change', refresh);
     categoryGroup.addEventListener('change', refresh);
-    whenGroup.addEventListener('change', function () { syncScheduleUi(); refresh(); });
-    scheduleInput.addEventListener('input', refresh);
 
     // ── Clear ─────────────────────────────────────────────
     function resetForm() {
+        ++editorEpoch;
+        ++previewRevision;
+        if (disposePreview) disposePreview();
+        byId('gen-article-preview').srcdoc = '';
         titleInput.value = '';
         tagInput.value = '';
         setChecked('gen-category', DEFAULT_CATEGORY);
         setChecked('gen-author', DEFAULT_AUTHOR);
-        setChecked('gen-when', 'now');
-        scheduleInput.value = '';
-        syncScheduleUi();
         sourceMetadata = {};
         contentArea.value = '';
         heroInput.value = '';
+        restoredHeroFile = null;
         if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
         heroImageMeta = { width: 848, height: 400 };
         headerInput.value = '';
+        restoredHeaderFile = null;
         if (headerObjectUrl) { URL.revokeObjectURL(headerObjectUrl); headerObjectUrl = null; }
         headerImageMeta = { width: 848, height: 400 };
         contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
@@ -628,12 +578,7 @@
         published = false;
     }
 
-    clearBtn.addEventListener('click', async function () {
-        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl;
-        if (dirty && !(await showConfirm('Θα χαθούν κείμενο και εικόνες που δεν έχουν εξαχθεί ή δημοσιευτεί. Συνέχεια;', { title: 'Καθαρισμός φόρμας', okLabel: 'Καθαρισμός' }))) return;
-        resetForm();
-        goToStep(0);
-    });
+    clearBtn.addEventListener('click', function () { drafts.newDraft(); });
 
     // ── Import ZIP (reverse of Export) ────────────────────
     function normalizeZipPath(path) {
@@ -670,12 +615,15 @@
     }
 
     importInput.addEventListener('change', async function () {
+        if (publishing || drafts.busy()) { importInput.value = ''; return; }
+        var startingEpoch = editorEpoch;
         var zipFile = importInput.files && importInput.files[0];
         importInput.value = '';
         if (!zipFile) return;
 
         try {
             await authorDom.loadJSZip();
+            if (startingEpoch !== editorEpoch) return;
         } catch (error) {
             await showAlert(error.message);
             return;
@@ -728,7 +676,9 @@
             imageEntries.sort(function (a, b) { return a.slot - b.slot; });
 
             // Populate text fields
+            if (startingEpoch !== editorEpoch) return;
             resetForm();
+            drafts.detach();
             titleInput.value = meta.title || '';
             tagInput.value = meta.tags.join(', ');
             setChecked('gen-category', meta.category);
@@ -738,6 +688,7 @@
             var authorName = authorFromFolderName(folderName);
             if (authorName) setChecked('gen-author', authorName);
 
+            var importEpoch = editorEpoch;
             // Load thumbnail (slot 1), banner (slot 2), content (slot >= 3)
             for (var k = 0; k < imageEntries.length; k++) {
                 var ent = imageEntries[k];
@@ -749,13 +700,16 @@
                 });
                 var url = URL.createObjectURL(file);
                 var meta2 = await readImageMeta(url);
+                if (importEpoch !== editorEpoch) { URL.revokeObjectURL(url); return; }
                 if (ent.slot === 1) {
                     heroObjectUrl = url;
                     heroImageMeta = meta2;
+                    restoredHeroFile = file;
                     resetFileInputWith(heroInput, file);
                 } else if (ent.slot === 2) {
                     headerObjectUrl = url;
                     headerImageMeta = meta2;
+                    restoredHeaderFile = file;
                     resetFileInputWith(headerInput, file);
                 } else if (ent.slot >= 3) {
                     contentImageFiles.push({ file: file, url: url, width: meta2.width, height: meta2.height });
@@ -843,8 +797,8 @@
         var authorCode = AUTHOR_CODES[author] || '';
         var folderName = todayYYYYMMDD() + authorCode;
 
-        var heroFile = heroInput.files && heroInput.files[0];
-        var headerFile = headerInput.files && headerInput.files[0];
+        var heroFile = getHeroFile();
+        var headerFile = getHeaderFile();
 
         exportBtn.disabled = true;
         authorDom.setBusyText(exportBtn, 'Πακετάρισμα…');
@@ -1029,7 +983,7 @@
         }
     }
 
-    // Folders that open author/* PRs (scheduled ones included) are about to add,
+    // Folders that open author/* PRs are about to add,
     // keyed lowercase like the branch slug. Best effort: main is still checked.
     async function pendingPullFolders(token) {
         var folders = {};
@@ -1056,7 +1010,7 @@
         throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για άρθρο της ' + baseDate + '.');
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting, publishAt) {
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting) {
         function tick(msg) { if (progress) progress(msg); }
 
         // Phase 1: upload blobs (content-addressed, safe to do once)
@@ -1131,16 +1085,9 @@
         });
         var prTitle = commitMessage;
         var prBody = 'Author tool publish for `blog-module/blog-entries/' + folderName + '`.';
-        if (publishAt) {
-            prTitle += ' · προγραμματισμένο ' + formatAthens(publishAt);
-            prBody += '\n\n**Προγραμματισμένη δημοσίευση:** ' + formatAthens(publishAt) +
-                '\n\nΤο workflow **Scheduled Publish** (09:00 και 18:00 ώρα Ελλάδας) κάνει merge στο πρώτο του run μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι — εδώ ~' + formatAthens(nextPublishSlot(publishAt)) + '. ' +
-                'Για αλλαγή ώρας, άλλαξε την κρυφή γραμμή `f1s-publish-at` στο κείμενο του PR (ώρα UTC). Για ακύρωση, κλείσε το PR ή κάν\' το draft.' +
-                '\n\n' + window.F1S_AUTHOR_GITHUB.publishAtMarker(publishAt);
-        }
         var result = await github.createPullRequestFromTree(
             token,
-            publishAt ? 'scheduled' : 'blog',
+            'blog',
             folderName,
             treeEntries,
             commitMessage,
@@ -1148,18 +1095,6 @@
             prBody,
             tick
         );
-        // The label is for people browsing PRs; the workflow keys off the branch and marker.
-        if (publishAt && result.pullRequest && result.pullRequest.number) {
-            tick('Ετικέτα ' + SCHEDULE_LABEL + '…');
-            try {
-                await ghFetch('/issues/' + result.pullRequest.number + '/labels', token, {
-                    method: 'POST',
-                    body: { labels: [SCHEDULE_LABEL] }
-                });
-            } catch (e) {
-                console.warn('Could not label scheduled PR', e);
-            }
-        }
         return result;
     }
 
@@ -1170,16 +1105,14 @@
         progressList.appendChild(li);
     }
 
-    function showResult(publishResult, folderName, publishAt) {
+    function showResult(publishResult, folderName) {
         var pr = publishResult.pullRequest || {};
         resultBox.replaceChildren();
-        resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + (publishAt ? ' προγραμματίστηκε' : ' άνοιξε')));
+        resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + ' άνοιξε'));
         var branch = el('p', 'gb-result-branch');
         branch.appendChild(el('code', '', publishResult.branchName));
         resultBox.appendChild(branch);
-        var note = el('p', '', publishAt
-            ? 'Φάκελος blog-entries/' + folderName + '/. Δημοσίευση: ' + formatAthens(publishAt) + ', στον επόμενο έλεγχο ~' + formatAthens(nextPublishSlot(publishAt)) + '. Οι έλεγχοι τρέχουν τώρα· merge, build και deploy γίνονται αυτόματα τότε. Για ακύρωση, κλείσε το PR.'
-            : 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.');
+        var note = el('p', '', 'Το PR για blog-entries/' + folderName + '/ άνοιξε. Η δημοσίευση εκκρεμεί: μετά τους ελέγχους γίνονται αυτόματα merge, build και deploy. Το τοπικό πρόχειρο διατηρείται.');
         if (pr.html_url) {
             var link = el('a', '', 'Προβολή PR στο GitHub');
             link.href = pr.html_url;
@@ -1198,7 +1131,8 @@
     }
 
     publishBtn.addEventListener('click', async function () {
-        if (publishing) return;
+        if (publishing || (drafts && drafts.busy())) return;
+        if (collectIssues().some(function (issue) { return issue.block; })) { goToStep(4); return; }
         if (!(await requireTitleAndBody('τη δημοσίευση'))) return;
         goToStep(4, false);
 
@@ -1214,16 +1148,14 @@
         var tag = tagInput.value.trim();
         var category = getCategory();
         var authorCode = AUTHOR_CODES[author] || '';
-        var publishAt = scheduledDate();
-        var scheduleProblem = scheduleIssue();
-        if (scheduleProblem) { await showAlert(scheduleProblem + '.'); refresh(); return; }
         var baseDate = articleDateYYYYMMDD();
         var folderName = baseDate + authorCode;
-        var heroFile = heroInput.files && heroInput.files[0];
-        var headerFile = headerInput.files && headerInput.files[0];
+        var heroFile = getHeroFile();
+        var headerFile = getHeaderFile();
         var replaceExisting = false;
 
         publishing = true;
+        panels.forEach(function (panel) { panel.inert = true; });
         publishBtn.disabled = true;
         nextBtn.disabled = true;
         resultBox.hidden = true;
@@ -1236,7 +1168,7 @@
             var pendingFolders = await pendingPullFolders(token);
             if (await folderExists(token, folderName)) {
                 var choice = await authorDialogs.choose(
-                    'Υπάρχει ήδη άρθρο για ' + (publishAt ? 'αυτή την ημερομηνία' : 'σήμερα') + ' στο blog-entries/' + folderName + '.',
+                    'Υπάρχει ήδη άρθρο για ' + 'σήμερα' + ' στο blog-entries/' + folderName + '.',
                     [
                         { value: 'new', label: 'Νέα έκδοση με επόμενο -N', detail: 'Το υπάρχον άρθρο μένει ανέπαφο.' },
                         { value: 'replace', label: 'Αντικατάσταση του ' + folderName, detail: 'Τα αρχεία του φακέλου που δεν ξαναγράφονται θα διαγραφούν στο PR.' }
@@ -1262,14 +1194,11 @@
 
             var markerCount = countMarkers();
             var confirmMsg = 'Άνοιγμα Pull Request για το «' + title + '» στο blog-module/blog-entries/' + folderName + '/.';
-            if (publishAt) confirmMsg += '\n\nΠρογραμματισμένη δημοσίευση: ' + formatAthens(publishAt) + '. Βγαίνει στον επόμενο έλεγχο, ~' + formatAthens(nextPublishSlot(publishAt)) + '.';
             if (contentImageFiles.length) {
                 confirmMsg += '\n\nΠεριλαμβάνει ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') +
                     ' κειμένου + ' + plural(markerCount, 'δείκτη', 'δείκτες') + '.';
             }
-            confirmMsg += publishAt
-                ? '\n\nΤο main αλλάζει μόνο μετά την ώρα αυτή, τους ελέγχους και το αυτόματο merge.'
-                : '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
+            confirmMsg += '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
             if (!(await showConfirm(confirmMsg, { title: 'Άνοιγμα Pull Request', okLabel: 'Άνοιγμα PR' }))) {
                 logProgress('Ακυρώθηκε.');
                 return;
@@ -1291,13 +1220,12 @@
             var publishResult = await publishToGitHub(
                 token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
                 logProgress,
-                replaceExisting,
-                publishAt
+                replaceExisting
             );
             logProgress('Ολοκληρώθηκε.');
             progressList.lastChild.className = 'is-done';
             published = true;
-            showResult(publishResult, folderName, publishAt);
+            showResult(publishResult, folderName);
         } catch (err) {
             console.error('Publish failed', err);
             logProgress('Απέτυχε.');
@@ -1306,674 +1234,117 @@
             await showAlert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
         } finally {
             publishing = false;
+            panels.forEach(function (panel) { panel.inert = false; });
             nextBtn.disabled = false;
             setPublishReady();
             refresh();
         }
     });
 
-    // ── Preview (step 4) ──────────────────────────────────
-    function renderPreview() {
-        var title    = titleInput.value.trim() || 'Χωρίς τίτλο';
-        var author   = getAuthor();
-        var category = getCategory();
-        var raw      = contentArea.value;
-
-        var html = convertContent(raw);
-
-        byId('pv-title').textContent = title;
-        byId('pv-category').textContent = category;
-        byId('pv-date').textContent = new Date().toLocaleDateString('el-GR', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        // Article header prefers the banner (slot 2); falls back to thumbnail (slot 1).
-        var heroImg = byId('pv-hero-img');
-        var headerUrl = headerObjectUrl || heroObjectUrl;
-        var headerMeta = headerObjectUrl ? headerImageMeta : (heroObjectUrl ? heroImageMeta : null);
-        heroImg.src = headerUrl || '/blog-module/images/default-blog.jpg';
-        heroImg.alt = title;
-        var heroPicture = heroImg.closest('picture');
-        heroPicture.tabIndex = 0;
-        heroPicture.setAttribute('role', 'button');
-        heroPicture.setAttribute('aria-label', 'Open article image');
-        heroPicture.onkeydown = function (event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                heroImg.click();
-            }
-        };
-        applyImageMeta(heroImg, headerMeta || { width: 848, height: 400 }, 848, 400);
-
-        var contentEl = byId('pv-content');
-        authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
-
-        var authorData = AUTHORS[author] || AUTHORS[TEAM_NAME];
-        byId('pv-byline').textContent = authorData.label;
-        // Mirrors renderHeaderByline(): the team signs without a portrait.
-        var bylineImg = byId('pv-byline-img');
-        bylineImg.hidden = !authorData.slug;
-        if (authorData.slug) {
-            bylineImg.src = window.F1S_TAXONOMY.authorThumb(authorData);
-            byId('pv-byline-row').setAttribute('data-author-slug', authorData.slug);
-        } else {
-            byId('pv-byline-row').removeAttribute('data-author-slug');
+    // ── Preview (step 4): the production renderer in a script-disabled iframe ──
+    var previewRevision = 0;
+    var disposePreview = function () {};
+    var previewLoader = null;
+    function loadPreviewRenderer() {
+        if (window.F1S_ARTICLE_PREVIEW) return Promise.resolve();
+        if (!previewLoader) previewLoader = new Promise(function (resolve, reject) {
+            var script = document.createElement('script');
+            script.src = byId('gen-article-preview').dataset.rendererSrc;
+            script.onload = resolve;
+            script.onerror = function () { previewLoader = null; script.remove(); reject(new Error('Δεν φορτώθηκε ο μετατροπέας. Δοκίμασε ξανά την προεπισκόπηση.')); };
+            document.head.appendChild(script);
+        });
+        return previewLoader;
+    }
+    async function renderPreview() {
+        var revision = ++previewRevision;
+        var notice = byId('gen-preview-notice');
+        try {
+            await loadPreviewRenderer();
+            if (revision !== previewRevision) return;
+            var state = captureDraft();
+            var result = await window.F1S_ARTICLE_PREVIEW.render(state);
+            if (revision !== previewRevision) { result.dispose(); return; }
+            var frame = byId('gen-article-preview');
+            disposePreview();
+            disposePreview = result.dispose;
+            frame.onload = function () { window.F1S_ARTICLE_PREVIEW.hydrate(frame.contentDocument); };
+            frame.srcdoc = result.html;
+            notice.textContent = 'Τοπική προεπισκόπηση προχείρου · δημοσίευση σήμερα. Δεν είναι δημοσιευμένο άρθρο.' +
+                (result.limitations.length ? ' ' + result.limitations.join(' ') : '');
+        } catch (error) {
+            if (revision === previewRevision) notice.textContent = 'Η προεπισκόπηση απέτυχε: ' + error.message;
         }
-        byId('pv-author-name').textContent = authorData.label;
-        byId('pv-author-img').src = authorData.portrait;
-        if (authorData.slug) byId('pv-author-card').setAttribute('data-author-slug', authorData.slug);
-        else byId('pv-author-card').removeAttribute('data-author-slug');
-        byId('pv-author-title').textContent = authorData.specialty;
-        byId('pv-author-bio').textContent = authorData.bio;
-
-        var words = contentEl.textContent.trim().split(/\s+/).length;
-        byId('pv-reading-time').textContent = plural(Math.max(1, Math.ceil(words / 200)), 'λεπτό', 'λεπτά') + ' ανάγνωσης';
-
-        processSocialEmbeds(contentEl);
     }
 
-    // Leaving with unsaved work loses it (there is no draft storage).
+    function captureDraft() {
+        function image(file, meta) {
+            return file ? { blob: file, name: file.name, width: meta.width, height: meta.height } : null;
+        }
+        return { title: titleInput.value, author: getAuthor(), category: getCategory(), tags: tagInput.value,
+            text: contentArea.value, metadata: Object.assign({}, sourceMetadata),
+            hero: image(getHeroFile(), heroImageMeta),
+            banner: image(getHeaderFile(), headerImageMeta),
+            images: contentImageFiles.map(function (item) { return image(item.file, item); }),
+            editor: { step: currentStep, device: previewFrame.classList.contains('is-phone') ? 'phone' : 'desktop',
+                selectionStart: contentArea.selectionStart, selectionEnd: contentArea.selectionEnd } };
+    }
+
+    async function restoreDraft(value) {
+        var epoch = ++editorEpoch;
+        var staged = [];
+        try {
+            var images = [value.hero, value.banner].concat(value.images);
+            for (var i = 0; i < images.length; i++) {
+                if (!images[i]) { staged.push(null); continue; }
+                var file = new File([images[i].blob], images[i].name, { type: images[i].blob.type });
+                var url = URL.createObjectURL(file);
+                staged.push({ file: file, url: url });
+                var meta = await readImageMeta(url);
+                staged[staged.length - 1].width = meta.width;
+                staged[staged.length - 1].height = meta.height;
+                if (epoch !== editorEpoch) throw new Error('Η φόρτωση ακυρώθηκε επειδή άλλαξε το άρθρο.');
+            }
+            resetForm();
+            titleInput.value = value.title;
+            tagInput.value = value.tags;
+            setChecked('gen-author', value.author);
+            setChecked('gen-category', value.category);
+            sourceMetadata = Object.assign({}, value.metadata);
+            contentArea.value = value.text;
+            contentArea.setSelectionRange(value.editor.selectionStart || 0, value.editor.selectionEnd || 0);
+            if (staged[0]) {
+                heroObjectUrl = staged[0].url; heroImageMeta = staged[0];
+                restoredHeroFile = staged[0].file;
+                resetFileInputWith(heroInput, staged[0].file);
+            }
+            if (staged[1]) {
+                headerObjectUrl = staged[1].url; headerImageMeta = staged[1];
+                restoredHeaderFile = staged[1].file;
+                resetFileInputWith(headerInput, staged[1].file);
+            }
+            contentImageFiles = staged.slice(2);
+            staged = [];
+            var phone = value.editor.device === 'phone';
+            previewFrame.classList.toggle('is-phone', phone);
+            deviceButtons.forEach(function (button) { button.setAttribute('aria-pressed', String((button.dataset.device === 'phone') === phone)); });
+            byId('gen-article-preview').width = phone ? 390 : 1440;
+            paintHero(); paintHeader(); renderTitleWarnings(); renderContentImagesList();
+            goToStep(value.editor.step || 0, false);
+            renderPreview();
+        } finally {
+            staged.forEach(function (item) { if (item) URL.revokeObjectURL(item.url); });
+        }
+    }
+
+    paintTokenState(); paintHero(); paintHeader(); renderContentImagesList(); goToStep(0, false);
+    var drafts = window.F1S_DRAFT_MANAGER.attach({ capture: captureDraft, restore: restoreDraft,
+        reset: function () { resetForm(); goToStep(0); }, locked: function () { return publishing; } });
     window.addEventListener('beforeunload', function (event) {
-        if (publishing || titleInput.value.trim() || contentArea.value.trim()) {
-            event.preventDefault();
-            event.returnValue = '';
-        }
+        if (!closing && (publishing || drafts.dirty())) { event.preventDefault(); event.returnValue = ''; }
     });
-
-    paintTokenState();
-    paintHero();
-    paintHeader();
-    renderContentImagesList();
-    syncScheduleUi();
-    goToStep(0, false);
-
-    // ═══════════════════════════════════════════════════════
-    // Content conversion (client-side .txt → HTML)
-    // ═══════════════════════════════════════════════════════
-
-    function escapeHtml(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    // **bold**, *italic* and [link text](https://example.com): the same formatter the build uses
-    // (blog-module/inline-markup.js), so the preview matches the published article.
-    function inlineFormat(text) {
-        return window.F1S_INLINE.formatInline(text);
-    }
-
-    // ── Embed detection ──────────────────────────────────
-    // Mirrors blog-module/build/shared.js → CONFIG.IFRAME_WHITELIST
-    var IFRAME_WHITELIST = [
-        'georgiosbalatzis.github.io',
-        'f1-stories.gr',
-        'www.f1-stories.gr',
-        'facebook.com',
-        'www.facebook.com',
-        'www.youtube.com',
-        'youtube.com',
-        'open.spotify.com',
-        'player.vimeo.com',
-        'codepen.io',
-        'datawrapper.dwcdn.net',
-        'sketchfab.com',
-        'www.sketchfab.com'
-    ];
-
-    function isIframeUrlWhitelisted(urlStr) {
-        try {
-            var host = new URL(urlStr).hostname;
-            return IFRAME_WHITELIST.some(function (d) {
-                return host === d || host.endsWith('.' + d);
-            });
-        } catch (e) { return false; }
-    }
-
-    function buildIframeBlockedHtml(url) {
-        return '<div class="embed-error" style="padding:0.75rem 1rem;border:1px solid #ef4444;border-radius:8px;color:#ef4444;font-size:0.85rem;">' +
-            '<strong>Iframe blocked:</strong> ' + escapeHtml(url) + ' is not in the allowed domain list.' +
-            '</div>';
-    }
-
-    // IFRAME:url[|key=value&key=value] line marker (mirrors embed-render.js)
-    function buildIframeMarkerHtml(rest) {
-        var pipeIdx = rest.indexOf('|');
-        var url = (pipeIdx > -1 ? rest.substring(0, pipeIdx) : rest).trim();
-        var attrStr = pipeIdx > -1 ? rest.substring(pipeIdx + 1).trim() : '';
-        if (!isIframeUrlWhitelisted(url)) return buildIframeBlockedHtml(url);
-
-        var attrs = { height: '650', loading: 'lazy', style: 'border-radius:12px;border:1px solid #E1060033;background:#15151e' };
-        if (attrStr) {
-            attrStr.split('&').forEach(function (pair) {
-                var eq = pair.indexOf('=');
-                if (eq <= 0) return;
-                var key = pair.substring(0, eq).trim();
-                var value = pair.substring(eq + 1).trim();
-                if (key) attrs[key] = value;
-            });
-        }
-        return '<div class="embed-container embed-iframe">' +
-            '<iframe src="' + escapeHtml(url) + '" width="100%" height="' + escapeHtml(attrs.height) + '" ' +
-            'frameborder="0" style="' + escapeHtml(attrs.style) + '" allowfullscreen loading="' + escapeHtml(attrs.loading) + '">' +
-            '</iframe></div>';
-    }
-
-    // Wrap a raw <iframe>...</iframe> block (whitelist-checked) in the embed container.
-    function wrapRawIframeHtml(block, src) {
-        if (!isIframeUrlWhitelisted(src)) return buildIframeBlockedHtml(src);
-        return '<div class="embed-container embed-iframe">\n' + block + '\n</div>';
-    }
-
-    function getYouTubeId(url) {
-        try {
-            var u = new URL(url);
-            var host = u.hostname.replace(/^(www|m)\./, '');
-            if (host === 'youtube.com' && u.pathname === '/watch') return u.searchParams.get('v');
-            if (host === 'youtu.be') return u.pathname.split('/')[1];
-            if (host === 'youtube.com' && /^\/(shorts|live|embed)\//.test(u.pathname)) return u.pathname.split('/')[2];
-        } catch (e) {}
-        return null;
-    }
-
-    function isXUrl(url) {
-        try {
-            var host = new URL(url).hostname.replace('www.', '').replace('mobile.', '');
-            return (host === 'x.com' || host === 'twitter.com') && /\/status\/\d+/.test(url);
-        } catch (e) { return false; }
-    }
-
-    function isInstagramUrl(url) {
-        try {
-            var host = new URL(url).hostname.replace('www.', '');
-            return host === 'instagram.com' && /^\/(p|reel|reels|tv)\//.test(new URL(url).pathname);
-        } catch (e) { return false; }
-    }
-
-    function isThreadsUrl(url) {
-        try {
-            var host = new URL(url).hostname.replace('www.', '');
-            return (host === 'threads.net' || host === 'threads.com');
-        } catch (e) { return false; }
-    }
-
-    function isFacebookUrl(url) {
-        try {
-            var host = new URL(url).hostname.replace('www.', '').replace('m.', '').replace('mbasic.', '');
-            return host === 'facebook.com' || host === 'fb.watch';
-        } catch (e) { return false; }
-    }
-
-    function buildEmbed(url) {
-        var ytId = getYouTubeId(url);
-        if (ytId) {
-            return '<div class="youtube-embed-container">' +
-                '<iframe src="https://www.youtube.com/embed/' + escapeHtml(ytId) + '" ' +
-                'title="YouTube video player" frameborder="0" ' +
-                'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
-                'allowfullscreen></iframe>' +
-                '<div class="video-caption">Video: YouTube</div></div>';
-        }
-        if (isXUrl(url)) {
-            return '<div class="social-embed social-embed-x">' +
-                '<blockquote class="twitter-tweet" data-theme="dark">' +
-                '<a href="' + escapeHtml(url) + '">View this post on X</a>' +
-                '</blockquote></div>';
-        }
-        if (isInstagramUrl(url)) {
-            return '<div class="social-embed social-embed-instagram">' +
-                '<blockquote class="instagram-media" data-instgrm-permalink="' + escapeHtml(url) + '" data-instgrm-version="14">' +
-                '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">View this post on Instagram</a>' +
-                '</blockquote></div>';
-        }
-        if (isThreadsUrl(url)) {
-            return '<div class="social-embed social-embed-threads">' +
-                '<blockquote class="text-post-media" data-text-post-permalink="' + escapeHtml(url) + '" data-text-post-version="0">' +
-                '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">View this post on Threads</a>' +
-                '</blockquote></div>';
-        }
-        if (isFacebookUrl(url)) {
-            var kind = /video|reel|watch/.test(url) ? 'fb-video' : 'fb-post';
-            return '<div class="social-embed social-embed-facebook">' +
-                '<div class="' + kind + '" data-href="' + escapeHtml(url) + '" data-width="500" data-show-text="true"></div></div>';
-        }
-        return null;
-    }
-
-    function isStandaloneUrl(line) {
-        return /^https?:\/\/\S+$/.test(line.trim());
-    }
-
-    function buildPreviewImageTag(src, alt, meta, options) {
-        var opts = options || {};
-        var attrs = [
-            'class="' + (opts.className || 'article-content-img') + '"',
-            'src="' + escapeHtml(src) + '"',
-            'alt="' + escapeHtml(alt || '') + '"',
-            'decoding="' + (opts.decoding || 'async') + '"',
-            'width="' + String(meta && meta.width ? meta.width : (opts.fallbackWidth || 1600)) + '"',
-            'height="' + String(meta && meta.height ? meta.height : (opts.fallbackHeight || 900)) + '"'
-        ];
-        if (opts.loading) attrs.push('loading="' + opts.loading + '"');
-        if (opts.dataFullSrc !== false) attrs.push('data-full-src="' + escapeHtml(src) + '"');
-        return '<img ' + attrs.join(' ') + '>';
-    }
-
-    function parsePipeTableRow(line) {
-        var trimmed = String(line || '').trim();
-        if (trimmed.indexOf('|') === -1) return null;
-        var normalized = trimmed.replace(/^\|\s*/, '').replace(/\s*\|$/, '');
-        var cells = normalized.split('|').map(function (cell) { return cell.trim(); });
-        return cells.length >= 2 ? cells : null;
-    }
-
-    function isPipeTableDivider(line, expectedCols) {
-        var cells = parsePipeTableRow(line);
-        if (!cells || cells.length !== expectedCols) return false;
-        return cells.every(function (cell) {
-            return /^:?-{3,}:?$/.test(cell.replace(/\s+/g, ''));
-        });
-    }
-
-    function readPipeTable(lines, startIndex) {
-        var headers = parsePipeTableRow(lines[startIndex]);
-        if (!headers) return null;
-        if (startIndex + 1 >= lines.length || !isPipeTableDivider(lines[startIndex + 1], headers.length)) return null;
-
-        var rows = [];
-        var i = startIndex + 2;
-        while (i < lines.length) {
-            var rawLine = lines[i];
-            var trimmed = rawLine.trim();
-            if (!trimmed) break;
-
-            var row = parsePipeTableRow(rawLine);
-            if (!row || isPipeTableDivider(rawLine, headers.length)) break;
-            rows.push(row);
-            i++;
-        }
-
-        return {
-            nextIndex: i - 1,
-            headers: headers.map(inlineFormat),
-            rows: rows.map(function (row) { return row.map(inlineFormat); })
-        };
-    }
-
-    function plainTextFromHtml(html) {
-        return String(html || '').replace(/<[^>]+>/g, '').trim();
-    }
-
-    function buildPreviewTable(headers, rows, tableId) {
-        var html = '<div class="table-responsive-container docx-table-container">' +
-            '<div class="table-container scroll-view active" id="' + tableId + '-scroll">' +
-                '<div class="table-scroll-indicator">' +
-                    '<span>Σύρετε για περισσότερα</span>' +
-                    '<svg class="icon" aria-hidden="true"><use href="#fa-arrows-left-right"/></svg>' +
-                '</div>' +
-                '<table class="responsive-table docx-table">' +
-                    '<thead><tr>';
-
-        headers.forEach(function (header) {
-            html += '<th>' + header + '</th>';
-        });
-
-        html += '</tr></thead>';
-        if (rows.length) {
-            html += '<tbody>';
-            rows.forEach(function (row) {
-                html += '<tr>';
-                headers.forEach(function (header, index) {
-                    var cell = row[index] || '';
-                    html += '<td data-label="' + escapeHtml(plainTextFromHtml(header)) + '">' + cell + '</td>';
-                });
-                html += '</tr>';
-            });
-            html += '</tbody>';
-        }
-
-        html += '</table></div></div>';
-        return html;
-    }
-
-    // ── Main converter ───────────────────────────────────
-    function convertContent(raw) {
-        // Pre-pass: extract raw multi-line <iframe ...></iframe> blocks into
-        // single-line tokens so the line-based parser below treats each as one
-        // standalone embed (mirrors blog-module/build/embeds.js raw-iframe path).
-        var iframePlaceholders = {};
-        var iframeCounter = 0;
-        raw = String(raw || '').replace(
-            /<iframe\s[^>]*src=["']([^"']+)["'][^>]*>[\s\S]*?<\/iframe>/gi,
-            function (block, src) {
-                var token = '__F1S_RAW_IFRAME_' + (iframeCounter++) + '__';
-                iframePlaceholders[token] = { block: block, src: src };
-                return '\n' + token + '\n';
-            }
-        );
-
-        var lines = raw.split('\n');
-        var html = '';
-        var currentParagraph = '';
-        var leadNextParagraph = false;
-        var inList = false;
-        var imageIdx = 0; // sequential marker counter, mirrors processor
-        var tableIdx = 0;
-
-        function flushParagraph() {
-            if (currentParagraph) {
-                html += '<p' + (leadNextParagraph ? ' class="article-lead"' : '') + '>' + inlineFormat(currentParagraph) + '</p>\n';
-                currentParagraph = '';
-                leadNextParagraph = false;
-            }
-        }
-
-        for (var i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            var trimmed = line.trim();
-
-            if (trimmed === '') {
-                flushParagraph();
-                if (inList) { html += '</ul>\n'; inList = false; }
-                continue;
-            }
-
-            if (trimmed === '[lead]') {
-                flushParagraph();
-                leadNextParagraph = true;
-                continue;
-            }
-
-            var table = readPipeTable(lines, i);
-            if (table) {
-                flushParagraph();
-                if (inList) { html += '</ul>\n'; inList = false; }
-                html += buildPreviewTable(table.headers, table.rows, 'preview-txt-table-' + tableIdx++) + '\n';
-                i = table.nextIndex;
-                continue;
-            }
-
-            // Headings
-            if (trimmed.startsWith('## ')) {
-                flushParagraph();
-                if (inList) { html += '</ul>\n'; inList = false; }
-                html += '<h3>' + inlineFormat(trimmed.substring(3)) + '</h3>\n';
-                continue;
-            }
-            if (trimmed.startsWith('# ')) {
-                flushParagraph();
-                if (inList) { html += '</ul>\n'; inList = false; }
-                html += '<h2>' + inlineFormat(trimmed.substring(2)) + '</h2>\n';
-                continue;
-            }
-
-            // List items
-            if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-                flushParagraph();
-                if (!inList) { html += '<ul>\n'; inList = true; }
-                html += '<li>' + inlineFormat(trimmed.substring(2)) + '</li>\n';
-                continue;
-            }
-            if (inList) { html += '</ul>\n'; inList = false; }
-
-            // Image marker → pull next attached content image
-            if (trimmed === '[img-instert-tag]') {
-                flushParagraph();
-                var item = contentImageFiles[imageIdx];
-                imageIdx++;
-                if (item) {
-                    var num = imageIdx + 2; // 3, 4, 5 …
-                    html += '<figure class="article-figure">' +
-                        buildPreviewImageTag(item.url, 'Image ' + num, item, { loading: 'lazy' }) +
-                        '<figcaption>Image ' + num + '</figcaption>' +
-                        '</figure>\n';
-                } else {
-                    html += '<div style="padding:0.6rem 0.9rem;border:1px dashed #f59e0b;border-radius:6px;color:#f59e0b;font-size:0.82rem;">' +
-                        '[img-instert-tag] #' + imageIdx + ' — no attached image for this marker (would be empty in the published article)' +
-                        '</div>\n';
-                }
-                continue;
-            }
-
-            // Raw <iframe> placeholder (substituted by the pre-pass above)
-            if (iframePlaceholders[trimmed]) {
-                flushParagraph();
-                var rawInfo = iframePlaceholders[trimmed];
-                html += wrapRawIframeHtml(rawInfo.block, rawInfo.src) + '\n';
-                continue;
-            }
-
-            // IFRAME:url[|key=value&...] line marker (whitelist-checked)
-            var iframeTagMatch = trimmed.match(/^IFRAME:(https?:\/\/.+)$/i);
-            if (iframeTagMatch) {
-                flushParagraph();
-                html += buildIframeMarkerHtml(iframeTagMatch[1].trim()) + '\n';
-                continue;
-            }
-
-            // Standalone URL → embed
-            if (isStandaloneUrl(trimmed)) {
-                flushParagraph();
-                var embed = buildEmbed(trimmed);
-                if (embed) { html += embed + '\n'; continue; }
-            }
-
-            // Regular text → accumulate paragraph
-            currentParagraph = currentParagraph ? currentParagraph + ' ' + trimmed : trimmed;
-        }
-
-        flushParagraph();
-        if (inList) html += '</ul>\n';
-
-        // Post-pass: merge consecutive <figure> into a carousel (mirrors
-        // blog-processor.js mergeConsecutiveFigures).
-        html = mergeConsecutiveFiguresInHtml(html);
-
-        // Orphan content images (attached but no marker for them) → appended
-        // as a carousel at the end.
-        var orphansStart = imageIdx;
-        if (orphansStart < contentImageFiles.length) {
-            var orphanHtmls = [];
-            for (var o = orphansStart; o < contentImageFiles.length; o++) {
-                var item = contentImageFiles[o];
-                var num = o + 3;
-                orphanHtmls.push(
-                    '<figure class="article-figure">' +
-                    buildPreviewImageTag(item.url, 'Image ' + num, item, { loading: 'lazy' }) +
-                    '</figure>'
-                );
-            }
-            if (orphanHtmls.length === 1) {
-                html += '\n' + orphanHtmls[0];
-            } else {
-                html += '\n' + buildPreviewCarousel(orphanHtmls);
-            }
-        }
-
-        return html;
-    }
-
-    function buildPreviewCarousel(figureHtmls) {
-        var slides = '';
-        var thumbs = '';
-        for (var i = 0; i < figureHtmls.length; i++) {
-            var imgMatch = figureHtmls[i].match(/<img[^>]*src="([^"]+)"[^>]*>/);
-            var src = imgMatch ? imgMatch[1] : '';
-            var widthMatch = figureHtmls[i].match(/\bwidth="(\d+)"/i);
-            var heightMatch = figureHtmls[i].match(/\bheight="(\d+)"/i);
-            var width = widthMatch ? parseInt(widthMatch[1], 10) : 1600;
-            var height = heightMatch ? parseInt(heightMatch[1], 10) : 900;
-            var active = i === 0 ? ' active' : '';
-            slides +=
-                '<div class="gallery-slide' + active + '" data-index="' + i + '">' +
-                    buildPreviewImageTag(src, 'Gallery image ' + (i + 1), { width: width, height: height }, { loading: 'lazy' }) +
-                '</div>';
-            thumbs +=
-                '<button class="gallery-thumb' + active + '" data-index="' + i + '" aria-label="Show image ' + (i + 1) + '">' +
-                    '<img src="' + src + '" alt="" loading="lazy" decoding="async" width="' + width + '" height="' + height + '">' +
-                '</button>';
-        }
-        var total = figureHtmls.length;
-        return '<div class="gallery-carousel" role="region" aria-label="Image Gallery" aria-roledescription="carousel">' +
-            '<div class="gallery-carousel-stage">' +
-                '<div class="gallery-carousel-slides">' + slides + '</div>' +
-                '<button class="gallery-carousel-prev" aria-label="Previous image" disabled><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>' +
-                '<button class="gallery-carousel-next" aria-label="Next image"' + (total <= 1 ? ' disabled' : '') + '><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>' +
-                '<div class="gallery-carousel-counter">1 / ' + total + '</div>' +
-            '</div>' +
-            '<div class="gallery-carousel-thumbs">' + thumbs + '</div>' +
-        '</div>';
-    }
-
-    function mergeConsecutiveFiguresInHtml(html) {
-        var figureRe = /<figure class="article-figure">([\s\S]*?)<\/figure>/g;
-        var figures = [];
-        var m;
-        while ((m = figureRe.exec(html)) !== null) {
-            figures.push({ start: m.index, end: m.index + m[0].length, html: m[0] });
-        }
-        if (figures.length < 2) return html;
-
-        var gapRe = /^(?:\s|<p>\s*<\/p>|<\/p>\s*<p>)*$/;
-        var groups = [[figures[0]]];
-        for (var i = 1; i < figures.length; i++) {
-            var gap = html.substring(figures[i - 1].end, figures[i].start);
-            if (gapRe.test(gap)) {
-                groups[groups.length - 1].push(figures[i]);
-            } else {
-                groups.push([figures[i]]);
-            }
-        }
-
-        var replacements = [];
-        for (var g = 0; g < groups.length; g++) {
-            if (groups[g].length < 2) continue;
-            var carousel = buildPreviewCarousel(groups[g].map(function (f) { return f.html; }));
-            replacements.push({
-                start: groups[g][0].start,
-                end:   groups[g][groups[g].length - 1].end,
-                html:  carousel
-            });
-        }
-        if (!replacements.length) return html;
-
-        replacements.sort(function (a, b) { return b.start - a.start; });
-        for (var r = 0; r < replacements.length; r++) {
-            html = html.substring(0, replacements[r].start) + replacements[r].html + html.substring(replacements[r].end);
-        }
-        return html;
-    }
-
-    // ── Social embed script loading ──────────────────────
-    function loadScript(src, attrs) {
-        return new Promise(function (resolve, reject) {
-            if (document.querySelector('script[src*="' + src.split('/').pop() + '"]')) {
-                resolve();
-                return;
-            }
-            var s = document.createElement('script');
-            s.src = src;
-            s.async = true;
-            if (attrs) Object.keys(attrs).forEach(function (k) { s.setAttribute(k, attrs[k]); });
-            s.onload = resolve;
-            s.onerror = reject;
-            document.body.appendChild(s);
-        });
-    }
-
-    function processSocialEmbeds(container) {
-        // X / Twitter
-        var tweets = container.querySelectorAll('blockquote.twitter-tweet');
-        if (tweets.length) {
-            var theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-            tweets.forEach(function (el) { el.setAttribute('data-theme', theme); });
-            if (window.twttr && window.twttr.widgets) {
-                window.twttr.widgets.load(container);
-            } else {
-                loadScript('https://platform.twitter.com/widgets.js', { charset: 'utf-8' })
-                    .then(function () { if (window.twttr && window.twttr.widgets) window.twttr.widgets.load(container); });
-            }
-        }
-
-        // Instagram
-        var instagramReady = Promise.resolve();
-        if (container.querySelectorAll('blockquote.instagram-media').length) {
-            if (window.instgrm && window.instgrm.Embeds) {
-                window.instgrm.Embeds.process();
-            } else {
-                instagramReady = loadScript('https://www.instagram.com/embed.js')
-                    .then(function () { if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); })
-                    .catch(function () {});
-            }
-        }
-
-        // Threads
-        if (container.querySelectorAll('blockquote.text-post-media').length) {
-            loadScript('https://www.threads.net/embed.js');
-        }
-
-        // Facebook
-        var fbEmbeds = container.querySelectorAll('.fb-post, .fb-video');
-        if (fbEmbeds.length) {
-            function ensureFbRoot() {
-                if (!document.getElementById('fb-root')) {
-                    var r = document.createElement('div');
-                    r.id = 'fb-root';
-                    document.body.prepend(r);
-                }
-            }
-            ensureFbRoot();
-            if (window.FB && window.FB.XFBML) {
-                window.FB.XFBML.parse(container);
-            } else {
-                window.fbAsyncInit = function () { window.FB.XFBML.parse(container); };
-                // Instagram's embed.js does nothing once the Facebook SDK is on the page.
-                instagramReady.then(function () {
-                    loadScript('https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0', { crossorigin: 'anonymous' });
-                });
-            }
-        }
-    }
-
-    // ── Lightbox for preview images ──────────────────────
-    // (Reuses the same lightbox pattern from article-script.js)
-    document.addEventListener('click', function (e) {
-        var img = e.target.closest && e.target.closest('.article-content-img');
-        if (!img) {
-            var header = e.target.closest && e.target.closest('.article-header');
-            if (header && !e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) {
-                img = header.querySelector('.article-header-img');
-            }
-        }
-        if (!img) return;
-        // Simple fullscreen view
-        var overlay = document.createElement('div');
-        overlay.className = 'lb-overlay open';
-        var naturalWidth = img.naturalWidth || img.width || 1600;
-        var naturalHeight = img.naturalHeight || img.height || 900;
-        var closeBtn = document.createElement('button');
-        closeBtn.className = 'lb-close';
-        closeBtn.type = 'button';
-        closeBtn.setAttribute('aria-label', 'Close');
-        closeBtn.appendChild(authorDom.createSvgIcon('fa-times'));
-        var imageWrap = document.createElement('div');
-        imageWrap.className = 'lb-img-wrap';
-        var image = document.createElement('img');
-        image.className = 'lb-img';
-        image.src = img.dataset.fullSrc || img.src;
-        image.alt = '';
-        image.decoding = 'async';
-        image.width = naturalWidth;
-        image.height = naturalHeight;
-        imageWrap.appendChild(image);
-        overlay.append(closeBtn, imageWrap);
-        document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
-        function close() { overlay.remove(); document.body.style.overflow = ''; }
-        closeBtn.addEventListener('click', close);
-        overlay.addEventListener('click', function (ev) { if (ev.target === overlay) close(); });
-        document.addEventListener('keydown', function handler(ev) {
-            if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', handler); }
-        });
-    });
+    new MutationObserver(function () {
+        var doc = byId('gen-article-preview').contentDocument;
+        if (doc && doc.documentElement) doc.documentElement.dataset.theme = document.documentElement.dataset.theme || 'dark';
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();

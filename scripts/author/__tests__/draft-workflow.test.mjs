@@ -1,0 +1,406 @@
+import assert from 'node:assert/strict';
+import { test, before, after } from 'node:test';
+import fs from 'node:fs';
+import path from 'node:path';
+import http from 'node:http';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright-core';
+import { Launcher } from 'chrome-launcher';
+import os from 'node:os';
+import { buildAuthorPreview } from '../../build/author-preview.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+let browser, server, origin, scratch;
+before(async () => {
+    scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-draft-tests-'));
+    await buildAuthorPreview(root, path.relative(root, path.join(scratch, 'preview.js')));
+    server = http.createServer((request, response) => {
+        let file = path.resolve(root, '.' + new URL(request.url, 'http://localhost').pathname);
+        if (file === path.join(root, 'scripts/author/article-preview.min.js')) file = path.join(scratch, 'preview.js');
+        else if (file.includes('/scripts/author/') || !fs.existsSync(file)) file = file.replace(/\.min\.(js|css)$/, '.$1');
+        if ((!file.startsWith(root + '/') && !file.startsWith(scratch + '/')) || !fs.existsSync(file) || !fs.statSync(file).isFile()) { response.writeHead(404).end(); return; }
+        const type = { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.webp': 'image/webp', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' }[path.extname(file)] || 'application/octet-stream';
+        response.writeHead(200, { 'Content-Type': type }); fs.createReadStream(file).pipe(response);
+    });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    origin = 'http://127.0.0.1:' + server.address().port;
+    browser = await chromium.launch({ executablePath: Launcher.getInstallations()[0], headless: true });
+});
+after(async () => { await browser?.close(); if (server) await new Promise(resolve => server.close(resolve)); fs.rmSync(scratch, { recursive: true, force: true }); });
+
+async function pageFor(t) {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    t.after(() => context.close());
+    const page = await context.newPage();
+    page.setDefaultTimeout(7000);
+    await context.route('**/*', route => route.request().url().startsWith(origin) || route.request().url().startsWith('blob:') ? route.continue() : route.abort());
+    await page.goto(origin + '/generate.html');
+    await page.waitForFunction(() => window.F1S_LOCAL_DRAFTS && document.querySelector('[name="gen-author"]'));
+    return page;
+}
+async function setText(page, title, text) {
+    await page.evaluate(({ title, text }) => {
+        for (const [id, value] of [['gen-title', title], ['gen-content', text]]) {
+            const input = document.getElementById(id); input.value = value; input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, { title, text });
+}
+async function step(page, number) { await page.locator(`.gb-step[data-step="${number}"]`).click(); }
+async function saved(page) { await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε τοπικά')); }
+
+test('IndexedDB CRUD: multiple incomplete/Greek drafts, Blob order, update identity and refresh persistence', async t => {
+    const page = await pageFor(t);
+    const result = await page.evaluate(async () => {
+        const api = window.F1S_LOCAL_DRAFTS;
+        const input = { title: '', author: 'Γιάννης', category: '', tags: 'ρυθμός, Σιγκαπούρη', text: 'Καλημέρα!\n\nΤόνοι: ά έ ή ί ό ύ ώ — α\u0301.',
+            metadata: { sources: 'https://example.com/verified', token: 'dummy-secret' }, token: 'dummy-secret',
+            hero: { blob: new Blob(['hero'], { type: 'image/webp' }), name: 'κεντρική.webp' },
+            images: ['δεύτερη', 'πρώτη'].map(name => ({ name, blob: new Blob([name]) })) };
+        const a = await api.save(input), b = await api.save({ text: '' });
+        const update = await api.save({ ...input, title: 'Νέος τίτλος' }, a.id);
+        const reopened = await api.get(a.id);
+        return { id: a.id, second: b.id, created: a.createdAt, update, text: reopened.text,
+            blobs: await Promise.all([reopened.hero.blob, ...reopened.images.map(image => image.blob)].map(blob => blob.text())),
+            names: reopened.images.map(image => image.name), count: (await api.list()).length };
+    });
+    assert.equal(result.update.id, result.id); assert.equal(result.update.createdAt, result.created);
+    assert.equal(result.count, 2); assert.equal(result.text, 'Καλημέρα!\n\nΤόνοι: ά έ ή ί ό ύ ώ — α\u0301.');
+    assert.deepEqual(result.blobs, ['hero', 'δεύτερη', 'πρώτη']); assert.deepEqual(result.names, ['δεύτερη', 'πρώτη']);
+    assert.ok(!JSON.stringify(result.update).includes('dummy-secret'));
+    await page.reload();
+    assert.equal(await page.evaluate(async id => (await window.F1S_LOCAL_DRAFTS.get(id)).title, result.id), 'Νέος τίτλος');
+    await page.evaluate(async id => window.F1S_LOCAL_DRAFTS.remove(id), result.second);
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).length), 1);
+});
+
+test('storage quota, aborted transactions, corrupt records and database/unsupported failures do not report success', async t => {
+    const page = await pageFor(t);
+    const codes = await page.evaluate(async () => {
+        const api = window.F1S_LOCAL_DRAFTS, results = [];
+        const put = IDBObjectStore.prototype.put;
+        IDBObjectStore.prototype.put = function () { throw new DOMException('Full', 'QuotaExceededError'); };
+        try { await api.save({ text: 'κείμενο' }); } catch (error) { results.push(error.code); }
+        IDBObjectStore.prototype.put = function (value) { const request = put.call(this, value); this.transaction.abort(); return request; };
+        try { await api.save({ text: 'κείμενο' }); } catch (error) { results.push(error.code); }
+        IDBObjectStore.prototype.put = put;
+        results.push((await api.list()).length);
+        await new Promise((resolve, reject) => {
+            const request = indexedDB.open('f1stories-author-drafts', 1);
+            request.onsuccess = () => { const db = request.result, tx = db.transaction('drafts', 'readwrite'); tx.objectStore('drafts').put({ id: 'broken', title: '<img onerror=alert(1)>' }); tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject; };
+        });
+        try { await api.get('broken'); } catch (error) { results.push(error.code); }
+        results.push((await api.list())[0].corrupt);
+        const open = indexedDB.open;
+        indexedDB.open = () => { throw new DOMException('Unavailable', 'SecurityError'); };
+        try { await api.list(); } catch (error) { results.push(error.code); }
+        indexedDB.open = open;
+        Object.defineProperty(window, 'indexedDB', { value: undefined, configurable: true });
+        try { await api.list(); } catch (error) { results.push(error.code); }
+        return results;
+    });
+    assert.deepEqual(codes, ['quota', 'storage', 0, 'corrupt', true, 'storage', 'unsupported']);
+});
+
+test('save/reopen/edit/delete restores every editor image and never makes GitHub requests', async t => {
+    const page = await pageFor(t);
+    const requests = [];
+    await page.route('https://api.github.com/**', route => { requests.push(route.request().method()); return route.fulfill({ json: {} }); });
+    await page.evaluate(() => sessionStorage.setItem('f1stories-gh-token', 'dummy-token-for-save-isolation'));
+    await page.reload();
+    assert.match(await page.locator('#gen-token-state').textContent(), /ενεργό/);
+    await setText(page, 'Πρόχειρο με εικόνες', '# Ενότητα\n\n[img-instert-tag]\n\n[img-instert-tag]\n\nΤέλος.');
+    await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
+    await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
+    await page.locator('#gen-hero-input').setInputFiles(path.join(root, 'blog-module/blog-entries/20261010J/1.webp'));
+    await page.locator('#gen-header-input').setInputFiles(path.join(root, 'blog-module/blog-entries/20261020W/1.webp'));
+    await page.locator('#gen-content-input').setInputFiles(['3', '4'].map(slot => path.join(root, `blog-module/blog-entries/20261020W/${slot}.webp`)));
+    await page.waitForFunction(() => document.querySelectorAll('#gen-content-images-list li').length === 2 && document.querySelector('#gen-content-images-list img'));
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    const id = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].id);
+    assert.ok(!(await page.evaluate(async () => JSON.stringify(await window.F1S_LOCAL_DRAFTS.list()))).includes('dummy-token-for-save-isolation'));
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list button').filter({ hasText: 'Άνοιγμα' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.locator('#gen-title').inputValue(), 'Πρόχειρο με εικόνες');
+    assert.equal(await page.locator('[name="gen-author"]:checked').inputValue(), 'Giannis Poulikidis');
+    assert.equal(await page.locator('[name="gen-category"]:checked').inputValue(), 'Analysis');
+    assert.equal(await page.locator('#gen-content-images-list img').count(), 2);
+    assert.equal(await page.locator('#gen-hero-input').evaluate(input => input.files[0].size), fs.statSync(path.join(root, 'blog-module/blog-entries/20261010J/1.webp')).size);
+    await setText(page, 'Διορθωμένο', 'Συνέχεια με ακριβείς τόνους.');
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    assert.deepEqual(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).map(value => value.id)), [id]);
+    await setText(page, 'Μη αποθηκευμένο', 'Αλλαγές'); await page.locator('#gen-new-draft').click();
+    assert.equal(await page.getByRole('dialog').count(), 1);
+    await page.getByRole('button', { name: 'Ακύρωση', exact: true }).click();
+    assert.equal(await page.locator('#gen-title').inputValue(), 'Μη αποθηκευμένο');
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Διαγραφή: Διορθωμένο', exact: true }).click();
+    assert.equal(await page.getByRole('dialog').count(), 1);
+    await page.getByRole('dialog').getByRole('button', { name: 'Διαγραφή', exact: true }).click();
+    await page.waitForFunction(async () => (await window.F1S_LOCAL_DRAFTS.list()).length === 0);
+    assert.deepEqual(requests, []);
+});
+
+test('article scheduling is absent and immediate publishing still uses the trusted workflow', () => {
+    assert.equal(fs.existsSync(path.join(root, '.github/workflows/scheduled-publish.yml')), false);
+    for (const file of ['generate.html', 'scripts/author/generate-page.js', 'scripts/author/github-client.js', 'scripts/author/housekeeping-page.js']) {
+        assert.doesNotMatch(fs.readFileSync(path.join(root, file), 'utf8'), /author\/scheduled|f1s-publish-at|scheduledDate|parsePublishAt|publishAtMarker|gen-schedule/);
+    }
+    const workflow = fs.readFileSync(path.join(root, '.github/workflows/auto-publish-author-pr.yml'), 'utf8');
+    assert.match(workflow, /author\/blog\/\*\*/);
+    assert.match(workflow, /head_sha/);
+    assert.match(workflow, /--match-head-commit/);
+    assert.match(workflow, /Site Quality/);
+});
+
+test('switching drafts releases old image URLs and ignores a late image decode', async t => {
+    const page = await pageFor(t);
+    await page.evaluate(() => {
+        const NativeImage = window.Image;
+        window.__pendingImageLoads = [];
+        window.Image = function () {
+            const image = new NativeImage();
+            Object.defineProperty(image, 'onload', { set(callback) { image.addEventListener('load', () => window.__pendingImageLoads.push(() => callback.call(image))); } });
+            return image;
+        };
+        const revoke = URL.revokeObjectURL.bind(URL);
+        window.__revokedImageURLs = [];
+        URL.revokeObjectURL = url => { window.__revokedImageURLs.push(url); revoke(url); };
+    });
+    await page.locator('#gen-hero-input').setInputFiles(path.join(root, 'blog-module/blog-entries/20261010J/1.webp'));
+    await page.waitForFunction(() => window.__pendingImageLoads.length === 1);
+    await page.locator('#gen-new-draft').click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση', exact: true }).click();
+    await page.evaluate(async () => { window.__pendingImageLoads.forEach(finish => finish()); await new Promise(resolve => setTimeout(resolve, 0)); });
+    assert.equal(await page.locator('#gen-hero-input').evaluate(input => input.files.length), 0);
+    assert.equal(await page.locator('#gen-hero-thumb img').count(), 0);
+    assert.equal(await page.evaluate(() => window.__revokedImageURLs.length), 1);
+});
+
+test('restored images remain saveable when a browser cannot assign file inputs', async t => {
+    const page = await pageFor(t);
+    const expected = await page.evaluate(async origin => {
+        const blob = await (await fetch(origin + '/blog-module/blog-entries/20261010J/1.webp')).blob();
+        await window.F1S_LOCAL_DRAFTS.save({ title: 'Δοκιμή αποκατάστασης', text: 'Κείμενο.', author: 'Giannis Poulikidis', category: 'Betting', hero: { blob, name: 'hero.webp' }, editor: { step: 4 } });
+        window.DataTransfer = function () { throw new Error('File input assignment is unavailable'); };
+        return blob.size;
+    }, origin);
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.locator('#gen-hero-input').evaluate(input => input.files.length), 0);
+    assert.equal(await page.locator('#gen-hero-thumb img').count(), 1);
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].hero.blob.size), expected);
+});
+
+test('edits made during a save remain visibly unsaved and update the same draft on the next save', async t => {
+    const page = await pageFor(t);
+    await page.evaluate(() => {
+        const save = window.F1S_LOCAL_DRAFTS.save;
+        let first = true;
+        window.F1S_LOCAL_DRAFTS.save = async (...args) => {
+            const result = await save(...args);
+            if (first) { first = false; await new Promise(resolve => window.__finishDraftSave = resolve); }
+            return result;
+        };
+    });
+    await setText(page, 'Αρχικός τίτλος', 'Κείμενο πριν από την αποθήκευση.');
+    await step(page, 4); await page.locator('#gen-save-draft').click();
+    await page.waitForFunction(() => Boolean(window.__finishDraftSave));
+    await setText(page, 'Νεότερος τίτλος', 'Κείμενο που γράφτηκε ενώ αποθηκευόταν.');
+    await page.evaluate(() => window.__finishDraftSave());
+    await saved(page);
+    assert.match(await page.locator('#gen-draft-status').textContent(), /νεότερες μη αποθηκευμένες αλλαγές/);
+    const before = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0]);
+    assert.equal(before.title, 'Αρχικός τίτλος');
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    const after = await page.evaluate(async () => await window.F1S_LOCAL_DRAFTS.list());
+    assert.equal(after.length, 1); assert.equal(after[0].id, before.id); assert.equal(after[0].title, 'Νεότερος τίτλος');
+});
+
+test('only explicit publish from a saved draft retains author/blog PR behavior and keeps the draft', async t => {
+    const page = await pageFor(t);
+    const calls = [];
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), url = new URL(request.url()), suffix = url.pathname.replace('/repos/georgiosbalatzis/f1StoriesPage', '');
+        calls.push({ suffix, method: request.method(), body: request.postDataJSON() });
+        let data = {};
+        if (suffix.startsWith('/pulls?') || suffix === '/pulls' && request.method() === 'GET') data = [];
+        else if (suffix.startsWith('/contents/')) return route.fulfill({ status: 404, json: { message: 'Not Found' } });
+        else if (suffix === '/git/ref/heads/main') data = { object: { sha: 'base-sha' } };
+        else if (suffix === '/git/commits/base-sha') data = { tree: { sha: 'tree-sha' } };
+        else if (suffix === '/pulls') data = { number: 123, html_url: 'https://github.com/example/dummy/pull/123' };
+        else data = { sha: 'mock-sha' };
+        await route.fulfill({ json: data });
+    });
+    await setText(page, 'Άρθρο από πρόχειρο', 'Κείμενο για άμεση δημοσίευση.');
+    await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
+    await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    assert.deepEqual(calls, []);
+    await page.locator('#gen-publish-btn').click();
+    await page.getByRole('dialog').getByRole('textbox').fill('dummy-token-only-for-tests');
+    await page.getByRole('dialog').getByRole('button', { name: 'OK', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    await page.waitForFunction(() => !document.getElementById('gen-result').hidden);
+    const branch = calls.find(call => call.suffix === '/git/refs').body.ref;
+    assert.match(branch, /^refs\/heads\/author\/blog\/\d{8}j-/);
+    const textBlob = calls.find(call => call.suffix === '/git/blobs').body;
+    assert.match(Buffer.from(textBlob.content, 'base64').toString('utf8'), /category: Analysis/);
+    assert.equal(calls.filter(call => call.suffix === '/pulls' && call.method === 'POST').length, 1);
+    assert.ok(calls.some(call => call.suffix === '/git/commits' && call.method === 'POST'));
+    assert.ok(!JSON.stringify(calls).includes('f1s-publish-at'));
+    assert.ok(!calls.some(call => /actions|deploy|merge/.test(call.suffix)));
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).length), 1);
+    assert.match(await page.locator('#gen-result').innerText(), /Η δημοσίευση εκκρεμεί/);
+});
+
+test('preview uses Race Report at real 1440/390 viewports, live values, shared typography and safe embeds', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Μεγάλος ελληνικός τίτλος: τι αλλάζει στη Formula 1 και γιατί η ανάλυση του αγώνα έχει σημασία',
+        '# Ενότητα\n\nΠαράγραφος **έντονη** και *πλάγια*.\n\n- Ένα\n- Δύο\n\n| Οδηγός | Χρόνος |\n| --- | --- |\n| Νόρις | 1:20 |\n\nIFRAME:https://f1-stories.gr/standings/?tab=debrief&embed=1\n\n<iframe src="javascript:alert(1)" onload="parent.alert(1)"></iframe>\n\n<script>parent.__draftInjected=true</script>');
+    await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.rr-title'));
+    const frame = page.frames().find(frame => frame.url() === 'about:srcdoc');
+    for (const width of [1440, 390]) {
+        await page.getByRole('button', { name: width === 390 ? 'Κινητό' : 'Desktop', exact: true }).click();
+        for (const theme of ['light', 'dark']) {
+            await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+            await frame.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
+            const result = await frame.evaluate(() => ({ width: innerWidth, kind: document.querySelector('.rr').dataset.articleKind,
+                rr: ['.rr-article', '.rr-cover__grid', '.rr-cover__media', '.rr-cover__text', '.rr-timing', '.rr-layout', '.rr-body', '.rr-pitwall', '.rr-tower'].every(selector => document.querySelector(selector)),
+                content: document.querySelector('.rr-body').textContent, unsafe: Boolean(document.querySelector('script, iframe[src^="javascript:"], [onload], [onerror], link[rel="canonical"]')),
+                tower: getComputedStyle(document.querySelector('.rr-tower')).display, data: document.querySelectorAll('.rr-data').length,
+                title: getComputedStyle(document.querySelector('.rr-title')).fontFamily }));
+            assert.equal(result.width, width); assert.ok(result.rr); assert.equal(result.unsafe, false);
+            assert.equal(result.data, 1); assert.equal(result.kind, 'news');
+            assert.equal(result.tower === 'none', width === 390);
+            assert.match(result.title, /IBM Plex Sans/);
+        }
+    }
+    assert.equal(await page.evaluate(() => window.__draftInjected), undefined);
+    assert.equal(await page.locator('#gen-article-preview').getAttribute('sandbox'), 'allow-same-origin');
+    await step(page, 0); await page.locator('#gen-title').fill('Αλλαγή χωρίς αποθήκευση'); await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.rr-title')?.textContent.includes('Αλλαγή χωρίς αποθήκευση'));
+});
+
+test('published News, Analysis, Technical, History and Betting articles match preview geometry and editorial content', async t => {
+    const posts = JSON.parse(fs.readFileSync(path.join(root, 'blog-module/blog-source-cache.json'), 'utf8')).posts;
+    const ids = ['20261005G', '20261008J', '20261015G', '20261021W', '20261010J'];
+    const evidence = process.env.F1S_AUTHOR_QA_DIR;
+    if (evidence) fs.mkdirSync(evidence, { recursive: true });
+    const report = [];
+    for (const id of ids) {
+        const post = posts.find(post => post.id === id);
+        const page = await pageFor(t);
+        const dir = path.join(root, 'blog-module/blog-entries', id);
+        const source = fs.readFileSync(path.join(dir, 'source.txt'), 'utf8');
+        const draftId = await page.evaluate(async ({ source, post, origin }) => {
+            const parsed = window.F1S_AUTHOR_ARTICLE_SOURCE.parseSourceText(source, { id: post.id });
+            const state = { title: parsed.title, text: parsed.body, tags: parsed.tags.join(', '), author: post.author, category: parsed.category, metadata: parsed.metadata, images: [], editor: { step: 3 } };
+            // Load source images as Blobs, just as local draft restore does; no ZIP or GitHub token is involved.
+            for (let slot = 1; slot <= 30; slot++) {
+                const image = await fetch(origin + '/blog-module/blog-entries/' + post.id + '/' + slot + '.webp');
+                if (!image.ok) { if (slot < 3) continue; break; }
+                const value = { blob: await image.blob(), name: slot + '.webp' };
+                if (slot === 1) state.hero = value; else if (slot === 2) state.banner = value; else state.images.push(value);
+            }
+            return (await window.F1S_LOCAL_DRAFTS.save(state)).id;
+        }, { source, post, origin });
+        await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+        await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.rr-title'));
+        const frame = page.frames().find(frame => frame.url() === 'about:srcdoc');
+        const published = await page.context().newPage();
+        const isolated = await page.context().newPage();
+        const html = await page.locator('#gen-article-preview').getAttribute('srcdoc');
+        for (const width of [1440, 390]) for (const theme of ['dark', 'light']) {
+            for (const target of [published, isolated]) await target.setViewportSize({ width, height: 1000 });
+            await published.goto(origin + '/blog-module/blog-entries/' + id + '/article.html');
+            await isolated.goto(origin + '/generate.html');
+            await isolated.setContent(html);
+            for (const target of [published, isolated]) {
+                await target.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+                await target.evaluate(() => document.fonts.ready);
+                await target.locator('.rr-cover img').evaluateAll(images => Promise.all(images.map(image => image.decode().catch(() => {}))));
+                await target.evaluate(() => document.getAnimations().forEach(animation => { if (Number.isFinite(animation.effect.getComputedTiming().endTime)) animation.finish(); }));
+            }
+            const metrics = async target => target.evaluate(() => {
+                const style = selector => {
+                    const node = document.querySelector(selector);
+                    if (!node) return null;
+                    const css = getComputedStyle(node), rect = node.getBoundingClientRect();
+                    return { width: rect.width, height: rect.height, fontFamily: css.fontFamily, fontSize: css.fontSize, fontWeight: css.fontWeight,
+                        lineHeight: css.lineHeight, letterSpacing: css.letterSpacing, color: css.color, marginBottom: css.marginBottom };
+                };
+                return { kind: document.querySelector('.rr').dataset.articleKind, cover: document.querySelector('.rr-cover').className,
+                    title: style('.rr-title'), image: style('.rr-cover__media img'), body: style('.rr-body'),
+                    timing: style('.rr-timing'), byline: document.querySelector('.rr-cover__side').textContent.replace(/\s+/g, ' ').trim(),
+                    paragraph: style('.rr-body > p'), heading: style('.rr-body h2, .rr-body h3'), author: style('.rr-pitwall__name'),
+                    authorText: document.querySelector('.rr-pitwall__name').textContent.trim(),
+                    prose: [...document.querySelectorAll('.rr-body > p, .rr-body > h2, .rr-body > h3')].map(node => node.textContent.replace(/\s+/g, ' ').trim()),
+                    data: document.querySelectorAll('.rr-data').length, gallery: document.querySelectorAll('.gallery-carousel').length,
+                    imageCount: document.querySelectorAll('.rr-body .article-content-img').length, overflow: document.documentElement.scrollWidth > innerWidth,
+                    runningOrder: [...document.querySelectorAll('.rr-tower a')].map(link => link.textContent.replace(/\s+/g, ' ').trim()) };
+            });
+            const expected = await metrics(published), actual = await metrics(isolated);
+            for (const field of ['kind', 'cover', 'byline', 'authorText', 'prose', 'data', 'gallery', 'imageCount', 'runningOrder']) assert.deepEqual(actual[field], expected[field], `${id}/${width}/${theme}: ${field}`);
+            for (const field of ['title', 'timing', 'paragraph', 'heading', 'author']) assert.deepEqual(actual[field], expected[field], `${id}/${width}/${theme}: ${field}`);
+            // Published AVIF variants can round an original WebP's ratio by a fraction of a pixel.
+            const { width: imageWidth, height: imageHeight, ...imageStyle } = actual.image;
+            const { width: expectedWidth, height: expectedImageHeight, ...expectedImageStyle } = expected.image;
+            assert.deepEqual(imageStyle, expectedImageStyle);
+            assert.ok(Math.abs(imageWidth - expectedWidth) <= 1 && Math.abs(imageHeight - expectedImageHeight) <= 1, `${id}/${width}/${theme}: image geometry within one pixel`);
+            const { height: actualHeight, ...body } = actual.body;
+            const { height: expectedHeight, ...expectedBody } = expected.body;
+            assert.deepEqual(body, expectedBody, `${id}/${width}/${theme}: body measure and typography`);
+            assert.equal(actual.overflow, false);
+            report.push({ id, category: post.categories[0], width, theme, cover: actual.cover, bodyWidth: body.width, titleHeight: actual.title.height, bodyHeightDifference: actualHeight - expectedHeight });
+            if (evidence) {
+                for (const [name, target] of [['published', published], ['preview', isolated]]) {
+                    await target.locator('.rr-cover').screenshot({ path: path.join(evidence, `${post.categories[0]}-${width}-${theme}-${name}.png`), animations: 'disabled' });
+                    if ((id === '20261015G' && width === 1440 && theme === 'light') || (id === '20261021W' && width === 390 && theme === 'light')) {
+                        await target.locator('.rr-body').evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'instant' }));
+                        await target.screenshot({ path: path.join(evidence, `${post.categories[0]}-${width}-${theme}-body-${name}.png`), animations: 'disabled' });
+                        await target.locator('.rr-pitwall').screenshot({ path: path.join(evidence, `${post.categories[0]}-${width}-${theme}-author-${name}.png`), animations: 'disabled' });
+                    }
+                }
+            }
+        }
+        await page.close(); await published.close(); await isolated.close();
+    }
+    if (evidence) fs.writeFileSync(path.join(evidence, 'parity.json'), JSON.stringify(report, null, 2));
+});
+
+test('portrait, landscape and square images use the production cover variants', async t => {
+    const page = await pageFor(t);
+    assert.equal(await page.evaluate(() => Boolean(window.F1S_ARTICLE_PREVIEW)), false, 'preview code is not loaded before it is needed');
+    await step(page, 3);
+    await page.waitForFunction(() => Boolean(window.F1S_ARTICLE_PREVIEW));
+    const variants = await page.evaluate(async () => {
+        const variants = [];
+        for (const [width, height] of [[1600, 900], [1050, 791], [500, 1000], [300, 300]]) {
+            const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp'));
+            const result = await window.F1S_ARTICLE_PREVIEW.render({ title: 'Δοκιμή αναλογιών', text: 'Κείμενο.', category: 'Technical', author: 'Georgios Balatzis', tags: '', metadata: {}, hero: { blob, width, height }, images: [] });
+            const doc = new DOMParser().parseFromString(result.html, 'text/html');
+            variants.push(doc.querySelector('.rr-cover').className); result.dispose();
+        }
+        return variants;
+    });
+    assert.deepEqual(variants, ['rr-cover rr-cover--bleed', 'rr-cover rr-cover--split', 'rr-cover rr-cover--inset', 'rr-cover rr-cover--inset']);
+});
+
+test('IndexedDB drafts and image Blobs survive closing and restarting a browser profile', async t => {
+    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-draft-profile-'));
+    t.after(() => fs.rmSync(profile, { recursive: true, force: true }));
+    let id;
+    for (const first of [true, false]) {
+        const context = await chromium.launchPersistentContext(profile, { executablePath: Launcher.getInstallations()[0], headless: true });
+        try {
+            const page = await context.newPage();
+            await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
+            await page.goto(origin + '/generate.html');
+            if (first) id = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.save({ title: 'Μετά την επανεκκίνηση', hero: { blob: new Blob(['persistent bytes']), name: 'εικόνα.webp' } })).id);
+            else assert.deepEqual(await page.evaluate(async id => { const value = await window.F1S_LOCAL_DRAFTS.get(id); return [value.title, await value.hero.blob.text()]; }, id), ['Μετά την επανεκκίνηση', 'persistent bytes']);
+        } finally { await context.close(); }
+    }
+});

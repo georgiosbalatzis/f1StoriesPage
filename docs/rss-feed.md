@@ -25,9 +25,7 @@ the permanent GUID, so title/excerpt edits do not change identity.
 Publication dates are the existing **Europe/Athens folder calendar dates**. No exact publication
 time is available in article metadata. The feed represents each day as Athens midnight, with the
 correct winter/summer offset, and emits RFC 822 dates in GMT. It does not claim a precise merge time.
-Scheduled articles stay on `author/scheduled/**` PR branches until the existing Scheduled Publish
-workflow merges them when due (normally 09:00 or 18:00 Athens). PR drafts and unmerged articles
-are therefore absent from the production checkout and feed. No new scheduler is introduced.
+Local author drafts stay in browser storage. Unmerged article PRs are absent from the production checkout and feed.
 A future-dated article manually placed on main becomes feed-eligible on the next blog build
 on or after its Athens publication day; the feed itself does not trigger deployments.
 
