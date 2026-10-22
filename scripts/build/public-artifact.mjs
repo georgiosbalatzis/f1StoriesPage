@@ -63,6 +63,8 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/article-styles.min.css',
     'blog-module/blog-fixes.min.js',
     'blog-module/blog-index-data.json',
+    'blog-module/search-destinations.json',
+    'blog-module/search-destinations.min.js',
     'blog-module/blog-index.min.js',
     'blog-module/taxonomy.min.js',
     'blog-module/inline-markup.min.js',

@@ -22,6 +22,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { unifiedSearchQA } from './unified-search-qa.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
@@ -267,6 +268,7 @@ try {
         check('new', 'a cached page loses ΝΕΟ once the week has passed', (await stale.page.locator('.ed-new').count()) === 0);
         await stale.context.close();
     }
+    await unifiedSearchQA({ open, base, root: ROOT, check, settle });
 } finally {
     await browser.close();
     server.close();

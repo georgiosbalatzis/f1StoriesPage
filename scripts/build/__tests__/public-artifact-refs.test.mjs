@@ -5,10 +5,30 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
-import { validateHtmlRefs, validateJsRefs } from '../validate-public-artifact.mjs';
+import { validateHtmlRefs, validateJsRefs, validateSearchDestinations } from '../validate-public-artifact.mjs';
 import { injectSecurityMeta, securityHeadersText } from '../security-policy.mjs';
 
 const validator = fileURLToPath(new URL('../validate-public-artifact.mjs', import.meta.url));
+
+test('search JSON links require an actual approved self-canonical public hub', t => {
+    const root = fixture(t);
+    const href = '/blog-module/blog/entities/drivers/fixture/';
+    const file = href.slice(1) + 'index.html';
+    const approved = new Set([file]);
+    const record = { type: 'entity', id: 'driver:fixture', label: 'Fixture', href, aliases: [] };
+    write(root, 'blog-module/search-destinations.json', JSON.stringify({ v: 1, records: [record] }));
+    const errors = () => { const result = []; validateSearchDestinations(result, root, approved); return result; };
+    assert.match(errors()[0], /Missing destination/);
+    write(root, file, '<link rel="canonical" href="https://f1-stories.gr' + href + '">');
+    assert.deepEqual(errors(), []);
+    const unapproved = [];
+    validateSearchDestinations(unapproved, root, new Set());
+    assert.match(unapproved[0], /Unapproved hub/);
+    write(root, file, '<link rel="canonical" href="https://f1-stories.gr' + href + '"><meta name="robots" content="noindex,follow">');
+    assert.match(errors()[0], /Noncanonical/);
+    write(root, 'blog-module/search-destinations.json', '{"v":1,"records":[]}');
+    assert.match(errors()[0], /do not match/);
+});
 const write = (root, file, text = '') => {
     fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
     fs.writeFileSync(path.join(root, file), text);
@@ -159,6 +179,8 @@ function cliFixture(t) {
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
+    write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
+    write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
@@ -197,6 +219,7 @@ function cliFixture(t) {
     write(dist, 'hero.webp');
     write(dist, 'blog-module/blog-index.min.js');
     write(dist, 'blog-module/blog-index-data.json', '{"v":2,"p":[]}');
+    write(dist, 'blog-module/search-destinations.json', '{"v":1,"records":[]}');
     write(dist, 'blog-module/home-latest.json', JSON.stringify([{ slug: 'story', title: 'Lead', heroImage: '/hero.webp' }]));
     write(dist, 'robots.txt', 'Sitemap: https://f1-stories.gr/sitemap.xml\n');
     write(dist, 'CNAME', 'f1-stories.gr');

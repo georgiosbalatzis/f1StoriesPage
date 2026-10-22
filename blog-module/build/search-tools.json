@@ -1,0 +1,32 @@
+[
+  {
+    "id": "standings",
+    "label": "THE GRID — Βαθμολογίες F1",
+    "href": "https://f1-stories.gr/standings/",
+    "aliases": ["βαθμολογία", "βαθμολογίες", "standings", "κατασκευαστές", "quali gaps", "qualifying", "tyre pace", "ρυθμός ελαστικών", "pit stops", "dirty air", "lap 1", "track dominance", "Friday debrief"]
+  },
+  {
+    "id": "telemetry",
+    "label": "Telemetry — Τηλεμετρία",
+    "href": "https://georgiosbalatzis.github.io/f1-telemetry-dashboard/",
+    "aliases": ["τηλεμετρία", "telemetry", "f1telemetry", "ανάλυση γύρου", "ταχύτητα", "φρένα"]
+  },
+  {
+    "id": "ghostcar",
+    "label": "Ghost Car — Σύγκριση γύρων",
+    "href": "https://georgiosbalatzis.github.io/ghostcar/",
+    "aliases": ["ghostcar", "ghost car", "σύγκριση γύρων"]
+  },
+  {
+    "id": "tyres",
+    "label": "TYRES — Ελαστικά",
+    "href": "https://georgiosbalatzis.github.io/Tyres/",
+    "aliases": ["tyres", "tires", "ελαστικά", "γόμες", "απαιτήσεις πίστας"]
+  },
+  {
+    "id": "betcast",
+    "label": "BetCast",
+    "href": "https://georgiosbalatzis.github.io/BetCastVisualisation/",
+    "aliases": ["betcast", "bet cast", "στοίχημα", "αγωνιστικές εκτιμήσεις"]
+  }
+]

@@ -1,0 +1,199 @@
+{
+  "baseline": "45ec0154e8d94c0f3697f67cb2442ac0f03bb090",
+  "baselineFiles": 4093,
+  "candidateFiles": 4095,
+  "added": {
+    "blog-module/search-destinations.json": "71a15aa2112069039dafd3ac4d032c18073025318437005b17a8170cf9869b3a",
+    "blog-module/search-destinations.min.js": "fbd9e36c58a84764cef1973594fb217ed4abefa5d6a848be94541c2f2e2b173e"
+  },
+  "removed": {},
+  "changed": {
+    "blog-module/blog-index.min.js": {
+      "baselineSHA256": "bbc1ceba119b279a1da1c2d99aad918e7893d31ac0cd313ce806221de552e16f",
+      "candidateSHA256": "ba7bdfc3a9d6b105f0c04d71483b47c1d0d246409f892f05b91f8c776d72083d"
+    },
+    "blog-module/blog/archive-editorial.min.css": {
+      "baselineSHA256": "b8dc941e19d368dc6a228c3f6543810126082692af6d54d81dde0ba77d1da3e4",
+      "candidateSHA256": "11b44067466410acd4dca6cef27c2bf47c310b47a9c6f74b2a94b15f3fe92054"
+    },
+    "blog-module/blog/archive/2025/03/index.html": {
+      "baselineSHA256": "7c80da16d564e0eb5b356cb7528c78da14a37c0ca6a1c239241281e5b9a269cf",
+      "candidateSHA256": "74770073ab278767740d9ed13a968336d314b00e749ce6ea5a9c61984b11fa61"
+    },
+    "blog-module/blog/archive/2025/04/index.html": {
+      "baselineSHA256": "37693288498c3a10afb3cb7b8edfa018dee832207cb5233e2bf1269637f2b40f",
+      "candidateSHA256": "527b0e6724b5fc37c7f73c4e661ed4a49a3d6bcabaac62364e75c416570c1e97"
+    },
+    "blog-module/blog/archive/2025/05/index.html": {
+      "baselineSHA256": "7fb559447360a82c3c6c86b236b72aee4d61a5de8d07b7dcc142f5102ad91a2f",
+      "candidateSHA256": "e539a5c17c347c4ed10009ccdbf1e9ee8457d36a87d3273f6d07748ee0b9a154"
+    },
+    "blog-module/blog/archive/2025/06/index.html": {
+      "baselineSHA256": "c992c47c5d9e8cd05b7445ae3ffb570ba249ea9e82d04776ee416271af122e48",
+      "candidateSHA256": "d12b25050b0d9c533c46ff79486394952766b82a49c37af0abcb10bc70c1c87e"
+    },
+    "blog-module/blog/archive/2025/07/index.html": {
+      "baselineSHA256": "9d4c70c428005497db37f55072bd1238184881bfbae39b521ced22531315160f",
+      "candidateSHA256": "aea25a8cc95462f505abcedcb060cf08efa09fc7a8ed218291773482cc35291d"
+    },
+    "blog-module/blog/archive/2025/08/index.html": {
+      "baselineSHA256": "f7cd8ce8c03084b8b6129ef74a8046ef401bf9e4d78b3f2ab9d449bb4cd05b3e",
+      "candidateSHA256": "46b31323704e65ffdd362e1e48c3ae7ae45162d7be6d3c730e7c9bc224b60161"
+    },
+    "blog-module/blog/archive/2025/09/index.html": {
+      "baselineSHA256": "39a53913e5d3af67d0f3e09359954c341894ee3e6666f7d8b2bd00155e1e8c3a",
+      "candidateSHA256": "ccae282a44ccb7bad2cf687becffbd5e9924495fcdd7059a650dd517d1c22824"
+    },
+    "blog-module/blog/archive/2025/10/index.html": {
+      "baselineSHA256": "d0d37ba537947a6cb2c704ed9a57be085ea04ace776332737add3587c8717ff6",
+      "candidateSHA256": "e24d479f28a39cf584e9d212cb5b2ece4551ee9fc5a5f4f8ae55b1e48cdf2cdd"
+    },
+    "blog-module/blog/archive/2026/02/index.html": {
+      "baselineSHA256": "62c2c34d463be9f633dd4f1e47d56abd25b1842d734d045a526ebff6b4d46103",
+      "candidateSHA256": "c5f2f422cb8af1279862078f29c48fb1283f573edcc778f9f62a0944c68e64f3"
+    },
+    "blog-module/blog/archive/2026/03/index.html": {
+      "baselineSHA256": "25d62e8d15538b713ed5b6f7e1dd7fcb41340c260ee2357f848b21b2c2fe23c0",
+      "candidateSHA256": "d4c950c5c9626916343b75e74a6e2babeebf0d3f904af2961fc92634823651bf"
+    },
+    "blog-module/blog/archive/2026/04/index.html": {
+      "baselineSHA256": "dfd7332be1c1469a52e3c63c17706a623e7178ab7a77ee34ab1e2c045e6ac474",
+      "candidateSHA256": "9bbee20b4841f00641ff4f4205ce369726ac2157d3607cf97058919d56fbaab5"
+    },
+    "blog-module/blog/archive/2026/05/index.html": {
+      "baselineSHA256": "20f794acc9bbbe081f71276239c6ec5b5252ffd76dc106a2cfc2c0314ed6481a",
+      "candidateSHA256": "cd0a16abc4593308660b69870ad4b88d42015a8a23e1ef8759b298a7108905eb"
+    },
+    "blog-module/blog/archive/2026/06/index.html": {
+      "baselineSHA256": "03dcf94e0299e391ea94b08f62650ee689c2e905f16f3788445f9fd54727f5e7",
+      "candidateSHA256": "21fa8e1a7e6817296434d3af07f8fe4d2beb787a0f78ca28a5a317180cf093ba"
+    },
+    "blog-module/blog/archive/2026/07/index.html": {
+      "baselineSHA256": "d3d1afe3aa09270dc8361ed83bb4db53fc239d22d8c5aeb8d149d4437b51d005",
+      "candidateSHA256": "0094e6f5c24e24f2bbb6ace9d5831bfdc26d56c2aa6b8af5a0e142b150ba5f0a"
+    },
+    "blog-module/blog/archive/2026/08/index.html": {
+      "baselineSHA256": "4a432041af2e4a501252c90ed67b96518c3cf57c24ddef1c23c8a309a0dedc7c",
+      "candidateSHA256": "6f29c7df1acb2f22480a4c16094615045b330dfa07c36b7006f39b9dd4a3cbe5"
+    },
+    "blog-module/blog/archive/2026/09/index.html": {
+      "baselineSHA256": "6fb54a38fc4aa44ca4a0b1d367329bfece62394f64b79aaf75ecf56a2128e65f",
+      "candidateSHA256": "d853dc71c7136cde07958a348ff59d70777b347ecb385e8025b24a61b95d8760"
+    },
+    "blog-module/blog/archive/2026/10/index.html": {
+      "baselineSHA256": "bb9f584b41da3c292b7d4ea50b18225be7f06d3ee159f0441e67b2a986122f0c",
+      "candidateSHA256": "11631f14a20f5885f4f892eca870ceb243167388b68a847fe5d6c57f1c01bab3"
+    },
+    "blog-module/blog/archive/index.html": {
+      "baselineSHA256": "0464cf24980ccac0ad9472374fc39bf4612e162af8bdbd5fde5c0631b892257e",
+      "candidateSHA256": "45987677580d373b8f23df9afef4e4bfb0208f99c1eeb6f4851ddf63230ca7bf"
+    },
+    "blog-module/blog/entities/drivers/lando-norris/index.html": {
+      "baselineSHA256": "5bbd2d0fb94b5596745338c0f715da6f33ab04e29026cc9d6a474de45f747cf5",
+      "candidateSHA256": "c5fa97db871eee02bb1285cff7eca486ff188e455030b6d37345db8207fa9da7"
+    },
+    "blog-module/blog/index.html": {
+      "baselineSHA256": "4e0da056e7be44c064a2ee5d8fc4a31a3958b912057a04c9958cb94a72130377",
+      "candidateSHA256": "5f8919efa33c20cafd3384bd67acaf6efb24250f54526e7a8b502b5138470649"
+    },
+    "blog-module/blog/section/analysis/index.html": {
+      "baselineSHA256": "e36cfa080159685979592b9a11848f274c01e4fbbe62a10bd1593efc028ff64a",
+      "candidateSHA256": "0eb7e5d22f012a37c364cd57a296baee93d9f6863b47d1526b014490e5a76156"
+    },
+    "blog-module/blog/section/betting/index.html": {
+      "baselineSHA256": "61880e2685469c043b46db6f6d5d1d33ff8f76986472d2e272cba4e278d155b2",
+      "candidateSHA256": "531820116e49c5f7b2ff69854c83cee4b1c332a4ae64ccae198ec578edfd925a"
+    },
+    "blog-module/blog/section/drivers/index.html": {
+      "baselineSHA256": "a653be4c8db4bcc09736f806172729df9f663829a396ea8b05c3ad8703ae1756",
+      "candidateSHA256": "8b12859cd30c1e35b3b8adc8244c435d42911d2de02f121c8eaf6a5d3bfc874c"
+    },
+    "blog-module/blog/section/drivers/page/2/index.html": {
+      "baselineSHA256": "9b1690479000359ecd28042516f30e4b9812ba2a6f5516d41c7cae548f260f46",
+      "candidateSHA256": "1b79bd0e138f7f50c2a76f682464398757220a22da6d4ae2eb62eaa69df614be"
+    },
+    "blog-module/blog/section/history/index.html": {
+      "baselineSHA256": "e2b4371b0c69452acfd594ca3057b2797bcc022ce9610e4267a4204fb0c1961f",
+      "candidateSHA256": "dec6863405caddb924f675134d51e51a7c5f4aba981624b0a6586d8338c4cc48"
+    },
+    "blog-module/blog/section/history/page/2/index.html": {
+      "baselineSHA256": "787efe6cbd4aa3c803f983074d4b650ce2e0bf09689cccf74c7988dc10bc647f",
+      "candidateSHA256": "492072b2207b3df712d6b0d4e034b66aac267ae6804a0946314db0bfeec65d6a"
+    },
+    "blog-module/blog/section/history/page/3/index.html": {
+      "baselineSHA256": "5d9d684d05975415b01d0cef69f49bfd0e585a9aede3aefa48faa6e02920ede0",
+      "candidateSHA256": "c34415e37c7227e8bce092213784e3bf8814977558b374775ddf976624f1d087"
+    },
+    "blog-module/blog/section/history/page/4/index.html": {
+      "baselineSHA256": "5aa33e56cdf4eb81ad8edc4a082070e4d979d8db817c2e9ba740e5dfb3fdaaa5",
+      "candidateSHA256": "95bb9599ce8f760aeb3e6d2871b62b45d6de4715b0195153f42f40c28a3843f1"
+    },
+    "blog-module/blog/section/news/index.html": {
+      "baselineSHA256": "c3059a32710117a6c59ac912748c863342e2214900cb97882b60f86250a501ae",
+      "candidateSHA256": "d4836babc0378358a9d77cf78d795f1f35d45a88bc12f690c68a7044fea4dc6c"
+    },
+    "blog-module/blog/section/news/page/2/index.html": {
+      "baselineSHA256": "18b232df33dcb46eb898004199f5a26f7e6b18ec59606fbf9fa83d8c70f67ad7",
+      "candidateSHA256": "245894e0145b4634102f1934363369d0980deead605cf36e2eb2abee10fc7c01"
+    },
+    "blog-module/blog/section/news/page/3/index.html": {
+      "baselineSHA256": "0ad422cb4cf9c4b464d03c104c7233b42669400cc62755ac0f549b705da0bac3",
+      "candidateSHA256": "5f7ad1e7cc33e02973e67c6bc760ec669ab7c0f50b9deb10644f14c1417d729e"
+    },
+    "blog-module/blog/section/news/page/4/index.html": {
+      "baselineSHA256": "ba439229d501ad42b83e7dccf7605b457e4988904ffbaf9a560f13ec19e16f4d",
+      "candidateSHA256": "486090599502d7bc21d40efafb81cdd5478d7a6e9085aa5c12b0a5fe6906aa8f"
+    },
+    "blog-module/blog/section/news/page/5/index.html": {
+      "baselineSHA256": "dbea1f66e61adb5dbc855cbcd4d98b28ad7db26e6e6731649f79e97994a04d26",
+      "candidateSHA256": "8d1ea9d2e8360bb964431011942a20c14eda4dbe68c523923ca9ea64844dc8b3"
+    },
+    "blog-module/blog/section/news/page/6/index.html": {
+      "baselineSHA256": "4717fca2faa693e1df955a57fc597a6a2a841ae30a2945a0fce4ba12313f25c5",
+      "candidateSHA256": "0ebadc158c68c5d810020707204bf8c2d7ff7dda1e286bb04b989fac97030765"
+    },
+    "blog-module/blog/section/opinion/index.html": {
+      "baselineSHA256": "99e53a524ec06f8b7d3fbc0c2eb2a3fd2f0817f9a466ebf667e6542c499355ea",
+      "candidateSHA256": "c86287cd53bbe6677590b96cd2dc568b844d07cb8fb8f0265d5113be9a7c1c96"
+    },
+    "blog-module/blog/section/teams/index.html": {
+      "baselineSHA256": "30696ef267b5f880a51dec9f45ca5375f67289a6627f00592b61a37a96933374",
+      "candidateSHA256": "7ceb98044f742f7e7a79ae517703c05227ba403049693e7f999993a4c4f48ec5"
+    },
+    "blog-module/blog/section/technical/index.html": {
+      "baselineSHA256": "cd12d80b15271832ebaf69068805ee8160daf5825ff02d69a89e52424215d06f",
+      "candidateSHA256": "e7bb8ddd8015a62a69137a4b3901f361bc51ab0bad0ea2e052f88d5de22a8abc"
+    },
+    "blog-module/blog/section/technical/page/2/index.html": {
+      "baselineSHA256": "e2e682e118991ec740f4bb24085ba93208b99951c4edf87dae9664a062fa7ab8",
+      "candidateSHA256": "ef316661116b63b44552693ad9953e4753001264782db0fe3fd8578ba1ac17cf"
+    }
+  },
+  "unchangedFiles": 4053,
+  "articleHtmlCount": 409,
+  "changedArticleFiles": [],
+  "articleIndexIdentical": true,
+  "sitemapIdentical": true,
+  "htmlDifferencesOnlyArchiveAssets": true,
+  "protectedArticleTreeFiles": 3800,
+  "protectedArticleTreeManifestSHA256": "05bba28ec215bf1bbcdb6f24834ea237e14b6f191bf71e0da1a74e24f6949630",
+  "protectedInputsAndRedirectsIdentical": true,
+  "sizes": {
+    "blog-module/blog-index.min.js": {
+      "raw": 15259,
+      "gzip": 5661
+    },
+    "blog-module/search-destinations.min.js": {
+      "raw": 5128,
+      "gzip": 2051
+    },
+    "blog-module/search-destinations.json": {
+      "raw": 1457,
+      "gzip": 666
+    },
+    "blog-module/blog-index-data.json": {
+      "raw": 146806,
+      "gzip": 43469
+    }
+  }
+}

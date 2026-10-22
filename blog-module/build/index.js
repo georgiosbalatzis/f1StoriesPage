@@ -27,6 +27,7 @@ const {
 } = require('../taxonomy');
 const { buildPages, writeDiscoveryPages } = require('./discovery');
 const { loadFoundation } = require('./entities');
+const { writeSearchDestinations } = require('./search-destinations');
 const { buildHubPages, writeHubPages, hubPath } = require('./entities/hubs');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
@@ -1155,6 +1156,7 @@ async function processBlogEntries(options = {}) {
     await injectHomePanels(undefined, blogPosts);
 
     writeHubPages(CONFIG.OUTPUT_HTML_DIR, entities.pages);
+    writeSearchDestinations(entities);
     console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
     generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages]);
     generateFeed(blogPosts);

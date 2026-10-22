@@ -46,6 +46,7 @@ export const JS_INPUTS = [
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/taxonomy.js',
     'blog-module/inline-markup.js',
+    'blog-module/search-destinations.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',

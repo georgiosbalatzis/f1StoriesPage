@@ -6,6 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
 import { buildSync } from 'esbuild';
+import search from '../../blog-module/search-destinations.js';
+import hubs from '../../blog-module/build/entities/hubs.js';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +44,8 @@ const REQUIRED_EXACT = [
     'sw.js',
     'assets/youtube-latest.json',
     'blog-module/blog-index-data.json',
+    'blog-module/search-destinations.json',
+    'blog-module/search-destinations.min.js',
     'blog-module/home-latest.json',
     'blog-module/taxonomy.min.js',
     'blog-module/blog/index.html',
@@ -780,6 +784,27 @@ function validateEditorialArticle(errors, html, relPath, editorialRefs) {
     }
 }
 
+// JSON links need explicit validation; the HTML reference crawl never sees them.
+export function validateSearchDestinations(errors, distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles()) {
+    const rel = 'blog-module/search-destinations.json';
+    try {
+        const data = search.validateIndex(JSON.parse(fs.readFileSync(path.join(distRoot, rel), 'utf8')));
+        for (const record of data.records) {
+            const url = new URL(search.destination(record));
+            if (url.origin !== SITE_ORIGIN) continue;
+            const file = url.pathname.slice(1) + 'index.html';
+            if (!fs.existsSync(path.join(distRoot, file))) throw new Error(`Missing destination: ${file}`);
+            if (record.type === 'entity' && !approvedFiles.has(file)) throw new Error(`Unapproved hub: ${file}`);
+            const html = fs.readFileSync(path.join(distRoot, file), 'utf8');
+            if (!html.includes(`rel="canonical" href="${url.href}"`) || /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html)
+                || /<meta[^>]+http-equiv=["']refresh["']/i.test(html)) throw new Error(`Noncanonical destination: ${file}`);
+        }
+        const actual = new Set(data.records.filter(record => record.type === 'entity').map(record => record.href.slice(1) + 'index.html'));
+        const expected = [...approvedFiles].filter(file => !file.includes('/page/'));
+        if (actual.size !== expected.length || expected.some(file => !actual.has(file))) throw new Error('Search hub records do not match approved public hubs');
+    } catch (error) { errors.push(`${rel}: ${error.message}`); }
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -802,6 +827,7 @@ function main() {
     validateRobots(errors);
     validateCname(errors);
     validateArchiveRuntime(errors);
+    validateSearchDestinations(errors);
     validateHomepageHero(errors);
     validateRouteMarkers(errors, editorialRefs);
 

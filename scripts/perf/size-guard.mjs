@@ -10,6 +10,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -279,6 +280,20 @@ function main() {
     if (newFiles > 0) {
         console.log(`ℹ ${newFiles} new file(s) not in budget yet. Run: npm run perf:budget:update`);
     }
+    // Independent hard caps: these new files cannot borrow the original runtime's allowance.
+    const searchFiles = ['blog-module/search-destinations.json', 'blog-module/search-destinations.min.js'];
+    const searchSizes = searchFiles.map(rel => fs.readFileSync(path.join(REPO_ROOT, rel)));
+    const searchCaps = [4096, 5632];
+    // Include positive initial-runtime growth against the audited 15,205 B raw / 5,516 B gzip.
+    const runtime = path.join(REPO_ROOT, 'blog-module/blog-index.min.js');
+    const runtimeBytes = fs.existsSync(runtime) ? fs.readFileSync(runtime) : Buffer.alloc(0);
+    const raw = searchSizes.reduce((n, b) => n + b.length, Math.max(0, runtimeBytes.length - 15205));
+    const gzip = searchSizes.reduce((n, b) => n + gzipSync(b).length, Math.max(0, gzipSync(runtimeBytes).length - 5516));
+    if (searchSizes.some((b, i) => b.length > searchCaps[i]) || raw > 7168 || gzip > 3072) {
+        console.error('✗ destination search exceeds JSON 4096 B / helper 5632 B / combined 7168 B raw or 3072 B gzip');
+        process.exit(1);
+    }
+    console.log(`✓ destination search: JSON ${searchSizes[0].length} B, helper ${searchSizes[1].length} B, combined ${raw} B raw / ${gzip} B gzip`);
     const standingsViolations = checkStandingsBundleBudgets();
     if (standingsViolations.length) {
         console.error('✗ standings bundle budget exceeded:');

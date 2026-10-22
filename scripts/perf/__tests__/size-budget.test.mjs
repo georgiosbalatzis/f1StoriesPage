@@ -14,6 +14,8 @@ function fixture(t) {
     };
     for (const dir of ['standings/tabs', 'standings/chunks']) fs.mkdirSync(path.join(root, dir), { recursive: true });
     write('scripts/perf/size-guard.mjs', fs.readFileSync(new URL('../size-guard.mjs', import.meta.url)));
+    write('blog-module/search-destinations.json', '{}');
+    write('blog-module/search-destinations.min.js', '');
     write('perf/size-budget.json', JSON.stringify({ thresholdPercent: 10, files: {
         'scripts/shared-nav.js': 100, 'standings/standings.min.js': 48 * 1024
     } }));
@@ -28,6 +30,18 @@ test('the per-file budget still rejects growth above ten percent', t => {
     const result = run();
     assert.equal(result.status, 1);
     assert.match(result.stderr, /exceeded the \+10% budget/);
+});
+
+test('destination files have independent hard caps without changing existing tolerance', t => {
+    const { write, run } = fixture(t);
+    write('blog-module/search-destinations.json', 'x'.repeat(4097));
+    assert.match(run().stderr, /destination search exceeds/);
+    write('blog-module/search-destinations.json', '{}');
+    write('blog-module/search-destinations.min.js', 'x'.repeat(5633));
+    assert.match(run().stderr, /destination search exceeds/);
+    write('blog-module/search-destinations.json', 'x'.repeat(3000));
+    write('blog-module/search-destinations.min.js', 'x'.repeat(5000));
+    assert.match(run().stderr, /destination search exceeds/);
 });
 
 test('the measured standings shell ceiling is enforced independently of per-file tolerance', t => {

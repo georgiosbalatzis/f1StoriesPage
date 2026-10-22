@@ -301,3 +301,8 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
 @media (prefers-reduced-motion: reduce) {
     .edition :is(a, img, .ed-view) { transition: none; }
 }
+
+/* Query-only destinations share the archive typography and focus treatment. */
+.edition .ed-destinations { max-width: 52rem; margin-top: 28px; }
+.edition .ed-destinations ul { list-style: none; padding: 0; margin: 8px 0 24px; }
+.edition .ed-destinations a { display: block; padding: 12px 0; color: var(--text-primary); text-decoration: underline; text-underline-offset: .2em; overflow-wrap: anywhere; }
