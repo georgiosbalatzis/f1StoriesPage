@@ -42,6 +42,10 @@ test('destination files have independent hard caps without changing existing tol
     write('blog-module/search-destinations.json', 'x'.repeat(3000));
     write('blog-module/search-destinations.min.js', 'x'.repeat(5000));
     assert.match(run().stderr, /destination search exceeds/);
+    write('blog-module/search-destinations.json', 'x'.repeat(1000));
+    write('blog-module/search-destinations.min.js', 'x'.repeat(4500));
+    write('blog-module/blog/archive-editorial.min.css', 'x'.repeat(23830));
+    assert.match(run().stderr, /destination search exceeds/, 'initial archive styling cannot bypass the combined cap');
 });
 
 test('the measured standings shell ceiling is enforced independently of per-file tolerance', t => {

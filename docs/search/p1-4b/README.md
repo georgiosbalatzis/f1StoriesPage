@@ -39,7 +39,7 @@ Existing size-budget baselines, the +10% threshold and the article JSON contract
 
 The original runtime is 15,259 B against its unchanged 13,872 B +10% allowance (maximum integer size 15,259 B). Initial runtime growth is 54 B raw / 145 B gzip relative to the audited build. Its byte allowance is exhausted.
 
-New independent caps: JSON 4,096 B; minified helper 5,632 B; combined added transfer 7,168 B raw / 3,072 B gzip. Combined added transfer includes positive original-runtime growth: **6,639 B raw / 2,862 B gzip**. New query-only files alone total 6,585 B raw / 2,717 B gzip. gzip is a deterministic local estimate, not a claim about server compression headers.
+New independent caps: JSON 4,096 B; minified helper 5,632 B; combined added transfer 7,168 B raw / 3,072 B gzip. Combined added transfer includes positive original-runtime and archive-style growth: **6,929 B raw / 2,911 B gzip**. Archive CSS grows by 290 B raw / 49 B gzip (21,830 → 22,120 B raw); it is inlined in public archive HTML and adds no request. New query-only files alone total 6,585 B raw / 2,717 B gzip. gzip is a deterministic local estimate, not a claim about server compression headers.
 
 ## Validation
 

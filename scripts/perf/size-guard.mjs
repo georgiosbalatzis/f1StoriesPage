@@ -284,11 +284,17 @@ function main() {
     const searchFiles = ['blog-module/search-destinations.json', 'blog-module/search-destinations.min.js'];
     const searchSizes = searchFiles.map(rel => fs.readFileSync(path.join(REPO_ROOT, rel)));
     const searchCaps = [4096, 5632];
-    // Include positive initial-runtime growth against the audited 15,205 B raw / 5,516 B gzip.
-    const runtime = path.join(REPO_ROOT, 'blog-module/blog-index.min.js');
-    const runtimeBytes = fs.existsSync(runtime) ? fs.readFileSync(runtime) : Buffer.alloc(0);
-    const raw = searchSizes.reduce((n, b) => n + b.length, Math.max(0, runtimeBytes.length - 15205));
-    const gzip = searchSizes.reduce((n, b) => n + gzipSync(b).length, Math.max(0, gzipSync(runtimeBytes).length - 5516));
+    // Count positive growth of initial assets too; archive CSS is inlined in public HTML.
+    // These are audited asset measurements, not replacements for existing budget baselines.
+    const initial = [['blog-module/blog-index.min.js', 15205, 5516], ['blog-module/blog/archive-editorial.min.css', 21830, 4366]];
+    let raw = searchSizes.reduce((n, b) => n + b.length, 0);
+    let gzip = searchSizes.reduce((n, b) => n + gzipSync(b).length, 0);
+    for (const [rel, baselineRaw, baselineGzip] of initial) {
+        const file = path.join(REPO_ROOT, rel);
+        const bytes = fs.existsSync(file) ? fs.readFileSync(file) : Buffer.alloc(0);
+        raw += Math.max(0, bytes.length - baselineRaw);
+        gzip += Math.max(0, gzipSync(bytes).length - baselineGzip);
+    }
     if (searchSizes.some((b, i) => b.length > searchCaps[i]) || raw > 7168 || gzip > 3072) {
         console.error('✗ destination search exceeds JSON 4096 B / helper 5632 B / combined 7168 B raw or 3072 B gzip');
         process.exit(1);
