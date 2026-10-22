@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { Launcher } from 'chrome-launcher';
 import os from 'node:os';
+import { createResponsiveTableFromCSV } from '../../../blog-module/build/csv-to-table.js';
 import { buildAuthorPreview } from '../../build/author-preview.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -402,5 +403,102 @@ test('IndexedDB drafts and image Blobs survive closing and restarting a browser 
             if (first) id = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.save({ title: 'Μετά την επανεκκίνηση', hero: { blob: new Blob(['persistent bytes']), name: 'εικόνα.webp' } })).id);
             else assert.deepEqual(await page.evaluate(async id => { const value = await window.F1S_LOCAL_DRAFTS.get(id); return [value.title, await value.hero.blob.text()]; }, id), ['Μετά την επανεκκίνηση', 'persistent bytes']);
         } finally { await context.close(); }
+    }
+});
+
+
+async function renderedTable(table) {
+    return table.evaluate(table => {
+        const container = table.closest('.table-container.scroll-view');
+        const rect = container.getBoundingClientRect();
+        container.scrollLeft = 100;
+        const cells = [...table.querySelectorAll('th, td')].map(cell => {
+            const box = cell.getBoundingClientRect(), style = getComputedStyle(cell);
+            return { text: cell.textContent.trim(), width: box.width, height: box.height,
+                visible: cell.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }), fontSize: parseFloat(style.fontSize) };
+        });
+        const result = { display: getComputedStyle(container).display, width: rect.width, height: rect.height,
+            overflowX: getComputedStyle(container).overflowX, scrollLeft: container.scrollLeft,
+            documentOverflow: document.documentElement.scrollWidth > innerWidth, cells };
+        container.scrollLeft = 0;
+        return result;
+    });
+}
+
+test('document table cells stay visible and scroll inside published articles and author preview at mobile breakpoints', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Δοκιμή πίνακα', '# Δεδομένα αγώνα\n\n| Οδηγός | Χρόνος | Πρώτος τομέας | Δεύτερος τομέας | Τρίτος τομέας | Ταχύτητα |\n| --- | --- | --- | --- | --- | --- |\n| Συνθετικός οδηγός | 1:23.456 | 27.123 | 31.234 | 25.099 | 320 km/h |');
+    await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.docx-table'));
+    const frame = page.frames().find(frame => frame.url() === 'about:srcdoc');
+    const published = await page.context().newPage();
+    await published.goto(origin + '/blog-module/blog-entries/20250405G/article.html');
+    for (const width of [390, 576, 577, 1440]) for (const theme of ['light', 'dark']) {
+        // Test the iframe's viewport, not only the width of its parent editor.
+        await page.locator('#gen-article-preview').evaluate((element, width) => { element.width = width; element.style.width = width + 'px'; }, width);
+        await frame.waitForFunction(width => innerWidth === width, width);
+        await published.setViewportSize({ width, height: 1000 });
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        await frame.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
+        await published.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        for (const [name, target] of [['published', published], ['preview', frame]]) {
+            const result = await renderedTable(target.locator('.docx-table').first());
+            const label = `${name}/${width}/${theme}`;
+            assert.equal(result.display, 'block', label);
+            assert.ok(result.width > 0 && result.height > 0, label + ': rendered container');
+            assert.ok(result.cells.length > 2 && result.cells.every(cell => cell.text && cell.visible && cell.width > 0 && cell.height > 0 && cell.fontSize >= 12), label + ': readable header and body cells');
+            assert.equal(result.documentOverflow, false, label + ': contained overflow');
+            if (width === 390) {
+                assert.equal(result.overflowX, 'auto', label);
+                assert.ok(result.scrollLeft > 0, label + ': wide table scrolls horizontally');
+            }
+        }
+    }
+});
+
+test('CSV cards, desktop view switching and compact tables retain their behavior in articles and preview', async t => {
+    const page = await pageFor(t);
+    const fixtures = createResponsiveTableFromCSV('Οδηγός,Χρόνος\nΆλφα,1:20\nΒήτα,1:21\nΓάμμα,1:22', 'qa-full.csv')
+        + createResponsiveTableFromCSV('Οδηγός,Χρόνος\nΆλφα,1:20', 'qa-compact.csv');
+    const published = await page.context().newPage();
+    await published.route('**/blog-entries/20250405G/article.html', route => {
+        const html = fs.readFileSync(path.join(root, 'blog-module/blog-entries/20250405G/article.html'), 'utf8');
+        return route.fulfill({ contentType: 'text/html', body: html.replace(/(<div class="rr-body article-content"[^>]*>)/, '$1' + fixtures) });
+    });
+    await published.goto(origin + '/blog-module/blog-entries/20250405G/article.html');
+    await setText(page, 'Δοκιμή CSV', 'Συνθετικό κείμενο.'); await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.rr-body'));
+    const frame = page.frames().find(frame => frame.url() === 'about:srcdoc');
+    // File-backed CSV is a documented preview limitation. Test the unchanged production-generated markup and preview's real toggle handler.
+    await frame.locator('.rr-body').evaluate((body, html) => {
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        body.append(...[...parsed.body.children].map(element => document.importNode(element, true)));
+    }, fixtures);
+    await page.evaluate(() => window.F1S_ARTICLE_PREVIEW.hydrate(document.getElementById('gen-article-preview').contentDocument));
+    for (const width of [390, 576, 577, 1440]) for (const theme of ['light', 'dark']) {
+        await page.locator('#gen-article-preview').evaluate((element, width) => { element.width = width; element.style.width = width + 'px'; }, width);
+        await frame.waitForFunction(width => innerWidth === width, width);
+        await published.setViewportSize({ width, height: 1000 });
+        await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        await frame.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
+        await published.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+        for (const [name, target] of [['published', published], ['preview', frame]]) {
+            const display = selector => target.locator(selector).evaluate(element => getComputedStyle(element).display);
+            const label = `${name}/${width}/${theme}`;
+            assert.equal(await display('#csv-table-qa-full-csv-scroll'), width <= 576 ? 'none' : 'block', label);
+            assert.equal(await display('#csv-table-qa-full-csv-card'), width <= 576 ? 'block' : 'none', label);
+            const compact = await renderedTable(target.locator('#csv-table-qa-compact-csv-scroll table'));
+            assert.equal(compact.display, 'block', label);
+            assert.ok(compact.width > 0 && compact.height > 0 && compact.cells.every(cell => cell.visible && cell.width > 0 && cell.height > 0), label);
+            assert.equal(await display('#csv-table-qa-compact-csv-card'), 'none', label);
+            if (width === 1440) for (const id of ['qa-full', 'qa-compact']) {
+                await target.locator(`[data-table="csv-table-${id}-csv"][data-view="card"]`).click();
+                assert.equal(await display(`#csv-table-${id}-csv-scroll`), 'none', label);
+                assert.equal(await display(`#csv-table-${id}-csv-card`), 'block', label);
+                await target.locator(`[data-table="csv-table-${id}-csv"][data-view="scroll"]`).click();
+                assert.equal(await display(`#csv-table-${id}-csv-scroll`), 'block', label);
+                assert.equal(await display(`#csv-table-${id}-csv-card`), 'none', label);
+            }
+        }
     }
 });

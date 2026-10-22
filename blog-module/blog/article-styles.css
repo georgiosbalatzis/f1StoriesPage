@@ -56,7 +56,7 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
 @keyframes tooltipFade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 @media (max-width: 576px) {
     .share-buttons { display: flex; gap: 0.4rem; flex-wrap: nowrap; flex-shrink: 0; }
-    .table-responsive-container:not(.table-compact) .table-container.scroll-view { display: none !important; }
+    .table-responsive-container:not(.table-compact):not(.docx-table-container) .table-container.scroll-view { display: none !important; }
     .table-responsive-container:not(.table-compact) .table-container.card-view { display: block !important; }
     .docx-table-container .table-container.scroll-view { display: block !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
