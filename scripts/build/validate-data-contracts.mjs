@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import taxonomy from '../../blog-module/taxonomy.js';
 import feed from '../../blog-module/build/feed.js';
+import search from '../../blog-module/search-destinations.js';
 
 const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
@@ -18,6 +19,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const FILE_LIMITS = {
     'assets/youtube-latest.json': 40 * 1024,
     'blog-module/blog-index-data.json': 144 * 1024,
+    'blog-module/search-destinations.json': 4 * 1024,
     'blog-module/blog-source-cache.json': 1024 * 1024,
     'blog-module/home-latest.json': 16 * 1024,
     'scripts/build/asset-manifest.json': 256 * 1024,
@@ -637,6 +639,8 @@ function validateFeed() {
 
 function main() {
     validateCompactBlogIndex();
+    try { search.validateIndex(readJson('blog-module/search-destinations.json')); }
+    catch (error) { addError('blog-module/search-destinations.json', error.message); }
     validateHomeLatest();
     validateBlogSourceCache();
     validateYoutubeSnapshot();

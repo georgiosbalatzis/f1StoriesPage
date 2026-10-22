@@ -3,7 +3,7 @@
 // phone strip, cover fallbacks and story prefetch. On index.html it also renders the *views* from the compact index:
 // the legacy ?category= and ?author= links keep working, and q, sort and page are new, additive parameters.
 // Every view is a URL; links are real links and Back is the browser's. Only typing in search updates in place.
-(function() {
+(() => {
     var T = window.F1S_TAXONOMY;
     var main = document.getElementById('main');
     if (!T || !main || !main.classList.contains('edition')) return;
@@ -19,25 +19,25 @@
 
     function el(tag, attrs, children) {
         var node = document.createElement(tag);
-        Object.keys(attrs || {}).forEach(function(key) {
+        Object.keys(attrs || {}).forEach((key) => {
             var value = attrs[key];
             if (value == null || value === false) return;
             if (key === 'class') node.className = value;
             else if (key === 'text') node.textContent = value;
             else node.setAttribute(key, value);
         });
-        (children || []).forEach(function(child) { if (child != null) node.append(child); });
+        (children || []).forEach((child) => { if (child != null) node.append(child); });
         return node;
     }
     function norm(value) {
         return String(value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ς/g, 'σ');
     }
-    function all(selector) { return Array.prototype.slice.call(main.querySelectorAll(selector)); }
+    function all(selector) { return [...main.querySelectorAll(selector)]; }
 
     // ── Every Edition page ───────────────────────────────
     // ΝΕΟ is a story of the last seven days: the build marks them, and a page cached for days drops the marks
     // whose last day has passed (the reader's Athens calendar day, not the device's time zone).
-    all('.ed-new').forEach(function(mark) {
+    all('.ed-new').forEach((mark) => {
         var until = mark.getAttribute('data-new-until');
         if (!T.isDay(until) || !T.isNewStory(T.addDays(until, 1 - T.NEW_DAYS), today)) mark.remove();
     });
@@ -61,12 +61,12 @@
     if (strip) {
         // Browsers scroll a focused link in only when it is wholly outside the strip: bring a half-clipped one fully
         // into view, its ring included (the strip's scroll-padding).
-        strip.addEventListener('focusin', function(event) { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); });
+        strip.addEventListener('focusin', (event) => { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); });
         strip.addEventListener('scroll', railEdges, { passive: true });
         window.addEventListener('resize', railEdges);
     }
     // A missing cover never leaves a hole: the srcset, then the default image, then a text-only card.
-    main.addEventListener('error', function(event) {
+    main.addEventListener('error', (event) => {
         var image = event.target;
         if (!image || image.tagName !== 'IMG') return;
         var fallback = image.getAttribute('data-fallback-src');
@@ -106,7 +106,7 @@
     function authorFrom(value) {
         var wanted = norm(value).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         // The slug (f1-stories) or the slugified data name (f1-stories-team).
-        return !wanted ? null : T.AUTHORS.filter(function(author) { return author.slug === wanted || norm(author.name).replace(/[^a-z0-9]+/g, '-') === wanted; })[0] || null;
+        return !wanted ? null : T.AUTHORS.filter((author) => { return author.slug === wanted || norm(author.name).replace(/[^a-z0-9]+/g, '-') === wanted; })[0] || null;
     }
     function readState() {
         var params = new URL(window.location.href).searchParams;
@@ -126,7 +126,7 @@
         var next = Object.assign({}, state, change);
         var url = new URL(window.location.href);
         [['category', next.category], ['author', next.author && next.author.slug], ['q', next.q],
-            ['sort', next.sort === 'oldest' ? 'oldest' : ''], ['page', next.page > 1 ? next.page : '']].forEach(function(pair) {
+            ['sort', next.sort === 'oldest' ? 'oldest' : ''], ['page', next.page > 1 ? next.page : '']].forEach((pair) => {
             if (pair[1]) url.searchParams.set(pair[0], pair[1]); else url.searchParams.delete(pair[0]);
         });
         return url.pathname + url.search;
@@ -146,7 +146,7 @@
     function expandCompactPosts(data) {
         if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
         var cardFlags = decodeFlags(data.h, data.p.length);
-        return data.p.map(function(row, index) {
+        return data.p.map((row, index) => {
             var folder = '/blog-module/blog-entries/' + encodeURIComponent(row[0] || '') + '/';
             return {
                 id: row[0] || '', title: row[1] || '', author: (data.a || [])[row[2]] || 'F1 Stories', date: row[3] || '',
@@ -154,14 +154,14 @@
                 thumbnailWidth: parseInt(row[4], 10) || 400, thumbnailHeight: parseInt(row[5], 10) || 188,
                 excerpt: row[6] || '', readingTime: row[7] || '',
                 // The build lists the primary category first.
-                categories: (row[8] || []).map(function(i) { return data.c[i]; }).filter(Boolean),
-                tags: (row[9] || []).map(function(tag) { return typeof tag === 'number' ? data.t[tag] : tag; }).filter(Boolean)
+                categories: (row[8] || []).map((i) => { return data.c[i]; }).filter(Boolean),
+                tags: (row[9] || []).map((tag) => { return typeof tag === 'number' ? data.t[tag] : tag; }).filter(Boolean)
             };
         });
     }
     function preparePosts(list) {
         // Newest first by day; the build's order breaks same-day ties (Array#sort is stable).
-        return list.slice().sort(function(a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; }).map(function(post) {
+        return list.slice().sort((a, b) => { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; }).map((post) => {
             var postTaxonomy = T.getPostTaxonomy(post);
             post.categories = postTaxonomy.categories;
             post.__search = norm([post.title, post.excerpt, post.author, T.authorLabel(post.author), post.categories.join(' '),
@@ -172,8 +172,8 @@
     function fetchJson(index) {
         if (index >= DATA_PATHS.length) return Promise.reject(new Error('Unable to load blog data'));
         return fetch(DATA_PATHS[index], { cache: 'no-store', headers: { Accept: 'application/json' } })
-            .then(function(response) { if (!response.ok) throw new Error('not ok'); return response.json(); })
-            .catch(function() { return fetchJson(index + 1); });
+            .then((response) => { if (!response.ok) throw new Error('not ok'); return response.json(); })
+            .catch(() => { return fetchJson(index + 1); });
     }
     function ensurePosts() {
         if (loaded) return Promise.resolve(posts);
@@ -184,13 +184,13 @@
             cached = cached && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.posts) ? cached.posts : null;
         } catch (_) {}
         if (cached) { posts = preparePosts(cached); loaded = true; return Promise.resolve(posts); }
-        pending = fetchJson(0).then(function(data) {
+        pending = fetchJson(0).then((data) => {
             var list = expandCompactPosts(data) || (data && data.posts) || [];
             try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), posts: list })); } catch (_) {}
             posts = preparePosts(list);
             loaded = true;
             return posts;
-        }).catch(function(error) { pending = null; throw error; });
+        }).catch((error) => { pending = null; throw error; });
         return pending;
     }
 
@@ -206,18 +206,18 @@
             el('div', { class: 'ed-row__text' }, [
                 el('span', { class: 'ed-kicker' }, [T.greekUpper(T.categoryLabel(primary)), fresh ? el('span', { class: 'ed-new', 'data-new-until': T.newUntil(post.date), text: 'ΝΕΟ' }) : null]),
                 el('h4', { class: 'ed-headline' }, [el('span', { class: 'ed-title-link', text: post.title })]),
-                el('p', { class: 'ed-meta' }, [T.authorLabel(post.author), minutes].filter(Boolean).map(function(text) { return el('span', { text: text }); }))
+                el('p', { class: 'ed-meta' }, [T.authorLabel(post.author), minutes].filter(Boolean).map((text) => { return el('span', { text: text }); }))
             ])
         ])]);
     }
     function monthGroups(list) {
         var groups = [];
-        list.forEach(function(post) {
+        list.forEach((post) => {
             var key = post.date.slice(0, 7);
             if (!groups.length || groups[groups.length - 1].key !== key) groups.push({ key: key, posts: [] });
             groups[groups.length - 1].posts.push(post);
         });
-        return groups.map(function(group) {
+        return groups.map((group) => {
             var dated = T.isDay(group.key + '-01');
             return el('section', { class: 'ed-month', 'aria-label': dated ? null : 'Χωρίς ημερομηνία' }, [
                 dated ? el('h3', { class: 'ed-month__title', text: T.monthName(group.key) }) : null,
@@ -231,7 +231,7 @@
             return to < 1 || to > total ? el('span', { class: 'ed-pages__step is-off', text: text })
                 : el('a', { class: 'ed-pages__step', rel: rel, href: href(state, { page: to }), text: text });
         }
-        var items = T.pageItems(state.page, total).map(function(item) {
+        var items = T.pageItems(state.page, total).map((item) => {
             if (item === '…') return el('li', {}, [el('span', { class: 'ed-pages__gap', 'aria-hidden': 'true', text: '…' })]);
             return el('li', {}, [item === state.page
                 ? el('span', { class: 'ed-pages__num', 'aria-current': 'page' }, [el('span', { class: 'visually-hidden', text: 'Σελίδα ' }), String(item)])
@@ -242,7 +242,7 @@
     // "Ειδήσεις · Ανάλυση · …" as links to the static section pages, for the empty and failure messages.
     function sectionNames() {
         var nodes = [];
-        T.PUBLIC_CATEGORIES.forEach(function(name, i) {
+        T.PUBLIC_CATEGORIES.forEach((name, i) => {
             if (i) nodes.push(' · ');
             nodes.push(el('a', { href: SECTIONS + T.categoryKind(name) + '/', text: T.categoryLabel(name) }));
         });
@@ -252,7 +252,7 @@
     // ── Rendering a state ────────────────────────────────
     function viewOf(state) { return state.author ? 'author' : state.category ? 'category' : state.q ? 'search' : 'all'; }
     function head(state, list) {
-        var months = list.map(function(post) { return post.date.slice(0, 7); }).filter(function(key) { return T.isDay(key + '-01'); }).sort();
+        var months = list.map((post) => { return post.date.slice(0, 7); }).filter((key) => { return T.isDay(key + '-01'); }).sort();
         var range = months.length ? T.monthName(months[0]) + ' – ' + T.monthName(months[months.length - 1]) : '';
         var facts = list.length ? T.plural(list.length, 'ιστορία', 'ιστορίες') + (range ? ' · ' + range : '') + (state.page > 1 ? ' · Σελίδα ' + state.page : '') : 'Καμία ιστορία';
         var count = el('p', { class: 'ed-section__facts ed-num', id: 'post-count', 'aria-live': 'polite', text: facts });
@@ -272,22 +272,22 @@
     // With two or more filters in play each one gets a link that removes just that filter.
     function filters(state) {
         var chips = [['category', state.category && T.categoryLabel(state.category), ''], ['author', state.author && state.author.label, null], ['q', state.q && '«' + state.q + '»', '']]
-            .filter(function(chip) { return chip[1]; });
-        return chips.length < 2 ? null : el('p', { class: 'ed-filters' }, [el('span', { text: 'Φίλτρα:' })].concat(chips.map(function(chip) {
+            .filter((chip) => { return chip[1]; });
+        return chips.length < 2 ? null : el('p', { class: 'ed-filters' }, [el('span', { text: 'Φίλτρα:' })].concat(chips.map((chip) => {
             var change = { page: 1 };
             change[chip[0]] = chip[2];
             return el('a', { href: href(state, change) }, [chip[1], el('span', { class: 'visually-hidden', text: ' — αφαίρεση φίλτρου' })]);
         })));
     }
     function sortSwitch(state) {
-        return el('p', { class: 'ed-sort' }, [el('span', { class: 'visually-hidden', text: 'Σειρά: ' })].concat([['newest', 'Νεότερα'], ['oldest', 'Παλαιότερα']].map(function(option) {
+        return el('p', { class: 'ed-sort' }, [el('span', { class: 'visually-hidden', text: 'Σειρά: ' })].concat([['newest', 'Νεότερα'], ['oldest', 'Παλαιότερα']].map((option) => {
             return state.sort === option[0] ? el('span', { 'aria-current': 'true', text: option[1] }) : el('a', { href: href(state, { sort: option[0], page: 1 }), text: option[1] });
         })));
     }
     function render(state, list) {
         var kind = viewOf(state);
         // Oldest first is a stable ascending sort, so same-day stories keep the build's order.
-        var ordered = state.sort === 'oldest' ? list.slice().sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }) : list;
+        var ordered = state.sort === 'oldest' ? list.slice().sort((a, b) => { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }) : list;
         var total = Math.max(1, Math.ceil(ordered.length / PAGE));
         state.page = Math.min(state.page, total);
         var from = (state.page - 1) * PAGE;
@@ -310,7 +310,7 @@
         var title = main.querySelector('.ed-title');
         if (!title || (title.tagName === 'H1') === asHeading) return;
         var next = el(asHeading ? 'h1' : 'p', { class: 'ed-title' });
-        next.append.apply(next, title.childNodes);
+        next.append(...title.childNodes);
         title.replaceWith(next);
     }
     function syncChrome(state) {
@@ -320,7 +320,7 @@
         main.classList.toggle('ed-page--section', !!section);
         setMastTitle(!listing);
         if (searchInput && searchInput.value !== state.q) searchInput.value = state.q;
-        all('.ed-contents__list a, .ed-rail a').forEach(function(link) {
+        all('.ed-contents__list a, .ed-rail a').forEach((link) => {
             var kind = (/\/section\/([^/]+)\//.exec(link.getAttribute('href')) || [])[1];
             var current = section ? kind === T.categoryKind(state.category) : link.getAttribute('href') === INDEX_PATH;
             if (current) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
@@ -331,17 +331,17 @@
     }
 
     var baseTitle = document.title;
-    var scrollKey = function() { return 'f1s-edition-scroll:' + location.pathname + location.search; };
+    var scrollKey = () => { return 'f1s-edition-scroll:' + location.pathname + location.search; };
     var restore = (performance.getEntriesByType && (performance.getEntriesByType('navigation')[0] || {}).type) === 'back_forward';
     // The view renders after the data arrives, so the browser cannot restore the scroll; Back does it here.
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.addEventListener('pagehide', function() { try { sessionStorage.setItem(scrollKey(), String(window.scrollY)); } catch (_) {} });
+    window.addEventListener('pagehide', () => { try { sessionStorage.setItem(scrollKey(), String(window.scrollY)); } catch (_) {} });
     function restoreScroll() {
         if (!restore) return;
         restore = false;
         var y = 0;
         try { y = parseInt(sessionStorage.getItem(scrollKey()), 10) || 0; } catch (_) {}
-        if (y) window.requestAnimationFrame(function() { window.scrollTo({ top: y, behavior: 'instant' }); });
+        if (y) window.requestAnimationFrame(() => { window.scrollTo({ top: y, behavior: 'instant' }); });
     }
 
     function show() {
@@ -350,34 +350,41 @@
         if (!isListing(state)) {
             renderToken += 1;
             archive.removeAttribute('aria-busy');
-            ['data-category', 'data-author', 'data-query'].forEach(function(name) { archive.setAttribute(name, ''); });
-            archive.setAttribute('data-view', 'all');
-            archive.setAttribute('data-sort', 'newest');
-            archive.setAttribute('data-page', '1');
+            Object.assign(archive.dataset, { category: '', author: '', query: '', view: 'all', sort: 'newest', page: 1 });
             document.title = baseTitle;
             restoreScroll();
             return;
         }
         archive.setAttribute('aria-busy', 'true');
         var token = ++renderToken;
-        ensurePosts().then(function() {
-            // The reader may have moved on (Back, another search) while the data loaded.
+        // Both sources settle before one render; even a stalled helper cannot hold articles indefinitely.
+        var extra = state.q ? Promise.race([
+            import(SEARCH_DESTINATIONS_URL).then(() => window.F1S_SEARCH.prepare(state, el)),
+            new Promise(resolve => setTimeout(resolve, 400))
+        ]) : null;
+        Promise.allSettled([ensurePosts(), extra]).then((results) => {
             if (token !== renderToken) return;
+            var articlesOK = results[0].status === 'fulfilled';
             var q = norm(state.q);
-            var list = posts.filter(function(post) {
+            var list = articlesOK ? posts.filter((post) => {
                 return (!state.category || post.categories.indexOf(state.category) !== -1)
                     && (!state.author || post.author === state.author.name)
                     && (!q || post.__search.indexOf(q) !== -1);
-            });
-            var kind = render(state, list);
+            }) : [];
+            if (articlesOK) {
+                var kind = render(state, list);
+                Object.assign(archive.dataset, { view: kind, category: state.category, author: state.author ? state.author.slug : '', query: state.q, sort: state.sort, page: state.page, total: list.length });
+                document.title = (state.author ? state.author.label : state.category ? T.categoryLabel(state.category) : state.q ? '«' + state.q + '»' : 'Όλες οι ιστορίες') + ' — Αρχείο F1 Stories';
+            } else {
+                archive.dataset.total = 0;
+                view.replaceChildren(el('p', { class: 'ed-empty', role: 'status' }, ['Δεν ήταν δυνατή η φόρτωση του αρχείου. Δοκίμασε ξανά σε λίγο ή άνοιξε μια ενότητα: '].concat(sectionNames())));
+            }
+            if (state.q) {
+                if (results[1].value) results[1].value(view, articlesOK, list.length);
+                else view.append(el('p', { role: 'status', text: 'Δεν ήταν δυνατή η φόρτωση θεμάτων και εργαλείων.' }));
+            }
             archive.removeAttribute('aria-busy');
-            [['view', kind], ['category', state.category], ['author', state.author ? state.author.slug : ''], ['query', state.q], ['sort', state.sort], ['page', state.page], ['total', list.length]]
-                .forEach(function(pair) { archive.setAttribute('data-' + pair[0], String(pair[1])); });
-            document.title = (state.author ? state.author.label : state.category ? T.categoryLabel(state.category) : state.q ? '«' + state.q + '»' : 'Όλες οι ιστορίες') + ' — Αρχείο F1 Stories';
             restoreScroll();
-        }, function() {
-            archive.removeAttribute('aria-busy');
-            view.replaceChildren(el('p', { class: 'ed-empty', role: 'status' }, ['Δεν ήταν δυνατή η φόρτωση του αρχείου. Δοκίμασε ξανά σε λίγο ή άνοιξε μια ενότητα: '].concat(sectionNames())));
         });
     }
 
@@ -389,18 +396,24 @@
         show();
     }
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', () => {
             clearTimeout(searchTimer);
-            searchTimer = setTimeout(function() { setQuery(searchInput.value); }, 250);
+            searchTimer = setTimeout(() => { setQuery(searchInput.value); }, 250);
             clearTimeout(analyticsTimer);
-            analyticsTimer = setTimeout(function() {
+            analyticsTimer = setTimeout(() => {
                 var analytics = window.f1storiesAnalytics;
                 var query = searchInput.value.trim();
                 if (query && analytics && analytics.getConsentState().analytics_storage === 'granted') analytics.trackEvent('journal_search', { query_length: query.length, result_count: Number(archive.getAttribute('data-total')) || 0 });
             }, 900);
         });
-        if (searchInput.form) searchInput.form.addEventListener('submit', function(event) { event.preventDefault(); clearTimeout(searchTimer); setQuery(searchInput.value); });
+        if (searchInput.form) searchInput.form.addEventListener('submit', (event) => { event.preventDefault(); clearTimeout(searchTimer); setQuery(searchInput.value); });
     }
     window.addEventListener('popstate', show);
+    window.addEventListener('pageshow', event => {
+        if (event.persisted && readState().q) {
+            if (window.F1S_SEARCH) window.F1S_SEARCH.reset();
+            show();
+        }
+    });
     show();
 })();

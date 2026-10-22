@@ -174,6 +174,8 @@ async function minifyJs(rel) {
     const result = await esbuildTransform(source, {
         define: rel === 'scripts/perf/web-vitals-beacon.js' ? {
             RUM_COLLECTOR_URL: JSON.stringify('/' + collector + '?v=' + sha256Short(fs.readFileSync(path.join(REPO_ROOT, collector))))
+        } : rel === 'blog-module/blog-index.js' ? {
+            SEARCH_DESTINATIONS_URL: JSON.stringify('/blog-module/search-destinations.min.js?v=' + sha256Short(fs.readFileSync(path.join(REPO_ROOT, 'blog-module/search-destinations.min.js'))))
         } : {},
         loader: 'js',
         minify: true,

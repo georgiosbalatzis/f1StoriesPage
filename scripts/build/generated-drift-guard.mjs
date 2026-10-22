@@ -15,6 +15,7 @@ const GENERATED_EXACT = new Set([
     'feed.xml',
     'assets/youtube-latest.json',
     'blog-module/blog/index.html',
+    'blog-module/search-destinations.json',
     'blog-module/blog/template.html',
     'f1telemetry/index.html',
     'generate.html',

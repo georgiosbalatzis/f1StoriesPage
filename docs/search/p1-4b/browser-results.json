@@ -1,0 +1,453 @@
+{
+  "comparisons": [
+    {
+      "width": 1440,
+      "suffix": "?q=Norris",
+      "equal": true,
+      "total": "11",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260928G/article.html",
+        "/blog-module/blog-entries/20260927G/article.html",
+        "/blog-module/blog-entries/20260824W/article.html",
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20260727G/article.html",
+        "/blog-module/blog-entries/20260725W/article.html",
+        "/blog-module/blog-entries/20260613J/article.html",
+        "/blog-module/blog-entries/20250804G/article.html",
+        "/blog-module/blog-entries/20250707G/article.html",
+        "/blog-module/blog-entries/20250630G/article.html",
+        "/blog-module/blog-entries/20250425J/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=Λαντο",
+      "equal": true,
+      "total": "1",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260822W/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=Νορισ",
+      "equal": true,
+      "total": "3",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20250530G/article.html",
+        "/blog-module/blog-entries/20250518W/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=Senna",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260918W/article.html",
+        "/blog-module/blog-entries/20260910-2G/article.html",
+        "/blog-module/blog-entries/20260801W/article.html",
+        "/blog-module/blog-entries/20260616W/article.html",
+        "/blog-module/blog-entries/20260603W/article.html",
+        "/blog-module/blog-entries/20250530-2W/article.html",
+        "/blog-module/blog-entries/20250515-1W/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=ghostcar",
+      "equal": true,
+      "total": "0",
+      "articleURLs": []
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=F1&page=2",
+      "equal": true,
+      "total": "192",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260909J/article.html",
+        "/blog-module/blog-entries/20260906W/article.html",
+        "/blog-module/blog-entries/20260905J/article.html",
+        "/blog-module/blog-entries/20260904W/article.html",
+        "/blog-module/blog-entries/20260901W/article.html",
+        "/blog-module/blog-entries/20260901J/article.html",
+        "/blog-module/blog-entries/20260829W/article.html",
+        "/blog-module/blog-entries/20260828W/article.html",
+        "/blog-module/blog-entries/20260827W/article.html",
+        "/blog-module/blog-entries/20260826W/article.html",
+        "/blog-module/blog-entries/20260825W/article.html",
+        "/blog-module/blog-entries/20260824W/article.html",
+        "/blog-module/blog-entries/20260824J/article.html",
+        "/blog-module/blog-entries/20260824D/article.html",
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20260822J/article.html",
+        "/blog-module/blog-entries/20260820W/article.html",
+        "/blog-module/blog-entries/20260817J/article.html",
+        "/blog-module/blog-entries/20260815W/article.html",
+        "/blog-module/blog-entries/20260803W/article.html",
+        "/blog-module/blog-entries/20260802W/article.html",
+        "/blog-module/blog-entries/20260801W/article.html",
+        "/blog-module/blog-entries/20260730W/article.html",
+        "/blog-module/blog-entries/20260729W/article.html",
+        "/blog-module/blog-entries/20260727J/article.html",
+        "/blog-module/blog-entries/20260727G/article.html",
+        "/blog-module/blog-entries/20260726W/article.html",
+        "/blog-module/blog-entries/20260726D/article.html",
+        "/blog-module/blog-entries/20260725W/article.html",
+        "/blog-module/blog-entries/20260725J/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=2026&sort=oldest",
+      "equal": true,
+      "total": "241",
+      "articleURLs": [
+        "/blog-module/blog-entries/20250404G/article.html",
+        "/blog-module/blog-entries/20250612W/article.html",
+        "/blog-module/blog-entries/20260211W/article.html",
+        "/blog-module/blog-entries/20260217T/article.html",
+        "/blog-module/blog-entries/20260218W/article.html",
+        "/blog-module/blog-entries/20260222T/article.html",
+        "/blog-module/blog-entries/20260224J/article.html",
+        "/blog-module/blog-entries/20260225W/article.html",
+        "/blog-module/blog-entries/20260227Τ/article.html",
+        "/blog-module/blog-entries/20260303W/article.html",
+        "/blog-module/blog-entries/20260304D/article.html",
+        "/blog-module/blog-entries/20260309D/article.html",
+        "/blog-module/blog-entries/20260312J/article.html",
+        "/blog-module/blog-entries/20260313W/article.html",
+        "/blog-module/blog-entries/20260314W/article.html",
+        "/blog-module/blog-entries/20260316D/article.html",
+        "/blog-module/blog-entries/20260317W/article.html",
+        "/blog-module/blog-entries/20260319W/article.html",
+        "/blog-module/blog-entries/20260320J/article.html",
+        "/blog-module/blog-entries/20260324W/article.html",
+        "/blog-module/blog-entries/20260326W/article.html",
+        "/blog-module/blog-entries/20260327J/article.html",
+        "/blog-module/blog-entries/20260328W/article.html",
+        "/blog-module/blog-entries/20260329G/article.html",
+        "/blog-module/blog-entries/20260330D/article.html",
+        "/blog-module/blog-entries/20260331J/article.html",
+        "/blog-module/blog-entries/20260401W/article.html",
+        "/blog-module/blog-entries/20260402G/article.html",
+        "/blog-module/blog-entries/20260403W/article.html",
+        "/blog-module/blog-entries/20260404G/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?category=History&sort=oldest&page=2",
+      "equal": true,
+      "total": "105",
+      "articleURLs": [
+        "/blog-module/blog-entries/20250819W/article.html",
+        "/blog-module/blog-entries/20250822W/article.html",
+        "/blog-module/blog-entries/20250905W/article.html",
+        "/blog-module/blog-entries/20250919W/article.html",
+        "/blog-module/blog-entries/20250926W/article.html",
+        "/blog-module/blog-entries/20251007W/article.html",
+        "/blog-module/blog-entries/20251009W/article.html",
+        "/blog-module/blog-entries/20251011W/article.html",
+        "/blog-module/blog-entries/20260211W/article.html",
+        "/blog-module/blog-entries/20260218W/article.html",
+        "/blog-module/blog-entries/20260303W/article.html",
+        "/blog-module/blog-entries/20260314W/article.html",
+        "/blog-module/blog-entries/20260317W/article.html",
+        "/blog-module/blog-entries/20260319W/article.html",
+        "/blog-module/blog-entries/20260324W/article.html",
+        "/blog-module/blog-entries/20260326W/article.html",
+        "/blog-module/blog-entries/20260407W/article.html",
+        "/blog-module/blog-entries/20260409W/article.html",
+        "/blog-module/blog-entries/20260414W/article.html",
+        "/blog-module/blog-entries/20260415/article.html",
+        "/blog-module/blog-entries/20260416W/article.html",
+        "/blog-module/blog-entries/20260420W/article.html",
+        "/blog-module/blog-entries/20260425-2W/article.html",
+        "/blog-module/blog-entries/20260429W/article.html",
+        "/blog-module/blog-entries/20260502W/article.html",
+        "/blog-module/blog-entries/20260508W/article.html",
+        "/blog-module/blog-entries/20260515W/article.html",
+        "/blog-module/blog-entries/20260601W/article.html",
+        "/blog-module/blog-entries/20260605W/article.html",
+        "/blog-module/blog-entries/20260605-2W/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=σημ&category=History&author=themis-charvalis",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260706-2W/article.html",
+        "/blog-module/blog-entries/20260618W/article.html",
+        "/blog-module/blog-entries/20250816W/article.html",
+        "/blog-module/blog-entries/20250709W/article.html",
+        "/blog-module/blog-entries/20250514W/article.html",
+        "/blog-module/blog-entries/20250509W/article.html",
+        "/blog-module/blog-entries/20250507W/article.html"
+      ]
+    },
+    {
+      "width": 1440,
+      "suffix": "?q=Ferrari&category=Technical",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20261015G/article.html",
+        "/blog-module/blog-entries/20260422G/article.html",
+        "/blog-module/blog-entries/20250429-1G/article.html",
+        "/blog-module/blog-entries/20250428G/article.html",
+        "/blog-module/blog-entries/20250425-1G/article.html",
+        "/blog-module/blog-entries/20250423G/article.html",
+        "/blog-module/blog-entries/20250410G/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=Norris",
+      "equal": true,
+      "total": "11",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260928G/article.html",
+        "/blog-module/blog-entries/20260927G/article.html",
+        "/blog-module/blog-entries/20260824W/article.html",
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20260727G/article.html",
+        "/blog-module/blog-entries/20260725W/article.html",
+        "/blog-module/blog-entries/20260613J/article.html",
+        "/blog-module/blog-entries/20250804G/article.html",
+        "/blog-module/blog-entries/20250707G/article.html",
+        "/blog-module/blog-entries/20250630G/article.html",
+        "/blog-module/blog-entries/20250425J/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=Λαντο",
+      "equal": true,
+      "total": "1",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260822W/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=Νορισ",
+      "equal": true,
+      "total": "3",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20250530G/article.html",
+        "/blog-module/blog-entries/20250518W/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=Senna",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260918W/article.html",
+        "/blog-module/blog-entries/20260910-2G/article.html",
+        "/blog-module/blog-entries/20260801W/article.html",
+        "/blog-module/blog-entries/20260616W/article.html",
+        "/blog-module/blog-entries/20260603W/article.html",
+        "/blog-module/blog-entries/20250530-2W/article.html",
+        "/blog-module/blog-entries/20250515-1W/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=ghostcar",
+      "equal": true,
+      "total": "0",
+      "articleURLs": []
+    },
+    {
+      "width": 390,
+      "suffix": "?q=F1&page=2",
+      "equal": true,
+      "total": "192",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260909J/article.html",
+        "/blog-module/blog-entries/20260906W/article.html",
+        "/blog-module/blog-entries/20260905J/article.html",
+        "/blog-module/blog-entries/20260904W/article.html",
+        "/blog-module/blog-entries/20260901W/article.html",
+        "/blog-module/blog-entries/20260901J/article.html",
+        "/blog-module/blog-entries/20260829W/article.html",
+        "/blog-module/blog-entries/20260828W/article.html",
+        "/blog-module/blog-entries/20260827W/article.html",
+        "/blog-module/blog-entries/20260826W/article.html",
+        "/blog-module/blog-entries/20260825W/article.html",
+        "/blog-module/blog-entries/20260824W/article.html",
+        "/blog-module/blog-entries/20260824J/article.html",
+        "/blog-module/blog-entries/20260824D/article.html",
+        "/blog-module/blog-entries/20260822W/article.html",
+        "/blog-module/blog-entries/20260822J/article.html",
+        "/blog-module/blog-entries/20260820W/article.html",
+        "/blog-module/blog-entries/20260817J/article.html",
+        "/blog-module/blog-entries/20260815W/article.html",
+        "/blog-module/blog-entries/20260803W/article.html",
+        "/blog-module/blog-entries/20260802W/article.html",
+        "/blog-module/blog-entries/20260801W/article.html",
+        "/blog-module/blog-entries/20260730W/article.html",
+        "/blog-module/blog-entries/20260729W/article.html",
+        "/blog-module/blog-entries/20260727J/article.html",
+        "/blog-module/blog-entries/20260727G/article.html",
+        "/blog-module/blog-entries/20260726W/article.html",
+        "/blog-module/blog-entries/20260726D/article.html",
+        "/blog-module/blog-entries/20260725W/article.html",
+        "/blog-module/blog-entries/20260725J/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=2026&sort=oldest",
+      "equal": true,
+      "total": "241",
+      "articleURLs": [
+        "/blog-module/blog-entries/20250404G/article.html",
+        "/blog-module/blog-entries/20250612W/article.html",
+        "/blog-module/blog-entries/20260211W/article.html",
+        "/blog-module/blog-entries/20260217T/article.html",
+        "/blog-module/blog-entries/20260218W/article.html",
+        "/blog-module/blog-entries/20260222T/article.html",
+        "/blog-module/blog-entries/20260224J/article.html",
+        "/blog-module/blog-entries/20260225W/article.html",
+        "/blog-module/blog-entries/20260227Τ/article.html",
+        "/blog-module/blog-entries/20260303W/article.html",
+        "/blog-module/blog-entries/20260304D/article.html",
+        "/blog-module/blog-entries/20260309D/article.html",
+        "/blog-module/blog-entries/20260312J/article.html",
+        "/blog-module/blog-entries/20260313W/article.html",
+        "/blog-module/blog-entries/20260314W/article.html",
+        "/blog-module/blog-entries/20260316D/article.html",
+        "/blog-module/blog-entries/20260317W/article.html",
+        "/blog-module/blog-entries/20260319W/article.html",
+        "/blog-module/blog-entries/20260320J/article.html",
+        "/blog-module/blog-entries/20260324W/article.html",
+        "/blog-module/blog-entries/20260326W/article.html",
+        "/blog-module/blog-entries/20260327J/article.html",
+        "/blog-module/blog-entries/20260328W/article.html",
+        "/blog-module/blog-entries/20260329G/article.html",
+        "/blog-module/blog-entries/20260330D/article.html",
+        "/blog-module/blog-entries/20260331J/article.html",
+        "/blog-module/blog-entries/20260401W/article.html",
+        "/blog-module/blog-entries/20260402G/article.html",
+        "/blog-module/blog-entries/20260403W/article.html",
+        "/blog-module/blog-entries/20260404G/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?category=History&sort=oldest&page=2",
+      "equal": true,
+      "total": "105",
+      "articleURLs": [
+        "/blog-module/blog-entries/20250819W/article.html",
+        "/blog-module/blog-entries/20250822W/article.html",
+        "/blog-module/blog-entries/20250905W/article.html",
+        "/blog-module/blog-entries/20250919W/article.html",
+        "/blog-module/blog-entries/20250926W/article.html",
+        "/blog-module/blog-entries/20251007W/article.html",
+        "/blog-module/blog-entries/20251009W/article.html",
+        "/blog-module/blog-entries/20251011W/article.html",
+        "/blog-module/blog-entries/20260211W/article.html",
+        "/blog-module/blog-entries/20260218W/article.html",
+        "/blog-module/blog-entries/20260303W/article.html",
+        "/blog-module/blog-entries/20260314W/article.html",
+        "/blog-module/blog-entries/20260317W/article.html",
+        "/blog-module/blog-entries/20260319W/article.html",
+        "/blog-module/blog-entries/20260324W/article.html",
+        "/blog-module/blog-entries/20260326W/article.html",
+        "/blog-module/blog-entries/20260407W/article.html",
+        "/blog-module/blog-entries/20260409W/article.html",
+        "/blog-module/blog-entries/20260414W/article.html",
+        "/blog-module/blog-entries/20260415/article.html",
+        "/blog-module/blog-entries/20260416W/article.html",
+        "/blog-module/blog-entries/20260420W/article.html",
+        "/blog-module/blog-entries/20260425-2W/article.html",
+        "/blog-module/blog-entries/20260429W/article.html",
+        "/blog-module/blog-entries/20260502W/article.html",
+        "/blog-module/blog-entries/20260508W/article.html",
+        "/blog-module/blog-entries/20260515W/article.html",
+        "/blog-module/blog-entries/20260601W/article.html",
+        "/blog-module/blog-entries/20260605W/article.html",
+        "/blog-module/blog-entries/20260605-2W/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=σημ&category=History&author=themis-charvalis",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20260706-2W/article.html",
+        "/blog-module/blog-entries/20260618W/article.html",
+        "/blog-module/blog-entries/20250816W/article.html",
+        "/blog-module/blog-entries/20250709W/article.html",
+        "/blog-module/blog-entries/20250514W/article.html",
+        "/blog-module/blog-entries/20250509W/article.html",
+        "/blog-module/blog-entries/20250507W/article.html"
+      ]
+    },
+    {
+      "width": 390,
+      "suffix": "?q=Ferrari&category=Technical",
+      "equal": true,
+      "total": "7",
+      "articleURLs": [
+        "/blog-module/blog-entries/20261015G/article.html",
+        "/blog-module/blog-entries/20260422G/article.html",
+        "/blog-module/blog-entries/20250429-1G/article.html",
+        "/blog-module/blog-entries/20250428G/article.html",
+        "/blog-module/blog-entries/20250425-1G/article.html",
+        "/blog-module/blog-entries/20250423G/article.html",
+        "/blog-module/blog-entries/20250410G/article.html"
+      ]
+    }
+  ],
+  "network": [
+    {
+      "width": 1440,
+      "ordinaryAdditional": 0,
+      "firstQueryAdditional": 2
+    },
+    {
+      "width": 390,
+      "ordinaryAdditional": 0,
+      "firstQueryAdditional": 2
+    }
+  ],
+  "cls": [
+    {
+      "width": 1440,
+      "mode": "normal direct query",
+      "value": 0.00022082820939429014
+    },
+    {
+      "width": 1440,
+      "mode": "delayed destinations",
+      "value": 0.00022082820939429014
+    },
+    {
+      "width": 390,
+      "mode": "normal direct query",
+      "value": 0.0033206663501107944
+    },
+    {
+      "width": 390,
+      "mode": "delayed destinations",
+      "value": 0.0033206663501107944
+    }
+  ],
+  "consoleErrors": [],
+  "addedPayload": {
+    "raw": 6585,
+    "gzip": 2717
+  }
+}
