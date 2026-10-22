@@ -192,6 +192,31 @@ test('restored images remain saveable when a browser cannot assign file inputs',
     assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].hero.blob.size), expected);
 });
 
+test('edits made during a save remain visibly unsaved and update the same draft on the next save', async t => {
+    const page = await pageFor(t);
+    await page.evaluate(() => {
+        const save = window.F1S_LOCAL_DRAFTS.save;
+        let first = true;
+        window.F1S_LOCAL_DRAFTS.save = async (...args) => {
+            const result = await save(...args);
+            if (first) { first = false; await new Promise(resolve => window.__finishDraftSave = resolve); }
+            return result;
+        };
+    });
+    await setText(page, 'Αρχικός τίτλος', 'Κείμενο πριν από την αποθήκευση.');
+    await step(page, 4); await page.locator('#gen-save-draft').click();
+    await page.waitForFunction(() => Boolean(window.__finishDraftSave));
+    await setText(page, 'Νεότερος τίτλος', 'Κείμενο που γράφτηκε ενώ αποθηκευόταν.');
+    await page.evaluate(() => window.__finishDraftSave());
+    await saved(page);
+    assert.match(await page.locator('#gen-draft-status').textContent(), /νεότερες μη αποθηκευμένες αλλαγές/);
+    const before = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0]);
+    assert.equal(before.title, 'Αρχικός τίτλος');
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    const after = await page.evaluate(async () => await window.F1S_LOCAL_DRAFTS.list());
+    assert.equal(after.length, 1); assert.equal(after[0].id, before.id); assert.equal(after[0].title, 'Νεότερος τίτλος');
+});
+
 test('only explicit publish from a saved draft retains author/blog PR behavior and keeps the draft', async t => {
     const page = await pageFor(t);
     const calls = [];

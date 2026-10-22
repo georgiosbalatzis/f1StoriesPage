@@ -68,7 +68,7 @@ Independent maintenance, standings/YouTube refresh, security-header schedules an
 
 ## Validation and limits
 
-- `npm run test:author`: 17 passed, including CRUD, Greek/Blob persistence, incomplete/multiple drafts, ID stability, refresh/restart, corruption, quota/abort, unsaved-change/delete confirmations, token exclusion, stale image loads and file-input fallback.
+- `npm run test:author`: 18 passed, including CRUD, Greek/Blob persistence, incomplete/multiple drafts, ID stability, refresh/restart, corruption, quota/abort, unsaved-change/delete confirmations, token exclusion, stale image loads and file-input fallback.
 - `npm run test:blog`: 336 passed; golden snapshots match.
 - `npm run qa:author-images`: 16 fixtures passed.
 - Publishing routing, security policy, icon and maintenance checks: 36 passed.
@@ -76,7 +76,7 @@ Independent maintenance, standings/YouTube refresh, security-header schedules an
 - Clean baseline/candidate SHA-256 comparison: all 410 published article pages are byte-identical. Article index, RSS, sitemap, canonicals, homepage, entity hubs and public article browser assets are unchanged.
 - Public changes are limited to the author pages, their source/minified scripts and CSS, three new author modules, and the author security-header policy. The existing default author portrait remains in the artifact. Screenshot evidence is excluded from the public artifact.
 - Repeated builds are byte-identical across all 4,104 public files.
-- Initial local scripts referenced by `generate.html`: 114,857 → 110,072 bytes raw; summed per-file gzip 38,211 → 36,528 bytes. The shared preview bundle adds 143,413 bytes raw / 52,412 gzip only when preview is opened. Published article/homepage JavaScript and CSS are unchanged. The size-budget gate passes; no field-performance or Lighthouse claim is made.
+- Initial local scripts referenced by `generate.html`: 114,857 → 110,331 bytes raw; summed per-file gzip 38,211 → 36,559 bytes. The shared preview bundle adds 143,413 bytes raw / 52,412 gzip only when preview is opened. Published article/homepage JavaScript and CSS are unchanged. The size-budget gate passes; no field-performance or Lighthouse claim is made.
 
 Exact changed public paths (13):
 

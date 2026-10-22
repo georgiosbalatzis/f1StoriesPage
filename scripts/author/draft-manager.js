@@ -53,6 +53,7 @@
                 id = result.id;
                 saved = checkpoint;
                 status.textContent = 'Αποθηκεύτηκε τοπικά · ' + new Date(result.updatedAt).toLocaleString('el-GR') + '. Δεν δημοσιεύτηκε.';
+                if (dirty()) status.textContent += ' Υπάρχουν νεότερες μη αποθηκευμένες αλλαγές.';
                 // Permission is advisory; save success depends only on the completed IndexedDB transaction.
                 db.requestPersistence();
             } catch (error) { errorMessage(error); }
