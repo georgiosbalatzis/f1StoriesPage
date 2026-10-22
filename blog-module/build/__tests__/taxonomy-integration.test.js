@@ -172,60 +172,10 @@ test('THE PADDOCK signs with short bylines and dates the wire, voices and archiv
     assert.match(html, /home-story__kind">ΙΣΤΟΡΙΑ/);
 });
 
-test('ON AIR shows the newest episode behind a facade and falls back to YouTube frames', () => {
-    const { renderOnAir, splitEpisodeTitle } = require('../home-panels');
-    assert.deepEqual(splitEpisodeTitle('BetCast #270  Hungaroring'), { series: 'BetCast #270', name: 'Hungaroring' });
-    assert.deepEqual(splitEpisodeTitle('Charity Kart!'), { series: '', name: 'Charity Kart!' });
-    const video = (id, title) => ({ id, title, publishedAt: '2026-07-25T12:00:00+00:00' });
-    const html = renderOnAir({ videos: [video('l0vNNK6FO3g', 'BetCast #270  Hungaroring'), video('Q_SQJqa6CMU', 'Charity Kart!'), video('bad id', 'x'), video('iXCGUUeM-ag', 'CoolDownRoom #263')] },
-        file => file.endsWith('l0vNNK6FO3g.webp'));
-    assert.match(html, /data-video-id="l0vNNK6FO3g" data-video-title="BetCast #270: Hungaroring"/);
-    assert.match(html, /episode__tab">BETCAST \/ #270</);
-    // BetCast brings its own dek and hosts; a self-hosted lead keeps a width-based srcset.
-    assert.match(html, /episode__dek/);
-    assert.match(html, /<img alt="" src="\/images\/youtube\/l0vNNK6FO3g\.webp" srcset="[^"]+400w, [^"]+800w"/);
-    // Invalid ids are skipped; a frame not fetched yet comes from YouTube.
-    assert.equal((html.match(/episode--small/g) || []).length, 2);
-    assert.match(html, /https:\/\/i\.ytimg\.com\/vi\/Q_SQJqa6CMU\/hqdefault\.jpg/);
-    assert.match(html, /<span>F1 STORIES<\/span>/);
-    assert.equal(renderOnAir({ videos: [] }), '');
-});
-
-test('ON AIR uses a newer published BetCast article when the YouTube snapshot is stale', () => {
-    const { renderOnAir, selectEpisodes } = require('../home-panels');
-    const snapshot = { videos: [{ id: 'l0vNNK6FO3g', title: 'BetCast #270: Hungaroring', publishedAt: '2026-07-25' }] };
-    const article = (id, title, date) => ({ id, title, date, url: `/blog-module/blog-entries/${id}/article.html`, image: `/blog-module/blog-entries/${id}/1.webp`, author: 'Giannis Poulikidis' });
-    const posts = [
-        article('20260912J', 'BetCast #273: Προσπεράσεις', '2026-09-12'),
-        article('20261004J', 'Ferrari update', '2026-10-04'),
-        article('20261002J', 'BetCast #275: Το Grid', '2026-10-02'),
-        article('20260725J', 'BetCast #270: Hungaroring', '2026-07-25'),
-        article('invalid', 'BetCast #999: Invalid date', 'invalid')
-    ];
-    assert.deepEqual(selectEpisodes(snapshot, posts).map(item => item.id), ['20261002J', '20260912J', 'l0vNNK6FO3g']);
-    const html = renderOnAir(snapshot, () => false, posts);
-    const lead = html.slice(0, html.indexOf('<ol class="episodes"'));
-    assert.match(lead, /episode__tab">BETCAST \/ #275</);
-    assert.match(lead, /ΤΕΛΕΥΤΑΙΟ ΕΠΕΙΣΟΔΙΟ/);
-    assert.match(lead, /datetime="2026-10-02">2 Οκτ 2026/);
-    assert.match(lead, /href="\/blog-module\/blog-entries\/20261002J\/article\.html"/);
-    assert.match(lead, /aria-label="Διαβάστε: BetCast #275: Το Grid"/);
-    assert.doesNotMatch(lead, /data-video-id|#fa-play/);
-    assert.match(html, /https:\/\/www\.youtube\.com\/watch\?v=l0vNNK6FO3g/);
-    assert.match(renderOnAir(null, () => false, posts), /BETCAST \/ #275/);
-
-    // A fresh feed takes over again without a manual homepage change.
-    const fresh = { videos: [{ id: 'Q_SQJqa6CMU', title: 'BetCast #276: Next race', publishedAt: '2026-10-07' }] };
-    const refreshedLead = renderOnAir(fresh, () => false, posts).split('<ol class="episodes"')[0];
-    assert.match(refreshedLead, /data-video-id="Q_SQJqa6CMU"/);
-    assert.match(refreshedLead, /BETCAST \/ #276/);
-    assert.match(refreshedLead, /datetime="2026-10-07"/);
-});
-
-test('ON AIR signs an article episode like the Journal and shows square art whole', () => {
+test('ON AIR signs an article like the Journal and shows square art whole', () => {
     const { renderOnAir } = require('../home-panels');
     const article = (id, title, date, extra = {}) => ({ id, title, date, url: `/blog-module/blog-entries/${id}/article.html`, image: `/blog-module/blog-entries/${id}/1.webp`, author: 'Giannis Poulikidis', ...extra });
-    const html = renderOnAir(null, () => false, [
+    const html = renderOnAir([
         article('20261002J', 'BetCast #275: Το Grid', '2026-10-02'),
         article('20260924J', 'BetCast #274: Baku', '2026-09-24', { imageWidth: 300, imageHeight: 300 }),
         article('20260912J', 'BetCast #273: Προσπεράσεις', '2026-09-12', { imageWidth: 1672, imageHeight: 941 })

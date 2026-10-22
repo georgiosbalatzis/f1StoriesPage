@@ -42,14 +42,12 @@ test('headline links and duplicate technical previews retain empty alt, even wit
     assert.match(tech, /<h2[^>]*><a[^>]+>Τίτλος άρθρου<\/a>/);
 });
 
-test('episode image controls keep their Greek action name and do not repeat it in alt', () => {
+test('Cast article image links keep their Greek action name and do not repeat it in alt', () => {
     const article = { ...story('20261010J', 'BetCast #276: Singapore GP'), image: '/blog-module/blog-entries/20261010J/1.webp' };
-    const articleHtml = renderOnAir({ videos: [] }, () => false, [article]);
+    const articleHtml = renderOnAir([article]);
     assert.match(articleHtml, /aria-label="Διαβάστε: BetCast #276: Singapore GP"/);
     assert.ok(images(articleHtml).every(tag => /\salt=""/.test(tag)));
-    const videoHtml = renderOnAir({ videos: [{ id: 'abcdefghijk', title: 'BetCast #277: Austin GP', publishedAt: '2026-10-21' }] }, () => false);
-    assert.match(videoHtml, /<button[^>]+aria-label="Αναπαραγωγή: BetCast #277: Austin GP"/);
-    assert.ok(images(videoHtml).every(tag => /\salt=""/.test(tag)));
+
 });
 
 test('gallery photographs have distinct descriptions and repeated metadata application is stable', () => {

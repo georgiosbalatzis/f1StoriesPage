@@ -20,7 +20,7 @@ const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
-const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
+const { selectCastArticles, isCastArticle, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, athensDay
@@ -510,9 +510,9 @@ function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
     }
     // The cover story itself is rendered by injectHomepageHero; its reading time and the two frames beside it come from here.
     const { cover, tech, journal, warnings } = selectHomeStories(indexPosts, selection);
-    // ON AIR already leads with this episode; the Journal moves on to the next story.
-    const onAirEpisode = featuredEpisode(blogPosts);
-    const posts = journal.filter(post => !isFeaturedEpisode(post, onAirEpisode));
+    // Every article shown in ON AIR (and duplicate editions) stays out of the Journal and cover frames.
+    const onAirArticles = selectCastArticles(blogPosts);
+    const posts = journal.filter(post => !isCastArticle(post, onAirArticles));
     warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the technical spread falls back to the newest Technical story`));
     const paddock = selectPaddock(posts);
     const featureSource = paddock.feature && blogPosts.find(post => post.id === paddock.feature.id);
