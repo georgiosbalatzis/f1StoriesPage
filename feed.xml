@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Tue, 20 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 21 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <item>
+      <title>GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261022J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261022J/article.html</guid>
+      <pubDate>Wed, 21 Oct 2026 21:00:00 GMT</pubDate>
+      <description>Αγώνας 18ος από τους 23 και απομένουν άλλοι 5 μετά από αυτόν. Σε αυτόν τον αγώνα υπάρχει πιθανότητα να στεφθεί πρωταθλητής ο μικρός Kimi από την Bologna. Το σενάριο για να γίνει αυτό πραγματικότητα...</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
     <item>
       <title>Olivier Panis: Μια νίκη ήταν αρκετή.</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261021W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Σε έναν αγώνα όπου η βροχή ήταν ο πρωταγωνιστής, το χάος ξεκίνησε από νωρίς και η κόκκινη σημαία βγήκε στον γύρο σχηματισμού. Τρομερό; Και όμως, πραγματικά τρομερό, αφού ένα ένα τα μονοθέσια...</description>
       <category>Άποψη</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Elfyn Evans: Όταν τελικά κάθε προσπάθεια αξίζει</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261004W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261004W/article.html</guid>
-      <pubDate>Sat, 03 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Για χρόνια βρισκόταν τόσο κοντά όσο λίγοι. Πέντε φορές είχε τερματίσει δεύτερος στο Παγκόσμιο Πρωτάθλημα Ράλι, μεταξύ αυτών και το 2025, όταν έχασε τον τίτλο από τον Sébastien Ogier για μόλις...</description>
-      <category>Άποψη</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

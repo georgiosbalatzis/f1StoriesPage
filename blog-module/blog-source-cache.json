@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261022J",
+      "title": "GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-22",
+      "dateISO": "2026-10-22",
+      "displayDate": "22 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261022J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261022J/1.webp",
+      "excerpt": "Αγώνας 18ος από τους 23 και απομένουν άλλοι 5 μετά από αυτόν. Σε αυτόν τον αγώνα υπάρχει πιθανότητα να στεφθεί πρωταθλητής ο μικρός Kimi από την Bologna. Το σενάριο για να γίνει αυτό πραγματικότητα...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261022J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "COAT",
+        "America",
+        "GridCast"
+      ],
+      "wordCount": 495,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261021W",
       "title": "Olivier Panis: Μια νίκη ήταν αρκετή.",
       "author": "Themis Charvalis",
@@ -10844,5 +10873,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-21T20:19:50.229Z"
+  "lastUpdated": "2026-10-22T10:04:36.445Z"
 }
