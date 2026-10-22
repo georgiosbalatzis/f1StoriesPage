@@ -15,6 +15,9 @@ const HTML_INPUTS = [
 
 export async function productionIconSources(root) {
     const files = new Set([...HTML_INPUTS, ...CSS_INPUTS, ...CSS_DEPENDENCIES]);
+    // Its browser adapter bundles build-time modules; their rendered icons are
+    // already covered by the article template and published bodies above.
+    files.add('scripts/author/article-preview.js');
     const entriesRoot = path.join(root, 'blog-module/blog-entries');
     if (fs.existsSync(entriesRoot)) {
         for (const entry of fs.readdirSync(entriesRoot, { withFileTypes: true })) {
@@ -34,7 +37,7 @@ export async function productionIconSources(root) {
     // No output is written, and source order is fixed before alias resolution.
     const graph = await build({
         absWorkingDir: root,
-        entryPoints: [...JS_INPUTS, 'standings/standings.js', 'standings/standings-polish.js',
+        entryPoints: [...JS_INPUTS.filter(file => file !== 'scripts/author/article-preview.js'), 'standings/standings.js', 'standings/standings-polish.js',
             ...STANDINGS_TAB_ENTRIES.map(name => `standings/tabs/${name}.js`)],
         bundle: true, write: false, metafile: true, outdir: 'icon-source-graph',
         platform: 'browser', logLevel: 'silent'

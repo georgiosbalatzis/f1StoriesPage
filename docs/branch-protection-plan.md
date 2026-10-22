@@ -26,7 +26,6 @@ with `contents: write`, and the **authors' fine-grained PAT** (it has
 |---|---|---|
 | Author tools (generate/housekeeping, author PAT) | branch `author/*` + PR | yes: PR events run Site Quality |
 | **Publish Article** (`auto-publish-author-pr.yml`) | `gh pr merge --merge --match-head-commit` after Site Quality passed on that commit | yes, with 0 required approvals |
-| **Scheduled Publish** (`scheduled-publish.yml`) | `gh pr merge --merge --match-head-commit` after the `Quality gates` check passed | yes, with 0 required approvals |
 | **Site Maintenance** `publish_blog` | `git push origin HEAD:main` (generated artifacts) | **no**: direct push |
 | **Site Maintenance** `refresh_youtube` | `git push origin HEAD:main` (`assets/youtube-latest.json`) | **no**: direct push |
 | **Site Maintenance** `refresh_standings_data` | `git push origin HEAD:main` (standings caches) | **no**: direct push |
@@ -81,7 +80,7 @@ add `github-actions`, a bot, or an app to the bypass list.
 
 Why each setting:
 
-- **0 required approvals.** Publish Article and Scheduled Publish merge with
+- **0 required approvals.** Publish Article merges with
   `GITHUB_TOKEN`, which cannot approve. Requiring one approval would stop all
   automated publishing, and would not be stronger than the check it replaces:
   today nothing is required at all.
@@ -89,8 +88,8 @@ Why each setting:
   Site Quality job can satisfy it, not a commit status or another app with the
   same name.
 - **Not strict (`strict_required_status_checks_policy: false`).** Author
-  branches start from `main` when the PR is opened; scheduled PRs wait days.
-  "Up to date with main" would make every scheduled publish fail at its slot.
+  branches start from `main` when the PR is opened and may wait for review.
+  Requiring a newer base would block publication after unrelated main changes.
   `--match-head-commit` already ties each merge to the tested commit.
 - **Admin bypass `always` → `pull_request`.** Today an admin can force-push or
   delete `main`. With `pull_request`, the owner can still merge a PR while CI is
@@ -153,7 +152,7 @@ private key as a repository secret. It must still **not** be a bypass actor.
 ### Phase 4: switch `main`
 
 1. Merge the Phase 2 workflow change (at this point it still works without the new rules).
-2. Watch one real cycle of each writer: an author publish, a scheduled publish, a YouTube refresh (dispatch `task=youtube`), and a standings refresh (dispatch `task=standings`).
+2. Watch one real cycle of each writer: an author publish, a YouTube refresh (dispatch `task=youtube`), and a standings refresh (dispatch `task=standings`).
 3. Edit **Force Protection** to the target JSON (Settings → Rules → Rulesets, or `PUT /repos/{owner}/{repo}/rulesets/14773308`).
 4. Repeat the four cycles from step 2.
 5. Delete the canary ruleset and branch.

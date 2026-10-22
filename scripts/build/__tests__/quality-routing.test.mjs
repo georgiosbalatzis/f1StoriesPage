@@ -59,7 +59,7 @@ test('article-only PRs use content checks on scheduled, author and ordinary bran
     f.write('blog-module/blog-entries/new/hero.webp', Buffer.from([0, 1, 255]));
     f.commit();
     for (const branch of ['author/blog/new', 'author/import/new', 'author/delete/new',
-        'author/edit/new', 'author/scheduled/new', 'editorial/new']) {
+        'author/edit/new', 'editorial/new']) {
         assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=true', branch);
     }
 });
@@ -72,7 +72,7 @@ test('mixed changes require full checks even on author and scheduled branches', 
         f.write('blog-module/blog-entries/entry/source.txt', 'edited article\n');
         f.write(file, 'changed code or configuration\n');
         f.commit();
-        for (const branch of ['author/blog/edit', 'author/scheduled/edit']) {
+        for (const branch of ['author/blog/edit']) {
             assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=false', `${branch}: ${file}`);
         }
     }

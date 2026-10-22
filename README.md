@@ -610,7 +610,7 @@ npm run build:public
 - Το βήμα ελέγχου δείχνει όλα τα warnings: τίτλο με κεφαλαία ή emoji, επαναλαμβανόμενες λέξεις, εικόνες που δεν αντιστοιχούν σε δείκτες.
 - Αν υπάρχει ήδη φάκελος με την ίδια ημερομηνία, διαλέγετε ανάμεσα σε νέα έκδοση `-N` και αντικατάσταση. Η αντικατάσταση ζητά δεύτερη επιβεβαίωση.
 - **Δημοσίευση:** δημιουργεί branch `author/blog/<slug>-<timestamp>`, κάνει ένα commit μόνο μέσα στο `blog-module/blog-entries/` και ανοίγει PR προς το `main`.
-- **Προγραμματισμένη δημοσίευση:** στο βήμα 5, «Πότε δημοσιεύεται» → «Προγραμματισμένα» με ημερομηνία και ώρα (τουλάχιστον 10 λεπτά μπροστά). Το PR ανοίγει αμέσως σε branch `author/scheduled/<slug>-<timestamp>` με ετικέτα `scheduled`, και ο φάκελος παίρνει την ημερομηνία δημοσίευσης. Η δημοσίευση γίνεται από το Scheduled Publish (ενότητα 13.5).
+- **Τοπικά πρόχειρα:** στο βήμα 5, «Αποθήκευση ως πρόχειρο». Η λίστα «Τα πρόχειρά μου» ανοίγει τα άρθρα με όλες τις εικόνες τους χωρίς token ή ZIP. Αποθηκεύονται στο IndexedDB αυτού του browser, δεν συγχρονίζονται και μπορεί να χαθούν αν διαγραφούν τα δεδομένα του ιστοτόπου. Η αποθήκευση δεν κάνει αιτήματα δημοσίευσης. Μόνο το «Δημοσίευση τώρα» ανοίγει PR `author/blog/*`.
 - Φάκελοι που περιμένουν ήδη σε ανοιχτό PR `author/*` θεωρούνται πιασμένοι: η δημοσίευση πηγαίνει αυτόματα στο επόμενο `-N`.
 - **Εξαγωγή ZIP:** κατεβάζει τον φάκελο του άρθρου (`source.txt`, εικόνες, `README.txt`) για χειροκίνητη δημοσίευση ή για εισαγωγή από το housekeeping.
 
@@ -623,7 +623,7 @@ npm run build:public
 
 ### 12.4 Τι γίνεται μετά το PR
 
-Το PR περνά αυτόματα από έλεγχο, γίνεται merge, χτίζεται και δημοσιεύεται (ενότητα 13.2). Ο συντάκτης δεν χρειάζεται να κάνει τίποτα άλλο. Ένα προγραμματισμένο PR ελέγχεται αμέσως αλλά γίνεται merge μόνο όταν περάσει η ώρα του (ενότητα 13.5). Το housekeeping δείχνει την ώρα αυτή στη λίστα ανοιχτών PR.
+Το PR περνά αυτόματα από έλεγχο, γίνεται merge, χτίζεται και δημοσιεύεται (ενότητα 13.2). Ο συντάκτης δεν χρειάζεται να κάνει τίποτα άλλο.
 
 ---
 
@@ -635,7 +635,6 @@ npm run build:public
 |---|---|---|---|
 | `quality.yml` | **Site Quality** | PR προς `main`, χειροκίνητα | Build και έλεγχοι, μόνο με ανάγνωση. Δεν κάνει deploy. |
 | `auto-publish-author-pr.yml` | **Publish Article** | Όταν ολοκληρωθεί το Site Quality σε branch `author/**` | Έλεγχος και merge του PR του συντάκτη, μετά κλήση του Site Maintenance (`task: blog`). |
-| `scheduled-publish.yml` | **Scheduled Publish** | Κάθε μέρα 09:00 και 18:00 ώρα Αθήνας, χειροκίνητα | Merge των PR `author/scheduled/**` των οποίων η ώρα πέρασε, μετά κλήση του Site Maintenance (`task: blog`). |
 | `publish-blog.yml` | **Site Maintenance** | Schedule, κάθε push στο `main`, χειροκίνητα, κλήση από το Publish Article | Build του blog όταν χρειάζεται, ανανέωση YouTube/standings, μία κλήση deploy ανά push. |
 | `deploy-pages.yml` | **Deploy Pages** | Χειροκίνητα, κλήση από άλλο workflow | `build:public` με επαναχρησιμοποίηση εικόνων, έλεγχοι, upload και deploy στο GitHub Pages. |
 
@@ -653,9 +652,9 @@ npm run build:public
 - **Δικαιώματα:** `contents: read`.
 - **Concurrency:** `quality-<ref>` με `cancel-in-progress`. Ένα νέο push στο ίδιο PR ακυρώνει τον προηγούμενο έλεγχο.
 - **Ταξινόμηση αλλαγών:** checkout με `fetch-depth: 2` και `scripts/build/classify-quality.mjs`. Επιβεβαιώνει ότι ο δεύτερος γονέας του δοκιμαζόμενου PR merge είναι το head commit του event και συγκρίνει το merge με τον πρώτο γονέα του (το `main`). Ελέγχει όλα τα αλλαγμένα αρχεία, μαζί με διαγραφές και τις δύο πλευρές μετονομασιών, χωρίς όριο αρχείων του GitHub API ή πλήρες Git ιστορικό. Το όνομα του branch δεν επηρεάζει τη διαδρομή ελέγχων.
-- **Μόνο άρθρα:** όταν το PR αλλάζει αποκλειστικά το `blog-module/blog-entries/**`, τρέχουν `build:html`, `build:blog`, `build:assets` και `build:data-contracts`. Παραλείπονται η cache εικόνων, το packaging του `dist/` και το runtime dependency audit. Η ίδια διαδρομή καλύπτει τα `author/scheduled/**` και τα χειροκίνητα content PRs.
+- **Μόνο άρθρα:** όταν το PR αλλάζει αποκλειστικά το `blog-module/blog-entries/**`, τρέχουν `build:html`, `build:blog`, `build:assets` και `build:data-contracts`. Παραλείπονται η cache εικόνων, το packaging του `dist/` και το runtime dependency audit. Η ίδια διαδρομή καλύπτει τα PR συντάκτη και τα χειροκίνητα content PRs.
 - **Πλήρεις έλεγχοι:** μικτές αλλαγές ή οποιοδήποτε αρχείο έξω από τα entries τρέχουν `build:public` και `audit:runtime`, ακόμη και σε branch συντάκτη. Κενό diff, έλλειψη ιστορικού ή αποτυχία σύγκρισης οδηγούν συντηρητικά στους πλήρεις ελέγχους. Το χειροκίνητο `workflow_dispatch` χρησιμοποιεί πάντα αυτή τη διαδρομή.
-- **Κοινά βήματα:** `quality:static`, `test:author`, `test:standings`, `test:security` και publishing regression tests τρέχουν και στις δύο διαδρομές. Το μοναδικό check παραμένει **Quality gates**, που περιμένουν τα workflows αυτόματης και προγραμματισμένης δημοσίευσης.
+- **Κοινά βήματα:** `quality:static`, `test:author`, `test:standings`, `test:security` και publishing regression tests τρέχουν και στις δύο διαδρομές. Το μοναδικό check παραμένει **Quality gates**, που περιμένουν το workflow άμεσης δημοσίευσης.
 - Timeout 25 λεπτά.
 
 ### 13.2 Publish Article (`auto-publish-author-pr.yml`)
@@ -720,7 +719,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **`workflow_dispatch`** με επιλογή `task`: `blog`, `standings` ή `youtube`.
 - **`workflow_call`** με input `task`. Το χρησιμοποιεί το Publish Article με `task: blog`.
 
-Το GitHub υποστηρίζει [timezone-aware schedules](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) και χειρίζεται αυτόματα τη θερινή/χειμερινή ώρα. Δεν χρειάζονται διπλά UTC cron ή shell έλεγχος ώρας. Το job επιλέγεται από συγκεκριμένα maintenance cron, οπότε ένας καθυστερημένος scheduled run δεν παραλείπεται λόγω της ώρας εκκίνησής του και μια reusable κλήση από το Scheduled Publish δεν ξεκινά κατά λάθος standings refresh. Οι πραγματικές τοπικές ώρες παραμένουν ίδιες.
+Το GitHub υποστηρίζει [timezone-aware schedules](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) και χειρίζεται αυτόματα τη θερινή/χειμερινή ώρα. Δεν χρειάζονται διπλά UTC cron ή shell έλεγχος ώρας. Το job επιλέγεται από συγκεκριμένα maintenance cron, οπότε ένας καθυστερημένος scheduled run δεν παραλείπεται λόγω της ώρας εκκίνησής του και μια reusable κλήση για blog δεν ξεκινά κατά λάθος standings refresh. Οι πραγματικές τοπικές ώρες παραμένουν ίδιες.
 
 **Jobs:**
 
@@ -754,19 +753,6 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Οι νέες εικόνες από `generate.html` και `housekeeping.html` συμπιέζονται στον browser πριν το ZIP ή το PR: WebP, έως 1600 px πλάτος και 300 KiB, με διατήρηση αναλογιών. Αν χρειάζεται, μειώνεται πρώτα η ποιότητα και έπειτα οι διαστάσεις. Εικόνες WebP που ήδη χωρούν περνούν χωρίς αλλαγή. Έτσι τα νέα originals παρακάμπτουν τη συμπίεση του public artifact· το build εξακολουθεί να παράγει τα responsive AVIF/WebP variants. Η cache καλύπτει oversized εικόνες που προστίθενται εκτός των author tools. Η πολιτική και ο έλεγχος Chromium (`npm run qa:author-images`) περιγράφονται στο [`docs/article-media-policy.md`](docs/article-media-policy.md).
 
-### 13.5 Scheduled Publish (`scheduled-publish.yml`)
-
-Δημοσιεύει τα προγραμματισμένα άρθρα του `generate.html`. Το Publish Article δεν αγγίζει τα branches `author/scheduled/**`, οπότε τίποτα δεν γίνεται merge πριν την ώρα του.
-
-- **Trigger:** `0 9,18 * * *` με `timezone: Europe/Athens`, δηλαδή δύο φορές τη μέρα στις 09:00 και 18:00 τοπική ώρα, και `workflow_dispatch`. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
-- **Ώρα δημοσίευσης:** κρυφή γραμμή στο κείμενο του PR, `<!-- f1s-publish-at: 2026-10-01T09:00:00Z -->` (UTC). Για αλλαγή ώρας, Edit στην περιγραφή του PR και αλλαγή της γραμμής.
-- **Ακύρωση:** κλείσιμο του PR ή μετατροπή σε draft.
-- **Job `merge`** (`contents: write`, `pull-requests: write`, `checks: read`): για κάθε ανοιχτό, μη draft PR `author/scheduled/**` από το ίδιο repo προς `main`, με ώρα που πέρασε:
-  1. περιμένει πράσινο **Quality gates** στο head commit (αλλιώς warning και ξαναδοκιμάζει στο επόμενο run),
-  2. αποτυγχάνει αν το PR αλλάζει αρχεία έξω από το `blog-module/blog-entries/`,
-  3. `gh pr merge --merge --delete-branch --match-head-commit <sha>`.
-- **Job `publish`:** αν έγινε έστω ένα merge, καλεί το `publish-blog.yml` με `task: blog`, όπως το Publish Article.
-
 ### 13.6 Σημαντικές λεπτομέρειες
 
 - **`[skip ci]` και reusable deploy.** Τα commits των workflows γίνονται με το `GITHUB_TOKEN`. Το GitHub δεν ξεκινά νέα workflows από τέτοια pushes, και επιπλέον έχουν `[skip ci]`. Γι' αυτό το deploy δεν περιμένει κάποιο push. Το workflow που έκανε το commit καλεί το ίδιο το `deploy-pages.yml`.
@@ -779,9 +765,8 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **Χειροκίνητη εκτέλεση.** Actions > Site Maintenance > Run workflow > επιλογή `blog`, `standings` ή `youtube`. Για deploy χωρίς αλλαγές: Actions > Deploy Pages > Run workflow.
 - **Όλοι οι δρόμοι προς την παραγωγή:**
   - push κώδικα στο `main`: Deploy Pages.
-  - αλλαγή άρθρου με push ή schedule: Site Maintenance, και μετά Deploy Pages.
+  - αλλαγή άρθρου με push: Site Maintenance, και μετά Deploy Pages.
   - PR συντάκτη: Site Quality, Publish Article, Site Maintenance (`task: blog`), και μετά Deploy Pages.
-  - προγραμματισμένο PR συντάκτη: Site Quality, Scheduled Publish (μετά την ώρα), Site Maintenance (`task: blog`), και μετά Deploy Pages.
 
 ---
 

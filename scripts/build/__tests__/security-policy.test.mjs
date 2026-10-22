@@ -70,8 +70,9 @@ const REVIEWED = {
             'https://www.threads.net',
             'https://x.com'
         ],
-        // YouTube, IFRAME_WHITELIST in generate-page.js, and the SDK iframes.
+        // Isolated script-disabled article preview plus approved embed origins.
         'frame-src': [
+            "'self'",
             'https://codepen.io',
             'https://datawrapper.dwcdn.net',
             'https://f1-stories.gr',

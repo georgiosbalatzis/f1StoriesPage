@@ -67,18 +67,14 @@ export const AUTHOR_TOOLS_CSP = [
     "frame-src 'none'"
 ].join('; ');
 
-// generate.html: the same token boundary, plus the live article preview.
-// The preview renders YouTube and whitelisted raw iframes (IFRAME_WHITELIST in
-// scripts/author/generate-page.js) and loads the X, Instagram, Threads and
-// Facebook embed SDKs (processSocialEmbeds). Those SDKs run in this page, so
-// they are the reason script-src and connect-src are wider than housekeeping.
-// Every origin here is also allowed by the public policy.
+// generate.html keeps the token in the parent; its article preview is a
+// script-disabled, sandboxed same-origin document with allowlisted embeds.
 export const AUTHOR_GENERATE_CSP = [
     ...TOOL_BASE_DIRECTIVES,
     "script-src 'self' https://platform.twitter.com https://www.instagram.com https://www.threads.net https://connect.facebook.net",
     "img-src 'self' data: blob:",
     "connect-src 'self' https://api.github.com https://platform.twitter.com https://syndication.twitter.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://www.instagram.com https://www.threads.net https://connect.facebook.net https://www.facebook.com",
-    "frame-src https://www.youtube.com https://youtube.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1-stories.gr https://www.f1-stories.gr https://georgiosbalatzis.github.io"
+    "frame-src 'self' https://www.youtube.com https://youtube.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1-stories.gr https://www.f1-stories.gr https://georgiosbalatzis.github.io"
 ].join('; ');
 
 export const CSP_PROFILES = Object.freeze({

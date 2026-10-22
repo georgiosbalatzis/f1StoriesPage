@@ -59,6 +59,9 @@ export const JS_INPUTS = [
     'scripts/author/image-tools.js',
     'scripts/author/article-source.js',
     'scripts/author/article-index.js',
+    'scripts/author/local-drafts.js',
+    'scripts/author/draft-manager.js',
+    'scripts/author/article-preview.js',
     'scripts/author/generate-page.js',
     'scripts/author/housekeeping-page.js'
 ];
