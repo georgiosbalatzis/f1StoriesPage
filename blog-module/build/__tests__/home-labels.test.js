@@ -101,3 +101,11 @@ test('the Race Desk link is named THE GRID and still opens the standings', () =>
     assert.match(html, /<a class="pd-link" href="\/standings\/">THE GRID <span aria-hidden="true">→<\/span><\/a>/);
     assert.doesNotMatch(html, /ΑΝΟΙΞΕ ΤΟ RACE DESK/);
 });
+
+test('ON AIR keeps its identity and links readers to the article archive', () => {
+    const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
+    const section = html.match(/<section id="onair"[\s\S]*?<\/section>/)[0];
+    assert.match(section, /ON AIR<span>\.<\/span>/);
+    assert.match(section, /href="\/blog-module\/blog\/">Περισσότερα άρθρα/);
+    assert.doesNotMatch(section, /youtube\.com|ΤΟ ΚΑΝΑΛΙ/);
+});

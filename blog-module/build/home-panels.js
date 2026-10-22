@@ -1,6 +1,4 @@
-// Homepage "ON AIR." and "THE NUMBERS." panels, rendered from the snapshots the
-// scheduled jobs keep in the repo (assets/youtube-latest.json, standings caches),
-// so every deploy's build refreshes them without a network request.
+// Homepage "ON AIR." articles and "THE NUMBERS." standings, rendered at build time.
 const { pathToFileURL } = require('url');
 const { fs, path, CONFIG, escapeHtmlAttribute: esc, getCardThumbnailPath } = require('./shared');
 const { cardSrcset } = require('./image-sizes');
@@ -8,21 +6,13 @@ const { greekUpper, authorLabel, formatDate, findAuthor } = require('../taxonomy
 
 const REPO_ROOT = path.join(CONFIG.BLOG_DIR, '..', '..');
 const HOME_HTML_PATH = path.join(REPO_ROOT, 'index.html');
-const YOUTUBE_PATH = path.join(REPO_ROOT, 'assets', 'youtube-latest.json');
 const STANDINGS_PATH = path.join(REPO_ROOT, 'standings', 'standings-cache.json');
 const DEBRIEF_PATH = path.join(REPO_ROOT, 'standings', 'debrief-cache.json');
-const YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
 const TOWER_ROWS = 10;
 const SHARE_ROWS = 6;
 const PACE_ROWS = 6;
 
-// The feed carries no description or hosts; a series we know brings its own copy.
-const SERIES_COPY = Object.freeze({
-    betcast: {
-        dek: 'Αγωνιστική πρόβλεψη, ρυθμός και επιλογές πριν από το Grand Prix.',
-        byline: 'Γ. ΠΟΥΛΙΚΙΔΗΣ · Γ. ΜΠΑΛΑΤΖΗΣ'
-    }
-});
+const CAST_TITLE_RE = /^(BetCast|GridCast|AnalystCast)\b(?:\s*[:.\-–—|]*\s*#?\s*(\d+)\b)?[\s:.\-–—|]*(.*)$/i;
 
 function readJson(filePath) {
     try { return JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch (_) { return null; }
@@ -44,119 +34,89 @@ function episodeDate(value) {
 // "BetCast #270  Hungaroring" → { series: "BetCast #270", name: "Hungaroring" }
 function splitEpisodeTitle(title) {
     const clean = String(title || '').replace(/\s+/g, ' ').trim();
-    const match = /^(.*?#\d+)\s*[:\-–]?\s*(.+)$/.exec(clean);
-    return match ? { series: match[1].trim(), name: match[2].trim() } : { series: '', name: clean };
+    const match = CAST_TITLE_RE.exec(clean);
+    return match ? { series: match[1] + (match[2] ? ` #${match[2]}` : ''), name: match[3] } : { series: '', name: clean };
 }
 
 function episodeTitle(parts) {
-    return parts.series ? `${parts.series}: ${parts.name}` : parts.name;
+    return [parts.series, parts.name].filter(Boolean).join(': ');
 }
 
-// Self-hosted frames (scripts/build/fetch-youtube.mjs) keep YouTube off the page
-// until play; a frame not fetched yet falls back to YouTube's own thumbnail.
-// The lead's <img> opens with alt so stamp-html's density rewrite (which matches
-// `<img src="/images/youtube/…`) leaves its width-based srcset alone.
-function thumbnail(id, exists) {
-    const local = `/images/youtube/${id}.webp`;
-    if (exists(path.join(REPO_ROOT, local))) return { src: local, srcset: `/images/youtube/${id}-1x.webp 400w, ${local} 800w`, width: 800, height: 450 };
-    return { src: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, srcset: '', width: 480, height: 360 };
+function castEdition(title) {
+    const { series } = splitEpisodeTitle(title);
+    return /#\d+$/.test(series) ? series.toLowerCase().replace(/#0+(?=\d)/, '#') : '';
 }
 
-// Archive publication continues even when the YouTube feed cannot refresh.
-// Rank both sources by publication date and show each numbered episode once.
-const EPISODE_ARTICLE_RE = /^BetCast\s*#\d+\b/i;
-
-function selectEpisodes(snapshot, posts = []) {
-    const videos = (snapshot && Array.isArray(snapshot.videos) ? snapshot.videos : [])
-        .filter(video => YOUTUBE_ID_RE.test(video.id || ''))
-        .map(video => ({ ...video, url: `https://www.youtube.com/watch?v=${video.id}` }));
-    const articles = posts.filter(post => EPISODE_ARTICLE_RE.test(post.title || '')
-        && /^\/blog-module\/blog-entries\/[A-Za-z0-9_-]+\/article\.html$/.test(post.url || ''))
-        .map(post => ({ ...post, publishedAt: post.date, article: true }));
-    const seen = new Set();
-    return [...videos, ...articles]
-        .filter(item => Number.isFinite(Date.parse(item.publishedAt)))
-        .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
-        .filter(item => {
-            const key = splitEpisodeTitle(item.title).series.toLowerCase() || item.id;
-            if (seen.has(key)) return false;
-            seen.add(key);
+// Published posts arrive in comparePosts order, including main-line publication ties.
+// Keep that order and the original records; YouTube is not a source for this article panel.
+function selectCastArticles(posts = []) {
+    const ids = new Set();
+    const editions = new Set();
+    return posts.filter(post => post.id && splitEpisodeTitle(post.title).series
+        && post.url === `/blog-module/blog-entries/${post.id}/article.html`
+        && /^[A-Za-z0-9_-]+$/.test(post.id) && Number.isFinite(Date.parse(post.date)))
+        .filter(post => {
+            const edition = castEdition(post.title);
+            if (ids.has(post.id) || (edition && editions.has(edition))) return false;
+            ids.add(post.id);
+            if (edition) editions.add(edition);
             return true;
-        });
+        }).slice(0, 3);
 }
 
-// The episode ON AIR leads with, so the Journal can leave it out: the same blog article, or the article of the
-// same numbered series ("BetCast #276") when the video is the newer entry. Anything unnumbered matches by id only.
-function featuredEpisode(posts = [], snapshot = readJson(YOUTUBE_PATH)) {
-    const [lead] = selectEpisodes(snapshot, posts);
-    if (!lead) return null;
-    return { id: lead.article ? lead.id : '', series: splitEpisodeTitle(lead.title).series.toLowerCase() };
+function isCastArticle(post, selected = []) {
+    if (!post) return false;
+    const edition = castEdition(post.title);
+    return selected.some(item => item.id === post.id || (edition && castEdition(item.title) === edition));
 }
 
-function isFeaturedEpisode(post, featured) {
-    if (!featured || !post) return false;
-    if (featured.id && post.id === featured.id) return true;
-    const series = splitEpisodeTitle(post.title).series.toLowerCase();
-    return Boolean(featured.series && series === featured.series && EPISODE_ARTICLE_RE.test(post.title || ''));
-}
-
-// An article episode offers its card-sized copies (measured widths) instead of the full original for a 132px tile.
-function episodeImage(item, exists, { full = false } = {}) {
-    if (!item.article) return thumbnail(item.id, exists);
+// Use measured card variants instead of the full original for a 132px tile.
+function episodeImage(item, { full = false } = {}) {
     const image = item.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const card = getCardThumbnailPath(image);
     const srcset = card !== image ? cardSrcset(card, full) : '';
-    return { src: srcset ? card : image, srcset, article: true, width: item.imageWidth || 1600, height: item.imageHeight || 900 };
+    return { src: srcset ? card : image, srcset, width: item.imageWidth || 1600, height: item.imageHeight || 900 };
 }
 
-function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
-    const [lead, ...rest] = selectEpisodes(snapshot, posts);
+function renderOnAir(posts = []) {
+    const [lead, ...rest] = selectCastArticles(posts);
     if (!lead) return '';
     const parts = splitEpisodeTitle(lead.title);
     const title = episodeTitle(parts);
-    const copy = SERIES_COPY[parts.series.split(' ')[0].toLowerCase()] || {};
-    const image = episodeImage(lead, exists, { full: true });
-    const watch = lead.url;
-    const linkAttributes = lead.article ? '' : ' target="_blank" rel="noopener"';
-    const frameOpening = lead.article
-        ? `<a class="home-video-facade" href="${esc(watch)}" aria-label="Διαβάστε: ${esc(title)}">`
-        : `<button type="button" class="home-video-facade" data-video-id="${lead.id}" data-video-title="${esc(title)}" aria-label="Αναπαραγωγή: ${esc(title)}">`;
-    const small = rest.slice(0, 2).map(video => {
-        const item = splitEpisodeTitle(video.title);
-        const thumb = episodeImage(video, exists);
-        // Density pair, exactly as stamp-html's addDensitySrcset writes it, so the two never disagree.
-        const srcset = thumb.article ? (thumb.srcset ? ` srcset="${esc(thumb.srcset)}" sizes="132px"` : '')
-            : thumb.srcset ? ` srcset="/images/youtube/${video.id}-1x.webp 1x, ${thumb.src} 2x"` : '';
-        const url = video.url;
+    const image = episodeImage(lead, { full: true });
+    const small = rest.map(post => {
+        const item = splitEpisodeTitle(post.title);
+        const thumb = episodeImage(post);
+        const srcset = thumb.srcset ? ` srcset="${esc(thumb.srcset)}" sizes="132px"` : '';
+        const url = post.url;
         // Square or portrait art (a 16:9 crop would cut its lettering) is shown whole.
         const contain = thumb.width / thumb.height < 1.3 ? ' episode__thumb--contain' : '';
-        const attributes = video.article ? '' : ' target="_blank" rel="noopener"';
         return `                <li class="episode episode--small">
-                    <a class="episode__thumb${contain}" href="${esc(url)}"${attributes} tabindex="-1" aria-hidden="true"><img src="${esc(thumb.src)}"${srcset} alt="" width="${thumb.width}" height="${thumb.height}" loading="lazy" decoding="async"></a>
+                    <a class="episode__thumb${contain}" href="${esc(url)}" tabindex="-1" aria-hidden="true"><img src="${esc(thumb.src)}"${srcset} alt="" width="${thumb.width}" height="${thumb.height}" loading="lazy" decoding="async"></a>
                     <div>
-                        <p class="home-story__meta"><span>${esc(greekUpper(item.series || 'F1 STORIES'))}</span><time datetime="${esc(String(video.publishedAt || '').slice(0, 10))}">${episodeDate(video.publishedAt)}</time></p>
-                        <h3 class="episode__small-title"><a href="${esc(url)}"${attributes}>${esc(item.name)} <span class="episode__out" aria-hidden="true">${video.article ? '→' : '↗'}</span></a></h3>
+                        <p class="home-story__meta"><span>${esc(greekUpper(item.series))}</span><time datetime="${esc(String(post.date).slice(0, 10))}">${episodeDate(post.date)}</time></p>
+                        <h3 class="episode__small-title"><a href="${esc(url)}">${esc(item.name || item.series)} <span class="episode__out" aria-hidden="true">→</span></a></h3>
                     </div>
                 </li>`;
     }).join('\n');
     return `            <article class="episode episode--lead">
                 <div class="episode__frame">
-                    ${frameOpening}
+                    <a class="home-video-facade" href="${esc(lead.url)}" aria-label="Διαβάστε: ${esc(title)}">
                         <img alt="" src="${esc(image.src)}"${image.srcset ?` srcset="${esc(image.srcset)}" sizes="(max-width: 767px) 100vw, (max-width: 1199px) 62vw, 780px"` : ''} width="${image.width}" height="${image.height}" loading="lazy" decoding="async">
-                        <span class="episode__play" aria-hidden="true"><svg class="icon"><use href="#${lead.article ? 'fa-arrow-right' : 'fa-play'}"/></svg></span>
-                        <span class="episode__tab">${esc(parts.series ? greekUpper(parts.series).replace(' #', ' / #') : 'YOUTUBE')}</span>
-                    ${lead.article ? '</a>' : '</button>'}
+                        <span class="episode__play" aria-hidden="true"><svg class="icon"><use href="#fa-arrow-right"/></svg></span>
+                        <span class="episode__tab">${esc(greekUpper(parts.series).replace(' #', ' / #'))}</span>
+                    </a>
                 </div>
                 <div class="episode__text">
-                    <p class="home-story__meta"><span class="episode__latest"><span class="episode__dot" aria-hidden="true"></span>ΤΕΛΕΥΤΑΙΟ ΕΠΕΙΣΟΔΙΟ</span><time datetime="${esc(String(lead.publishedAt || '').slice(0, 10))}">${episodeDate(lead.publishedAt)}</time></p>
-                    <h3 class="episode__title"><a href="${esc(watch)}"${linkAttributes}>${esc(title)}</a></h3>`
-        + (copy.dek ? `\n                    <p class="episode__dek">${esc(copy.dek)}</p>` : '')
-        + (lead.article || copy.byline ? `\n                    <p class="home-story__byline">${esc(lead.article ? homeByline(lead.author) : copy.byline)}</p>` : '')
+                    <p class="home-story__meta"><span class="episode__latest"><span class="episode__dot" aria-hidden="true"></span>ΤΕΛΕΥΤΑΙΟ ΑΡΘΡΟ</span><time datetime="${esc(String(lead.date).slice(0, 10))}">${episodeDate(lead.date)}</time></p>
+                    <h3 class="episode__title"><a href="${esc(lead.url)}">${esc(title)}</a></h3>`
+        + (lead.excerpt ? `\n                    <p class="episode__dek">${esc(lead.excerpt)}</p>` : '')
+        + `\n                    <p class="home-story__byline">${esc(homeByline(lead.author))}</p>`
         + `
                 </div>
             </article>`
         + (small ? `
-            <ol class="episodes" aria-label="Προηγούμενα επεισόδια">
+            <ol class="episodes" aria-label="Περισσότερα άρθρα">
 ${small}
             </ol>` : '')
         + '\n            ';
@@ -426,8 +386,8 @@ async function injectHomePanels(htmlPath = HOME_HTML_PATH, posts = readJson(CONF
     const teamColor = (id, name) => `#${getCanonicalTeamColor(id, name, '9C9FA2')}`;
     const html = fs.readFileSync(htmlPath, 'utf8');
     let updated = html;
-    const onAir = renderOnAir(readJson(YOUTUBE_PATH), fs.existsSync, posts);
-    if (onAir) updated = replaceMarked(updated, 'home-onair', `\n${onAir}`);
+    const onAir = renderOnAir(posts);
+    updated = replaceMarked(updated, 'home-onair', `\n${onAir}`);
     const numbers = renderNumbers(readJson(STANDINGS_PATH), readJson(DEBRIEF_PATH), teamColor);
     // Boards, stamp, cover edition line and season line describe one snapshot: written together or, without
     // standings rows, all left as the last build published them.
@@ -443,4 +403,4 @@ async function injectHomePanels(htmlPath = HOME_HTML_PATH, posts = readJson(CONF
     return true;
 }
 
-module.exports = { featuredEpisode, isFeaturedEpisode, injectHomePanels, homeByline, selectEpisodes, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };
+module.exports = { selectCastArticles, isCastArticle, injectHomePanels, homeByline, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };
