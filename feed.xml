@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Thu, 22 Oct 2026 21:00:00 GMT</lastBuildDate>
     <item>
+      <title>Gp Usa: Από τον Moss και τον Bruce McLaren στους σημερινούς ήρωες.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261023G/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261023G/article.html</guid>
+      <pubDate>Thu, 22 Oct 2026 21:00:00 GMT</pubDate>
+      <description>Usa Grand Prix:Από τον Μος και τον Κλαρκ στον Χάμιλτον, τον Φερστάπεν. Σήμερα θα μιλήσουμε για την ιστορία ενός αγώνα που άλλαξε πολλές φορές έδρα, φιλοξένησε θρυλικές μονομαχίες και έφερε τη Formula...</description>
+      <category>Ιστορία</category>
+      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
+    </item>
+    <item>
       <title>Norifumi Abe: Κάνοντας την Suzuka να σωπάσει</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261023W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261023W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Όταν μιλάμε για τον Marquez, μιλάμε για τον αναβάτη, για όσα έχει ήδη κάνει και για αυτό που αντιπροσωπεύει. Για έναν άνθρωπο που εδώ και χρόνια έχει κάνει την εμμονή του με τη νίκη τρόπο ζωής. Που...</description>
       <category>Άποψη</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Tο bug που πάγωσε τη Formula 1 στο Sepang</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261005G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261005G/article.html</guid>
-      <pubDate>Sun, 04 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Η εικόνα είχε κάτι σουρεαλιστικό. Ο Max Verstappen σερνόταν πίσω από το Safety Car, λίγο αργότερα ο Lewis Hamilton σταμάτησε στην ευθεία, και πίσω τους άρχισαν να εμφανίζονται κι άλλα αυτοκίνητα που...</description>
-      <category>Ειδήσεις</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>

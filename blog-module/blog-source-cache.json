@@ -1,6 +1,44 @@
 {
   "posts": [
     {
+      "id": "20261023G",
+      "title": "Gp Usa: Από τον Moss και τον Bruce McLaren στους σημερινούς ήρωες.",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-23",
+      "dateISO": "2026-10-23",
+      "displayDate": "23 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261023G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261023G/2.webp",
+      "excerpt": "Usa Grand Prix:Από τον Μος και τον Κλαρκ στον Χάμιλτον, τον Φερστάπεν. Σήμερα θα μιλήσουμε για την ιστορία ενός αγώνα που άλλαξε πολλές φορές έδρα, φιλοξένησε θρυλικές μονομαχίες και έφερε τη Formula...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261023G/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Historical",
+        "Racing Legends",
+        "Jim Clark",
+        "Ayrton Senna",
+        "Alain Prost",
+        "Michael Schumacher",
+        "Sebastian Vettel",
+        "Lewis Hamilton",
+        "Max Verstappen",
+        "Kimi Raikkonen",
+        "Charles Leclerc",
+        "USA Gp"
+      ],
+      "wordCount": 3143,
+      "readingTime": "16 min",
+      "imageWidth": 1350,
+      "imageHeight": 900,
+      "backgroundImageWidth": 682,
+      "backgroundImageHeight": 450
+    },
+    {
       "id": "20261023W",
       "title": "Norifumi Abe: Κάνοντας την Suzuka να σωπάσει",
       "author": "Themis Charvalis",
@@ -10902,5 +10940,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-23T07:38:33.129Z"
+  "lastUpdated": "2026-10-23T20:34:21.415Z"
 }
