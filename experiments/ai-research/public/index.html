@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="el" data-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AI Research — F1 Stories</title>
+    <link rel="stylesheet" href="/app.css">
+    <script type="module" src="/app.js"></script>
+</head>
+<body>
+    <header><a class="brand" href="/">F1 STORIES</a><span>Εργαστήριο έρευνας</span><button type="button" id="theme" aria-pressed="false">Φωτεινό θέμα</button></header>
+    <main>
+        <div class="intro"><h1>AI Research <span>— F1 Stories</span></h1><p>Από το ερώτημα στις πηγές. Ένα πειραματικό σημειωματάριο για έρευνα, αβεβαιότητες και καλύτερες εκδοτικές αποφάσεις.</p></div>
+        <div class="workspace">
+            <aside aria-label="Πεδίο έρευνας">
+                <form id="research">
+                    <h2>Το ερώτημα</h2>
+                    <label for="example">Δοκίμασε μια έρευνα</label><select id="example"><option value="">Δικό μου ερώτημα</option></select>
+                    <label for="question">Research question / Ερώτημα</label><textarea id="question" name="question" rows="5" minlength="8" maxlength="1200" required placeholder="Τι θέλεις να διερευνήσεις;"></textarea>
+                    <p class="hint">Μόνο το ερώτημα και τα πεδία αυτής της φόρμας αποστέλλονται. Μην επικολλάς αδημοσίευτα άρθρα ή προσωπικά στοιχεία.</p>
+                    <div class="fields"><div><label for="season">Season / Σεζόν</label><input id="season" name="season" value="2026" pattern="[0-9]{4}" inputmode="numeric" maxlength="4" required></div><div><label for="session">Session / Σκέλος</label><select id="session" name="session"><option value="">Προαιρετικό</option><option value="Practice">Ελεύθερες δοκιμές</option><option value="Qualifying">Κατατακτήριες</option><option value="Sprint">Sprint</option><option value="Race">Αγώνας</option></select></div></div>
+                    <label for="grandPrix">Grand Prix (προαιρετικό)</label><input id="grandPrix" name="grandPrix" maxlength="100" placeholder="π.χ. Monza">
+                    <label for="category">Editorial category / Κατηγορία</label><select id="category" name="category"><option value="Technical">Technical — Τεχνικό</option><option value="Analysis">Analysis — Ανάλυση</option><option value="History">History — Ιστορία</option><option value="News">News — Ειδήσεις</option><option value="Opinion">Opinion — Άποψη</option></select>
+                    <label for="mode">Λειτουργία έρευνας</label><select id="mode"><option value="DEMO">DEMO — χωρίς χρέωση</option><option value="LIVE" disabled>LIVE — πληρωμένη κλήση API</option></select>
+                    <p id="availability" class="hint">Φόρτωση τοπικής ρύθμισης…</p>
+                    <label id="activation" class="check" hidden><input type="checkbox" id="activateLive">Ενεργοποιώ ρητά μία πληρωμένη έρευνα για αυτό το ερώτημα.</label>
+                    <div class="actions"><button type="submit" id="start" class="primary" disabled>Έναρξη έρευνας</button><button type="button" id="cancel" disabled>Ακύρωση</button></div>
+                </form>
+                <details class="internal"><summary>Εσωτερικές αναφορές F1 Stories</summary><p class="hint">Ξεχωριστή τοπική αναζήτηση σε δημοσιευμένους τίτλους. Οι αναφορές δεν αποστέλλονται στο AI.</p><form id="lookup"><label for="lookupQuery">Τίτλος / θέμα</label><input id="lookupQuery" minlength="2" maxlength="100" required><button>Εύρεση αναφορών</button></form><div id="internalResults" aria-live="polite"></div></details>
+            </aside>
+            <article aria-label="Ερευνητικό dossier">
+                <div class="result-header"><h2>Ερευνητικό dossier</h2><div class="actions"><button id="copy" disabled>Αντιγραφή brief</button><button id="download" disabled>Λήψη brief.txt</button></div></div>
+                <p id="status" role="status" aria-live="polite">Επίλεξε ένα παράδειγμα ή γράψε το ερώτημά σου για να ξεκινήσεις.</p>
+                <div id="result"><div class="empty"><h3>Η αβεβαιότητα έχει θέση στο brief.</h3><p>Πηγές δίπλα στους ισχυρισμούς. Υποθέσεις χωριστά από καταγραφές. Καμία αυτόματη μεταφορά σε άρθρα ή δημοσίευση.</p><dl><dt>Επίσημες πηγές</dt><dd>FIA · Formula 1 · Pirelli</dd><dt>Δομή</dt><dd>Ευρήματα, στατιστικά, τεχνικές εξηγήσεις, αντιφάσεις, περιορισμοί και μητρώο πηγών.</dd><dt>Χωρίς στοιχεία;</dt><dd>Το αποτέλεσμα οφείλει να το λέει καθαρά.</dd></dl></div></div>
+            </article>
+        </div>
+        <footer>Τοπικό πείραμα P2.3a · Κανένα δικαίωμα δημοσίευσης · Καμία σύνδεση με προσχέδια<br>Οι τοπικές δικλίδες δεν επαρκούν για δημόσια υπηρεσία. Η δημόσια χρήση απαιτεί ξεχωριστή ταυτοποίηση και προστασία κατάχρησης.</footer>
+    </main>
+</body>
+</html>
