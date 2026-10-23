@@ -1,0 +1,16 @@
+{
+  "baselineCommit": "d2bfbc01d257cb680247a2dae89e196018497e30",
+  "baselineFiles": 4104,
+  "candidateFiles": 4106,
+  "unchanged": 4102,
+  "changed": [
+    "generate.html",
+    "styles/author/generate.css"
+  ],
+  "added": [
+    "scripts/author/research-assistant.min.js",
+    "scripts/author/research-catalog.json"
+  ],
+  "removed": [],
+  "articlesUnchanged": 410
+}

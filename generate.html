@@ -151,11 +151,15 @@
             <h1 class="gb-title" id="gb-h-1" tabindex="-1">Κείμενο</h1>
             <p class="gb-lede">Απλό κείμενο. Κενή γραμμή χωρίζει παραγράφους.</p>
             <div class="gb-toolbar">
+                <button class="gb-btn gb-btn-sm" id="research-toggle" type="button" aria-controls="research-notebook" aria-expanded="false">Έρευνα — προαιρετικά</button>
                 <button class="gb-btn gb-btn-sm" id="gen-insert-img-marker" type="button">
                     <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> Θέση εικόνας εδώ
                 </button>
                 <span class="gb-hint" id="gen-marker-count" aria-live="polite">0 δείκτες • 0 εικόνες</span>
             </div>
+            <div class="gb-writing-layout">
+            <aside id="research-notebook" class="gb-research" aria-labelledby="research-heading" hidden></aside>
+            <div class="gb-writing">
             <label class="gb-sr" for="gen-content">Κείμενο άρθρου</label>
             <textarea class="gb-textarea" id="gen-content" spellcheck="true" placeholder="Γράψε ή επικόλλησε εδώ το κείμενο του άρθρου…"></textarea>
             <p class="gb-hint">Για να τονίσεις παράγραφο, βάλε <code>[lead]</code> σε δική της γραμμή ακριβώς πριν από αυτή.</p>
@@ -167,6 +171,8 @@
                 <dt><code>[img-instert-tag]</code></dt><dd>Θέση εικόνας — αντιστοιχίζεται στο βήμα 3</dd>
                 <dt><code>https://youtu.be/…</code></dt><dd>Σε δική του γραμμή: ενσωμάτωση YouTube, X, Instagram, Threads, Facebook</dd>
             </dl>
+            </div>
+            </div>
         </section>
 
         <!-- Step 3 -->
@@ -271,5 +277,7 @@
 <script defer src="/scripts/author/local-drafts.min.js?v=844730d9"></script>
 <script defer src="/scripts/author/draft-manager.min.js?v=4c35e9f2"></script>
 <script defer src="/scripts/author/generate-page.min.js?v=5fff19bf"></script>
+<script defer src="/scripts/author/article-index.min.js?v=e9372717"></script>
+<script defer src="/scripts/author/research-assistant.min.js?v=320ab809"></script>
 </body>
 </html>

@@ -18,6 +18,7 @@
 
 import { CSS_INPUTS, CSS_DEPENDENCIES, JS_INPUTS, STANDINGS_TAB_ENTRIES } from './asset-sources.mjs';
 import { buildAuthorPreview } from './author-preview.mjs';
+import { buildResearchCatalog } from './author-research.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -178,6 +179,7 @@ async function minifyJs(rel) {
     }
     const collector = 'scripts/perf/web-vitals-collector.min.js';
     const result = await esbuildTransform(source, {
+        charset: rel === 'scripts/author/research-assistant.js' ? 'utf8' : undefined,
         define: rel === 'scripts/perf/web-vitals-beacon.js' ? {
             RUM_COLLECTOR_URL: JSON.stringify('/' + collector + '?v=' + sha256Short(fs.readFileSync(path.join(REPO_ROOT, collector))))
         } : rel === 'blog-module/blog-index.js' ? {
@@ -204,6 +206,7 @@ async function minifyJs(rel) {
 }
 
 async function buildOnce() {
+    buildResearchCatalog(REPO_ROOT);
     const manifest = {};
     const rows = [];
 
