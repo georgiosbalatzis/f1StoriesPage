@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261023W",
+      "title": "Norifumi Abe: Κάνοντας την Suzuka να σωπάσει",
+      "author": "Themis Charvalis",
+      "date": "2026-10-23",
+      "dateISO": "2026-10-23",
+      "displayDate": "23 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261023W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261023W/2.webp",
+      "excerpt": "Στις 7 Σεπτεμβρίου 1975 γεννήθηκε στο Τόκιο ένας άνθρωπος που έμελλε να γίνει μία από τις πιο χαρακτηριστικές μορφές της χρυσής εποχής των 500cc. Πριν ακόμη φτάσει στο Παγκόσμιο Πρωτάθλημα, ο Abe...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261023W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Norifumi Abe",
+        "Yamaha"
+      ],
+      "wordCount": 829,
+      "readingTime": "5 min",
+      "imageWidth": 516,
+      "imageHeight": 308,
+      "backgroundImageWidth": 788,
+      "backgroundImageHeight": 389
+    },
+    {
       "id": "20261022J",
       "title": "GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;",
       "author": "Giannis Poulikidis",
@@ -10873,5 +10902,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-22T10:04:36.445Z"
+  "lastUpdated": "2026-10-23T07:38:33.129Z"
 }
