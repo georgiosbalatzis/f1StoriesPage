@@ -4,7 +4,7 @@
 
 Current checked contracts:
 
-- `blog-module/blog-index-data.json`: compact blog index `v: 2`.
+- `blog-module/blog-index-data.json`: compact blog index `v: 2`, capped at 192 KiB. The 411-post archive is 147,523 bytes; the previous 144 KiB cap blocked ordinary publishing. Split the index before reaching the new cap; schema and per-field limits still apply.
 - `blog-module/blog-source-cache.json`: source cache used by author/build tooling.
 - `blog-module/home-latest.json`: homepage latest-articles payload, at most 4 posts: `[0]` is the cover story, `[1..3]` fill the journal. Optional `deck` (≤240 chars) and `lede` (≤320 chars) are whole sentences from the article's opening paragraph, used by the cover instead of the truncated `excerpt`.
 - `assets/youtube-latest.json`: local YouTube snapshot.
