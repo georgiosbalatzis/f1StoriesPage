@@ -1,0 +1,116 @@
+{
+  "note": "Existing public records used to validate discovery and provenance. This is not an independent factual audit.",
+  "search": [
+    {
+      "query": "Hamilton",
+      "results": [
+        {
+          "id": "20260929-2G",
+          "title": "Ferrari + Leclerc + P2 = ???",
+          "category": "Teams",
+          "date": "2026-09-29",
+          "author": "Georgios Balatzis",
+          "url": "/blog-module/blog-entries/20260929-2G/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        },
+        {
+          "id": "20261011J",
+          "title": "Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο",
+          "category": "Opinion",
+          "date": "2026-10-11",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20261011J/article.html",
+          "reason": "1/1 πλήρεις λέξεις · 1/1 μερικές αντιστοιχίσεις"
+        },
+        {
+          "id": "20261009W",
+          "title": "Grand prix Σιγκαπούρης: Η νύχτα, η ιστορία και η απόλυτη δοκιμασία της Formula 1",
+          "category": "History",
+          "date": "2026-10-09",
+          "author": "Themis Charvalis",
+          "url": "/blog-module/blog-entries/20261009W/article.html",
+          "reason": "1/1 πλήρεις λέξεις · 1/1 μερικές αντιστοιχίσεις"
+        }
+      ]
+    },
+    {
+      "query": "BetCast",
+      "results": [
+        {
+          "id": "20261010J",
+          "title": "Betcast #276 - Singapore GP",
+          "category": "Betting",
+          "date": "2026-10-10",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20261010J/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        },
+        {
+          "id": "20261002J",
+          "title": "BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο περιμέναμε! | F1",
+          "category": "Betting",
+          "date": "2026-10-02",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20261002J/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        },
+        {
+          "id": "20260912J",
+          "title": "BetCast #273: Προσπεράσεις ή… τοίχος με τοίχο;",
+          "category": "Betting",
+          "date": "2026-09-12",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20260912J/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        }
+      ]
+    },
+    {
+      "query": "GridCast",
+      "results": [
+        {
+          "id": "20261022J",
+          "title": "GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;",
+          "category": "Analysis",
+          "date": "2026-10-22",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20261022J/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        },
+        {
+          "id": "20261008J",
+          "title": "GRIDCAST #02 : Singapore - Ανάλυση",
+          "category": "Analysis",
+          "date": "2026-10-08",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20261008J/article.html",
+          "reason": "Ακριβής αντιστοίχιση πεδίου"
+        },
+        {
+          "id": "20260930J",
+          "title": "GRIDCAST #01 : GP Bahrain... τελική ευθεία",
+          "category": "Analysis",
+          "date": "2026-09-30",
+          "author": "Giannis Poulikidis",
+          "url": "/blog-module/blog-entries/20260930J/article.html",
+          "reason": "1/1 πλήρεις λέξεις · 1/1 μερικές αντιστοιχίσεις"
+        }
+      ]
+    },
+    {
+      "query": "AnalystCast",
+      "results": []
+    }
+  ],
+  "pinnedStanding": {
+    "name": "Andrea Kimi Antonelli",
+    "kind": "driver",
+    "position": "1",
+    "points": "340",
+    "source": "https://api.jolpi.ca/ergast/f1/2026/17/driverstandings.json?limit=30",
+    "season": "2026",
+    "round": "17",
+    "raceName": "Singapore Grand Prix",
+    "generatedAt": "2026-10-12T11:47:19.828Z"
+  }
+}
