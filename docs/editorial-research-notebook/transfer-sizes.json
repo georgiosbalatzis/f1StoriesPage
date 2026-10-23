@@ -1,0 +1,47 @@
+{
+  "note": "Raw bytes and sum of per-file gzip estimates. HTTP encoding/cache behavior is host-dependent. Initial script totals exclude the on-demand preview renderer. No research dataset is fetched at startup.",
+  "initialScripts": {
+    "baseline": {
+      "raw": 110331,
+      "gzip": 36559
+    },
+    "candidate": {
+      "raw": 137732,
+      "gzip": 46571
+    }
+  },
+  "authorCSS": {
+    "baseline": {
+      "raw": 18689,
+      "gzip": 4226
+    },
+    "candidate": {
+      "raw": 21220,
+      "gzip": 4707
+    }
+  },
+  "newInitialScripts": {
+    "scripts/author/research-assistant.min.js": {
+      "raw": 24222,
+      "gzip": 8543
+    },
+    "scripts/author/article-index.min.js": {
+      "raw": 3179,
+      "gzip": 1469
+    }
+  },
+  "onDemand": {
+    "scripts/author/research-catalog.json": {
+      "raw": 665,
+      "gzip": 359
+    },
+    "blog-module/blog-index-data.json": {
+      "raw": 147179,
+      "gzip": 43590
+    },
+    "standings/rounds/2026-17.json": {
+      "raw": 12944,
+      "gzip": 2155
+    }
+  }
+}

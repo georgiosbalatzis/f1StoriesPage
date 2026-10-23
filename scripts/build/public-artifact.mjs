@@ -38,6 +38,7 @@ const ROOT_FILES = new Set([
 ]);
 
 const AUTHOR_TOOL_FILES = new Set([
+    'scripts/author/research-catalog.json',
     // Retain the author portrait fallback after preview markup moves into the renderer.
     'images/authors/default.webp',
     // The article preview stylesheet of generate.html / housekeeping.html (no public page loads it).
