@@ -71,6 +71,9 @@ jobs:
       - name: Run author module tests
         run: npm run test:author
 
+      - name: Test isolated research prototype (DEMO and mocked provider only)
+        run: npm run test:research
+
       - name: Run standings module tests
         run: npm run test:standings
 
