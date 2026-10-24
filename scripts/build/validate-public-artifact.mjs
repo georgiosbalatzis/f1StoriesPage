@@ -9,6 +9,7 @@ import { buildSync } from 'esbuild';
 import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
 import articleDates from '../../blog-module/build/article-dates.js';
+import taxonomy from '../../blog-module/taxonomy.js';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,6 +57,7 @@ const REQUIRED_EXACT = [
     'images/icons/icon-512.png',
     'standings/index.html',
     'authors/index.html',
+    ...taxonomy.AUTHORS.map(author => taxonomy.authorPath(author).slice(1) + 'index.html'),
     'standings/debrief-cache.json',
     'standings/dirty-air/index.json',
     'standings/standings-cache.json',
@@ -486,6 +488,29 @@ export function validateSearchMetadata(errors, html, relPath) {
     if (firstMetaContent(head, 'property', 'article:published_time') !== data.datePublished) errors.push(`${relPath}: article:published_time must equal datePublished`);
     const modifiedTime = firstMetaContent(head, 'property', 'article:modified_time');
     if (modifiedTime && modifiedTime !== data.dateModified) errors.push(`${relPath}: article:modified_time must equal dateModified`);
+    validateArticleBreadcrumb(errors, html, head, relPath, section);
+}
+
+// One hierarchy, Home → the primary section's page → this article, stated alike by the cover strip and BreadcrumbList.
+function validateArticleBreadcrumb(errors, html, head, relPath, section) {
+    const lists = Array.from(head.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi))
+        .map(match => JSON.parse(match[1].trim())).filter(data => data['@type'] === 'BreadcrumbList');
+    const items = lists.length === 1 ? lists[0].itemListElement || [] : [];
+    const canonical = attrValue(findLinkTags(head, 'canonical')[0] || '', 'href');
+    const sectionPage = taxonomy.sectionPath(section);
+    const expected = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}${sectionPage}`, canonical];
+    if (!sectionPage || items.length !== 3 || items.some((item, i) => item.position !== i + 1 || item.item !== expected[i] || !item.name)) {
+        errors.push(`${relPath}: BreadcrumbList must be Home → ${sectionPage || 'a public section'} → the canonical article`);
+        return;
+    }
+    const text = value => value.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+    const nav = /<nav class="rr-crumbs" aria-label="[^"]+"><ol>([\s\S]*?)<\/ol><\/nav>/.exec(html);
+    const links = nav ? Array.from(nav[1].matchAll(/<a href="([^"]+)">([^<]*)<\/a>/g)).map(match => [match[1], text(match[2])]) : [];
+    const current = nav && (/<li class="visually-hidden" aria-current="page">([^<]*)<\/li>/.exec(nav[1]) || [])[1];
+    if (links.length !== 2 || links[0][0] !== '/' || links[1][0] !== sectionPage || links[1][1] !== items[1].name
+        || current === undefined || text(current) !== items[2].name) {
+        errors.push(`${relPath}: the visible breadcrumb must match BreadcrumbList (Home, ${items[1].name}, the article)`);
+    }
 }
 
 function validateHtmlSecurityMeta(errors, html, relPath) {

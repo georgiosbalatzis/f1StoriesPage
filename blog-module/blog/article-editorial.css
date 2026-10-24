@@ -986,6 +986,7 @@
 .article-page .rr-cover { margin-top: var(--nav-h); }
 .article-page .rr-edition { display: flex; gap: 10px; margin: 0; padding: 14px var(--gutter) 12px; color: var(--on-deep-2); font: 700 .9375rem/1.1 var(--cond); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-edition a { color: var(--on-deep); text-decoration: none; }
+.article-page .rr-crumbs ol { display: flex; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .article-page .rr-edition__date { margin-left: auto; font-variant-numeric: tabular-nums; }
 .article-page .rr-cover__media { margin: 0; overflow: hidden; }
 .article-page .rr-cover__media picture { display: contents; }

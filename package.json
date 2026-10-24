@@ -38,6 +38,7 @@
     "test:entities": "node --test blog-module/build/__tests__/entities*.test.js",
     "entities:validate": "node blog-module/build/entities/index.js --validate",
     "entities:report": "node blog-module/build/entities/index.js",
+    "links:report": "node blog-module/build/body-links.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",
     "test:standings": "node --test standings/core/__tests__/*.test.mjs",
     "test:security": "node --test scripts/build/__tests__/security-policy.test.mjs scripts/quality/__tests__/*.test.mjs",

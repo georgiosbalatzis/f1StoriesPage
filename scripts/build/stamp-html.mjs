@@ -200,6 +200,18 @@ function listDiscoveryPages() {
     ['section', 'archive', 'entities'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
     return pages.sort();
 }
+// The static author pages (authors/<slug>/, written by blog-module/build/authors-page.js) are the /authors/ shell.
+const AUTHORS_ROOT = path.join(REPO_ROOT, 'authors');
+const authorPages = fs.existsSync(AUTHORS_ROOT) ? fs.readdirSync(AUTHORS_ROOT, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.name) && fs.existsSync(path.join(AUTHORS_ROOT, entry.name, 'index.html')))
+    .map(entry => `authors/${entry.name}/index.html`).sort() : [];
+for (const rel of authorPages) {
+    TARGET_HTML.push(rel);
+    SPRITE_TARGETS.add(rel);
+    EDITORIAL_TARGETS.add(rel);
+    ROUTE_FONTS_SOURCES[rel] = ROUTE_FONTS_SOURCES['authors/index.html'];
+    FONT_PRELOADS[rel] = FONT_PRELOADS['authors/index.html'];
+}
 for (const rel of listDiscoveryPages()) {
     TARGET_HTML.push(rel);
     SPRITE_TARGETS.add(rel);

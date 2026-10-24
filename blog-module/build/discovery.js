@@ -54,7 +54,7 @@ const SECTION_METADATA = {
 
 const route = {
     index: `${BLOG}/index.html`,
-    section: (kind, page = 1) => `${BLOG}/section/${kind}/${page > 1 ? `page/${page}/` : ''}`,
+    section: (kind, page = 1) => `${T.SECTION_ROOT}${kind}/${page > 1 ? `page/${page}/` : ''}`,
     month: key => `${BLOG}/archive/${key.slice(0, 4)}/${key.slice(5, 7)}/`,
     archive: `${BLOG}/archive/`,
     story: post => post.url || `/blog-module/blog-entries/${post.id}/article.html`

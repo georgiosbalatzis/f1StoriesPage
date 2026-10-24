@@ -116,6 +116,27 @@
         return titleIssues(title, body).map(function (issue) { return TITLE_MESSAGES[issue.code](issue); });
     }
 
+    // Distinct F1 Stories destinations the body links to with [text](url): site paths and f1-stories.gr URLs, never
+    // fragments or other sites. The pattern is inline-markup.js's LINK_PATTERN (the syntax the build renders).
+    var LINK_PATTERN = /(?<!!)\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
+    function internalLinkCount(body) {
+        var seen = {};
+        String(body || '').replace(LINK_PATTERN, function (match, label, url) {
+            var site = /^https?:\/\/(?:www\.)?f1-stories\.gr(\/[^?#]*)?/i.exec(url);
+            var target = site ? site[1] || '/' : /^\/(?!\/)/.test(url) ? url.split(/[?#]/)[0] : '';
+            if (target) seen[target.replace(/\/index\.html$/, '/')] = true;
+            return match;
+        });
+        return Object.keys(seen).length;
+    }
+
+    // Advisory: 2–3 contextual links to earlier stories, sections or topic hubs (blog-module/build/body-links.js).
+    function linkWarnings(body) {
+        var count = internalLinkCount(body);
+        if (!String(body || '').trim() || count >= 2) return [];
+        return [(count ? 'Ένας μόνο εσωτερικός σύνδεσμος' : 'Κανένας εσωτερικός σύνδεσμος') + ' στο κείμενο. Προτείνονται 2–3 όπου βοηθούν τον αναγνώστη: προς προηγούμενα άρθρα, ενότητες ή θέματα του F1 Stories, π.χ. [Τεχνικά](/blog-module/blog/section/technical/).'];
+    }
+
     // Removes emoji (and flag/variation-selector/ZWJ residue) from a title.
     function stripEmoji(title) {
         return String(title || '')
@@ -129,6 +150,8 @@
         stripEmoji: stripEmoji,
         titleIssues: titleIssues,
         titleWarnings: titleWarnings,
+        internalLinkCount: internalLinkCount,
+        linkWarnings: linkWarnings,
         buildSourceText: buildSourceText,
         normalizeZipPath: normalizeZipPath,
         parseSourceText: parseSourceText

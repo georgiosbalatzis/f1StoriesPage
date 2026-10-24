@@ -388,6 +388,7 @@
         if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true });
         articleSource.titleWarnings(title, body).forEach(function (text) { issues.push({ step: 0, text: text }); });
         if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true });
+        articleSource.linkWarnings(body).forEach(function (text) { issues.push({ step: 1, text: text }); });
         if (!(getHeroFile())) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
         if (markers > images) issues.push({ step: 2, text: plural(markers - images, 'δείκτης', 'δείκτες') + ' χωρίς εικόνα — κενή θέση στο άρθρο' });
         if (images > markers) issues.push({ step: 2, text: plural(images - markers, 'εικόνα', 'εικόνες') + ' χωρίς δείκτη → carousel στο τέλος' });

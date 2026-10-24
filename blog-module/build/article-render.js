@@ -1,7 +1,7 @@
 const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensions, getImageDimensionsForPublicPath } = require('./shared');
 const { truthfulSrcset } = require('./image-sizes');
 const { mediaFor, slotOf, creditLineHtml, applyBodyMedia } = require('./media-meta');
-const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb, formatReadingTime } = require('../taxonomy');
+const { getPostTaxonomy, categoryLabel, categoryKind, sectionPath, authorLabel, findAuthor, authorPath, authorThumb, formatReadingTime } = require('../taxonomy');
 const { readingTimeFromWords, wordsInHtml } = require('./reading-time');
 const { transformBody, renderRunningOrder, coverVariant, COVER_SIZES } = require('./race-report');
 const { extractMetadata } = require('./metadata');
@@ -15,7 +15,11 @@ function escapeHtmlText(value) {
 }
 
 function jsonScriptLiteral(value) {
-    return JSON.stringify(String(value ?? ''))
+    return jsonScriptValue(String(value ?? ''));
+}
+
+function jsonScriptValue(value) {
+    return JSON.stringify(value)
         .replace(/</g, '\\u003C')
         .replace(/>/g, '\\u003E')
         .replace(/&/g, '\\u0026')
@@ -37,8 +41,17 @@ const EDITORIAL_LABELS = Object.freeze({
 });
 
 function authorProfileHref(name) {
+    return authorPath(findAuthor(name));
+}
+
+// The byline as structured data, the same identity the page shows: a writer's established name and profile page, the
+// house byline as the publisher it is, and an unknown name as given.
+function authorSchema(name) {
     const author = findAuthor(name);
-    return author ? `/authors/?author=${author.slug}` : '/authors/';
+    if (author && author.house) return { '@type': 'Organization', '@id': 'https://f1-stories.gr/#organization', name: 'F1 Stories' };
+    if (!author) return { '@type': 'Person', name: String(name ?? '') };
+    const url = `https://f1-stories.gr${authorPath(author)}`;
+    return { '@type': 'Person', '@id': `${url}#person`, name: author.label, url };
 }
 
 function getEditorialProfile(category) {
@@ -76,7 +89,7 @@ function renderAuthorCard(post) {
     return `<div class="rr-pitwall__author" data-author-slug="${author.slug}">`
         + `<img src="${author.portrait}" alt="" width="132" height="132" loading="lazy" decoding="async"><div>`
         + '<p class="rr-label">Γράφει</p>'
-        + `<h2 class="rr-pitwall__name" id="author-card-name"><a href="/authors/?author=${author.slug}">${escapeHtmlText(author.label)}</a></h2>`
+        + `<h2 class="rr-pitwall__name" id="author-card-name"><a href="${authorPath(author)}">${escapeHtmlText(author.label)}</a></h2>`
         + `<p class="rr-pitwall__role">${escapeHtmlText(author.specialty)}</p>`
         + `<p class="rr-pitwall__bio">${escapeHtmlText(author.bio)}</p>`
         + `<p class="rr-pitwall__links"><a href="/blog-module/blog/index.html?author=${author.slug}">Όλα τα άρθρα του ${escapeHtmlText(author.genitive)} <span aria-hidden="true">→</span></a>${social}</p>`
@@ -197,11 +210,29 @@ function replaceTemplateTokens(templateHtml, tokens) {
         .reduce((html, token) => html.split(token).join(String(tokens[token])), templateHtml);
 }
 
+// A category links to its static section page; one without a page is named, never linked to a guess.
+function categoryLink(category, className = '') {
+    const href = sectionPath(category);
+    const attrs = className ? ` class="${className}"` : '';
+    const label = escapeHtmlText(categoryLabel(category));
+    return href ? `<a href="${escapeHtmlAttribute(href)}"${attrs}>${label}</a>` : `<span${attrs}>${label}</span>`;
+}
+
+// Home → primary section → this story: the one hierarchy the cover strip shows and BreadcrumbList states.
+// A category without a section page falls back to the archive, never to an unrelated section.
+function articleBreadcrumb(category) {
+    const section = sectionPath(category);
+    return section ? { name: categoryLabel(category), path: section } : { name: 'Άρθρα', path: '/blog-module/blog/index.html' };
+}
+
+function renderBreadcrumb(crumb, title) {
+    return '<nav class="rr-crumbs" aria-label="Διαδρομή"><ol><li><a href="/">F1 Stories</a></li>'
+        + `<li><span aria-hidden="true">/</span> <a href="${escapeHtmlAttribute(crumb.path)}">${escapeHtmlText(crumb.name)}</a></li>`
+        + `<li class="visually-hidden" aria-current="page">${escapeHtmlText(title)}</li></ol></nav>`;
+}
+
 function renderCategoryLinks(categories, className = 'article-category-link') {
-    return categories.map(category => {
-        const href = `/blog-module/blog/index.html?category=${encodeURIComponent(category)}`;
-        return `<a href="${escapeHtmlAttribute(href)}"${className ? ` class="${className}"` : ''}>${escapeHtmlText(categoryLabel(category))}</a>`;
-    }).join(' ');
+    return categories.map(category => categoryLink(category, className)).join(' ');
 }
 
 function formatArticleDate(post) {
@@ -318,7 +349,7 @@ function refreshArticleTaxonomy(html, post) {
     let updated = html
         .replace(/F1 STORIES \/ THE JOURNAL/g, 'F1 STORIES / Η ΕΚΔΟΣΗ')
         .replace(/(<span class="article-category-pill">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
-        .replace(/<a href="[^"]*" class="article-category-pill">[\s\S]*?<\/a>/, `<a href="${escapeHtmlAttribute(`/blog-module/blog/index.html?category=${encodeURIComponent(category)}`)}" class="article-category-pill">${primary}</a>`)
+        .replace(/<a href="[^"]*" class="article-category-pill">[\s\S]*?<\/a>/, () => categoryLink(category, 'article-category-pill'))
         .replace(/(<div class="article-meta">[\s\S]*?<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${renderCategoryLinks(categories)}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
         // The cover already carries category, date and reading time; the rail keeps
@@ -481,6 +512,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const titleText = String(postData.title || '');
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
     const articleUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/article.html`;
+    const crumb = articleBreadcrumb(taxonomy.category);
     const imageFilePath = encodePathSegment(bgImageFilename);
     const imageUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/${imageFilePath}`;
     const renderTokens = {
@@ -497,7 +529,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_TITLE_PARAM: encodeURIComponent(String(postData.title ?? '')),
         ARTICLE_AUTHOR_TEXT: escapeHtmlText(authorLabel(postData.author)),
         ARTICLE_AUTHOR_ATTR: escapeHtmlAttribute(authorLabel(postData.author)),
-        ARTICLE_AUTHOR_JSON: jsonScriptLiteral(postData.author),
+        ARTICLE_AUTHOR_SCHEMA_JSON: jsonScriptValue(authorSchema(postData.author)),
         ARTICLE_HEADER_BYLINE: renderHeaderByline(postData),
         ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(dates.published.iso),
         ARTICLE_DATE_ISO: escapeHtmlAttribute(dates.published.iso),
@@ -525,8 +557,11 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_CATEGORIES_JSON: JSON.stringify(taxonomy.categories),
         ARTICLE_EDITORIAL_KIND: escapeHtmlAttribute(editorialProfile.kind),
         ARTICLE_EDITORIAL_LABEL: escapeHtmlText(editorialProfile.label),
-        ARTICLE_CATEGORY_LINKS: renderCategoryLinks(taxonomy.categories),
-        ARTICLE_CATEGORY_HREF: escapeHtmlAttribute(`/blog-module/blog/index.html?category=${encodeURIComponent(taxonomy.category)}`),
+        ARTICLE_CATEGORY_LINK: categoryLink(taxonomy.category),
+        // Single-line tokens: entity evidence (entities/associations.json) is anchored to article line numbers.
+        ARTICLE_BREADCRUMB: renderBreadcrumb(crumb, titleText),
+        ARTICLE_SECTION_NAME_JSON: jsonScriptLiteral(crumb.name),
+        ARTICLE_SECTION_URL_JSON: jsonScriptLiteral(`https://f1-stories.gr${crumb.path}`),
         ARTICLE_EDITION_DATE: editionDate(postData),
         ARTICLE_COVER_VARIANT: cover,
         ARTICLE_COVER_SIZES: heroSizes,
