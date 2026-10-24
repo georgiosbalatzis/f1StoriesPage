@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261024J",
+      "title": "BetCast #277 : Με 4 ομάδες στο παιχνίδι ...",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-24",
+      "dateISO": "2026-10-24",
+      "displayDate": "24 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261024J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261024J/1.webp",
+      "excerpt": "Πρωταθλητής ή όχι ο Kimi μετά από αυτό το GP... Δεν το ξέρουμε. Όμως ξέρουμε σίγουρα ότι θα έχουμε μεγάλες μάχες. Οπότε, BetCast Circuit of The Americas με 4 σημεία . Τα πρώτα δύο ελεύθερα...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261024J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "Coat",
+        "GP America",
+        "BetCast"
+      ],
+      "wordCount": 243,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261023G",
       "title": "Gp Usa: Από τον Moss και τον Bruce McLaren στους σημερινούς ήρωες.",
       "author": "Georgios Balatzis",
@@ -10940,5 +10969,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-23T20:34:21.415Z"
+  "lastUpdated": "2026-10-24T11:43:30.425Z"
 }

@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Thu, 22 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 23 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <item>
+      <title>BetCast #277 : Με 4 ομάδες στο παιχνίδι ...</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261024J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261024J/article.html</guid>
+      <pubDate>Fri, 23 Oct 2026 21:00:00 GMT</pubDate>
+      <description>Πρωταθλητής ή όχι ο Kimi μετά από αυτό το GP... Δεν το ξέρουμε. Όμως ξέρουμε σίγουρα ότι θα έχουμε μεγάλες μάχες. Οπότε, BetCast Circuit of The Americas με 4 σημεία . Τα πρώτα δύο ελεύθερα...</description>
+      <category>Στοίχημα</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
     <item>
       <title>Gp Usa: Από τον Moss και τον Bruce McLaren στους σημερινούς ήρωες.</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261023G/article.html</link>
@@ -267,15 +276,6 @@
       <description>Η Williams είχε δίκιο , οι βαθμοί όμως πήγαν στη McLaren Στον όγδοο γύρο του Grand Prix του Μπαχρέιν στο Sepang, η Williams είχε κάνει σχεδόν όλα όσα θα ζητούσες από ένα pit wall σε έναν αγώνα με...</description>
       <category>Ανάλυση</category>
       <dc:creator>Γιώργος Μπαλατζής</dc:creator>
-    </item>
-    <item>
-      <title>Δεν είναι δική μας δουλειά να αποφασίσουμε πώς θα τελειώσει η ιστορία του Marc Márquez</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261005W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261005W/article.html</guid>
-      <pubDate>Sun, 04 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Όταν μιλάμε για τον Marquez, μιλάμε για τον αναβάτη, για όσα έχει ήδη κάνει και για αυτό που αντιπροσωπεύει. Για έναν άνθρωπο που εδώ και χρόνια έχει κάνει την εμμονή του με τη νίκη τρόπο ζωής. Που...</description>
-      <category>Άποψη</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
