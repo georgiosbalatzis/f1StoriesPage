@@ -118,11 +118,12 @@ test('generated structured data is valid and agrees with the taxonomy', async ()
     assert.deepEqual(article.articleSection, ['Analysis', 'Drivers']);
     assert.equal(article.mainEntityOfPage['@id'], canonical);
     assert.equal(article.datePublished, '2026-01-01');
-    assert.equal(article.author.name, 'Georgios Balatzis');
+    assert.equal(article.author.name, 'Γιώργος Μπαλατζής');
+    assert.equal(article.author.url, 'https://f1-stories.gr/authors/georgios-balatzis/');
     assert.deepEqual(crumbs.itemListElement.map(i => [i.position, i.name, i.item]), [
         [1, 'F1 Stories', 'https://f1-stories.gr/'],
-        [2, 'Άρθρα', 'https://f1-stories.gr/blog-module/blog/index.html'],
-        [3, 'Ο τίτλος «με εισαγωγικά» & σύμβολα', undefined]
+        [2, 'Ανάλυση', 'https://f1-stories.gr/blog-module/blog/section/analysis/'],
+        [3, 'Ο τίτλος «με εισαγωγικά» & σύμβολα', canonical]
     ]);
 });
 

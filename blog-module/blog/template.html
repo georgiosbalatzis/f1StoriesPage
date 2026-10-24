@@ -35,7 +35,7 @@
         "image": ARTICLE_IMAGE_URL_JSON,
         "datePublished": ARTICLE_DATE_ISO_JSON,
         "dateModified": ARTICLE_UPDATED_DATE_ISO_JSON,
-        "author": { "@type": "Person", "name": ARTICLE_AUTHOR_JSON },
+        "author": ARTICLE_AUTHOR_SCHEMA_JSON,
         "publisher": { "@type": "Organization", "@id": "https://f1-stories.gr/#organization", "name": "F1 Stories", "url": "https://f1-stories.gr/", "logo": { "@type": "ImageObject", "url": "https://f1-stories.gr/images/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": ARTICLE_URL_JSON }
     }
@@ -46,8 +46,8 @@
         "@type": "BreadcrumbList",
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "F1 Stories", "item": "https://f1-stories.gr/" },
-            { "@type": "ListItem", "position": 2, "name": "Άρθρα", "item": "https://f1-stories.gr/blog-module/blog/index.html" },
-            { "@type": "ListItem", "position": 3, "name": ARTICLE_TITLE_JSON }
+            { "@type": "ListItem", "position": 2, "name": ARTICLE_SECTION_NAME_JSON, "item": ARTICLE_SECTION_URL_JSON },
+            { "@type": "ListItem", "position": 3, "name": ARTICLE_TITLE_JSON, "item": ARTICLE_URL_JSON }
         ]
     }
     </script>
@@ -62,7 +62,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=4d9086da">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=82958c06">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28794e85">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=2092dd0b">
 
     <!-- Preload hero image for LCP -->
     ARTICLE_HERO_PRELOAD
@@ -201,7 +201,7 @@
 <main id="main" class="article-page-wrapper rr" data-article-kind="ARTICLE_EDITORIAL_KIND">
     <article class="rr-article" data-article-kind="ARTICLE_EDITORIAL_KIND" aria-labelledby="article-title">
         <header class="rr-cover rr-cover--ARTICLE_COVER_VARIANT" data-cover>
-            <p class="rr-edition"><a href="/blog-module/blog/index.html">F1 Stories</a><span>/ ARTICLE_EDITORIAL_LABEL</span><time class="rr-edition__date" datetime="ARTICLE_DATE_ISO">ARTICLE_EDITION_DATE</time></p>
+            <div class="rr-edition">ARTICLE_BREADCRUMB<span>/ ARTICLE_EDITORIAL_LABEL</span><time class="rr-edition__date" datetime="ARTICLE_DATE_ISO">ARTICLE_EDITION_DATE</time></div>
             <div class="rr-cover__grid">
                 <figure class="rr-cover__media"ARTICLE_COVER_STYLE>
                     <picture>
@@ -214,7 +214,7 @@
                     ARTICLE_COVER_CAPTION
                 </figure>
                 <div class="rr-cover__text">
-                    <p class="rr-kicker"><a href="ARTICLE_CATEGORY_HREF">ARTICLE_CATEGORY_TEXT</a><span id="reading-time-value">ARTICLE_READING_TIME</span></p>
+                    <p class="rr-kicker">ARTICLE_CATEGORY_LINK<span id="reading-time-value">ARTICLE_READING_TIME</span></p>
                     <h1 class="ARTICLE_TITLE_CLASS" id="article-title">ARTICLE_TITLE_TEXTARTICLE_TITLE_PERIOD</h1>
                     ARTICLE_HEADER_BYLINE
                 </div>

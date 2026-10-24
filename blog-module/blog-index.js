@@ -263,7 +263,7 @@
                 el('div', {}, [el('p', { class: 'ed-label', text: 'Υπογραφή · ' + author.desk }),
                     el('h1', { class: 'ed-section__title', id: 'journal-archive-title', text: author.label }),
                     el('p', { class: 'ed-byline__spec', text: author.specialty }), count,
-                    el('p', {}, [el('a', { class: 'ed-sechead__more', href: '/authors/?author=' + author.slug, text: 'Το προφίλ στους Συντάκτες →' })])])
+                    el('p', {}, [el('a', { class: 'ed-sechead__more', href: T.authorPath(author), text: 'Το προφίλ στους Συντάκτες →' })])])
             ]);
         }
         return el('header', { class: 'ed-section__head' }, [el('p', { class: 'ed-label', text: state.category ? 'Ενότητα' : state.q ? 'Αναζήτηση' : 'Αρχείο' }),

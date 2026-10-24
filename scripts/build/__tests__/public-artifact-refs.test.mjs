@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { validateHtmlRefs, validateJsRefs, validateSearchDestinations } from '../validate-public-artifact.mjs';
 import { injectSecurityMeta, securityHeadersText } from '../security-policy.mjs';
+import taxonomy from '../../../blog-module/taxonomy.js';
 
 const validator = fileURLToPath(new URL('../validate-public-artifact.mjs', import.meta.url));
 
@@ -182,6 +183,7 @@ function cliFixture(t) {
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
+    write(root, 'blog-module/taxonomy.js', fs.readFileSync(new URL('../../../blog-module/taxonomy.js', import.meta.url)));
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
@@ -195,6 +197,8 @@ function cliFixture(t) {
     for (const route of ['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/']) {
         pages[`blog-module/blog/${route}index.html`] = pages['blog-module/blog/index.html'];
     }
+    // The static author pages (required: one per AUTHORS record) share the directory's shell.
+    for (const author of taxonomy.AUTHORS) pages[`${taxonomy.authorPath(author).slice(1)}index.html`] = pages['authors/index.html'];
     const manifest = { files: {} };
     for (const file of new Set(Object.values(pages).flat())) {
         const min = file.replace(/\.css$/, '.min.css');

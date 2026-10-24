@@ -59,7 +59,7 @@ test('source-less article taxonomy migration leaves body bytes intact and is ide
     const post = { tag: 'F1', category: oldLabel };
     const updated = refreshArticleTaxonomy(html, post);
     assert.ok(updated.includes(`<div class="article-content">${body}</div>`));
-    assert.ok(updated.includes('index.html?category=History'));
+    assert.ok(updated.includes('<a href="/blog-module/blog/section/history/" class="article-category-link">Ιστορία</a>'));
     assert.ok(!updated.includes(oldLabel));
     assert.ok(!updated.includes('data-tags='));
     const data = JSON.parse(updated.match(/application\/ld\+json">([\s\S]*?)<\/script>/)[1]);

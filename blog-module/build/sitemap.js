@@ -26,7 +26,7 @@ function sitemapUrl(loc, changefreq, priority, lastmod) {
     return entry;
 }
 
-function renderSitemap(articles = [], edition = [], { today = athensDay(), legalDates = {} } = {}) {
+function renderSitemap(articles = [], edition = [], { today = athensDay(), legalDates = {}, authors = [] } = {}) {
     // Publication changes the listing itself; build/cache refresh times do not.
     const latest = articles.filter(article => isDay(article.date) && article.date <= today
         && ![true, 'true'].includes(article.draft)
@@ -39,6 +39,8 @@ function renderSitemap(articles = [], edition = [], { today = athensDay(), legal
         ...edition.map(page => sitemapUrl(`https://f1-stories.gr${page.path}`, page.changefreq, page.priority, page.lastmod)),
         sitemapUrl('https://f1-stories.gr/standings/', 'weekly', '0.8'),
         sitemapUrl('https://f1-stories.gr/authors/', 'monthly', '0.5'),
+        // Profiles have no recorded update date, so no lastmod.
+        ...authors.map(page => sitemapUrl(`https://f1-stories.gr${page.path}`, 'monthly', '0.5')),
         sitemapUrl('https://f1-stories.gr/privacy/privacy.html', 'yearly', '0.2', formatSitemapDate(legalDates['privacy.html'])),
         sitemapUrl('https://f1-stories.gr/privacy/terms.html', 'yearly', '0.2', formatSitemapDate(legalDates['terms.html']))
     ];
@@ -58,11 +60,11 @@ function renderSitemap(articles = [], edition = [], { today = athensDay(), legal
         + '</urlset>\n';
 }
 
-function generateSitemap(articles, edition = []) {
+function generateSitemap(articles, edition = [], authors = []) {
     const legalDates = Object.fromEntries(['privacy.html', 'terms.html'].map(file => [
         file, legalLastmod(path.join(__dirname, '../../privacy', file))
     ]));
-    const xml = renderSitemap(articles, edition, { legalDates });
+    const xml = renderSitemap(articles, edition, { legalDates, authors });
     fs.writeFileSync(CONFIG.SITEMAP_PATH, xml, 'utf8');
     console.log(`Sitemap generated with ${(xml.match(/<url>/g) || []).length} URLs`);
 }

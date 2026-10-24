@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import taxonomy from '../../blog-module/taxonomy.js';
 import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 import { inlineHeadStylesheets } from './inline-head-css.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
@@ -75,8 +76,10 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/images/default-blog.jpg'
 ]);
 
+// The directory and one static page per AUTHORS record (blog-module/build/authors-page.js).
 const AUTHORS_PUBLIC_FILES = new Set([
-    'authors/index.html'
+    'authors/index.html',
+    ...taxonomy.AUTHORS.map(author => taxonomy.authorPath(author).slice(1) + 'index.html')
 ]);
 
 const STANDINGS_ROOT_FILES = new Set([

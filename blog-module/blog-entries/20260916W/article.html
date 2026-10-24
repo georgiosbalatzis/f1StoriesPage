@@ -35,7 +35,7 @@
         "image": "https://f1-stories.gr/blog-module/blog-entries/20260916W/2.webp",
         "datePublished": "2026-09-16",
         "dateModified": "2026-09-16",
-        "author": { "@type": "Person", "name": "Themis Charvalis" },
+        "author": {"@type":"Person","@id":"https://f1-stories.gr/authors/themis-charvalis/#person","name":"Θέμης Χαρβάλης","url":"https://f1-stories.gr/authors/themis-charvalis/"},
         "publisher": { "@type": "Organization", "@id": "https://f1-stories.gr/#organization", "name": "F1 Stories", "url": "https://f1-stories.gr/", "logo": { "@type": "ImageObject", "url": "https://f1-stories.gr/images/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": "https://f1-stories.gr/blog-module/blog-entries/20260916W/article.html" }
     }
@@ -46,8 +46,8 @@
         "@type": "BreadcrumbList",
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "F1 Stories", "item": "https://f1-stories.gr/" },
-            { "@type": "ListItem", "position": 2, "name": "Άρθρα", "item": "https://f1-stories.gr/blog-module/blog/index.html" },
-            { "@type": "ListItem", "position": 3, "name": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής" }
+            { "@type": "ListItem", "position": 2, "name": "Ιστορία", "item": "https://f1-stories.gr/blog-module/blog/section/history/" },
+            { "@type": "ListItem", "position": 3, "name": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής", "item": "https://f1-stories.gr/blog-module/blog-entries/20260916W/article.html" }
         ]
     }
     </script>
@@ -71,7 +71,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=82958c06">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28794e85">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=2092dd0b">
     <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=d8c05277"></script>
 </head>
@@ -143,7 +143,7 @@
 <main id="main" class="article-page-wrapper rr" data-article-kind="history">
     <article class="rr-article" data-article-kind="history" aria-labelledby="article-title">
         <header class="rr-cover rr-cover--bleed" data-cover>
-            <p class="rr-edition"><a href="/blog-module/blog/index.html">F1 Stories</a><span>/ ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span><time class="rr-edition__date" datetime="2026-09-16">16.09.2026</time></p>
+            <div class="rr-edition"><nav class="rr-crumbs" aria-label="Διαδρομή"><ol><li><a href="/">F1 Stories</a></li><li><span aria-hidden="true">/</span> <a href="/blog-module/blog/section/history/">Ιστορία</a></li><li class="visually-hidden" aria-current="page">Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής</li></ol></nav><span>/ ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span><time class="rr-edition__date" datetime="2026-09-16">16.09.2026</time></div>
             <div class="rr-cover__grid">
                 <figure class="rr-cover__media" style="--cover-max: 1600px">
                     <picture>
@@ -156,9 +156,9 @@
 
                 </figure>
                 <div class="rr-cover__text">
-                    <p class="rr-kicker"><a href="/blog-module/blog/index.html?category=History">Ιστορία</a><span id="reading-time-value">7 λεπτά ανάγνωσης</span></p>
+                    <p class="rr-kicker"><a href="/blog-module/blog/section/history/">Ιστορία</a><span id="reading-time-value">7 λεπτά ανάγνωσης</span></p>
                     <h1 class="rr-title" id="article-title">Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής<span class="rr-period" aria-hidden="true">.</span></h1>
-                    <div class="rr-cover__side" data-author-slug="themis-charvalis"><img src="/images/avatars/AS-96.webp" alt="" width="48" height="48" decoding="async"><p><span>Γράφει</span> <a href="/authors/?author=themis-charvalis" class="article-author-link">Θέμης Χαρβάλης</a><small>Ιστορικές αναδρομές και πορτρέτα οδηγών</small></p></div>
+                    <div class="rr-cover__side" data-author-slug="themis-charvalis"><img src="/images/avatars/AS-96.webp" alt="" width="48" height="48" decoding="async"><p><span>Γράφει</span> <a href="/authors/themis-charvalis/" class="article-author-link">Θέμης Χαρβάλης</a><small>Ιστορικές αναδρομές και πορτρέτα οδηγών</small></p></div>
                 </div>
             </div>
             <dl class="rr-timing"><div><dt>Κατηγορία</dt><dd>Ιστορία</dd></div><div><dt>Δημοσίευση</dt><dd class="rr-num"><time datetime="2026-09-16">16.09<small>.2026</small></time></dd></div><div><dt>Ανάγνωση</dt><dd class="rr-num">07<small> λεπτά</small></dd></div><div><dt>Έκταση</dt><dd class="rr-num">1.201<small> λέξεις</small></dd></div></dl>
@@ -265,7 +265,7 @@
 
         <section class="rr-pitwall" data-article-end aria-labelledby="author-card-name">
             <div class="rr-pitwall__inner">
-                <div class="rr-pitwall__author" data-author-slug="themis-charvalis"><img src="/images/avatars/AS.webp" alt="" width="132" height="132" loading="lazy" decoding="async"><div><p class="rr-label">Γράφει</p><h2 class="rr-pitwall__name" id="author-card-name"><a href="/authors/?author=themis-charvalis">Θέμης Χαρβάλης</a></h2><p class="rr-pitwall__role">Ιστορικές αναδρομές και πορτρέτα οδηγών</p><p class="rr-pitwall__bio">Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα και γράφει ιστορίες που συνδέουν το τότε με το σημερινό grid.</p><p class="rr-pitwall__links"><a href="/blog-module/blog/index.html?author=themis-charvalis">Όλα τα άρθρα του Θέμη <span aria-hidden="true">→</span></a><a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></div></div>
+                <div class="rr-pitwall__author" data-author-slug="themis-charvalis"><img src="/images/avatars/AS.webp" alt="" width="132" height="132" loading="lazy" decoding="async"><div><p class="rr-label">Γράφει</p><h2 class="rr-pitwall__name" id="author-card-name"><a href="/authors/themis-charvalis/">Θέμης Χαρβάλης</a></h2><p class="rr-pitwall__role">Ιστορικές αναδρομές και πορτρέτα οδηγών</p><p class="rr-pitwall__bio">Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα και γράφει ιστορίες που συνδέουν το τότε με το σημερινό grid.</p><p class="rr-pitwall__links"><a href="/blog-module/blog/index.html?author=themis-charvalis">Όλα τα άρθρα του Θέμη <span aria-hidden="true">→</span></a><a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></div></div>
                 <div class="rr-pitwall__side">
                     <p class="rr-label">Κοινοποίηση</p>
                     <div class="share-buttons rr-pitwall__share">
@@ -275,7 +275,7 @@
                         <button type="button" class="share-btn copy-link" id="copy-link-btn" aria-label="Αντιγραφή συνδέσμου"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></button>
                     </div>
                     <details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
-                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=themis-charvalis">Θέμης Χαρβάλης</a></strong><span>Δημοσίευση: <time datetime="2026-09-16">16 Σεπτεμβρίου 2026</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/themis-charvalis/">Θέμης Χαρβάλης</a></strong><span>Δημοσίευση: <time datetime="2026-09-16">16 Σεπτεμβρίου 2026</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
                         <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
                         <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
                     </div></details>

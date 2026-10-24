@@ -2,7 +2,7 @@
 // so a writer's name, portrait, desk, specialty, bio, column and featured stories
 // are never retyped in HTML. Numbering follows the list order.
 const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
-const { AUTHORS, findAuthor, greekUpper, formatDate } = require('../taxonomy');
+const { AUTHORS, findAuthor, authorPath, greekUpper, formatDate } = require('../taxonomy');
 
 const AUTHORS_HTML_PATH = path.join(CONFIG.BLOG_DIR, '..', '..', 'authors', 'index.html');
 const HOME_HTML_PATH = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
@@ -33,14 +33,14 @@ function renderAuthorProfile(author, index, postsById) {
         : '';
     return `<article id="author-${author.slug}" class="author-profile" data-author-slug="${author.slug}" data-author-name="${esc(author.name)}">
           <div class="author-profile__portrait-wrap">
-            <a class="author-profile__portrait" href="/authors/?author=${author.slug}" aria-label="Προφίλ ${esc(author.label)}">
+            <a class="author-profile__portrait" href="${authorPath(author)}" aria-label="Προφίλ ${esc(author.label)}">
               <img src="${esc(author.portrait)}" alt="${esc(author.label)}" width="240" height="240" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
             </a>
             <span class="author-profile__number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
           </div>
           <div class="author-profile__content">
             <span class="author-profile__kicker">${esc(author.desk)}</span>
-            <h2 class="author-profile__name"><a href="/authors/?author=${author.slug}">${esc(author.label)}</a></h2>
+            <h2 class="author-profile__name"><a href="${authorPath(author)}">${esc(author.label)}</a></h2>
             <p class="author-profile__specialty">${esc(author.specialty)}</p>
             <p class="author-profile__bio">${esc(author.bio)}</p>
             <div class="author-profile__column"><strong>Επαναλαμβανόμενη στήλη</strong><span>${esc(author.column)}</span></div>`
@@ -93,7 +93,7 @@ function renderHomeTeam(posts) {
                         <img class="team-card__avatar" src="${esc(author.portrait)}" alt="" width="240" height="240" loading="lazy" decoding="async">
                         <div>
                             <p class="team-card__desk">${esc(greekUpper(author.desk))}</p>
-                            <h3 class="team-card__name"><a href="/authors/?author=${author.slug}">${esc(author.label)}</a></h3>
+                            <h3 class="team-card__name"><a href="${authorPath(author)}">${esc(author.label)}</a></h3>
                             <p class="team-card__specialty">${esc(author.specialty)}</p>
                         </div>
                     </div>
@@ -106,7 +106,7 @@ function renderHomeTeam(posts) {
                     <span class="team-roster__tile"><img src="${esc(author.portrait)}" alt="" width="240" height="240" loading="lazy" decoding="async"></span>
                     <div class="team-roster__text">
                         <p class="team-roster__desk">${esc(greekUpper(author.desk))}</p>
-                        <h3 class="team-roster__name"><a href="/authors/?author=${author.slug}">${esc(author.label)}</a></h3>
+                        <h3 class="team-roster__name"><a href="${authorPath(author)}">${esc(author.label)}</a></h3>
                         <p>${esc(author.specialty)}</p>
                     </div>
                     <span class="team-roster__arrow" aria-hidden="true">→</span>
@@ -140,4 +140,4 @@ function injectHomeTeam(posts, htmlPath = HOME_HTML_PATH) {
     return true;
 }
 
-module.exports = { injectAuthorsDirectory, renderAuthorProfile, injectHomeTeam, renderHomeTeam };
+module.exports = { injectAuthorsDirectory, renderAuthorProfile, injectHomeTeam, renderHomeTeam, AUTHORS_HTML_PATH };

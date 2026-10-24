@@ -99,3 +99,19 @@ console.log('author article source tests passed.');
     assert.equal(stripEmoji('Καθαρός τίτλος'), 'Καθαρός τίτλος');
     console.log('titleWarnings: ok');
 }
+
+{
+    const { internalLinkCount, linkWarnings } = articleSource;
+    const body = [
+        'Όπως γράψαμε στην [προηγούμενη ανάλυση](/blog-module/blog-entries/20261001G/article.html),',
+        'και ξανά [εδώ](https://www.f1-stories.gr/blog-module/blog-entries/20261001G/article.html#section-2),',
+        'δείτε τα [Τεχνικά](https://f1-stories.gr/blog-module/blog/section/technical/index.html) και τον [Lando Norris](/blog-module/blog/entities/drivers/lando-norris/).',
+        'Εξωτερικά: [F1](https://www.formula1.com/), [ενότητα](#section-1), ![εικόνα](/images/x.webp), [χωρίς πρωτόκολλο](//evil.example/).'
+    ].join('\n');
+    assert.equal(internalLinkCount(body), 3, 'the same story twice counts once; other sites, fragments and images do not count');
+    assert.deepEqual(Array.from(linkWarnings(body)), []);
+    assert.match(linkWarnings('Κείμενο με [έναν](/standings/) σύνδεσμο.')[0], /^Ένας μόνο εσωτερικός σύνδεσμος/);
+    assert.match(linkWarnings('Κείμενο χωρίς συνδέσμους.')[0], /^Κανένας εσωτερικός σύνδεσμος.*2–3/);
+    assert.deepEqual(Array.from(linkWarnings('')), [], 'an empty body is reported by its own blocking issue');
+    console.log('linkWarnings: ok');
+}

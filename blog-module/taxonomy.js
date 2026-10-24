@@ -95,7 +95,7 @@
         {
             // The house byline: every story filed without a writer's code (or with F) is
             // credited here. The data name stays 'F1 Stories Team'; readers see 'F1 Stories'.
-            name: 'F1 Stories Team', label: 'F1 Stories', genitive: 'F1 Stories', slug: 'f1-stories', code: 'F',
+            name: 'F1 Stories Team', label: 'F1 Stories', genitive: 'F1 Stories', slug: 'f1-stories', code: 'F', house: true,
             portrait: '/images/avatars/F1S.webp', desk: 'Χωρίς πρόσωπο',
             specialty: 'Από το αρχείο ως τις Power Units του 2026',
             bio: 'Κανείς δεν έχει δει το πρόσωπο κάτω από το κράνος. Ξεθάβει V12 και turbo από το αρχείο, εξηγεί την ενέργεια των νέων Power Units και εμφανίζεται μόνο όταν μια ιστορία δεν χωράει σε μία υπογραφή.',
@@ -106,6 +106,10 @@
     function findAuthor(value) {
         const key = String(value || '').trim();
         return AUTHORS.find(author => author.name === key || author.slug === key) || null;
+    }
+    /** A writer's static profile page (build/authors-page.js writes one per record); the directory otherwise. */
+    function authorPath(author) {
+        return author ? `/authors/${author.slug}/` : '/authors/';
     }
     // Every portrait ships with a 96px square for small marks (filters, the archive's author view).
     function authorThumb(author) {
@@ -130,6 +134,13 @@
 
     function categoryKind(value) {
         return Object.prototype.hasOwnProperty.call(CATEGORY_KINDS, value) ? CATEGORY_KINDS[value] : 'journal';
+    }
+
+    // The static section pages build/discovery.js writes (one per public category with stories).
+    const SECTION_ROOT = '/blog-module/blog/section/';
+    /** A public category's section page; '' for anything else, so a caller never links a guess. */
+    function sectionPath(value) {
+        return Object.prototype.hasOwnProperty.call(CATEGORY_KINDS, value) ? `${SECTION_ROOT}${CATEGORY_KINDS[value]}/` : '';
     }
 
     // Greek capitals drop the tonos but keep the dialytika: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ", "Μαΐ" → "ΜΑΪ".
@@ -337,7 +348,7 @@
 
     return Object.freeze({
         PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
-        AUTHORS, findAuthor, authorThumb, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
+        AUTHORS, findAuthor, authorPath, authorThumb, categoryLabel, categoryKind, SECTION_ROOT, sectionPath, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
         cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture,
         EDITION_LAYOUT, NEW_DAYS, isDay, addDays, athensDay, isNewStory, newUntil, monthName, monthShort, plural, pageItems
     });
