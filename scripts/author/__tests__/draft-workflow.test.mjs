@@ -5,6 +5,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import JSZip from 'jszip';
 import { Launcher } from 'chrome-launcher';
 import os from 'node:os';
 import { createResponsiveTableFromCSV } from '../../../blog-module/build/csv-to-table.js';
@@ -45,6 +46,9 @@ async function setText(page, title, text) {
             const input = document.getElementById(id); input.value = value; input.dispatchEvent(new Event('input', { bubbles: true }));
         }
     }, { title, text });
+}
+async function setExcerpt(page, value) {
+    await page.locator('#gen-excerpt').fill(value);
 }
 async function step(page, number) { await page.locator(`.gb-step[data-step="${number}"]`).click(); }
 async function saved(page) { await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε τοπικά')); }
@@ -234,6 +238,7 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
         await route.fulfill({ json: data });
     });
     await setText(page, 'Άρθρο από πρόχειρο', 'Κείμενο για άμεση δημοσίευση.');
+    await setExcerpt(page, 'Η ανάλυση του αγώνα: γιατί η McLaren & η Mercedes «χάνουν» χρόνο στα φρένα;');
     await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
     await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
     await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
@@ -246,13 +251,87 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     const branch = calls.find(call => call.suffix === '/git/refs').body.ref;
     assert.match(branch, /^refs\/heads\/author\/blog\/\d{8}j-/);
     const textBlob = calls.find(call => call.suffix === '/git/blobs').body;
-    assert.match(Buffer.from(textBlob.content, 'base64').toString('utf8'), /category: Analysis/);
+    const publishedSource = Buffer.from(textBlob.content, 'base64').toString('utf8');
+    assert.match(publishedSource, /category: Analysis/);
+    assert.equal(publishedSource.match(/^excerpt: .*$/gm).join('\n'), 'excerpt: Η ανάλυση του αγώνα: γιατί η McLaren & η Mercedes «χάνουν» χρόνο στα φρένα;');
     assert.equal(calls.filter(call => call.suffix === '/pulls' && call.method === 'POST').length, 1);
     assert.ok(calls.some(call => call.suffix === '/git/commits' && call.method === 'POST'));
     assert.ok(!JSON.stringify(calls).includes('f1s-publish-at'));
     assert.ok(!calls.some(call => /actions|deploy|merge/.test(call.suffix)));
     assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).length), 1);
     assert.match(await page.locator('#gen-result').innerText(), /Η δημοσίευση εκκρεμεί/);
+});
+
+test('the description field counts, validates, blocks publishing and survives drafts, ZIP export/import and preview', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Άρθρο με περιγραφή', 'Πρώτη παράγραφος του κειμένου.\n\nΔεύτερη παράγραφος.');
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), true);
+    assert.match(await page.locator('#gen-review').innerText(), /Λείπει η περιγραφή άρθρου \(excerpt\)/);
+    await step(page, 0);
+    // Not a live region: typing never interrupts a screen reader; the count and issues are in aria-describedby.
+    assert.equal(await page.locator('#gen-excerpt').getAttribute('aria-describedby'), 'gen-excerpt-hint gen-excerpt-count gen-excerpt-warnings');
+    assert.equal(await page.locator('label[for="gen-excerpt"]').textContent(), 'Περιγραφή άρθρου');
+    await setExcerpt(page, `${'α'.repeat(150)} β γ δ ε ζ`);
+    assert.equal(await page.locator('#gen-excerpt-count').innerText(), '160 / 155');
+    assert.equal(await page.locator('#gen-excerpt-count').evaluate(node => node.classList.contains('is-warn')), true);
+    assert.equal(await page.locator('#gen-excerpt').getAttribute('aria-invalid'), 'true');
+    assert.match(await page.locator('#gen-excerpt-warnings').innerText(), /160 χαρακτήρες· το όριο είναι 155\. Συντόμευσέ τη κατά 5\./);
+    await setExcerpt(page, 'Η <b>Ferrari</b> στη Μόντσα');
+    assert.match(await page.locator('#gen-excerpt-warnings').innerText(), /HTML ή κωδικούς χαρακτήρων/);
+    const excerpt = 'Γιατί η Ferrari 🏎️ «κέρδισε» στη Μόντσα: η στρατηγική & τα ελαστικά.';
+    const count = [...new Intl.Segmenter('el', { granularity: 'grapheme' }).segment(excerpt)].length;
+    await setExcerpt(page, `  ${excerpt.replace(' «', '   «')}\n`);
+    assert.equal(await page.locator('#gen-excerpt-count').innerText(), `${count} / 155`);
+    assert.equal(await page.locator('#gen-excerpt').getAttribute('aria-invalid'), 'false');
+    assert.equal(await page.locator('#gen-card-excerpt').innerText(), excerpt);
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), false);
+    assert.match(await page.locator('#gen-review').innerText(), new RegExp(`Περιγραφή · ${count} / 155 χαρακτήρες`));
+    // The summary card previews the description; the article preview never adds it to the body.
+    await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.article-content p'));
+    const previewBody = await page.evaluate(() => document.getElementById('gen-article-preview').contentDocument.querySelector('.article-content').textContent);
+    assert.ok(previewBody.includes('Πρώτη παράγραφος') && !previewBody.includes('στρατηγική & τα'));
+    assert.equal(await page.locator('#gen-card-excerpt').innerText(), excerpt);
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list button').filter({ hasText: 'Άνοιγμα' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.locator('#gen-excerpt').inputValue(), excerpt);
+    // Editing the body never rewrites an existing description.
+    await setText(page, 'Άρθρο με περιγραφή', 'Εντελώς νέο κείμενο σώματος.');
+    assert.equal(await page.locator('#gen-excerpt').inputValue(), excerpt);
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gen-export-btn').click()]);
+    const zip = await JSZip.loadAsync(fs.readFileSync(await download.path()));
+    const source = await zip.file(/source\.txt$/)[0].async('string');
+    assert.deepEqual(source.match(/^excerpt: .*$/gm), [`excerpt: ${excerpt}`]);
+    // Import into an empty editor: the description and unrelated front matter come back exactly once.
+    await page.reload();
+    const file = path.join(scratch, 'import.zip');
+    zip.file(zip.file(/source\.txt$/)[0].name, source.replace(/^title: .*$/m, '$&\nsources: Πηγή | https://example.com/a'));
+    fs.writeFileSync(file, await zip.generateAsync({ type: 'nodebuffer' }));
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles(file);
+    await page.waitForFunction(() => document.getElementById('gen-excerpt').value);
+    assert.equal(await page.locator('#gen-excerpt').inputValue(), excerpt);
+    const [again] = await Promise.all([page.waitForEvent('download'), page.locator('#gen-export-btn').click()]);
+    const reexported = await (await JSZip.loadAsync(fs.readFileSync(await again.path()))).file(/source\.txt$/)[0].async('string');
+    assert.deepEqual(reexported.match(/^excerpt: .*$/gm), [`excerpt: ${excerpt}`]);
+    assert.deepEqual(reexported.match(/^sources: .*$/gm), ['sources: Πηγή | https://example.com/a']);
+});
+
+test('an old draft without a description opens with an empty field and no suggestion', async t => {
+    const page = await pageFor(t);
+    await page.evaluate(() => window.F1S_LOCAL_DRAFTS.save({ title: 'Παλιό πρόχειρο', author: 'Georgios Balatzis', category: 'News', tags: '', text: 'Κείμενο παλιού προχείρου.', metadata: { sources: 'Πηγή | https://example.com/b' }, images: [], editor: { step: 0 } }));
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list button').filter({ hasText: 'Άνοιγμα' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.locator('#gen-title').inputValue(), 'Παλιό πρόχειρο');
+    assert.equal(await page.locator('#gen-excerpt').inputValue(), '');
+    assert.equal(await page.locator('#gen-excerpt-count').innerText(), '0 / 155');
+    assert.equal(await page.locator('#gen-excerpt').getAttribute('aria-invalid'), 'false');
 });
 
 test('preview uses Race Report at real 1440/390 viewports, live values, shared typography and safe embeds', async t => {

@@ -17,6 +17,9 @@
     function byId(id) { return document.getElementById(id); }
     var titleInput        = byId('gen-title');
     var titleWarningsEl   = byId('gen-title-warnings');
+    var excerptInput      = byId('gen-excerpt');
+    var excerptCountEl    = byId('gen-excerpt-count');
+    var excerptWarningsEl = byId('gen-excerpt-warnings');
     var authorGroup       = byId('gen-author-group');
     var categoryGroup     = byId('gen-category-group');
     var tagInput          = byId('gen-tag');
@@ -387,6 +390,10 @@
         var images = contentImageFiles.length;
         if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true });
         articleSource.titleWarnings(title, body).forEach(function (text) { issues.push({ step: 0, text: text }); });
+        // Every article published from here is new, so its description is required (blog-module/build/description.js).
+        articleSource.excerptIssues(sourceMetadata.excerpt).forEach(function (issue) {
+            issues.push({ step: 0, text: articleSource.excerptMessage(issue), block: true });
+        });
         if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true });
         articleSource.linkWarnings(body).forEach(function (text) { issues.push({ step: 1, text: text }); });
         if (!(getHeroFile())) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
@@ -485,6 +492,9 @@
         var title = titleInput.value.trim();
         var rows = [];
         rows.push({ ok: Boolean(title), text: title ? 'Τίτλος: «' + title + '»' : 'Λείπει ο τίτλος', step: 0 });
+        var excerptIssue = articleSource.excerptIssues(sourceMetadata.excerpt)[0];
+        rows.push({ ok: !excerptIssue, step: 0, text: excerptIssue ? articleSource.excerptMessage(excerptIssue)
+            : 'Περιγραφή · ' + articleSource.descriptionLength(sourceMetadata.excerpt) + ' / ' + articleSource.DESCRIPTION_MAX + ' χαρακτήρες' });
         rows.push({ ok: Boolean(contentArea.value.trim()), text: contentArea.value.trim() ? 'Κείμενο · ' + plural(wordCount(), 'λέξη', 'λέξεις') : 'Λείπει το κείμενο', step: 1 });
         issues.filter(function (issue) { return !issue.block; }).forEach(function (issue) {
             rows.push({ ok: false, text: issue.text, step: issue.step });
@@ -511,6 +521,8 @@
         byId('gen-card-img').src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
         byId('gen-card-meta').textContent = getCategory() + ' · ' + new Date().toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
         byId('gen-card-title').textContent = titleInput.value.trim() || 'Χωρίς τίτλο';
+        byId('gen-card-excerpt').textContent = sourceMetadata.excerpt || '';
+        byId('gen-card-excerpt').hidden = !sourceMetadata.excerpt;
         byId('gen-card-author').textContent = 'Γράφει ' + author;
         byId('gen-fact-folder').textContent = folderPreview();
         byId('gen-fact-words').textContent = String(wordCount());
@@ -537,6 +549,30 @@
         renderSummary();
         if (drafts) drafts.changed();
     }
+
+    // The description lives in the source metadata as `excerpt`, so drafts, ZIP export/import and the PR carry it
+    // with every other front-matter field. Only the editor's own text is ever stored.
+    function renderExcerpt() {
+        var issues = articleSource.excerptIssues(sourceMetadata.excerpt).filter(function (issue) { return issue.code !== 'missing'; });
+        var length = articleSource.descriptionLength(sourceMetadata.excerpt);
+        excerptCountEl.textContent = length + ' / ' + articleSource.DESCRIPTION_MAX;
+        excerptCountEl.classList.toggle('is-warn', length > articleSource.DESCRIPTION_MAX);
+        excerptInput.setAttribute('aria-invalid', String(issues.length > 0));
+        excerptWarningsEl.replaceChildren.apply(excerptWarningsEl, issues.map(function (issue) {
+            return el('span', 'gb-badge gb-badge-warn', articleSource.excerptMessage(issue));
+        }));
+    }
+    function loadExcerpt() {
+        excerptInput.value = sourceMetadata.excerpt || '';
+        renderExcerpt();
+    }
+    excerptInput.addEventListener('input', function () {
+        var excerpt = articleSource.normalizeExcerpt(excerptInput.value);
+        if (excerpt) sourceMetadata.excerpt = excerpt;
+        else delete sourceMetadata.excerpt;
+        renderExcerpt();
+        refresh();
+    });
 
     titleInput.addEventListener('input', function () { renderTitleWarnings(); refresh(); });
     tagInput.addEventListener('input', refresh);
@@ -572,6 +608,7 @@
         paintHero();
         paintHeader();
         renderTitleWarnings();
+        loadExcerpt();
         progressList.hidden = true;
         resultBox.hidden = true;
         visited = { 0: true };
@@ -684,6 +721,7 @@
             tagInput.value = meta.tags.join(', ');
             setChecked('gen-category', meta.category);
             sourceMetadata = meta.metadata;
+            loadExcerpt();
             contentArea.value = meta.body || '';
 
             var authorName = authorFromFolderName(folderName);
@@ -1312,6 +1350,7 @@
             setChecked('gen-author', value.author);
             setChecked('gen-category', value.category);
             sourceMetadata = Object.assign({}, value.metadata);
+            loadExcerpt();
             contentArea.value = value.text;
             contentArea.setSelectionRange(value.editor.selectionStart || 0, value.editor.selectionEnd || 0);
             if (staged[0]) {

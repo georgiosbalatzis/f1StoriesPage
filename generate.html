@@ -130,6 +130,12 @@
                 <input type="text" class="gb-input gb-input-title" id="gen-title" placeholder="Τίτλος άρθρου" autocomplete="off">
                 <div class="gb-inline-warnings" id="gen-title-warnings" aria-live="polite"></div>
             </div>
+            <div class="gb-field">
+                <label class="gb-label" for="gen-excerpt">Περιγραφή άρθρου</label>
+                <textarea class="gb-input gb-input-excerpt" id="gen-excerpt" rows="3" spellcheck="true" aria-required="true" aria-describedby="gen-excerpt-hint gen-excerpt-count gen-excerpt-warnings"></textarea>
+                <p class="gb-hint gb-excerpt-meta"><span id="gen-excerpt-hint">Σύντομη περιγραφή για την Google και την κοινοποίηση. Έως 155 χαρακτήρες.</span> <span class="gb-excerpt-count" id="gen-excerpt-count">0 / 155</span></p>
+                <div class="gb-inline-warnings" id="gen-excerpt-warnings"></div>
+            </div>
             <fieldset class="gb-field">
                 <legend class="gb-label">Συντάκτης</legend>
                 <div class="gb-authors" id="gen-author-group"></div>
@@ -256,6 +262,7 @@
             <div class="gb-card-body">
                 <p class="gb-card-meta" id="gen-card-meta">—</p>
                 <p class="gb-card-title" id="gen-card-title">Χωρίς τίτλο</p>
+                <p class="gb-card-excerpt" id="gen-card-excerpt" hidden></p>
                 <p class="gb-card-author" id="gen-card-author"></p>
             </div>
         </div>
@@ -273,10 +280,10 @@
 
 <script defer src="/scripts/shared-nav.min.js?v=46457253"></script>
 <script defer src="/blog-module/taxonomy.min.js?v=f4881ac5"></script>
-<script defer src="/scripts/author/article-source.min.js?v=13cc474f"></script>
-<script defer src="/scripts/author/local-drafts.min.js?v=844730d9"></script>
+<script defer src="/scripts/author/article-source.min.js?v=6afb4522"></script>
+<script defer src="/scripts/author/local-drafts.min.js?v=265b1b62"></script>
 <script defer src="/scripts/author/draft-manager.min.js?v=4c35e9f2"></script>
-<script defer src="/scripts/author/generate-page.min.js?v=50e83607"></script>
+<script defer src="/scripts/author/generate-page.min.js?v=a507591f"></script>
 <script defer src="/scripts/author/article-index.min.js?v=e9372717"></script>
 <script defer src="/scripts/author/research-assistant.min.js?v=320ab809"></script>
 </body>

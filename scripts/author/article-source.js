@@ -137,6 +137,37 @@
         return [(count ? 'Ένας μόνο εσωτερικός σύνδεσμος' : 'Κανένας εσωτερικός σύνδεσμος') + ' στο κείμενο. Προτείνονται 2–3 όπου βοηθούν τον αναγνώστη: προς προηγούμενα άρθρα, ενότητες ή θέματα του F1 Stories, π.χ. [Τεχνικά](/blog-module/blog/section/technical/).'];
     }
 
+    // The article description (`excerpt:`) contract of blog-module/build/description.js: the same normalisation,
+    // grapheme count, issue codes and messages, so the tools block exactly what the build rejects (parity is tested).
+    var DESCRIPTION_MAX = 155;
+    var segmenter = typeof Intl === 'object' && Intl.Segmenter ? new Intl.Segmenter('el', { granularity: 'grapheme' }) : null;
+    function normalizeExcerpt(value) {
+        return String(value == null ? '' : value).replace(/[­​-‍⁠﻿]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    function descriptionLength(value) {
+        var text = normalizeExcerpt(value);
+        return segmenter ? Array.from(segmenter.segment(text)).length : Array.from(text).length;
+    }
+    function excerptIssues(value) {
+        var text = normalizeExcerpt(value);
+        if (!text) return [{ code: 'missing' }];
+        var issues = [];
+        if (/<[a-z!/?]/i.test(text) || /&(?:#\d|#x[\da-f]|[a-z][a-z\d]*;)/i.test(text)) issues.push({ code: 'markup' });
+        if ((text.match(/[\p{L}\p{N}]+/gu) || []).length < 3) issues.push({ code: 'short' });
+        var length = descriptionLength(text);
+        if (length > DESCRIPTION_MAX) issues.push({ code: 'long', length: length });
+        return issues;
+    }
+    var EXCERPT_MESSAGES = {
+        missing: function () { return 'Λείπει η περιγραφή άρθρου (excerpt). Γράψε μια σύντομη περιγραφή έως ' + DESCRIPTION_MAX + ' χαρακτήρες.'; },
+        markup: function () { return 'Η περιγραφή περιέχει HTML ή κωδικούς χαρακτήρων (π.χ. &amp;). Γράψε απλό κείμενο, με τους χαρακτήρες όπως είναι.'; },
+        short: function () { return 'Η περιγραφή είναι πολύ σύντομη. Γράψε τουλάχιστον μία πρόταση για το περιεχόμενο του άρθρου.'; },
+        long: function (issue) { return 'Η περιγραφή έχει ' + issue.length + ' χαρακτήρες· το όριο είναι ' + DESCRIPTION_MAX + '. Συντόμευσέ τη κατά ' + (issue.length - DESCRIPTION_MAX) + '.'; }
+    };
+    function excerptMessage(issue) {
+        return EXCERPT_MESSAGES[issue.code](issue);
+    }
+
     // Removes emoji (and flag/variation-selector/ZWJ residue) from a title.
     function stripEmoji(title) {
         return String(title || '')
@@ -152,6 +183,11 @@
         titleWarnings: titleWarnings,
         internalLinkCount: internalLinkCount,
         linkWarnings: linkWarnings,
+        DESCRIPTION_MAX: DESCRIPTION_MAX,
+        normalizeExcerpt: normalizeExcerpt,
+        descriptionLength: descriptionLength,
+        excerptIssues: excerptIssues,
+        excerptMessage: excerptMessage,
         buildSourceText: buildSourceText,
         normalizeZipPath: normalizeZipPath,
         parseSourceText: parseSourceText

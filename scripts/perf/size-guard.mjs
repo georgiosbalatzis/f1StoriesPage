@@ -83,6 +83,7 @@ const SOURCE_FILES = [
     'blog-module/build/nav.js',
     'blog-module/build/sitemap.js',
     'blog-module/build/worker.js',
+    'blog-module/build/description.js',
     'blog-module/build/index.js',
     'blog-module/build/authors-page.js',
     'blog-module/build/home-panels.js',

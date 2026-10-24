@@ -37,11 +37,15 @@ function articleIsPublic(article, root = ROOT) {
     return canonicals.length === 1 && canonicals[0].href === articleUrl(article) && !blocked;
 }
 
-// A story readers can reach: a real publication day not after `today`, no draft or unpublished status, a public page.
+// No draft or unpublished status: the story goes out on its date.
+function isReleased(article) {
+    return ![true, 'true'].includes(article.draft) && ![false, 'false'].includes(article.published)
+        && (!article.status || article.status === 'published');
+}
+
+// A story readers can reach: a real publication day not after `today`, released, a public page.
 function isPublishedArticle(article, today, isPublic = articleIsPublic) {
-    return T.isDay(article.date) && article.date <= today
-        && ![true, 'true'].includes(article.draft) && ![false, 'false'].includes(article.published)
-        && (!article.status || article.status === 'published') && isPublic(article);
+    return T.isDay(article.date) && article.date <= today && isReleased(article) && isPublic(article);
 }
 
 function selectHubs(registry, manifest, articles, { today = T.athensDay(), readSource, isPublic = articleIsPublic } = {}) {
@@ -176,4 +180,4 @@ function publicHubFiles(foundation = loadFoundation(), options = {}) {
         Array.from({ length: Math.ceil(hub.posts.length / PAGE_SIZE) }, (_, i) => hubPath(hub.entity, i + 1).slice(1) + 'index.html')));
 }
 const hubSitemap = pages => pages.map(page => sitemapUrl(SITE + page.path, page.changefreq, page.priority, page.lastmod)).join('');
-module.exports = { TYPES, PAGE_SIZE, GENERATED, jsonLd, hubPath, articleUrl, articleIsPublic, isPublishedArticle, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };
+module.exports = { TYPES, PAGE_SIZE, GENERATED, jsonLd, hubPath, articleUrl, articleIsPublic, isReleased, isPublishedArticle, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };
