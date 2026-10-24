@@ -8,6 +8,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { buildSync } from 'esbuild';
 import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import articleDates from '../../blog-module/build/article-dates.js';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -422,6 +423,69 @@ function validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticle
     });
 
     validateJsonLd(errors, html, relPath, canonicalUrl);
+}
+
+const RESTRICTED_PAGES = new Set(['generate.html', 'housekeeping.html', 'f1telemetry/index.html', 'ghostcar/index.html', 'tyres/index.html']);
+
+function isArticleDate(value) {
+    if (articleDates.isCalendarDay(value)) return true;
+    try {
+        return articleDates.parseInstant(value, 'date').iso === value;
+    } catch (_) {
+        return false;
+    }
+}
+
+// Search and sharing metadata: public pages carry one image-preview robots policy, locale and site name; restricted
+// pages keep their noindex; an article's type, dates and section agree across JSON-LD and Open Graph.
+export function validateSearchMetadata(errors, html, relPath) {
+    const end = String(html).search(/<\/head>/i);
+    const head = end === -1 ? String(html) : String(html).slice(0, end);
+    const robots = findMetaTags(head, 'name', 'robots').map(tag => attrValue(tag, 'content'));
+    if (robots.length > 1) errors.push(`${relPath}: expected at most one robots meta tag, found ${robots.length}`);
+    if (RESTRICTED_PAGES.has(relPath)) {
+        if (!robots.some(value => /\bnoindex\b/i.test(value))) errors.push(`${relPath}: restricted page lost its noindex`);
+        return;
+    }
+    if (robots.some(value => /\bnoindex\b/i.test(value)) || !findLinkTags(head, 'canonical').length) return;
+
+    if (robots[0] !== 'max-image-preview:large') errors.push(`${relPath}: public page robots must be "max-image-preview:large"`);
+    const properties = Array.from(head.matchAll(/<meta\b[^>]*\bproperty=["']([^"']+)["'][^>]*>/gi)).map(match => match[1]);
+    const duplicated = [...new Set(properties.filter((name, index) => properties.indexOf(name) !== index))];
+    if (duplicated.length) errors.push(`${relPath}: duplicate Open Graph properties ${duplicated.join(', ')}`);
+    if (firstMetaContent(head, 'property', 'og:locale') !== 'el_GR') errors.push(`${relPath}: og:locale must be el_GR`);
+    if (firstMetaContent(head, 'property', 'og:site_name') !== 'F1 Stories') errors.push(`${relPath}: og:site_name must be F1 Stories`);
+    if (!/blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return;
+
+    let article;
+    try {
+        article = Array.from(head.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi))
+            .map(match => JSON.parse(match[1].trim()))
+            .filter(data => ['Article', 'NewsArticle'].includes(data['@type']));
+    } catch (_) {
+        return; // validateJsonLd reports the invalid JSON.
+    }
+    if (article.length !== 1) {
+        errors.push(`${relPath}: expected exactly one Article or NewsArticle JSON-LD block, found ${article.length}`);
+        return;
+    }
+    const data = article[0];
+    const section = firstMetaContent(head, 'property', 'article:section');
+    if (firstMetaContent(head, 'property', 'og:type') !== 'article') errors.push(`${relPath}: og:type must be article`);
+    if (!section || !(data.articleSection || []).includes(section)) errors.push(`${relPath}: article:section must be one of the JSON-LD articleSection values`);
+    if (data['@type'] === 'NewsArticle' && section !== 'News') errors.push(`${relPath}: NewsArticle requires the News primary section`);
+    if (data.publisher?.['@id'] !== `${SITE_ORIGIN}/#organization`) errors.push(`${relPath}: publisher must reference ${SITE_ORIGIN}/#organization`);
+    for (const key of ['datePublished', 'dateModified']) {
+        if (!isArticleDate(data[key])) errors.push(`${relPath}: ${key} "${data[key]}" is not a calendar date or an Athens-offset timestamp`);
+    }
+    const day = value => String(value || '').slice(0, 10);
+    const instant = value => (articleDates.isCalendarDay(value) ? NaN : Date.parse(value));
+    const earlier = Number.isNaN(instant(data.dateModified)) || Number.isNaN(instant(data.datePublished))
+        ? day(data.dateModified) < day(data.datePublished) : instant(data.dateModified) < instant(data.datePublished);
+    if (earlier) errors.push(`${relPath}: dateModified precedes datePublished`);
+    if (firstMetaContent(head, 'property', 'article:published_time') !== data.datePublished) errors.push(`${relPath}: article:published_time must equal datePublished`);
+    const modifiedTime = firstMetaContent(head, 'property', 'article:modified_time');
+    if (modifiedTime && modifiedTime !== data.dateModified) errors.push(`${relPath}: article:modified_time must equal dateModified`);
 }
 
 function validateHtmlSecurityMeta(errors, html, relPath) {
@@ -848,6 +912,7 @@ function main() {
             validateEditorialArticle(errors, html, relPath, editorialRefs);
             validateHtmlSecurityMeta(errors, html, relPath);
             validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticleUrls);
+            validateSearchMetadata(errors, html, relPath);
             validateHtmlRefs(errors, abs, relPath);
             validateSpriteRefs(errors, html, relPath);
         }

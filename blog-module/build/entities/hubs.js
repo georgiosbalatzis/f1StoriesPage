@@ -116,6 +116,8 @@ function buildHubPages(registry, manifest, articles, options = {}) {
 }
 
 function composeHubPage(shell, page) {
+    // A preview page's own noindex replaces the shell's public robots policy rather than contradicting it.
+    if (/<meta name="robots"/.test(page.head)) shell = shell.replace(/\s*<meta name="robots" content="[^"]*">/, '');
     // The archive filtering runtime has no work on a static collection; retain shared navigation/consent runtimes.
     return composePage(shell, page).replace(/<script\b[^>]*src="\/blog-module\/(?:taxonomy|blog-index)(?:\.min)?\.js[^"']*"[^>]*><\/script>\s*/g, '');
 }

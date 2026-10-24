@@ -236,6 +236,10 @@ test('Norris local preview remains noindex and local after public approval', () 
     assert.doesNotMatch(page.head, /https:\/\/f1-stories\.gr\/blog-module\/blog\/entities/);
     const shell = fs.readFileSync(path.join(ROOT, 'blog-module/blog/index.html'), 'utf8');
     const html = composeHubPage(shell, page);
+    // The preview's noindex replaces the shell's public image-preview policy; it never sits beside it.
+    assert.deepEqual([...html.matchAll(/<meta name="robots" content="([^"]*)">/g)].map(match => match[1]), ['noindex, nofollow']);
+    const published = composeHubPage(shell, renderHub(norris, { deps })[0]);
+    assert.deepEqual([...published.matchAll(/<meta name="robots" content="([^"]*)">/g)].map(match => match[1]), ['max-image-preview:large']);
     assert.doesNotMatch(html, /src="\/blog-module\/(?:taxonomy|blog-index)/);
     assert.match(html, /shared-nav/); assert.match(html, /cookie-consent/);
     for (const paragraph of norris.entity.hub.introduction.text.split('\n\n')) assert.ok(page.main.includes(paragraph));

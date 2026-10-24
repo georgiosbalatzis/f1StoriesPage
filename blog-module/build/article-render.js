@@ -4,6 +4,8 @@ const { mediaFor, slotOf, creditLineHtml, applyBodyMedia } = require('./media-me
 const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb, formatReadingTime } = require('../taxonomy');
 const { readingTimeFromWords, wordsInHtml } = require('./reading-time');
 const { transformBody, renderRunningOrder, coverVariant, COVER_SIZES } = require('./race-report');
+const { extractMetadata } = require('./metadata');
+const { articleDates } = require('./article-dates');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -107,7 +109,7 @@ function editionDate(post) {
 function renderTiming(post, category, minutes, dataCount, words) {
     const [year, month, day] = String(post.dateISO || '').split('-');
     const date = year && month && day
-        ? `<time datetime="${escapeHtmlAttribute(post.dateISO)}">${day}.${month}<small>.${year}</small></time>`
+        ? `<time datetime="${escapeHtmlAttribute(post.publishedAtISO || post.dateISO)}">${day}.${month}<small>.${year}</small></time>`
         : escapeHtmlText(post.displayDate || post.date || '');
     const fourth = dataCount
         ? `<div class="is-signal"><dt>Δεδομένα</dt><dd class="rr-num">${pad2(dataCount)}<small> ${dataCount === 1 ? 'εργαλείο' : 'εργαλεία'}</small></dd></div>`
@@ -204,7 +206,8 @@ function renderCategoryLinks(categories, className = 'article-category-link') {
 
 function formatArticleDate(post) {
     const value = post && (post.dateISO || post.date);
-    const parsed = value ? new Date(`${value}T00:00:00Z`) : null;
+    // A recorded instant is already in Athens local time, so its first ten characters are the Athens day.
+    const parsed = value ? new Date(`${String(value).slice(0, 10)}T00:00:00Z`) : null;
     return parsed && !Number.isNaN(parsed.getTime())
         ? parsed.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
         : String(post && (post.displayDate || value) || '');
@@ -226,7 +229,7 @@ function renderArticleTrust(post, category) {
     const authorHref = escapeHtmlAttribute(authorProfileHref(post.author));
 
     return `<details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
-                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="${authorHref}">${author}</a></strong><span>Δημοσίευση: <time datetime="${escapeHtmlAttribute(post.dateISO || post.date || '')}">${escapeHtmlText(articleDate)}</time></span>${renderArticleUpdateStatus(post)}</div>
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="${authorHref}">${author}</a></strong><span>Δημοσίευση: <time datetime="${escapeHtmlAttribute(post.publishedAtISO || post.dateISO || post.date || '')}">${escapeHtmlText(articleDate)}</time></span>${renderArticleUpdateStatus(post)}</div>
                         <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span>${renderArticleSources(post.sources, profile)}</div>
                         <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
                     </div></details>`;
@@ -393,8 +396,37 @@ async function measureBodySrcsets(html, entryPath, id) {
     });
 }
 
+// Editorial facts come from the source's front matter at render time, so an entry reused from the cache renders
+// exactly like a rebuilt one (rebuilds follow file mtimes, which differ between machines).
+function sourceEditorialMetadata(entryPath) {
+    const doc = fs.existsSync(entryPath) ? utils.findSourceDocument(fs.readdirSync(entryPath)) : null;
+    if (!doc || !/\.(?:txt|md)$/i.test(doc)) return { categories: [] };
+    const metadata = extractMetadata(doc, fs.readFileSync(path.join(entryPath, doc), 'utf8'));
+    return {
+        categories: Array.isArray(metadata.categories) ? metadata.categories : [],
+        publishedAtISO: metadata.publishedAtISO,
+        updatedDateISO: metadata.updatedDateISO
+    };
+}
+
+// NewsArticle only for a story an editor filed under News. Legacy entries whose News is the taxonomy's
+// no-signal default (getPostTaxonomy) stay Article: a default is not an editorial classification.
+function articleSchemaType(category, editorial) {
+    return category === 'News' && editorial.categories.includes('News') ? 'NewsArticle' : 'Article';
+}
+
 async function renderArticleHtml(postData, entryPath, folderName = postData.id || path.basename(entryPath)) {
     const taxonomy = getPostTaxonomy(postData);
+    const editorial = sourceEditorialMetadata(entryPath);
+    const dates = articleDates({
+        id: folderName,
+        dateISO: postData.dateISO || postData.date,
+        publishedAtISO: editorial.publishedAtISO || postData.publishedAtISO,
+        updatedDateISO: editorial.updatedDateISO || postData.updatedDateISO
+    });
+    // Without a recorded update the page keeps its date-only publication value for dateModified, as before.
+    const modified = dates.modified || dates.published;
+    const datedPost = { ...postData, publishedAtISO: dates.published.iso, updatedDateISO: dates.modified ? dates.modified.iso : undefined };
     const editorialProfile = getEditorialProfile(taxonomy.category);
     const headerImage = postData.backgroundImage || postData.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const bgImageFilename = headerImage.includes('/')
@@ -455,18 +487,25 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_TITLE_TEXT: escapeHtmlText(postData.title),
         ARTICLE_TITLE_ATTR: escapeHtmlAttribute(postData.title),
         ARTICLE_TITLE_JSON: jsonScriptLiteral(postData.title),
+        ARTICLE_SCHEMA_TYPE_JSON: jsonScriptLiteral(articleSchemaType(taxonomy.category, editorial)),
+        // Same line as og:type: entity evidence (entities/associations.json) is anchored to article line numbers.
+        ARTICLE_OG_ARTICLE_META: [
+            ['article:published_time', dates.published.iso],
+            ['article:modified_time', dates.modified && dates.modified.iso],
+            ['article:section', taxonomy.category]
+        ].filter(([, value]) => value).map(([name, value]) => `<meta property="${name}" content="${escapeHtmlAttribute(value)}">`).join(''),
         ARTICLE_TITLE_PARAM: encodeURIComponent(String(postData.title ?? '')),
         ARTICLE_AUTHOR_TEXT: escapeHtmlText(authorLabel(postData.author)),
         ARTICLE_AUTHOR_ATTR: escapeHtmlAttribute(authorLabel(postData.author)),
         ARTICLE_AUTHOR_JSON: jsonScriptLiteral(postData.author),
         ARTICLE_HEADER_BYLINE: renderHeaderByline(postData),
-        ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(postData.dateISO),
-        ARTICLE_DATE_ISO: escapeHtmlAttribute(postData.dateISO),
+        ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(dates.published.iso),
+        ARTICLE_DATE_ISO: escapeHtmlAttribute(dates.published.iso),
         ARTICLE_DATE: escapeHtmlText(formatArticleDate(postData)),
-        ARTICLE_UPDATED_DATE_ISO_JSON: jsonScriptLiteral(postData.updatedDateISO || postData.dateISO),
-        ARTICLE_UPDATED_DATE: escapeHtmlText(formatArticleDate({ dateISO: postData.updatedDateISO || postData.dateISO, date: postData.date, displayDate: postData.displayDate })),
+        ARTICLE_UPDATED_DATE_ISO_JSON: jsonScriptLiteral(modified.iso),
+        ARTICLE_UPDATED_DATE: escapeHtmlText(formatArticleDate({ dateISO: modified.iso, date: postData.date, displayDate: postData.displayDate })),
         ARTICLE_SOURCES_HTML: renderArticleSources(postData.sources, editorialProfile),
-        ARTICLE_TRUST_HTML: renderArticleTrust(postData, taxonomy.category),
+        ARTICLE_TRUST_HTML: renderArticleTrust(datedPost, taxonomy.category),
         ARTICLE_AUTHOR_CARD: renderAuthorCard(postData),
         ARTICLE_EXCERPT_ATTR: escapeHtmlAttribute(postData.excerpt),
         ARTICLE_EXCERPT_JSON: jsonScriptLiteral(postData.excerpt),
@@ -501,7 +540,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         // Long titles step down a size; a title that ends in its own punctuation gets no signal full stop.
         ARTICLE_TITLE_CLASS: titleText.length > 64 ? 'rr-title rr-title--long' : 'rr-title',
         ARTICLE_TITLE_PERIOD: /[.!?;…»"”)]$/.test(titleText.trim()) ? '' : '<span class="rr-period" aria-hidden="true">.</span>',
-        ARTICLE_TIMING_HTML: renderTiming(postData, taxonomy.category, minutes, body.dataCount, Number(postData.wordCount) || wordsInHtml(body.html)),
+        ARTICLE_TIMING_HTML: renderTiming(datedPost, taxonomy.category, minutes, body.dataCount, Number(postData.wordCount) || wordsInHtml(body.html)),
         ARTICLE_SECTOR_SEGMENTS: body.sections ? `<ol class="rr-sectorbar__segs" aria-hidden="true">${'<li></li>'.repeat(body.sections)}</ol>` : '',
         ARTICLE_RUNNING_ORDER: renderRunningOrderBlocks(body.entries),
         ARTICLE_SPONSORS: renderPartners(),
