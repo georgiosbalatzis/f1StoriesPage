@@ -70,7 +70,7 @@ test('the cover shows the lead photograph beside the next two stories, with the 
     const frames = [...hero.matchAll(/<a class="cover-frame" href="(\/blog-module\/blog-entries\/[^"]+\/article\.html)">/g)].map(match => match[1]);
     assert.equal(frames.length, 2);
     assert.equal(new Set([...frames, hero.match(/id="hero-story-link" href="([^"]+)"/)[1]]).size, 3);
-    assert.match(hero, /<span>F1 STORIES \/ ΕΛΛΗΝΙΚΗ F1 ΚΟΙΝΟΤΗΤΑ<\/span>/);
+    assert.match(hero, /<h1 class="cover-edition__title">F1 Stories — Formula 1 στα ελληνικά<\/h1>/);
     assert.doesNotMatch(hero, /<figcaption|hero-stamp/);
     assert.doesNotMatch(html, /ΤΕΧΝΙΚΗ ΜΑΤΙΑ|ΜΕΣΑ ΣΤΗ ΔΡΑΣΗ|ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ|TECH DESK|RACE\. TALK\. REPEAT\.|paddock-strip/);
 });

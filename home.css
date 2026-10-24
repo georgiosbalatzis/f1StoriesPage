@@ -108,9 +108,11 @@
 .home-page #hero { display: block; padding: 0; margin-top: 76px; min-height: 0; clip-path: none; overflow: hidden; text-align: left; }
 .home-page #hero::before { display: none; }
 .home-page .cover-edition { display: flex; justify-content: space-between; gap: 16px; padding-block: 14px 12px; color: var(--on-deep-2); font: 700 .9375rem/1.1 var(--cond); letter-spacing: .16em; }
-.home-page .cover-edition > span:first-child { color: var(--on-deep); }
+.home-page .cover-edition > :first-child { color: var(--on-deep); }
 /* Preserve the intended single-line labels while fonts load; fallback wrapping shifts the cover at tablet widths. */
-.home-page .cover-edition > span { white-space: nowrap; }
+.home-page .cover-edition > * { white-space: nowrap; }
+/* The page's one h1 is the paper's name on the edition line: it keeps the line's type, not a heading's. */
+.home-page .cover-edition__title { margin: 0; font: inherit; letter-spacing: inherit; text-transform: uppercase; }
 /* The right-hand span is the build's season/round line; without standings data it stays empty. */
 .home-page .cover-edition > span:empty { display: none; }
 .home-page .cover-strip { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3px; height: clamp(320px, 39vw, 600px); }
@@ -507,9 +509,8 @@ body.home-page footer .footer-wordmark { font: 700 clamp(4rem, 15vw, 14rem)/.78 
 @media (max-width: 767px) {
     .home-page .container { padding-inline: 22px; }
     .home-page .cover-edition { font-size: .8125rem; letter-spacing: .12em; }
-    /* Phones: the logo above already names the paper, so the edition line shows the round instead. */
-    .home-page .cover-edition > span:first-child { display: none; }
-    .home-page .cover-edition > span:first-child:has(+ span:empty) { display: inline; }
+    /* Phones: the edition line keeps the page title; the round repeats in the championship section below. */
+    .home-page .cover-edition > span { display: none; }
     /* The lead photograph, the headline under it, then the next two stories as briefs: a small frame beside each
      * headline, so the lead stays the one big picture on the cover. */
     .home-page #hero { display: flex; flex-wrap: wrap; align-items: stretch; }

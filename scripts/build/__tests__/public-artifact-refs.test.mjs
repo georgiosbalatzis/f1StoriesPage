@@ -204,7 +204,7 @@ function cliFixture(t) {
     const markers = `<main id="about"><div id="contact"><form id="contact-form"></form></div>
         <div id="journal-archive" class="ed-lead"></div><div class="ed-row"></div><div class="ed-contents"></div>
         <div class="standings-wrapper" id="tab-drivers"></div><div class="author-profile"></div>
-        <h1 class="ed-section__title" id="hero-title">Lead</h1><img id="hero-image" src="/hero.webp">
+        <h1 class="ed-section__title">Section</h1><h2 id="hero-title">Lead</h2><img id="hero-image" src="/hero.webp">
         <a id="hero-story-link" href="/blog-module/blog-entries/story/article.html">Story</a><a href="/">Home</a>
         <!-- f1s:article-editorial:begin --><!-- f1s:article-editorial:end --></main>`;
     for (const [file, css] of Object.entries(pages)) {
