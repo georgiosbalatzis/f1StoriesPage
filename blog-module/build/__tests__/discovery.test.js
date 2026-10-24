@@ -274,7 +274,39 @@ test('home and composed discovery pages have one aligned metadata set and distin
         assert.equal(meta('og:url'), canonicals[0][1]);
     }
     assert.equal(new Set(descriptions).size, descriptions.length);
-    assert.match(home, /<title>F1 Stories \| Νέα Formula 1, Τεχνικές Αναλύσεις &amp; Podcast<\/title>/);
+    assert.match(home, /<title>F1 Stories \| Formula 1 στα ελληνικά — Νέα και Ανάλυση<\/title>/);
+});
+
+test('the homepage names the paper in its one h1 and declares one linked publisher identity', () => {
+    const home = fs.readFileSync(path.join(REPO, 'index.html'), 'utf8');
+    const footer = fs.readFileSync(path.join(REPO, 'partials/footer.html'), 'utf8');
+    // The lead story changes daily; the page heading does not.
+    const h1s = [...home.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)];
+    assert.equal(h1s.length, 1);
+    assert.equal(h1s[0][1].trim(), 'F1 Stories — Formula 1 στα ελληνικά');
+    assert.match(home, /<h2 id="hero-title"[\s>]/);
+
+    const blocks = [...home.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(match => JSON.parse(match[1]));
+    assert.equal(blocks.length, 1);
+    const graph = blocks[0]['@graph'];
+    const [org, site] = ['Organization', 'WebSite'].map(type => {
+        const nodes = graph.filter(node => node['@type'] === type);
+        assert.equal(nodes.length, 1, type);
+        return nodes[0];
+    });
+    const canonical = /<link rel="canonical" href="([^"]*)">/.exec(home)[1];
+    assert.equal(org['@id'], `${canonical}#organization`);
+    assert.equal(site['@id'], `${canonical}#website`);
+    assert.deepEqual([org.name, org.url, site.name, site.url], ['F1 Stories', canonical, 'F1 Stories', canonical]);
+    assert.deepEqual(site.publisher, { '@id': org['@id'] });
+    assert.equal(site.inLanguage, 'el-GR');
+    assert.match(org.logo.url, /^https:\/\/f1-stories\.gr\/\S+\.png$/);
+    for (const key of ['alternateName', 'potentialAction', 'founder', 'foundingDate']) {
+        assert.ok(!(key in org) && !(key in site), key);
+    }
+    // sameAs declares exactly the profiles the site itself links as its own.
+    const social = /<div class="social-media">([\s\S]*?)<\/div>/.exec(footer)[1];
+    assert.deepEqual([...org.sameAs].sort(), [...social.matchAll(/href="(https:\/\/[^"]+)"/g)].map(match => match[1]).sort());
 });
 
 test('monthly descriptions handle all Greek month names and a single story naturally', () => {

@@ -17,7 +17,7 @@ test('hero validation ignores collapsed whitespace but rejects a different headl
         fs.writeFileSync(path.join(root, 'index.html'), `
             <img id="hero-image" src="/hero.webp">
             <a id="hero-story-link" href="/blog-module/blog-entries/20261002W/article.html"></a>
-            <h1 id="hero-title"><!-- headline -->${headline}<span>.</span></h1>
+            <h2 id="hero-title"><!-- headline -->${headline}<span>.</span></h2>
         `);
         const errors = [];
         validateHomepageHero(errors, root);

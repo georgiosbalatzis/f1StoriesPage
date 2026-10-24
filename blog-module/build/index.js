@@ -608,7 +608,7 @@ function replaceHomepageTextSlot(html, id, begin, end, value) {
     const updated = replaceInlineMarkedBlock(html, begin, end, value);
     if (hasMarkers) return updated;
     const idPattern = escapeRegExp(id);
-    const tagName = id === 'hero-title' ? 'h1' : id === 'hero-category' ? 'span' : 'p';
+    const tagName = id === 'hero-title' ? 'h2' : id === 'hero-category' ? 'span' : 'p';
     const elementPattern = new RegExp(
         `(<${tagName}\\b[^>]*\\bid="${idPattern}"[^>]*>)[\\s\\S]*?(</${tagName}>)`,
         'i'
@@ -708,7 +708,7 @@ function injectHomepageHero(hero) {
     );
     html = updateHomepageHeroPeriod(html, titlePresentation);
     html = html.replace(
-        /(<h1\b[^>]*\bid="hero-title"[^>]*)(>)/i,
+        /(<h2\b[^>]*\bid="hero-title"[^>]*)(>)/i,
         (match, attributes, closing) => setHtmlAttribute(attributes, 'class', heroTitleSizeClass(titlePresentation.text)) + closing
     );
     html = replaceHomepageTextSlot(

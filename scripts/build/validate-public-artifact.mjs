@@ -667,7 +667,7 @@ export function validateHomepageHero(errors, distRoot = DIST_ROOT) {
     const preload = normalizeHeroRef(extractElementAttribute(html, 'link', 'hero-image-preload', 'href'));
     const link = normalizeHeroRef(extractElementAttribute(html, 'a', 'hero-story-link', 'href'));
     const expectedLink = `/blog-module/blog-entries/${encodeURIComponent(latest.slug || latest.id || '')}/article.html`;
-    const titleMatch = html.match(/<h1\b[^>]*\bid=["']hero-title["'][^>]*>([\s\S]*?)<\/h1>/i);
+    const titleMatch = html.match(/<h2\b[^>]*\bid=["']hero-title["'][^>]*>([\s\S]*?)<\/h2>/i);
     const title = titleMatch
         ? titleMatch[1].replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
         : '';
