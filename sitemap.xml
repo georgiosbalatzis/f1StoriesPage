@@ -245,6 +245,36 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://f1-stories.gr/authors/themis-charvalis/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/authors/giannis-poulikidis/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/authors/georgios-balatzis/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/authors/dimitris-keramidiotis/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/authors/thanasis-batalas/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/authors/f1-stories/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://f1-stories.gr/privacy/privacy.html</loc>
     <lastmod>2026-09-09</lastmod>
     <changefreq>yearly</changefreq>

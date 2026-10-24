@@ -20,6 +20,8 @@ const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
+const { writeAuthorPages } = require('./author-pages');
+const { checkBodyLinks } = require('./body-links');
 const { selectCastArticles, isCastArticle, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
@@ -1158,11 +1160,14 @@ async function processBlogEntries(options = {}) {
     writeHubPages(CONFIG.OUTPUT_HTML_DIR, entities.pages);
     writeSearchDestinations(entities);
     console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
-    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages]);
     generateFeed(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
+    // After the article pages: an author page lists a story only once its page is public.
+    checkBodyLinks(blogPosts, { today });
+    const authorPages = writeAuthorPages(blogPosts, { today });
+    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages], authorPages);
 
     // Standings caches are refreshed only by `npm run build:standings-data`.
     console.log('Blog processing complete');

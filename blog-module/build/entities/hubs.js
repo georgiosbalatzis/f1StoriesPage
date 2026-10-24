@@ -19,12 +19,13 @@ const humanApproved = (review, today) => review?.status === 'approved' && review
 function articleUrl(article) {
     const url = new URL(route.story(article), SITE);
     if (url.origin !== SITE || url.search || url.hash
-        || url.pathname !== `/blog-module/blog-entries/${article.id}/article.html`) throw new Error(`Invalid original article URL: ${article.id}`);
+        || url.pathname !== `/blog-module/blog-entries/${encodeURIComponent(article.id)}/article.html`) throw new Error(`Invalid original article URL: ${article.id}`);
     return url.href;
 }
 
 function articleIsPublic(article, root = ROOT) {
-    const file = path.join(root, new URL(articleUrl(article)).pathname);
+    // Folder ids may be Greek (20260227Τ): the URL carries them percent-encoded, the disk as written.
+    const file = path.join(root, decodeURIComponent(new URL(articleUrl(article)).pathname));
     if (!fs.existsSync(file)) return false;
     const html = fs.readFileSync(file, 'utf8');
     const attributes = tag => Object.fromEntries([...tag.matchAll(/([a-z][a-z0-9-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)]
@@ -36,6 +37,13 @@ function articleIsPublic(article, root = ROOT) {
     return canonicals.length === 1 && canonicals[0].href === articleUrl(article) && !blocked;
 }
 
+// A story readers can reach: a real publication day not after `today`, no draft or unpublished status, a public page.
+function isPublishedArticle(article, today, isPublic = articleIsPublic) {
+    return T.isDay(article.date) && article.date <= today
+        && ![true, 'true'].includes(article.draft) && ![false, 'false'].includes(article.published)
+        && (!article.status || article.status === 'published') && isPublic(article);
+}
+
 function selectHubs(registry, manifest, articles, { today = T.athensDay(), readSource, isPublic = articleIsPublic } = {}) {
     if (!T.isDay(today)) throw new Error('Entity generation requires a valid publication day');
     validateAssociations(registry, manifest, articles, readSource);
@@ -44,12 +52,7 @@ function selectHubs(registry, manifest, articles, { today = T.athensDay(), readS
         const reviewed = manifest.associations.filter(item => item.entityId === entity.id && humanApproved(item.review, today));
         const subjects = reviewed.filter(item => ['primary', 'secondary'].includes(item.role)
             && item.substantive === true && ['f1', 'mixed'].includes(item.discipline));
-        const members = subjects.filter(item => {
-            const article = byId.get(item.articleId);
-            return T.isDay(article.date) && article.date <= today
-                && ![true, 'true'].includes(article.draft) && ![false, 'false'].includes(article.published)
-                && (!article.status || article.status === 'published') && isPublic(article);
-        });
+        const members = subjects.filter(item => isPublishedArticle(byId.get(item.articleId), today, isPublic));
         const posts = members.map(item => byId.get(item.articleId))
             .sort((a, b) => compare(b.date, a.date) || compare(a.id, b.id));
         const reasons = [];
@@ -173,4 +176,4 @@ function publicHubFiles(foundation = loadFoundation(), options = {}) {
         Array.from({ length: Math.ceil(hub.posts.length / PAGE_SIZE) }, (_, i) => hubPath(hub.entity, i + 1).slice(1) + 'index.html')));
 }
 const hubSitemap = pages => pages.map(page => sitemapUrl(SITE + page.path, page.changefreq, page.priority, page.lastmod)).join('');
-module.exports = { TYPES, PAGE_SIZE, GENERATED, hubPath, articleUrl, articleIsPublic, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };
+module.exports = { TYPES, PAGE_SIZE, GENERATED, jsonLd, hubPath, articleUrl, articleIsPublic, isPublishedArticle, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };
