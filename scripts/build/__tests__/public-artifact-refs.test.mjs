@@ -181,6 +181,7 @@ function cliFixture(t) {
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
+    write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
@@ -211,7 +212,11 @@ function cliFixture(t) {
         const links = css.map(key => `<link rel="stylesheet" href="/${manifest.files[key].min}?v=12345678">`).join('\n');
         const canonical = file.startsWith('blog-module/blog/')
             ? `<link rel="canonical" href="https://f1-stories.gr/${file.replace(/index\.html$/, '')}">` : '';
-        write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${links}${canonical}</head>
+        // As in the real shells: public pages share the head-meta policy, the author tools keep their noindex.
+        const robots = ['generate.html', 'housekeeping.html'].includes(file)
+            ? '<meta name="robots" content="noindex, nofollow">'
+            : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
+        write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
             <body class="editorial-page home-page archive-page article-page standings-page authors-page">${markers}
             <script src="/blog-module/taxonomy.min.js"></script><script src="/blog-module/blog-index.min.js"></script>
             <script type="module" src="/entry.js"></script></body>`, file));

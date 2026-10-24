@@ -5,7 +5,7 @@
     <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <link rel="alternate" type="application/rss+xml" title="F1 Stories" href="https://f1-stories.gr/feed.xml">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">
     <script defer src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
@@ -18,7 +18,7 @@
     <meta property="og:description" content="ARTICLE_EXCERPT_ATTR">
     <meta property="og:image" content="ARTICLE_IMAGE_URL_ATTR">
     <meta property="og:url" content="ARTICLE_URL_ATTR">
-    <meta property="og:type" content="article">
+    <meta property="og:type" content="article">ARTICLE_OG_ARTICLE_META
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ARTICLE_TITLE_ATTR | F1 Stories">
     <meta name="twitter:description" content="ARTICLE_EXCERPT_ATTR">
@@ -28,7 +28,7 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Article",
+        "@type": ARTICLE_SCHEMA_TYPE_JSON,
         "headline": ARTICLE_TITLE_JSON,
         "description": ARTICLE_EXCERPT_JSON,
         "articleSection": ARTICLE_CATEGORIES_JSON,
@@ -36,7 +36,7 @@
         "datePublished": ARTICLE_DATE_ISO_JSON,
         "dateModified": ARTICLE_UPDATED_DATE_ISO_JSON,
         "author": { "@type": "Person", "name": ARTICLE_AUTHOR_JSON },
-        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1-stories.gr/images/icons/icon-512.png" } },
+        "publisher": { "@type": "Organization", "@id": "https://f1-stories.gr/#organization", "name": "F1 Stories", "url": "https://f1-stories.gr/", "logo": { "@type": "ImageObject", "url": "https://f1-stories.gr/images/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": ARTICLE_URL_JSON }
     }
     </script>
