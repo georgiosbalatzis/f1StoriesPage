@@ -15,6 +15,32 @@ runs:
         node-version: '22'
         package-manager-cache: false
 
+    # Aggregate builds only: a child that declares another Node major (TYRES: 24) gets it as an
+    # extra toolchain. Main and the default `node` on PATH stay on 22.
+    - name: Read aggregate toolchain
+      id: toolchain
+      shell: bash
+      run: node scripts/deployment/toolchain.mjs >> "$GITHUB_OUTPUT"
+
+    - name: Provision Node ${{ steps.toolchain.outputs.extra }} for child builds
+      if: steps.toolchain.outputs.extra != ''
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: ${{ steps.toolchain.outputs.extra }}
+        package-manager-cache: false
+
+    - name: Record the extra toolchain and restore Node 22
+      if: steps.toolchain.outputs.extra != ''
+      shell: bash
+      run: echo "F1S_NODE_BIN=${{ steps.toolchain.outputs.extra }}=$(dirname "$(command -v node)")" >> "$GITHUB_ENV"
+
+    - name: Restore Node 22 as the default
+      if: steps.toolchain.outputs.extra != ''
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: '22'
+        package-manager-cache: false
+
     - name: Install dependencies
       id: install
       shell: bash

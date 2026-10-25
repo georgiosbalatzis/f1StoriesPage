@@ -40,11 +40,17 @@ runs:
       shell: bash
       run: npm run build:public
 
+    # Before the build: TYRES renders its social cards and panel images with Chromium.
+    - name: Install integration browser
+      if: steps.assembly.outputs.enabled == 'true'
+      shell: bash
+      run: node_modules/.bin/playwright-core install --with-deps chromium
+
     - name: Build pinned aggregate artifact
       if: steps.assembly.outputs.enabled == 'true'
       shell: bash
       run: |
-        node scripts/deployment/build.mjs --output .build/priority6/site --reports .build/priority6/reports
+        node scripts/deployment/build.mjs --node-bin "$F1S_NODE_BIN" --output .build/priority6/site --reports .build/priority6/reports
         rm -rf dist
         mv .build/priority6/site dist
 
@@ -63,11 +69,6 @@ runs:
     - name: Audit runtime dependencies
       shell: bash
       run: npm run audit:runtime
-
-    - name: Install integration browser
-      if: steps.assembly.outputs.enabled == 'true'
-      shell: bash
-      run: node_modules/.bin/playwright-core install --with-deps chromium
 
     - name: Smoke test canonical artifact
       if: steps.assembly.outputs.enabled == 'true'

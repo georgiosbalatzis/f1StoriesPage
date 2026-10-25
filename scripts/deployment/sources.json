@@ -8,31 +8,49 @@
       "repository": "georgiosbalatzis/f1StoriesPage",
       "path": "/",
       "output": "dist",
-      "build": "build:public"
+      "build": "build:public",
+      "node": "22"
     },
     {
       "application": "telemetry",
       "repository": "georgiosbalatzis/f1-telemetry-dashboard",
-      "sha": "69d5c7eb9951f3de52640cf66fb43da6fc278c1b",
+      "sha": "2f57a928ce6db317589914f909de21ce498611a8",
       "path": "/telemetry/",
       "output": "dist",
-      "build": "build:f1stories"
+      "build": "build:f1stories",
+      "node": "22"
     },
     {
       "application": "ghostcar",
       "repository": "georgiosbalatzis/ghostcar",
-      "sha": "2b5d2d100d461124275732c9a2df5cde5b74804e",
+      "sha": "052fa80133a4d33d3f61a5dee020a330f06b3ada",
       "path": "/ghostcar/",
       "output": "dist",
-      "build": "build:f1stories"
+      "build": "build:f1stories",
+      "node": "22"
+    },
+    {
+      "application": "tyres",
+      "repository": "georgiosbalatzis/Tyres",
+      "sha": "1cb08065fc358c57f4662f052ac51f8053b08b08",
+      "path": "/tyres/",
+      "output": "dist",
+      "build": "build:f1stories",
+      "node": "24",
+      "data": {
+        "ref": "main",
+        "paths": ["data"],
+        "refresh": "weekend:update"
+      }
     },
     {
       "application": "betcast",
       "repository": "georgiosbalatzis/BetCastVisualisation",
-      "sha": "14ab8a1a2be39c3be1f35ecadc8061e39521f958",
+      "sha": "dcc1c04271dac603c8312d4f5f6d8f9417b40fc5",
       "path": "/betcast/",
       "output": "build",
-      "build": "build:f1stories"
+      "build": "build:f1stories",
+      "node": "22"
     }
   ],
   "releaseReady": false

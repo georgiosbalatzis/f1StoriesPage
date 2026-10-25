@@ -10,6 +10,10 @@ on:
         default: false
   # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
+  # TYRES refreshes schedules and forecasts every 6 h. Once aggregation is enabled the primary site
+  # rebuilds on that cadence; until then scheduled runs stop at the gate below.
+  schedule:
+    - cron: '41 */6 * * *'
 
 # Granted per job: only the deploy job can publish Pages or mint an OIDC token.
 permissions: {}
@@ -19,9 +23,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    name: Scheduled refresh gate
+    if: ${{ github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      enabled: ${{ steps.lock.outputs.enabled }}
+    steps:
+      - name: Checkout the source lock
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+          sparse-checkout: scripts/deployment/sources.json
+          sparse-checkout-cone-mode: false
+      - name: Read aggregation state
+        id: lock
+        run: echo "enabled=$(jq -r '.enabled == true' scripts/deployment/sources.json)" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build Pages artifact
-    if: ${{ !inputs.artifact_ready }}
+    needs: gate
+    if: ${{ !cancelled() && !inputs.artifact_ready && (github.event_name != 'schedule' || needs.gate.outputs.enabled == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
