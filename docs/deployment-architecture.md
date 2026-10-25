@@ -200,12 +200,13 @@ of old links are not guaranteed and take time.
 
 ## Release readiness and cutover (SEO PR 5.1)
 
-**Status: not ready; aggregation disabled** (`enabled:false`, `releaseReady:false`).
-The hosted Ecosystem dry run builds, assembles and browser-tests all five
-applications, but the publisher's own gates fail on the aggregate until the
-upstream runtime-policy fixes are merged and pinned (below).
+**Status: hosted validation passes on the final pins; aggregation disabled**
+(`enabled:false`, `releaseReady:false` until the owner sets it). The final run,
+[40197365952](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40197365952),
+builds, assembles, browser-tests and passes every publisher gate on the merged
+commits below: 5,240 files, 372.0 MB, 487 sitemap URLs.
 
-Evidence (GitHub-hosted, ubuntu24 20261023.334.3, Node 22.23.3 + 24.21.0):
+Earlier evidence (GitHub-hosted, ubuntu24 20261023.334.3, Node 22.23.3 + 24.21.0):
 - [run 40180388440](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40180388440):
   merged pins, before the publisher gates were added to the dry run: build,
   integrity and browser suite pass.
@@ -225,26 +226,27 @@ URL integrity, the browser suite, then every gate `build-pages` runs on an
 enabled aggregate, a live read-only API probe (informational) and a step summary.
 It uploads reports only; it has no Pages, OIDC or write permission.
 
-**Pinned sources** (each tree identical to its reviewed PR head):
-Telemetry `99ca01d4fde63481ea915cb08da30e97a9e6af18` (#22), Ghost Car
-`899493e75b3e261b3e23b2380d0874326bfcef34` (#21), TYRES
+**Pinned sources** (merged `main` commits; each tree identical to its reviewed PR
+head, directly on the previous pin): Telemetry
+`38c3dd2018b810a5dce1add1f7663bcb199c845a` (#22, #23), Ghost Car
+`4d7a783d9866bce917f61ae6546e48bc0d38b622` (#21, #22), TYRES
 `c780d95ffb678f9be710d5e92fce77ac997e0d9a` (#19, squash), BetCast
-`c6ac4e8cc4c19f49e8dc610220b5450216137e27` (#2).
+`74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650` (#2, #3). TYRES data follows its reviewed
+`main` (`7748aef9` in the final run, with Pirelli update #15); its code, including
+Dependabot bumps #17/#18, stays at the pin until re-pinned and re-validated.
 
-**Open before readiness:** runtime-policy fixes in Telemetry
-([#23](https://github.com/georgiosbalatzis/f1-telemetry-dashboard/pull/23)), Ghost Car
-([#22](https://github.com/georgiosbalatzis/ghostcar/pull/22)) and BetCast
-([#3](https://github.com/georgiosbalatzis/BetCastVisualisation/pull/3)): pre-paint theme
-scripts as files, BetCast fonts self-hosted, the retired domain out of Ghost Car's
-page. After they merge: re-pin their merged commits (check each tree equals the
-reviewed head), and require a green hosted dry run on that commit.
+**Re-pinning later:** pin only merged commits whose tree equals the reviewed head,
+and require a green `Ecosystem dry run` on that commit before marking readiness.
 
 **Freshness evidence:** three hosted builds with the same TYRES data commit
 (`c780d95f`, digest `02bc0a5e5135` before refresh) each refreshed schedules and
 forecasts (digests after `70b8704960d8`, `e6b668f85f7d`, `6309a2e17f2d`); the current
-race was a live forecast, past races archived forecasts, none stale. The 6-hourly
-Deploy Pages schedule had not fired yet when this was written (first slot after
-#333: 12:41 UTC); its gate is covered by `pages-preparation.test.mjs`.
+race was a live forecast, past races archived forecasts, none stale. The final run
+took newer reviewed data (`7748aef9`, digest `f62d7c95a25a`) with the code still
+pinned, validated it with the pinned schemas and refreshed it. GitHub had not yet
+started a scheduled Deploy Pages run when this was written (the 12:41 UTC slot
+after #333 had not fired 40 minutes later; GitHub cron is best-effort); the gate
+logic is covered by `pages-preparation.test.mjs`.
 
 **Readiness PR** (after a green dry run on the final pins): `releaseReady:true`
 only. This changes no deployment: Deploy Pages still publishes Main alone while
