@@ -91,6 +91,8 @@ async function createPage(os = 'light', width = 1440) {
     const page = await context.newPage();
     page.on('response', response => { if (response.url().startsWith(origin) && response.status() >= 400 && !response.url().includes('__invalid__')) failures.push({ url: response.url(), status: response.status() }); });
     page.on('pageerror', error => failures.push({ page: page.url(), error: error.message }));
+    // Content Security Policy refusals only reach the console; any of them is a release defect.
+    page.on('console', message => { if (message.type() === 'error' && /Content Security Policy|Refused to (?:load|execute|frame|connect|apply)/i.test(message.text())) failures.push({ page: page.url(), csp: message.text().slice(0, 300) }); });
     return { context, page };
 }
 
@@ -445,6 +447,28 @@ try {
             results.flows.push({ application, externalIframe: true, publisherOrigin: new URL(publisher).origin, productOrigin: publicTestOrigin });
             await context.unroute(publisher);
         }
+        // BetCast obeys host-theme messages only from the f1-stories.gr article origin; the retired domain is refused.
+        await context.route('https://f1-stories.gr/**', async route => {
+            const url = new URL(route.request().url());
+            await route.fulfill({ response: await context.request.get(origin + url.pathname + url.search) });
+        });
+        for (const [parent, trusted] of [['https://f1-stories.gr', true], ['https://f1stories.gr', false]]) {
+            const probe = `${parent}/frame-trust-probe`;
+            await context.route(probe, route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Article</title><iframe id="frame" width="600" height="400" src="https://f1-stories.gr/betcast/?viz=dataTable&embed=1&presentation=article&theme=host"></iframe>' }));
+            await page.goto(probe);
+            const frame = page.frameLocator('#frame');
+            await frame.locator('table').filter({ visible: true }).first().waitFor();
+            const bodyClass = () => frame.locator('body').evaluate(body => body.className);
+            const before = await bodyClass();
+            await page.evaluate(() => document.getElementById('frame').contentWindow.postMessage({ type: 'betcast:theme', theme: 'dark' }, 'https://f1-stories.gr'));
+            await page.waitForTimeout(500);
+            const after = await bodyClass();
+            assert.match(before, /light-mode/, `${parent}: light before the host message`);
+            assert.equal(/dark-mode/.test(after), trusted, `${parent}: host theme ${trusted ? 'accepted' : 'refused'}`);
+            results.flows.push({ betcastFrameTrust: parent, themeAccepted: /dark-mode/.test(after) });
+            await context.unroute(probe);
+        }
+        await context.unroute('https://f1-stories.gr/**');
         for (const invalid of ['/__invalid__/', '/telemetry/__invalid__/', '/ghostcar/__invalid__/', '/tyres/__invalid__/', '/tyres/2026/__invalid__/', '/betcast/__invalid__/']) assert.equal((await context.request.get(origin + invalid)).status(), 404);
         await context.close();
     }

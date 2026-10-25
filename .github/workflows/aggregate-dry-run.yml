@@ -44,11 +44,25 @@ jobs:
           mkdir -p "$REPORTS"
           { echo "node=$(node --version)"; echo "node_extra=$("${F1S_NODE_BIN#*=}/node" --version)"; echo "runner=$ImageOS $ImageVersion"; } | tee "$REPORTS/toolchain.txt"
       - name: Build the pinned aggregate (rehearsal)
+        id: build
         run: npm run build:ecosystem -- --rehearsal --node-bin "$F1S_NODE_BIN" --output "$SITE" --reports "$REPORTS"
       - name: Public URL integrity (sitemap, canonicals, Main sections, domain files)
         run: node scripts/deployment/verify-public.mjs --site "$SITE" | tee "$REPORTS/public-integrity.json"
       - name: Browser integration suite
         run: npm run test:integration -- --site "$SITE" --reports "$REPORTS"
+      # The gates build-pages runs on dist once aggregation is enabled, on this aggregate; kept in step by a test.
+      - name: Publisher gates on the aggregate
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          rm -rf dist && cp -R "$SITE" dist
+          set -o pipefail
+          status=0
+          gate() { echo "::group::$*"; "$@" 2>&1 | tee -a "$REPORTS/publisher-gates.log" || { status=1; echo "FAILED: $*" | tee -a "$REPORTS/publisher-gates.log"; }; echo "::endgroup::"; }
+          gate npm run quality:static
+          gate npm run qa:media
+          gate node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs scripts/build/__tests__/social-cards-release.test.mjs
+          gate npm run audit:runtime
+          exit $status
       - name: Live API reads (informational)
         if: ${{ !cancelled() }}
         continue-on-error: true

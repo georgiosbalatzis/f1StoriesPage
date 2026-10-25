@@ -229,6 +229,14 @@ test('the dry run cannot publish, and the publisher never builds a rehearsal', (
     }
 });
 
+test('the dry run runs every gate the publisher runs on an enabled aggregate', () => {
+    const publisher = read('.github/actions/build-pages/action.yml');
+    const dryRun = read('.github/workflows/aggregate-dry-run.yml');
+    const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
+    assert.equal(gates.length, 4);
+    for (const gate of gates) assert.ok(dryRun.includes(`gate ${gate}`), `dry run lacks: ${gate}`);
+});
+
 test('the dry run reports every endpoint the tools read at runtime, from the new origin', async () => {
     const { ENDPOINTS, readable } = await import('./live-read.mjs');
     assert.deepEqual(ENDPOINTS.map(([, , url]) => new URL(url).host), ['api.openf1.org', 'api.multiviewer.app', 'api.jolpi.ca', 'docs.google.com']);
