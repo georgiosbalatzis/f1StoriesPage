@@ -6,9 +6,10 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
-import { assertReleasable, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
+import { verifyPublic } from './verify-public.mjs';
 
 const ORIGIN = 'https://f1-stories.gr';
 const builtAt = '2026-10-25T12:00:00.000Z';
@@ -206,9 +207,43 @@ for (const [name, [mutate, error]] of Object.entries(lockFailures)) test(`source
     assert.throws(() => checkLock(config), error);
 });
 
-test('a release with unmet readiness conditions is refused; local rehearsal is allowed', () => {
+test('a release with unmet readiness conditions is refused; local and dry-run rehearsals are allowed', () => {
     assert.throws(() => assertReleasable({ releaseReady: false }, { local: false }), /Release pins are not ready/);
     assert.doesNotThrow(() => assertReleasable({ releaseReady: false }, { local: true }));
+    assert.doesNotThrow(() => assertReleasable({ releaseReady: false }, { local: false, rehearsal: true }));
+    assert.equal(buildMode({ local: false, rehearsal: false }), 'release');
+    assert.equal(buildMode({ local: false, rehearsal: true }), 'rehearsal');
+    // A rehearsal always builds the pinned sources, never a workspace checkout.
+    assert.throws(() => buildMode({ local: true, rehearsal: true }), /cannot be combined with --local/);
+});
+
+const read = rel => fs.readFileSync(path.join(here, '../..', rel), 'utf8');
+test('the dry run cannot publish, and the publisher never builds a rehearsal', () => {
+    const dryRun = read('.github/workflows/aggregate-dry-run.yml');
+    assert.doesNotMatch(dryRun, /uses:\s*actions\/(?:deploy-pages|upload-pages-artifact|configure-pages)|uses:\s*\.\/\.github\/(?:workflows\/deploy-pages|actions\/build-pages)|pages:\s*write|id-token|contents:\s*write/);
+    assert.match(dryRun, /permissions:\n  contents: read\n/);
+    assert.match(dryRun, /build:ecosystem -- --rehearsal --node-bin "\$F1S_NODE_BIN"/);
+    assert.match(dryRun, /rehearsal: 'true'/);
+    for (const publisher of ['.github/actions/build-pages/action.yml', '.github/workflows/deploy-pages.yml', '.github/workflows/publish-blog.yml']) {
+        assert.doesNotMatch(read(publisher), /--rehearsal|--local|--allow-dirty|rehearsal: 'true'/, publisher);
+    }
+});
+
+test('the dry run runs every gate the publisher runs on an enabled aggregate', () => {
+    const publisher = read('.github/actions/build-pages/action.yml');
+    const dryRun = read('.github/workflows/aggregate-dry-run.yml');
+    const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
+    assert.equal(gates.length, 4);
+    for (const gate of gates) assert.ok(dryRun.includes(`gate ${gate}`), `dry run lacks: ${gate}`);
+});
+
+test('the dry run reports every endpoint the tools read at runtime, from the new origin', async () => {
+    const { ENDPOINTS, readable } = await import('./live-read.mjs');
+    assert.deepEqual(ENDPOINTS.map(([, , url]) => new URL(url).host), ['api.openf1.org', 'api.multiviewer.app', 'api.jolpi.ca', 'docs.google.com']);
+    assert.equal(readable(200, '*'), true);
+    assert.equal(readable(200, 'https://f1-stories.gr'), true);
+    assert.equal(readable(200, 'https://f1stories.gr'), false);
+    assert.equal(readable(500, '*'), false);
 });
 
 test('dirty or mismatched release sources are refused', () => {
@@ -234,6 +269,24 @@ test('the wrong Node environment is refused', t => {
     assert.throws(() => nodeEnvironment({ application: 'tyres', node: '999' }, { 999: bin }), /tyres: requires Node 999\.x, found v20\.19\.0/);
 });
 
+test('public integrity: every sitemap URL is a page canonical to itself, on the primary domain', t => {
+    const page = url => `<link rel="canonical" href="${url}">`;
+    const entries = {
+        CNAME: 'f1-stories.gr\n', '.nojekyll': '', '404.html': '', 'robots.txt': 'User-agent: *\nAllow: /', 'feed.xml': '', 'index.html': page(`${ORIGIN}/`),
+        'standings/index.html': '', 'authors/index.html': '', 'authors/a/index.html': '', 'blog-module/blog/index.html': '', 'blog-module/blog/section/news/index.html': '',
+        'blog-module/blog/archive/2026/index.html': '', 'blog-module/blog/entities/drivers/x/index.html': '',
+        'blog-module/blog-entries/1/article.html': page(`${ORIGIN}/blog-module/blog-entries/1/article.html`),
+        'blog-module/blog-entries/20260227Τ/article.html': page(`${ORIGIN}/blog-module/blog-entries/20260227%CE%A4/article.html`),
+        ...Object.fromEntries(['telemetry', 'ghostcar', 'tyres', 'betcast'].map(tool => [`${tool}/index.html`, page(`${ORIGIN}/${tool}/`)])),
+        'sitemap.xml': ['/', '/blog-module/blog-entries/1/article.html', '/blog-module/blog-entries/20260227Τ/article.html', '/tyres/'].map(p => `<loc>${ORIGIN}${p}</loc>`).join(''),
+    };
+    const ok = verifyPublic(fixture(t, entries));
+    assert.deepEqual(ok.problems, []);
+    assert.equal(ok.notes.length, 1, 'the unencoded Greek article id is reported');
+    const broken = verifyPublic(fixture(t, { ...entries, CNAME: 'f1stories.gr', 'sitemap.xml': entries['sitemap.xml'] + `<loc>${ORIGIN}/gone/</loc>`, 'tyres/index.html': page(`${ORIGIN}/Tyres/`) }));
+    assert.deepEqual(broken.problems, ['CNAME does not name the primary domain', `${ORIGIN}/tyres/ declares canonical ${ORIGIN}/Tyres/`, `sitemap URL without a page: ${ORIGIN}/gone/`]);
+});
+
 test('prepared github.io compatibility pages keep the deep path, query and hash', t => {
     const { run, destination } = site(t);
     run();
@@ -257,6 +310,7 @@ test('CI provisions the TYRES Node toolchain only once aggregation is release-re
     const config = lock();
     assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }), '');
     assert.equal(extraNode({ ...config, releaseReady: true }), '24');
+    assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }, '22', { rehearsal: true }), '24');
     config.applications[1].node = '20';
     assert.throws(() => extraNode({ ...config, releaseReady: true }), /One extra Node toolchain/);
 });

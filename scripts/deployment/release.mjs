@@ -30,8 +30,14 @@ export function checkLock(config) {
     return config;
 }
 
-export function assertReleasable(config, { local }) {
-    if (!local && !config.releaseReady) throw new Error('Release pins are not ready: commit reviewed migration changes and update child SHAs first');
+/** release: publishable; rehearsal: the same pinned build, for the dry run only; local: workspace sources. */
+export function buildMode({ local, rehearsal }) {
+    if (local && rehearsal) throw new Error('--rehearsal builds the pinned sources; it cannot be combined with --local');
+    return local ? 'local' : rehearsal ? 'rehearsal' : 'release';
+}
+
+export function assertReleasable(config, { local, rehearsal = false }) {
+    if (buildMode({ local, rehearsal }) === 'release' && !config.releaseReady) throw new Error('Release pins are not ready: commit reviewed migration changes and update child SHAs first');
 }
 
 export function checkSource(app, { sha, dirty }, { allowDirty }) {

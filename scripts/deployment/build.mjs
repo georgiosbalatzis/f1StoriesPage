@@ -7,13 +7,16 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { assemble, prepareMain } from './assemble.mjs';
-import { assertReleasable, checkLock, checkScript, checkSource, nodeEnvironment, treeDigest } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, treeDigest } from './release.mjs';
 
 const mainRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const config = checkLock(JSON.parse(fs.readFileSync(path.resolve(option('--sources') || path.join(mainRoot, 'scripts/deployment/sources.json')))));
 const local = args.includes('--local');
+// --rehearsal: the full pinned release build for the Ecosystem dry run, allowed before releaseReady.
+const rehearsal = args.includes('--rehearsal');
+const mode = buildMode({ local, rehearsal });
 const allowDirty = local && args.includes('--allow-dirty');
 if (allowDirty && process.env.GITHUB_ACTIONS === 'true') throw new Error('Dirty local rehearsals are prohibited in GitHub Actions');
 const workspace = path.resolve(option('--workspace') || path.join(mainRoot, '..'));
@@ -23,7 +26,7 @@ const existingMain = option('--main-output');
 if (existingMain && !allowDirty) throw new Error('--main-output is a local non-release optimization only');
 // --node-bin 24=/opt/node24/bin: a directory holding the Node major an application declares.
 const nodeBins = Object.fromEntries(args.flatMap((arg, i) => arg === '--node-bin' ? [args[i + 1].split(/=(.*)/s).slice(0, 2)] : []));
-assertReleasable(config, { local });
+assertReleasable(config, { local, rehearsal });
 const staging = fs.mkdtempSync(path.join(os.tmpdir(), 'f1stories-assembly-'));
 const command = (cmd, argv, cwd, capture = false, env = process.env) => {
     const result = spawnSync(cmd, argv, { cwd, env: { ...env, CI: 'true' }, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 64 * 1024 * 1024 });
@@ -98,6 +101,14 @@ try {
                 metadata.data.refresh.digest = treeDigest(snapshot, app.data.paths);
             }
             command('npm', ['run', app.build], snapshot, false, node.env);
+            if (app.application === 'main') {
+                // The publisher's release gates verify this build's image and social-card reports in the
+                // repository's .build/public-images; the snapshot holding them is deleted after assembly.
+                const images = path.join(snapshot, '.build/public-images');
+                if (!fs.existsSync(images)) throw new Error('main: build produced no .build/public-images reports');
+                fs.rmSync(path.join(mainRoot, '.build/public-images'), { recursive: true, force: true });
+                fs.cpSync(images, path.join(mainRoot, '.build/public-images'), { recursive: true });
+            }
         }
         metadata.directory = path.join(snapshot, app.output);
         if (baseline) {
@@ -111,7 +122,9 @@ try {
         if (app.application === 'main') prepareMain(metadata.directory);
         snapshots.push(metadata);
     }
-    const result = assemble(snapshots, destination, { releaseEligible: !allowDirty && snapshots.every(app => !app.dirty), buildId: process.env.GITHUB_RUN_ID || 'local-rehearsal', builtAt, nodeVersion: process.version }, reports);
+    const sourcesClean = !allowDirty && snapshots.every(app => !app.dirty);
+    const run = process.env.GITHUB_RUN_ID ? { buildId: process.env.GITHUB_RUN_ID, runUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`, runner: `${process.env.RUNNER_OS}/${process.env.RUNNER_ARCH} ${process.env.ImageOS || ''} ${process.env.ImageVersion || ''}`.trim() } : { buildId: 'local' };
+    const result = assemble(snapshots, destination, { mode, releaseEligible: mode === 'release' && sourcesClean, sourcesClean, lock: { enabled: config.enabled, releaseReady: config.releaseReady }, ...run, builtAt, nodeVersion: process.version }, reports);
     fs.writeFileSync(path.join(reports, 'build-report.json'), JSON.stringify(result, null, 2) + '\n');
     console.log(JSON.stringify({ destination, reports, ...result }, null, 2));
 } finally {

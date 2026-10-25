@@ -250,5 +250,5 @@ export function assemble(inputs, destination, metadata, reportDirectory) {
     const manifest = { schemaVersion: 1, origin: ORIGIN, ...metadata, outputDigest, freshness: result.freshness, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, nodeVersion: app.nodeVersion, data: app.data, files: report.entries.filter(entry => entry.application === app.application).length, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
     const manifestText = JSON.stringify(manifest, null, 2) + '\n';
     fs.writeFileSync(path.join(destination, 'deployment-manifest.json'), manifestText);
-    return { ...result, files: result.files + 1, bytes: report.bytes + Buffer.byteLength(manifestText), outputDigest, collisions: report.collisions.length, releaseEligible: metadata.releaseEligible };
+    return { ...result, files: result.files + 1, bytes: report.bytes + Buffer.byteLength(manifestText), outputDigest, collisions: report.collisions.length, mode: metadata.mode, releaseEligible: metadata.releaseEligible };
 }

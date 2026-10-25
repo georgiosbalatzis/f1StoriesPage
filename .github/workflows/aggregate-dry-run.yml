@@ -1,30 +1,82 @@
 name: Ecosystem dry run
 
+# The pinned five-application build on a GitHub-hosted runner, exactly as Deploy Pages would build it once
+# enabled, but in --rehearsal mode: allowed before releaseReady, never published.
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/deployment/**'
+      - '.github/actions/setup/**'
+      - '.github/actions/build-pages/**'
+      - '.github/workflows/aggregate-dry-run.yml'
+      - '.github/workflows/deploy-pages.yml'
 
 # Deliberately no Pages/OIDC/write permissions and no deploy job.
 permissions:
   contents: read
 
+concurrency:
+  group: ecosystem-dry-run-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
+    env:
+      SITE: .build/priority6/site
+      REPORTS: .build/priority6/reports
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
+        with:
+          rehearsal: 'true'
       - run: npm run test:deployment
       # Before the build: TYRES renders its social cards and panel images with Chromium.
-      - name: Install integration browser
+      - name: Install integration browser and its system libraries
         run: node_modules/.bin/playwright-core install --with-deps chromium
-      - run: npm run build:ecosystem -- --node-bin "$F1S_NODE_BIN"
-      - run: npm run test:integration -- --site .build/priority6/site --reports .build/priority6/reports
-      - name: Upload reviewable artifact and evidence
+      - name: Record toolchain
+        run: |
+          mkdir -p "$REPORTS"
+          { echo "node=$(node --version)"; echo "node_extra=$("${F1S_NODE_BIN#*=}/node" --version)"; echo "runner=$ImageOS $ImageVersion"; } | tee "$REPORTS/toolchain.txt"
+      - name: Build the pinned aggregate (rehearsal)
+        id: build
+        run: npm run build:ecosystem -- --rehearsal --node-bin "$F1S_NODE_BIN" --output "$SITE" --reports "$REPORTS"
+      - name: Public URL integrity (sitemap, canonicals, Main sections, domain files)
+        run: node scripts/deployment/verify-public.mjs --site "$SITE" | tee "$REPORTS/public-integrity.json"
+      - name: Browser integration suite
+        run: npm run test:integration -- --site "$SITE" --reports "$REPORTS"
+      # The gates build-pages runs on dist once aggregation is enabled, on this aggregate; kept in step by a test.
+      - name: Publisher gates on the aggregate
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          rm -rf dist && cp -R "$SITE" dist
+          set -o pipefail
+          status=0
+          gate() { echo "::group::$*"; "$@" 2>&1 | tee -a "$REPORTS/publisher-gates.log" || { status=1; echo "FAILED: $*" | tee -a "$REPORTS/publisher-gates.log"; }; echo "::endgroup::"; }
+          gate npm run quality:static
+          gate npm run qa:media
+          gate node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs scripts/build/__tests__/social-cards-release.test.mjs
+          gate npm run audit:runtime
+          exit $status
+      - name: Live API reads (informational)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: node scripts/deployment/live-read.mjs --out "$REPORTS/live-read.json"
+      - name: Summary
+        if: ${{ !cancelled() }}
+        run: |
+          [ -f "$SITE/deployment-manifest.json" ] && cp "$SITE/deployment-manifest.json" "$REPORTS/"
+          node scripts/deployment/summary.mjs --site "$SITE" --reports "$REPORTS" >> "$GITHUB_STEP_SUMMARY"
+      # Reports only (manifest, collision/build reports, smoke JSON and screenshots): never a Pages artifact.
+      - name: Upload diagnostic reports
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: f1stories-aggregate-dry-run
-          include-hidden-files: true
-          path: .build/priority6/
+          name: ecosystem-dry-run-reports
+          path: .build/priority6/reports/
+          if-no-files-found: warn
