@@ -6,7 +6,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
-import { assertReleasable, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
 
@@ -206,9 +206,35 @@ for (const [name, [mutate, error]] of Object.entries(lockFailures)) test(`source
     assert.throws(() => checkLock(config), error);
 });
 
-test('a release with unmet readiness conditions is refused; local rehearsal is allowed', () => {
+test('a release with unmet readiness conditions is refused; local and dry-run rehearsals are allowed', () => {
     assert.throws(() => assertReleasable({ releaseReady: false }, { local: false }), /Release pins are not ready/);
     assert.doesNotThrow(() => assertReleasable({ releaseReady: false }, { local: true }));
+    assert.doesNotThrow(() => assertReleasable({ releaseReady: false }, { local: false, rehearsal: true }));
+    assert.equal(buildMode({ local: false, rehearsal: false }), 'release');
+    assert.equal(buildMode({ local: false, rehearsal: true }), 'rehearsal');
+    // A rehearsal always builds the pinned sources, never a workspace checkout.
+    assert.throws(() => buildMode({ local: true, rehearsal: true }), /cannot be combined with --local/);
+});
+
+const read = rel => fs.readFileSync(path.join(here, '../..', rel), 'utf8');
+test('the dry run cannot publish, and the publisher never builds a rehearsal', () => {
+    const dryRun = read('.github/workflows/aggregate-dry-run.yml');
+    assert.doesNotMatch(dryRun, /uses:\s*actions\/(?:deploy-pages|upload-pages-artifact|configure-pages)|uses:\s*\.\/\.github\/(?:workflows\/deploy-pages|actions\/build-pages)|pages:\s*write|id-token|contents:\s*write/);
+    assert.match(dryRun, /permissions:\n  contents: read\n/);
+    assert.match(dryRun, /build:ecosystem -- --rehearsal --node-bin "\$F1S_NODE_BIN"/);
+    assert.match(dryRun, /rehearsal: 'true'/);
+    for (const publisher of ['.github/actions/build-pages/action.yml', '.github/workflows/deploy-pages.yml', '.github/workflows/publish-blog.yml']) {
+        assert.doesNotMatch(read(publisher), /--rehearsal|--local|--allow-dirty|rehearsal: 'true'/, publisher);
+    }
+});
+
+test('the dry run reports every endpoint the tools read at runtime, from the new origin', async () => {
+    const { ENDPOINTS, readable } = await import('./live-read.mjs');
+    assert.deepEqual(ENDPOINTS.map(([, , url]) => new URL(url).host), ['api.openf1.org', 'api.multiviewer.app', 'api.jolpi.ca', 'docs.google.com']);
+    assert.equal(readable(200, '*'), true);
+    assert.equal(readable(200, 'https://f1-stories.gr'), true);
+    assert.equal(readable(200, 'https://f1stories.gr'), false);
+    assert.equal(readable(500, '*'), false);
 });
 
 test('dirty or mismatched release sources are refused', () => {
@@ -257,6 +283,7 @@ test('CI provisions the TYRES Node toolchain only once aggregation is release-re
     const config = lock();
     assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }), '');
     assert.equal(extraNode({ ...config, releaseReady: true }), '24');
+    assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }, '22', { rehearsal: true }), '24');
     config.applications[1].node = '20';
     assert.throws(() => extraNode({ ...config, releaseReady: true }), /One extra Node toolchain/);
 });

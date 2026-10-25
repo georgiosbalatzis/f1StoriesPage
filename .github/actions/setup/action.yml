@@ -1,6 +1,12 @@
 name: Setup
 description: Install Node and the locked npm dependencies.
 
+inputs:
+  rehearsal:
+    description: The Ecosystem dry run needs the child toolchains before the lock is release-ready.
+    required: false
+    default: 'false'
+
 outputs:
   dependency_hash:
     description: Hash of the manifests used for the installed dependencies.
@@ -20,7 +26,7 @@ runs:
     - name: Read aggregate toolchain
       id: toolchain
       shell: bash
-      run: node scripts/deployment/toolchain.mjs >> "$GITHUB_OUTPUT"
+      run: node scripts/deployment/toolchain.mjs ${{ inputs.rehearsal == 'true' && '--rehearsal' || '' }} >> "$GITHUB_OUTPUT"
 
     - name: Provision Node ${{ steps.toolchain.outputs.extra }} for child builds
       if: steps.toolchain.outputs.extra != ''
