@@ -271,6 +271,10 @@ function main() {
     for (const [name, files] of Object.entries(SOURCE_GROUPS)) {
         const curr = groupSize(files);
         const base = budget.groups?.[name];
+        if (files.every(rel => fileSize(rel) == null)) {
+            rows.push({ rel: name, base, curr: null, delta: null, pct: null, status: 'MISSING' });
+            continue;
+        }
         if (base == null) {
             // A group without a reviewed baseline fails rather than passing unmeasured.
             rows.push({ rel: name, base: null, curr, delta: null, pct: null, status: 'NO BUDGET' });
