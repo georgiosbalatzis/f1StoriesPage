@@ -205,6 +205,18 @@ The hosted Ecosystem dry run builds, assembles and browser-tests all five
 applications, but the publisher's own gates fail on the aggregate until the
 upstream runtime-policy fixes are merged and pinned (below).
 
+Evidence (GitHub-hosted, ubuntu24 20261023.334.3, Node 22.23.3 + 24.21.0):
+- [run 40180388440](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40180388440):
+  merged pins, before the publisher gates were added to the dry run: build,
+  integrity and browser suite pass.
+- [run 40184161016](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40184161016):
+  merged pins, publisher gates included: all pass except the runtime audit
+  (inline pre-paint scripts in Telemetry, Ghost Car, BetCast; BetCast's Google
+  Fonts) and the primary-domain test (a retired-domain comment in Ghost Car).
+- [run 40184154325](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40184154325):
+  the same with the three open fix PRs pinned on a throwaway branch (evidence
+  only): **every step passes**, publisher gates included; 5,240 files, 372.0 MB.
+
 **Hosted dry run.** `Ecosystem dry run` (`aggregate-dry-run.yml`; manual, and on
 PRs that change the deployment) on `ubuntu-latest` with Node 22 and the lock's
 Node 24, Chromium plus system libraries: `build.mjs --rehearsal` (the pinned
@@ -219,11 +231,20 @@ Telemetry `99ca01d4fde63481ea915cb08da30e97a9e6af18` (#22), Ghost Car
 `c780d95ffb678f9be710d5e92fce77ac997e0d9a` (#19, squash), BetCast
 `c6ac4e8cc4c19f49e8dc610220b5450216137e27` (#2).
 
-**Open before readiness:** runtime-policy fixes in Telemetry, Ghost Car and BetCast
-(pre-paint theme scripts as files; BetCast fonts self-hosted; the retired domain
-out of Ghost Car's page). After they merge: re-pin their merged commits (check
-the tree equals the reviewed head), and require a green hosted dry run on that
-commit.
+**Open before readiness:** runtime-policy fixes in Telemetry
+([#23](https://github.com/georgiosbalatzis/f1-telemetry-dashboard/pull/23)), Ghost Car
+([#22](https://github.com/georgiosbalatzis/ghostcar/pull/22)) and BetCast
+([#3](https://github.com/georgiosbalatzis/BetCastVisualisation/pull/3)): pre-paint theme
+scripts as files, BetCast fonts self-hosted, the retired domain out of Ghost Car's
+page. After they merge: re-pin their merged commits (check each tree equals the
+reviewed head), and require a green hosted dry run on that commit.
+
+**Freshness evidence:** three hosted builds with the same TYRES data commit
+(`c780d95f`, digest `02bc0a5e5135` before refresh) each refreshed schedules and
+forecasts (digests after `70b8704960d8`, `e6b668f85f7d`, `6309a2e17f2d`); the current
+race was a live forecast, past races archived forecasts, none stale. The 6-hourly
+Deploy Pages schedule had not fired yet when this was written (first slot after
+#333: 12:41 UTC); its gate is covered by `pages-preparation.test.mjs`.
 
 **Readiness PR** (after a green dry run on the final pins): `releaseReady:true`
 only. This changes no deployment: Deploy Pages still publishes Main alone while
