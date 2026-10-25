@@ -50,6 +50,11 @@ const fastestLap = number => ghost.laps[number].filter(lap => lap.lap_duration >
 const ghostQuery = `?y=${ghost.meeting.year}&mk=${ghost.meeting.meeting_key}&sk=${ghost.session.session_key}&d1=1&d2=4&l1=${fastestLap('1')}&l2=${fastestLap('4')}&v=2`;
 const telemetryQuery = '?year=2025&circuit=Monza&session=9912&drivers=1,4&lap=52&tab=telemetry';
 const betcastQuery = '?viz=dataTable&from=2&to=4&week=3&cmpA=2&cmpB=3';
+// TYRES is static and same-origin: its race pages and embeds are prerendered from the pinned data snapshot.
+const tyresRace = '/tyres/2026/austin/';
+const tyresEmbeds = ['/tyres/embed/el/2026/austin/compounds/', '/tyres/embed/en/2026/austin/compounds/', '/tyres/embed/el/2026/season/', '/tyres/embed/en/2026/austin/3d/'];
+// What a loaded page shows: embeds have no masthead or h1.
+const readySelector = pathname => pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : pathname.startsWith('/tyres/embed/') ? '.e-root' : 'h1';
 
 async function createPage(os = 'light', width = 1440) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: os, reducedMotion: 'reduce' });
@@ -92,17 +97,17 @@ async function createPage(os = 'light', width = 1440) {
 async function open(page, pathname) {
     const response = await page.goto(origin + pathname, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200, pathname);
-    await page.locator(pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : 'h1').first().waitFor();
+    await page.locator(readySelector(pathname)).first().waitFor();
     if (pathname.includes('betcast') || pathname.includes('BetCastVisualisation')) await page.locator('#chart-select').waitFor();
     await page.waitForTimeout(900);
     // Main's retired-worker cleanup can intentionally reload this document once.
-    await page.locator(pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : 'h1').first().waitFor();
+    await page.locator(readySelector(pathname)).first().waitFor();
     await page.evaluate(() => document.fonts.ready);
 }
 async function themeState(page) {
     return page.evaluate(() => ({ preference: localStorage.getItem('f1stories-theme'), resolved: document.documentElement.dataset.theme || (document.body.classList.contains('light-mode') ? 'light' : 'dark') }));
 }
-const products = [ ['main', '/', '/'], ['grid', '/standings/', '/standings/'], ['telemetry', '/telemetry/', '/f1-telemetry-dashboard/'], ['ghostcar', '/ghostcar/', '/ghostcar/'], ['betcast', '/betcast/', '/BetCastVisualisation/'] ];
+const products = [ ['main', '/', '/'], ['grid', '/standings/', '/standings/'], ['telemetry', '/telemetry/', '/f1-telemetry-dashboard/'], ['ghostcar', '/ghostcar/', '/ghostcar/'], ['tyres', '/tyres/', '/Tyres/'], ['betcast', '/betcast/', '/BetCastVisualisation/'] ];
 try {
     if (!args.includes('--visual-only') && !args.includes('--external-only')) {
     // Preference is set through Main's UI, then carried naturally by same-origin navigation.
@@ -132,10 +137,10 @@ try {
             }
             await open(page, '/');
         }
-        for (const [name, pathname] of products.filter(([name]) => ['telemetry', 'ghostcar', 'betcast'].includes(name))) {
+        for (const [name, pathname] of products.filter(([name]) => ['telemetry', 'ghostcar', 'tyres', 'betcast'].includes(name))) {
             await open(page, pathname);
             const before = await themeState(page);
-            const toggle = page.locator(name === 'betcast' ? '.theme-toggle' : name === 'ghostcar' ? '.masthead__theme' : '.nav-theme-toggle');
+            const toggle = page.locator(name === 'betcast' ? '.theme-toggle' : name === 'ghostcar' ? '.masthead__theme' : name === 'tyres' ? '[data-theme-toggle]' : '.nav-theme-toggle');
             if (await toggle.count()) await toggle.click(); else await page.getByRole('button', { name: /θέμα/i }).first().click();
             const after = await themeState(page);
             assert.notEqual(after.preference, before.preference);
@@ -147,32 +152,36 @@ try {
     }
     const { context, page } = await createPage();
     // Direct loads/reloads, selected query state, hashes and shell-free embed mode.
-    for (const pathname of ['/', '/standings/', '/telemetry/', '/ghostcar/', '/betcast/', '/telemetry/' + telemetryQuery + '#telemetry-speed-trace', '/ghostcar/' + ghostQuery + '#replay', '/betcast/' + betcastQuery, '/telemetry/' + telemetryQuery + '&embed=1&theme=dark', '/ghostcar/' + ghostQuery + '&embed=1&th=dark', '/betcast/' + betcastQuery + '&embed=1&theme=dark']) {
+    for (const pathname of ['/', '/standings/', '/telemetry/', '/ghostcar/', '/tyres/', '/betcast/', '/telemetry/' + telemetryQuery + '#telemetry-speed-trace', '/ghostcar/' + ghostQuery + '#replay', '/betcast/' + betcastQuery, '/telemetry/' + telemetryQuery + '&embed=1&theme=dark', '/ghostcar/' + ghostQuery + '&embed=1&th=dark', '/betcast/' + betcastQuery + '&embed=1&theme=dark', tyresRace, '/tyres/2025/yas-marina/#weather', ...tyresEmbeds, '/telemetry/analysis/hamilton-singapore-2026/']) {
         await open(page, pathname);
         console.log('Direct load', pathname);
         const first = page.url();
         const response = await page.reload({ waitUntil: 'domcontentloaded' });
         assert.equal(response.status(), 200);
-        await page.locator(pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : 'h1').first().waitFor();
+        await page.locator(readySelector(pathname)).first().waitFor();
         assert.equal(new URL(page.url()).pathname, new URL(first).pathname);
+        assert.equal(new URL(page.url()).hash, new URL(first).hash, `${pathname}: hash`);
+        // The page declares the canonical it is published under, on the primary domain.
+        const canonical = await page.locator('link[rel="canonical"]').getAttribute('href').catch(() => null);
+        if (canonical) assert.match(canonical, /^https:\/\/f1-stories\.gr\//, `${pathname}: canonical`);
         const client = await context.newCDPSession(page);
         await client.send('Network.clearBrowserCache');
         await client.send('Page.reload', { ignoreCache: true });
         await page.waitForLoadState('domcontentloaded');
-        await page.locator(pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : 'h1').first().waitFor();
+        await page.locator(readySelector(pathname)).first().waitFor();
         await client.detach();
         results.directLoads.push({ pathname, first, refreshed: page.url(), hardReload: true });
     }
     // Navigation targets and current Race Desk item; actual clicks for each requested edge.
-    const edges = [['/', '/standings/'], ['/', '/telemetry/'], ['/', '/ghostcar/'], ['/', '/betcast/'], ['/standings/', '/telemetry/'], ['/standings/', '/ghostcar/'], ['/telemetry/', '/standings/'], ['/telemetry/', '/ghostcar/'], ['/ghostcar/', '/standings/'], ['/ghostcar/', '/telemetry/'], ['/betcast/', '/']];
+    const edges = [['/', '/standings/'], ['/', '/telemetry/'], ['/', '/ghostcar/'], ['/', '/tyres/'], ['/', '/betcast/'], ['/standings/', '/telemetry/'], ['/standings/', '/ghostcar/'], ['/standings/', '/tyres/'], ['/telemetry/', '/standings/'], ['/telemetry/', '/ghostcar/'], ['/telemetry/', '/tyres/'], ['/ghostcar/', '/standings/'], ['/ghostcar/', '/telemetry/'], ['/ghostcar/', '/tyres/'], ['/tyres/', '/standings/'], ['/tyres/', '/telemetry/'], ['/tyres/', '/ghostcar/'], ['/tyres/', '/betcast/'], ['/tyres/', '/'], ['/betcast/', '/']];
     for (const [from, to] of edges) {
         console.log('Navigation', from, to);
         await open(page, from);
-        const legacy = await page.locator('a[href*="georgiosbalatzis.github.io"]').count();
+        const legacy = await page.locator('a[href*="georgiosbalatzis.github.io"], a[href^="https://f1stories.gr"], a[href^="https://www.f1stories.gr"]').count();
         assert.equal(legacy, 0, `${from}: legacy navigation`);
         let link = page.locator(`a[href="${to}"]`).filter({ visible: true }).first();
         let via = null;
-        if (!(await link.count()) && from === '/' && ['/telemetry/', '/ghostcar/'].includes(to)) {
+        if (!(await link.count()) && from === '/' && ['/telemetry/', '/ghostcar/', '/tyres/'].includes(to)) {
             via = '/standings/';
             await page.locator('a[href="/standings/"]').filter({ visible: true }).first().click();
             await page.waitForURL(origin + '/standings/');
@@ -185,11 +194,12 @@ try {
         await Promise.all([page.waitForURL(origin + to), link.click()]);
         results.navigation.push({ from, via, to, href, actual: page.url() });
     }
-    for (const pathname of ['/standings/', '/telemetry/', '/ghostcar/']) {
+    for (const pathname of ['/standings/', '/telemetry/', '/ghostcar/', '/tyres/']) {
         await open(page, pathname);
         const desk = page.getByRole('navigation', { name: 'Race Desk' });
-        assert.deepEqual(await desk.locator('a').allTextContents(), ['THE GRID', 'TELEMETRY', 'GHOST CAR']);
+        assert.deepEqual((await desk.locator('a').allTextContents()).map(text => text.trim()), ['THE GRID', 'TELEMETRY', 'GHOST CAR', 'TYRES']);
         assert.equal(await desk.locator('[aria-current="page"]').count(), 1);
+        assert.deepEqual(await desk.locator('a').evaluateAll(links => links.map(a => new URL(a.href).pathname)), ['/standings/', '/telemetry/', '/ghostcar/', '/tyres/']);
     }
     // Static route behavior: one Main 404; compatibility alias preserves state.
     await page.goto(origin + '/telemetry/__invalid__');
@@ -212,8 +222,11 @@ try {
     assert.equal(new URL(telemetryShare).pathname, '/telemetry/');
     assert.equal(new URL(telemetryShare).searchParams.get('lap'), '52');
     await page.getByRole('button', { name: 'Ενσωμάτωση καρτέλας', exact: true }).click();
+    // The embed dialog enables copying once its same-origin preview frame has reported its height.
+    await page.locator('.embed-dialog-copy:not([disabled])').click({ timeout: 30000 });
     await page.waitForFunction(() => window.__copied.at(-1).startsWith('<iframe'));
     const telemetryEmbed = await page.evaluate(() => window.__copied.at(-1));
+    await page.keyboard.press('Escape');
     assert.ok(telemetryEmbed.includes(origin + '/telemetry/'));
     assert.ok(telemetryEmbed.includes('embed=1'));
     results.flows.push({ telemetryShare, telemetryEmbed });
@@ -256,6 +269,48 @@ try {
     assert.ok(csv.toString().includes('Ποντάρισμα (€)'));
     results.flows.push({ betcastShare, betcastEmbed, csvFilename: download.suggestedFilename(), csvRows: csv.toString().trim().split('\n').length - 1 });
 
+    // TYRES: race and season selection move between prerendered pages that also load directly.
+    await open(page, tyresRace);
+    await page.locator('#race').selectOption({ label: await page.locator('#race option').filter({ hasText: 'Miami' }).first().textContent() });
+    await page.waitForURL(url => url.pathname === '/tyres/2026/miami/');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    assert.match(await page.locator('h1').first().textContent(), /TYRES/);
+    await page.locator('#year').selectOption('2025');
+    await page.waitForURL(url => url.pathname.startsWith('/tyres/2025/'));
+    const tyresSeason = new URL(page.url()).pathname;
+    await page.goBack();
+    await page.waitForURL(url => url.pathname === '/tyres/2026/miami/');
+    results.flows.push({ tyresRaceNavigation: ['/tyres/2026/miami/', tyresSeason], back: true, reload: true });
+    // The embed dialog offers a same-origin, script-free embed of the selected race.
+    await open(page, tyresRace);
+    await page.locator('#embed-open').click();
+    await page.locator('#embed-copy:not([disabled])').click();
+    await page.waitForFunction(() => window.__copied.length > 0);
+    const tyresEmbed = await page.evaluate(() => window.__copied.at(-1));
+    assert.ok(tyresEmbed.startsWith('<iframe'), tyresEmbed);
+    assert.ok(tyresEmbed.includes(origin + '/tyres/embed/'), tyresEmbed);
+    await page.keyboard.press('Escape');
+    // 3D: the app's viewer starts when the stage scrolls into view; the 3D embed on request.
+    await page.locator('#canvas-host').scrollIntoViewIfNeeded();
+    await page.locator('#canvas-host.has-3d').waitFor({ timeout: 30000 });
+    await open(page, '/tyres/embed/el/2026/austin/3d/');
+    await page.locator('#load-3d').click();
+    await page.locator('#canvas-host.has-3d').waitFor({ timeout: 30000 });
+    results.flows.push({ tyresEmbed, tyres3D: { app: true, embed: true }, modelUrl: '/tyres/models/f1car.glb' });
+
+    // Published articles embed Telemetry and Ghost Car; assembly makes those frames same-origin.
+    for (const article of ['/blog-module/blog-entries/20260329G/article.html', '/blog-module/blog-entries/20260331J/article.html']) {
+        await open(page, article);
+        for (const [prefix, selector] of [['/telemetry/', '.embed-mode'], ['/ghostcar/', '.embed']]) {
+            // The article theme bridge may make the src absolute and add a #light/#dark hash.
+            const frame = page.locator(`iframe[src*="${origin}${prefix}"], iframe[src^="${prefix}"], iframe[src^=" ${prefix}"]`).first();
+            await frame.scrollIntoViewIfNeeded();
+            assert.ok(!/github\.io/.test(await frame.getAttribute('src')), `${article}: ${prefix} frame left the origin`);
+            await frame.contentFrame().locator(selector).first().waitFor({ timeout: 30000 });
+        }
+        results.flows.push({ articleEmbeds: article, sameOrigin: ['/telemetry/', '/ghostcar/'] });
+    }
+
     // Main cleanup removes only its retired root registration/cache; hypothetical child state survives.
     await open(page, '/');
     await page.evaluate(async () => {
@@ -279,10 +334,11 @@ try {
         console.log('Visual', name, mode, width);
         const { context, page } = await createPage(mode, width);
         const query = name === 'ghostcar' ? ghostQuery : name === 'telemetry' ? telemetryQuery : name === 'betcast' ? betcastQuery : '';
+        if (name === 'tyres' && baseline) continue; // the standalone TYRES build has no f1-stories.gr counterpart to diff
         await open(page, pathname + query);
         await page.evaluate(mode => localStorage.setItem('f1stories-theme', mode), mode);
         await page.reload({ waitUntil: 'domcontentloaded' });
-        await page.locator(pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : 'h1').first().waitFor();
+        await page.locator(readySelector(pathname)).first().waitFor();
         if (name === 'betcast') await page.locator('#chart-select').waitFor();
         await page.evaluate(() => document.fonts.ready);
         await page.evaluate(async () => { const elements = [document.body, ...document.querySelectorAll('h1,h2,p,td,button,select')]; await Promise.all(elements.map(el => { const style = getComputedStyle(el); return document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, el.textContent || 'Τηλεμετρία'); })); await document.fonts.ready; });
@@ -326,7 +382,7 @@ try {
         }
         results.visuals.push({ name, mode, width, screenshot: file, diff });
         // Existing shell interaction: keyboard menu closes with Escape and restores focus.
-        const menu = page.locator(name === 'betcast' ? '.menu-toggle' : name === 'ghostcar' ? '.masthead__burger' : name === 'telemetry' ? '.nav-mobile summary' : '#nav-hamburger');
+        const menu = page.locator(name === 'betcast' ? '.menu-toggle' : name === 'ghostcar' ? '.masthead__burger' : name === 'telemetry' ? '.nav-mobile summary' : name === 'tyres' ? '.nav-menu' : '#nav-hamburger');
         if (width === 390 && await menu.count() && await menu.isVisible()) {
             await menu.focus(); await page.keyboard.press('Enter');
             await page.keyboard.press('Tab');
@@ -350,6 +406,7 @@ try {
         const snippets = [
             ['telemetry', results.flows.find(flow => flow.telemetryEmbed)?.telemetryEmbed],
             ['ghostcar', results.flows.find(flow => flow.ghostEmbed)?.ghostEmbed],
+            ['tyres', results.flows.find(flow => flow.tyresEmbed)?.tyresEmbed],
             ['betcast', results.flows.find(flow => flow.betcastEmbed)?.betcastEmbed]
         ];
         // Use a simulated public HTTPS app host for this third-party test. Chrome's
@@ -367,13 +424,14 @@ try {
             await context.route(publisher, route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>External publisher</title>' + snippet.replaceAll(origin, publicTestOrigin) }));
             await page.goto(publisher);
             const frame = page.frameLocator('iframe');
-            await frame.locator('#root > *').first().waitFor({ state: 'attached' });
-            await frame.locator(application === 'telemetry' ? '.dashboard-panel' : application === 'ghostcar' ? 'svg, canvas' : 'table').filter({ visible: true }).first().waitFor();
-            assert.equal(await frame.locator(application === 'ghostcar' ? '.masthead' : application === 'telemetry' ? '.site-nav' : '.app-header').count(), 0);
+            // TYRES embeds are script-free HTML; the React tools mount into #root.
+            await frame.locator(application === 'tyres' ? '.e-root' : '#root > *').first().waitFor({ state: 'attached' });
+            await frame.locator(application === 'telemetry' ? '.dashboard-panel' : application === 'ghostcar' ? 'svg, canvas' : application === 'tyres' ? '.e-root' : 'table').filter({ visible: true }).first().waitFor();
+            assert.equal(await frame.locator(application === 'ghostcar' ? '.masthead' : application === 'telemetry' ? '.site-nav' : application === 'tyres' ? '.site-nav' : '.app-header').count(), 0);
             results.flows.push({ application, externalIframe: true, publisherOrigin: new URL(publisher).origin, productOrigin: publicTestOrigin });
             await context.unroute(publisher);
         }
-        for (const invalid of ['/__invalid__/', '/telemetry/__invalid__/', '/ghostcar/__invalid__/', '/betcast/__invalid__/']) assert.equal((await context.request.get(origin + invalid)).status(), 404);
+        for (const invalid of ['/__invalid__/', '/telemetry/__invalid__/', '/ghostcar/__invalid__/', '/tyres/__invalid__/', '/tyres/2026/__invalid__/', '/betcast/__invalid__/']) assert.equal((await context.request.get(origin + invalid)).status(), 404);
         await context.close();
     }
     assert.deepEqual(failures, [], 'Local network or runtime errors');

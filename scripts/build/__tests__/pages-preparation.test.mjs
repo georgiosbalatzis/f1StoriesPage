@@ -28,11 +28,15 @@ test('trusted article generation prepares Pages with one checkout and dependency
 test('ready artifacts skip building but failed, cancelled or unprepared builds cannot deploy', () => {
     const buildExpression = job(pages, 'build').match(/if: \$\{\{(.*?)\}\}/)[1];
     const deployExpression = job(pages, 'deploy').match(/if: \$\{\{(.*?)\}\}/)[1];
-    const build = new Function('inputs', `return (${buildExpression});`);
+    const build = new Function('inputs', 'github', 'needs', 'cancelled', `return (${buildExpression});`);
     const deploy = new Function('inputs', 'needs', 'cancelled', `return (${deployExpression});`);
-    assert.equal(build({}), true); // workflow_dispatch has no reusable inputs
+    const event = (name, enabled) => [{ event_name: name }, { gate: { outputs: enabled === undefined ? {} : { enabled } } }, () => false];
+    assert.equal(build({}, ...event('workflow_dispatch')), true); // workflow_dispatch has no reusable inputs
+    assert.equal(build({}, { event_name: 'workflow_dispatch' }, { gate: { outputs: {} } }, () => true), false);
+    // Scheduled refreshes build only once the aggregate is enabled in the source lock.
+    for (const enabled of ['true', 'false', '']) assert.equal(build({}, ...event('schedule', enabled)), enabled === 'true');
     for (const ready of [false, true]) {
-        assert.equal(build({ artifact_ready: ready }), !ready);
+        assert.equal(build({ artifact_ready: ready }, ...event('workflow_call')), !ready);
         for (const result of ['success', 'skipped', 'failure', 'cancelled']) {
             const inputs = { artifact_ready: ready }, needs = { build: { result } };
             assert.equal(deploy(inputs, needs, () => false), result === 'success' || (ready && result === 'skipped'));
