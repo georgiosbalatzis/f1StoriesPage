@@ -104,6 +104,20 @@ async function open(page, pathname) {
     await page.locator(readySelector(pathname)).first().waitFor();
     await page.evaluate(() => document.fonts.ready);
 }
+// Wait for every face the page uses before capturing. A metric fallback face built only from local() system
+// fonts (Arial/Helvetica, absent on Linux runners) rejects; the browser falls through to the next family, so
+// those are recorded. Any other face that fails is a real font defect and fails the run.
+async function settleFonts(page) {
+    const unavailable = await page.evaluate(async () => {
+        const elements = [document.body, ...document.querySelectorAll('h1,h2,p,td,button,select')];
+        await Promise.allSettled(elements.map(el => { const style = getComputedStyle(el); return document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, el.textContent || 'Τηλεμετρία'); }));
+        await document.fonts.ready;
+        return [...document.fonts].filter(face => face.status === 'error').map(face => `${face.family} ${face.weight}`);
+    });
+    const broken = unavailable.filter(face => !/fallback/i.test(face));
+    assert.deepEqual(broken, [], `${page.url()}: fonts failed to load`);
+    return [...new Set(unavailable)];
+}
 async function themeState(page) {
     return page.evaluate(() => ({ preference: localStorage.getItem('f1stories-theme'), resolved: document.documentElement.dataset.theme || (document.body.classList.contains('light-mode') ? 'light' : 'dark') }));
 }
@@ -341,7 +355,7 @@ try {
         await page.locator(readySelector(pathname)).first().waitFor();
         if (name === 'betcast') await page.locator('#chart-select').waitFor();
         await page.evaluate(() => document.fonts.ready);
-        await page.evaluate(async () => { const elements = [document.body, ...document.querySelectorAll('h1,h2,p,td,button,select')]; await Promise.all(elements.map(el => { const style = getComputedStyle(el); return document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, el.textContent || 'Τηλεμετρία'); })); await document.fonts.ready; });
+        const unavailableFonts = await settleFonts(page);
         await page.mouse.move(0, 899);
         await page.waitForTimeout(1800);
         if (name === 'main') {
@@ -350,14 +364,14 @@ try {
         }
         const perf = await page.evaluate(() => ({ resources: performance.getEntriesByType('resource').filter(r => new URL(r.name).origin === location.origin).length, jsBytes: performance.getEntriesByType('resource').filter(r => r.name.match(/\.js(?:\?|$)/)).reduce((sum, r) => sum + r.decodedBodySize, 0), cssBytes: performance.getEntriesByType('resource').filter(r => r.name.match(/\.css(?:\?|$)/)).reduce((sum, r) => sum + r.decodedBodySize, 0), cls: window.__cls, overflowing: document.documentElement.scrollWidth > innerWidth }));
         assert.equal(perf.overflowing, false, `${name}/${width}: page overflow`);
-        results.performance.push({ name, mode, width, ...perf });
+        results.performance.push({ name, mode, width, ...perf, unavailableFonts });
         const file = path.join(reports, `${name}-${mode}-${width}.png`);
         await page.screenshot({ path: file, animations: 'disabled' });
         let diff = null;
         if (baseline) {
             servedRoot = path.resolve(baseline);
             await open(page, oldPath + query);
-            await page.evaluate(async () => { const elements = [document.body, ...document.querySelectorAll('h1,h2,p,td,button,select')]; await Promise.all(elements.map(el => { const style = getComputedStyle(el); return document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`, el.textContent || 'Τηλεμετρία'); })); await document.fonts.ready; });
+            await settleFonts(page);
         await page.mouse.move(0, 899);
         await page.waitForTimeout(1800);
             if (name === 'main') {

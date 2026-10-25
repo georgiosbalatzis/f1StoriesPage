@@ -9,6 +9,7 @@ import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
 import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
+import { verifyPublic } from './verify-public.mjs';
 
 const ORIGIN = 'https://f1-stories.gr';
 const builtAt = '2026-10-25T12:00:00.000Z';
@@ -258,6 +259,24 @@ test('the wrong Node environment is refused', t => {
     const bin = fixture(t, { node: '#!/bin/sh\necho v20.19.0\n' });
     fs.chmodSync(path.join(bin, 'node'), 0o755);
     assert.throws(() => nodeEnvironment({ application: 'tyres', node: '999' }, { 999: bin }), /tyres: requires Node 999\.x, found v20\.19\.0/);
+});
+
+test('public integrity: every sitemap URL is a page canonical to itself, on the primary domain', t => {
+    const page = url => `<link rel="canonical" href="${url}">`;
+    const entries = {
+        CNAME: 'f1-stories.gr\n', '.nojekyll': '', '404.html': '', 'robots.txt': 'User-agent: *\nAllow: /', 'feed.xml': '', 'index.html': page(`${ORIGIN}/`),
+        'standings/index.html': '', 'authors/index.html': '', 'authors/a/index.html': '', 'blog-module/blog/index.html': '', 'blog-module/blog/section/news/index.html': '',
+        'blog-module/blog/archive/2026/index.html': '', 'blog-module/blog/entities/drivers/x/index.html': '',
+        'blog-module/blog-entries/1/article.html': page(`${ORIGIN}/blog-module/blog-entries/1/article.html`),
+        'blog-module/blog-entries/20260227Τ/article.html': page(`${ORIGIN}/blog-module/blog-entries/20260227%CE%A4/article.html`),
+        ...Object.fromEntries(['telemetry', 'ghostcar', 'tyres', 'betcast'].map(tool => [`${tool}/index.html`, page(`${ORIGIN}/${tool}/`)])),
+        'sitemap.xml': ['/', '/blog-module/blog-entries/1/article.html', '/blog-module/blog-entries/20260227Τ/article.html', '/tyres/'].map(p => `<loc>${ORIGIN}${p}</loc>`).join(''),
+    };
+    const ok = verifyPublic(fixture(t, entries));
+    assert.deepEqual(ok.problems, []);
+    assert.equal(ok.notes.length, 1, 'the unencoded Greek article id is reported');
+    const broken = verifyPublic(fixture(t, { ...entries, CNAME: 'f1stories.gr', 'sitemap.xml': entries['sitemap.xml'] + `<loc>${ORIGIN}/gone/</loc>`, 'tyres/index.html': page(`${ORIGIN}/Tyres/`) }));
+    assert.deepEqual(broken.problems, ['CNAME does not name the primary domain', `${ORIGIN}/tyres/ declares canonical ${ORIGIN}/Tyres/`, `sitemap URL without a page: ${ORIGIN}/gone/`]);
 });
 
 test('prepared github.io compatibility pages keep the deep path, query and hash', t => {
