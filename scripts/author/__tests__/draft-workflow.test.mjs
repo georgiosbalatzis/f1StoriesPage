@@ -30,8 +30,8 @@ before(async () => {
 });
 after(async () => { await browser?.close(); if (server) await new Promise(resolve => server.close(resolve)); fs.rmSync(scratch, { recursive: true, force: true }); });
 
-async function pageFor(t) {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+async function pageFor(t, profile = { viewport: { width: 1440, height: 1000 } }) {
+    const context = await browser.newContext(profile);
     t.after(() => context.close());
     const page = await context.newPage();
     page.setDefaultTimeout(7000);
@@ -320,6 +320,45 @@ test('the description field counts, validates, blocks publishing and survives dr
     const reexported = await (await JSZip.loadAsync(fs.readFileSync(await again.path()))).file(/source\.txt$/)[0].async('string');
     assert.deepEqual(reexported.match(/^excerpt: .*$/gm), [`excerpt: ${excerpt}`]);
     assert.deepEqual(reexported.match(/^sources: .*$/gm), ['sources: Πηγή | https://example.com/a']);
+});
+
+// On a phone the panel's publish button is hidden; the bottom-nav button is the only way to publish.
+const PHONE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 };
+async function toReviewByNav(page) {
+    for (let i = 0; i < 4; i++) await page.locator('#gen-next').tap();
+    await page.waitForFunction(() => !document.querySelector('[data-panel="4"]').hidden);
+}
+const panelTitle = page => page.evaluate(() => [...document.querySelectorAll('.gb-panel')].find(panel => !panel.hidden).querySelector('.gb-title').textContent);
+
+test('phone: a description the browser restored without an input event still lets the article publish', async t => {
+    const page = await pageFor(t, PHONE);
+    assert.equal(await page.locator('#gen-publish-btn').isVisible(), false, 'the in-panel publish button is hidden on phones');
+    await setText(page, 'Άρθρο από το κινητό', 'Πρώτη παράγραφος.\n\nΔεύτερη παράγραφος.');
+    // Form restoration after a mobile tab reload (and some keyboards) fill the field without an input event.
+    await page.evaluate(() => { document.getElementById('gen-excerpt').value = 'Σύντομη περιγραφή του άρθρου για την Google και την κοινοποίηση.'; });
+    await toReviewByNav(page);
+    assert.match(await page.locator('#gen-review').innerText(), /Περιγραφή · \d+ \/ 155 χαρακτήρες/);
+    await page.locator('#gen-next').tap();
+    await page.locator('.f1s-author-dialog').filter({ hasText: 'GitHub Personal Access Token' }).waitFor();
+    assert.equal(await panelTitle(page), 'Έλεγχος & Δημοσίευση', 'publishing starts instead of returning to step 1');
+});
+
+test('phone: a missing description is explained, then its field opens, instead of a silent jump to step 1', async t => {
+    const page = await pageFor(t, PHONE);
+    await setText(page, 'Άρθρο χωρίς περιγραφή', 'Κείμενο του άρθρου.');
+    await toReviewByNav(page);
+    await page.locator('#gen-next').tap();
+    const dialog = page.locator('.f1s-author-dialog');
+    await dialog.waitFor();
+    assert.match(await dialog.innerText(), /Δεν μπορεί να δημοσιευτεί ακόμη[\s\S]*Λείπει η περιγραφή άρθρου \(excerpt\)/);
+    await dialog.locator('.f1s-author-dialog-btn-primary').tap();
+    await page.waitForFunction(() => document.activeElement?.id === 'gen-excerpt');
+    assert.equal(await panelTitle(page), 'Βασικά');
+    // Once it is written, the same button publishes.
+    await page.locator('#gen-excerpt').fill('Σύντομη περιγραφή του άρθρου για την Google και την κοινοποίηση.');
+    await toReviewByNav(page);
+    await page.locator('#gen-next').tap();
+    await page.locator('.f1s-author-dialog').filter({ hasText: 'GitHub Personal Access Token' }).waitFor();
 });
 
 test('an old draft without a description opens with an empty field and no suggestion', async t => {
