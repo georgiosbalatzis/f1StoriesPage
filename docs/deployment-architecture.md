@@ -200,8 +200,8 @@ of old links are not guaranteed and take time.
 
 ## Release readiness and cutover (SEO PR 5.1)
 
-**Status: release-ready, aggregation disabled** (`releaseReady:true`,
-`enabled:false`; Deploy Pages still publishes Main alone). The final run,
+**Status: activation proposed** (`releaseReady:true`, `enabled:true` in the
+activation PR; until it merges, Deploy Pages publishes Main alone). The final run,
 [40197365952](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40197365952),
 builds, assembles, browser-tests and passes every publisher gate on the merged
 commits below: 5,240 files, 372.0 MB, 487 sitemap URLs.
@@ -254,10 +254,13 @@ Main alone while `enabled:false`; the setup action provisions Node 24 alongside
 Node 22 in every workflow. Any later re-pin needs a green dry run again.
 
 **Activation PR** (separate, approved, quiet window): `enabled:true` in its own
-commit. Expected artifact: about 5,221 files and 370–380 MB (Main 4,152 files;
-Telemetry 183, Ghost Car 22, TYRES 837, BetCast 26), 487 sitemap URLs, report in
-the run's `deployment-manifest.json`. Before merging, record the current Pages
-deployment (Settings → Environments → github-pages) as the rollback reference.
+commit. Expected artifact: about 5,240 files and 370–380 MB (Main 4,152 files;
+Telemetry 185, Ghost Car 23, TYRES 837, BetCast 42), 487 sitemap URLs, report in
+the run's `deployment-manifest.json`. Merging publishes it: the main push runs
+Site Maintenance, whose `build-pages` now builds the aggregate (expect about 10–13
+minutes instead of 1–2; job limit 25). Rollback reference recorded before the
+activation PR: Pages deployment 7314387873, source `9c04f4ae`, Main only (Site
+Maintenance run 40201907576, 2026-10-25 14:23 UTC).
 
 **First production deployment checks** (live, after the Deploy Pages run):
 `curl -sI https://f1-stories.gr/{telemetry,ghostcar,tyres,betcast}/` are 200;

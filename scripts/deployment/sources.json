@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "enabled": false,
+  "enabled": true,
   "origin": "https://f1-stories.gr",
   "applications": [
     {
