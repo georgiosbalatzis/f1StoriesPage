@@ -130,6 +130,8 @@ body.author-page .background { display: none; }
 .hk-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .hk-input[disabled] { opacity: .6; cursor: not-allowed; }
 .hk-textarea { min-height: 280px; line-height: 1.7; resize: vertical; font-family: var(--hk-mono); font-size: .86rem; }
+.hk-excerpt { line-height: 1.6; resize: vertical; }
+.hk-input[aria-invalid="true"] { border-color: var(--hk-warn); }
 
 /* ── Buttons ────────────────────────────────────────── */
 .hk-btn {

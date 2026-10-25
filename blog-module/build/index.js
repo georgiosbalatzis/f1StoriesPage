@@ -22,6 +22,7 @@ const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { writeAuthorPages } = require('./author-pages');
 const { checkBodyLinks } = require('./body-links');
+const { clampDescription, normalizeText, syncDescriptions, checkExcerpts } = require('./description');
 const { selectCastArticles, isCastArticle, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
@@ -147,11 +148,9 @@ async function buildIndexPosts(blogPosts) {
     }));
 }
 
+// The search index keeps a shorter snippet of the article description, cut by the same rules.
 function compactExcerpt(value, maxLength = 120) {
-    const text = String(value || '').replace(/\s+/g, ' ').trim();
-    if (text.length <= maxLength) return text;
-    const clipped = text.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
-    return `${clipped || text.slice(0, maxLength).trim()}...`;
+    return clampDescription(normalizeText(value), maxLength);
 }
 
 function jsonKb(value) {
@@ -1082,6 +1081,8 @@ async function processBlogEntries(options = {}) {
 
     fixMissingAuthors(blogPosts);
     syncCachedReadingTimes(blogPosts);
+    syncDescriptions(blogPosts);
+    checkExcerpts(blogPosts);
     blogPosts.forEach(post => {
         Object.assign(post, getPostTaxonomy(post));
         delete post.tag;

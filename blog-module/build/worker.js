@@ -13,6 +13,7 @@ const { convertDocxToHtml } = require('./parse-docx');
 const { convertTxtToHtml } = require('./parse-txt');
 const { renderArticleHtml } = require('./article-render');
 const { countWords, readingTimeFromWords } = require('./reading-time');
+const { articleDescription } = require('./description');
 const { getPostTaxonomy } = require('../taxonomy');
 const {
     processImages,
@@ -142,11 +143,6 @@ async function processBlogEntry(entryPath) {
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const wordCount = countWords(plainText);
     const readingTime = readingTimeFromWords(wordCount);
-    const generatedExcerpt = plainText
-        ? plainText.length <= 200
-            ? plainText
-            : `${plainText.slice(0, 200).replace(/\s+\S*$/, '').trim() || plainText.slice(0, 200).trim()}...`
-        : `${metadata.title} image gallery.`;
 
     const primaryImage = images.thumbnail || images.background || CONFIG.DEFAULT_BLOG_IMAGE;
     const headerImage = images.background || images.thumbnail || CONFIG.DEFAULT_BLOG_IMAGE;
@@ -165,7 +161,7 @@ async function processBlogEntry(entryPath) {
         }),
         image: primaryImage,
         backgroundImage: headerImage,
-        excerpt: metadata.excerpt || generatedExcerpt,
+        ...articleDescription(metadata, content),
         // Optional `publishedAtISO` / `updatedDateISO` front matter: editor-recorded instants, validated by article-dates.js.
         ...Object.fromEntries(['draft', 'published', 'status', 'publishedAtISO', 'updatedDateISO'].filter(key => metadata[key] !== undefined).map(key => [key, metadata[key]])),
         // Optional front matter contract for transparent article citations:

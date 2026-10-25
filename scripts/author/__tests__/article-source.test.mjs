@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -115,3 +116,29 @@ console.log('author article source tests passed.');
     assert.deepEqual(Array.from(linkWarnings('')), [], 'an empty body is reported by its own blocking issue');
     console.log('linkWarnings: ok');
 }
+
+// The author tools and the build apply one description contract: same normalisation, count, codes and messages.
+const description = createRequire(import.meta.url)('../../../blog-module/build/description.js');
+const plain = value => JSON.parse(JSON.stringify(value));
+assert.equal(articleSource.DESCRIPTION_MAX, description.DESCRIPTION_MAX);
+[
+    undefined, '', '   ', 'Ferrari', 'Ferrari Mercedes', 'Η Ferrari κερδίζει', '  Η   Ferrari\nκερδίζει στη Μόντσα  ',
+    'Η <b>Ferrari</b> κερδίζει', 'McLaren &amp; Mercedes στη μάχη', 'Ο &#8217;Lewis στη Ferrari', 'R&D, AT&T και 3 < 4 στη μάχη',
+    `${'α'.repeat(151)} β γ`, `${'α'.repeat(152)} β γ`, `${'🏎️'.repeat(150)} β γ δ`, `${'🇬🇷'.repeat(160)} α β`,
+    `${'έ'.repeat(150)} α β γ`, 'Τι έγινε; Η Ferrari· «ναι»', 'κρυφό­κείμενο​ εδώ τώρα'
+].forEach(value => {
+    assert.equal(articleSource.normalizeExcerpt(value), description.normalizeText(value), String(value));
+    assert.equal(articleSource.descriptionLength(value), description.graphemes(description.normalizeText(value)).length, String(value));
+    const issues = articleSource.excerptIssues(value);
+    assert.deepEqual(plain(issues), description.excerptIssues(value), String(value));
+    issues.forEach(issue => assert.equal(articleSource.excerptMessage(issue), description.excerptMessage(issue)));
+});
+assert.equal(articleSource.descriptionLength('🏎️🇬🇷έ'), 3);
+
+// The description is one front-matter line, written exactly once and read back unchanged with the other fields.
+const withExcerpt = articleSource.buildSourceText('Ferrari', 'Technical', 'Τίτλος', 'Σώμα', { excerpt: 'Πώς η «Ferrari» & η McLaren κερδίζουν: ανάλυση.', sources: 'Πηγή | https://example.com/a' });
+assert.deepEqual(withExcerpt.match(/^excerpt: .*$/gm), ['excerpt: Πώς η «Ferrari» & η McLaren κερδίζουν: ανάλυση.']);
+const reread = articleSource.parseSourceText(withExcerpt);
+assert.equal(reread.metadata.excerpt, 'Πώς η «Ferrari» & η McLaren κερδίζουν: ανάλυση.');
+assert.equal(reread.metadata.sources, 'Πηγή | https://example.com/a');
+assert.equal(reread.body, 'Σώμα');

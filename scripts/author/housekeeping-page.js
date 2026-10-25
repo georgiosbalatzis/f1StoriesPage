@@ -264,6 +264,9 @@
     var editDateEl    = byId('hk-edit-date');
     var editTitleEl   = byId('hk-edit-title-input');
     var editTitleWarn = byId('hk-edit-title-warnings');
+    var editExcerptEl = byId('hk-edit-excerpt');
+    var editExcerptCount = byId('hk-edit-excerpt-count');
+    var editExcerptWarn = byId('hk-edit-excerpt-warnings');
     var editBodyEl    = byId('hk-edit-body');
     var editImagesEl  = byId('hk-edit-images');
     var editHeroIn    = byId('hk-edit-hero-input');
@@ -1352,6 +1355,18 @@
     }
     editTitleEl.addEventListener('input', renderEditTitleWarnings);
 
+    // The same description rules as Generate and the build. Empty is allowed only for an article published before
+    // the rule that keeps its folder; the save checks that.
+    function renderEditExcerpt() {
+        var issues = articleSource.excerptIssues(editExcerptEl.value).filter(function (issue) { return issue.code !== 'missing'; });
+        editExcerptCount.textContent = articleSource.descriptionLength(editExcerptEl.value) + ' / ' + articleSource.DESCRIPTION_MAX;
+        editExcerptEl.setAttribute('aria-invalid', String(issues.length > 0));
+        editExcerptWarn.replaceChildren.apply(editExcerptWarn, issues.map(function (issue) {
+            return el('span', 'hk-badge hk-badge-warn', articleSource.excerptMessage(issue));
+        }));
+    }
+    editExcerptEl.addEventListener('input', renderEditExcerpt);
+
     async function openEdit(post) {
         if (!editable(post)) {
             await showAlert('Το άρθρο ' + post.id + ' δεν έχει source.txt, οπότε δεν επεξεργάζεται από εδώ.');
@@ -1371,7 +1386,9 @@
         editCatEl.value = post.category || 'News';
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
+        editExcerptEl.value = '';
         renderEditTitleWarnings();
+        renderEditExcerpt();
         editImagesEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση…'));
 
         // Seed author + date from the folder name (single source of truth — the
@@ -1415,7 +1432,9 @@
             editCatEl.value = parsed.category;
             editTitleEl.value = parsed.title || post.title || '';
             editBodyEl.value = parsed.body;
+            editExcerptEl.value = parsed.metadata.excerpt || '';
             renderEditTitleWarnings();
+            renderEditExcerpt();
 
             // 3. Compute existing slots from folder, keep full file list so we
             //    can rename the folder by reusing blob SHAs for non-slot files.
@@ -1620,6 +1639,19 @@
         }
 
         var isRename = (newFolder !== oldFolder);
+
+        // A renamed folder is a new article for the build, and a description once written stays required.
+        var excerpt = articleSource.normalizeExcerpt(editExcerptEl.value);
+        var excerptIssue = articleSource.excerptIssues(excerpt)[0];
+        if (excerptIssue && (excerpt || isRename || articleSource.normalizeExcerpt(editState.sourceMetadata.excerpt))) {
+            await showAlert(articleSource.excerptMessage(excerptIssue) + (excerpt ? '' : isRename
+                ? ' Η αλλαγή συντάκτη ή ημερομηνίας δημιουργεί νέο φάκελο, άρα νέο άρθρο.'
+                : ' Το άρθρο έχει ήδη περιγραφή· διόρθωσέ τη αντί να τη σβήσεις.'));
+            editExcerptEl.focus();
+            return;
+        }
+        if (excerpt) editState.sourceMetadata.excerpt = excerpt;
+        else delete editState.sourceMetadata.excerpt;
 
         // Collision check: if the computed folder already exists elsewhere,
         // offer the next free -N suffix or abort.
