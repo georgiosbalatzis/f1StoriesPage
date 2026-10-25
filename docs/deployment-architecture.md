@@ -200,8 +200,8 @@ of old links are not guaranteed and take time.
 
 ## Release readiness and cutover (SEO PR 5.1)
 
-**Status: hosted validation passes on the final pins; aggregation disabled**
-(`enabled:false`, `releaseReady:false` until the owner sets it). The final run,
+**Status: release-ready, aggregation disabled** (`releaseReady:true`,
+`enabled:false`; Deploy Pages still publishes Main alone). The final run,
 [40197365952](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/40197365952),
 builds, assembles, browser-tests and passes every publisher gate on the merged
 commits below: 5,240 files, 372.0 MB, 487 sitemap URLs.
@@ -248,9 +248,10 @@ started a scheduled Deploy Pages run when this was written (the 12:41 UTC slot
 after #333 had not fired 40 minutes later; GitHub cron is best-effort); the gate
 logic is covered by `pages-preparation.test.mjs`.
 
-**Readiness PR** (after a green dry run on the final pins): `releaseReady:true`
-only. This changes no deployment: Deploy Pages still publishes Main alone while
-`enabled:false`; the setup action starts provisioning Node 24.
+**Readiness** (set in SEO PR 5.1 after the green dry run on the final pins):
+`releaseReady:true` only. It changes no deployment: Deploy Pages still publishes
+Main alone while `enabled:false`; the setup action provisions Node 24 alongside
+Node 22 in every workflow. Any later re-pin needs a green dry run again.
 
 **Activation PR** (separate, approved, quiet window): `enabled:true` in its own
 commit. Expected artifact: about 5,221 files and 370–380 MB (Main 4,152 files;
