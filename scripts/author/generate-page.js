@@ -383,18 +383,20 @@
 
     // Issues by step. `block` issues disable the PR; the rest are advisory.
     function collectIssues() {
+        syncExcerpt();
         var issues = [];
         var title = titleInput.value.trim();
         var body = contentArea.value.trim();
         var markers = countMarkers();
         var images = contentImageFiles.length;
-        if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true });
+        // A blocking issue names the field that fixes it.
+        if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true, field: titleInput });
         articleSource.titleWarnings(title, body).forEach(function (text) { issues.push({ step: 0, text: text }); });
         // Every article published from here is new, so its description is required (blog-module/build/description.js).
         articleSource.excerptIssues(sourceMetadata.excerpt).forEach(function (issue) {
-            issues.push({ step: 0, text: articleSource.excerptMessage(issue), block: true });
+            issues.push({ step: 0, text: articleSource.excerptMessage(issue), block: true, field: excerptInput });
         });
-        if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true });
+        if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true, field: contentArea });
         articleSource.linkWarnings(body).forEach(function (text) { issues.push({ step: 1, text: text }); });
         if (!(getHeroFile())) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
         if (markers > images) issues.push({ step: 2, text: plural(markers - images, 'δείκτης', 'δείκτες') + ' χωρίς εικόνα — κενή θέση στο άρθρο' });
@@ -439,15 +441,18 @@
         setTimeout(function () { location.assign('/'); }, 150);
     }
 
-    nextBtn.addEventListener('click', function () {
+    nextBtn.addEventListener('click', async function () {
         if (published) {
             finishAndClose();
             return;
         }
         if (currentStep === panels.length - 1) {
             var blocking = collectIssues().filter(function (issue) { return issue.block; })[0];
-            if (blocking) goToStep(blocking.step);
-            else publishBtn.click();
+            if (!blocking) { publishBtn.click(); return; }
+            // On a phone this is the only publish button: say what stops the article, then open the field that fixes it.
+            await showAlert(blocking.text, { title: 'Δεν μπορεί να δημοσιευτεί ακόμη' });
+            goToStep(blocking.step, false);
+            blocking.field.focus();
             return;
         }
         goToStep(currentStep + 1);
@@ -566,12 +571,17 @@
         excerptInput.value = sourceMetadata.excerpt || '';
         renderExcerpt();
     }
-    excerptInput.addEventListener('input', function () {
+    // The field is the description's source of truth, read like the title and body: text a browser restored into a
+    // reloaded tab, or a phone keyboard committed without an input event, still counts.
+    function syncExcerpt() {
         var excerpt = articleSource.normalizeExcerpt(excerptInput.value);
+        if (excerpt === (sourceMetadata.excerpt || '')) return;
         if (excerpt) sourceMetadata.excerpt = excerpt;
         else delete sourceMetadata.excerpt;
         renderExcerpt();
-        refresh();
+    }
+    ['input', 'change'].forEach(function (type) {
+        excerptInput.addEventListener(type, function () { syncExcerpt(); refresh(); });
     });
 
     titleInput.addEventListener('input', function () { renderTitleWarnings(); refresh(); });
@@ -1317,6 +1327,7 @@
     }
 
     function captureDraft() {
+        syncExcerpt();
         function image(file, meta) {
             return file ? { blob: file, name: file.name, width: meta.width, height: meta.height } : null;
         }
