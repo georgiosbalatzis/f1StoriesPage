@@ -211,7 +211,8 @@ function cliFixture(t) {
         <div class="standings-wrapper" id="tab-drivers"></div><div class="author-profile"></div>
         <h1 class="ed-section__title">Section</h1><h2 id="hero-title">Lead</h2><img id="hero-image" src="/hero.webp">
         <a id="hero-story-link" href="/blog-module/blog-entries/story/article.html">Story</a><a href="/">Home</a>
-        <!-- f1s:article-editorial:begin --><!-- f1s:article-editorial:end --></main>`;
+        <!-- f1s:article-editorial:begin --><!-- f1s:article-editorial:end --></main>
+        <nav>${Object.keys(pages).map(file => `<a href="/${file.replace(/index\.html$/, '')}">${file}</a>`).join('')}</nav>`;
     for (const [file, css] of Object.entries(pages)) {
         const links = css.map(key => `<link rel="stylesheet" href="/${manifest.files[key].min}?v=12345678">`).join('\n');
         const canonical = file.startsWith('blog-module/blog/')

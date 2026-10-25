@@ -58,6 +58,32 @@ test('multiple topics are deduplicated and ordered by canonical route without mu
     assert.equal(JSON.stringify(hubLinks), before);
 });
 
+test('a section lists an approved topic only when one of its approved stories is in that section', () => {
+    // synthetic(8): s0, s4 News · s1, s5 Technical · s2, s6 History+Drivers · s3, s7 Opinion.
+    const topic = { href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 2, articleIds: ['s2', 's4'] };
+    const baseline = byFile(build(synthetic(8)));
+    const result = byFile(build(synthetic(8), { hubLinks: [topic] }));
+    const block = html => (html.match(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/) || [''])[0];
+    for (const kind of ['news', 'history', 'drivers']) {
+        const html = result[`section/${kind}/index.html`].main;
+        assert.ok(block(html).includes(`<li><a href="${topic.href}"><span>Λάντο Νόρις</span><span class="ed-num">2 άρθρα</span></a></li>`), kind);
+        assert.equal(html.split(`href="${topic.href}"`).length - 1, 1, `${kind}: linked once`);
+        assert.ok(html.includes(`</ol></nav>${block(html)}<p class="ed-aside__block">`), `${kind}: between the other sections and the archive link`);
+        assert.equal(html.replace(block(html), ''), baseline[`section/${kind}/index.html`].main, `${kind}: the block is the only change`);
+    }
+    for (const kind of ['technical', 'opinion']) {
+        assert.equal(result[`section/${kind}/index.html`].main, baseline[`section/${kind}/index.html`].main, `${kind}: no approved story, no topic`);
+    }
+    for (const [file, page] of Object.entries(result)) if (file.startsWith('archive/')) assert.equal(page.main, baseline[file].main, file);
+});
+
+test('a topic without approved story ids stays on the blog index only', () => {
+    const topic = { href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 4 };
+    const baseline = build(synthetic(8));
+    const result = build(synthetic(8), { hubLinks: [topic] });
+    assert.deepEqual(result.pages.slice(1), baseline.pages.slice(1));
+});
+
 test('topic navigation escapes dynamic labels and attributes', () => {
     const html = build(synthetic(4), { hubLinks: [{ href: '/subject/"<&', label: '<Νόρις> & "οδηγός"', count: 4 }] }).pages[0].main;
     assert.match(html, /href="\/subject\/&quot;&lt;&amp;"/);

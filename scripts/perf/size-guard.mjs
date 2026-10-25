@@ -80,6 +80,7 @@ const SOURCE_FILES = [
     'blog-module/build/parse-docx.js',
     'blog-module/build/parse-txt.js',
     'blog-module/build/related.js',
+    'blog-module/build/related-score.js',
     'blog-module/build/nav.js',
     'blog-module/build/sitemap.js',
     'blog-module/build/worker.js',
@@ -129,6 +130,13 @@ function deriveMinSiblings(files) {
 }
 
 const TRACKED_GLOBS = [...SOURCE_FILES, ...deriveMinSiblings(SOURCE_FILES)];
+
+// Files that split one feature: their combined size has its own budget (`groups` in the budget file), so code moved
+// between them cannot leave the size accounting.
+const SOURCE_GROUPS = {
+    'NEXT UP (related.js + related-score.js)': ['blog-module/build/related.js', 'blog-module/build/related-score.js']
+};
+const groupSize = files => files.reduce((sum, rel) => sum + (fileSize(rel) ?? 0), 0);
 
 function parseArgs(argv) {
     const args = { update: false, threshold: 10 };
@@ -223,7 +231,8 @@ function main() {
             updatedAt: new Date().toISOString(),
             thresholdPercent: args.threshold,
             note: 'Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.',
-            files: current
+            files: current,
+            groups: Object.fromEntries(Object.entries(SOURCE_GROUPS).map(([name, files]) => [name, groupSize(files)]))
         };
         writeBudget(budget);
         console.log(`✓ budget updated: ${Object.keys(current).length} files, ${BUDGET_PATH}`);
@@ -258,6 +267,25 @@ function main() {
         const over = pct > threshold;
         if (over) violations++;
         rows.push({ rel, base, curr, delta, pct, status: over ? 'OVER' : 'ok' });
+    }
+    for (const [name, files] of Object.entries(SOURCE_GROUPS)) {
+        const curr = groupSize(files);
+        const base = budget.groups?.[name];
+        if (files.every(rel => fileSize(rel) == null)) {
+            rows.push({ rel: name, base, curr: null, delta: null, pct: null, status: 'MISSING' });
+            continue;
+        }
+        if (base == null) {
+            // A group without a reviewed baseline fails rather than passing unmeasured.
+            rows.push({ rel: name, base: null, curr, delta: null, pct: null, status: 'NO BUDGET' });
+            violations++;
+            continue;
+        }
+        const delta = curr - base;
+        const pct = base === 0 ? 0 : (delta / base) * 100;
+        const over = pct > threshold;
+        if (over) violations++;
+        rows.push({ rel: name, base, curr, delta, pct, status: over ? 'OVER' : 'ok' });
     }
 
     const nameW = Math.max(...rows.map(r => r.rel.length), 10);

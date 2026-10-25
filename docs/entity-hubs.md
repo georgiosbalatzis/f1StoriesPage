@@ -1,6 +1,16 @@
 # Approval-gated entity hubs (P1.2)
 
-No real entity is approved for publication in this change. Norris has four approved subjects and an approved introduction, but his separate hub publication review is pending. Hamilton has two subjects. Production therefore generates **zero entity hubs**.
+Lando Norris is the one published hub: four approved subjects, an approved introduction and a separate human publication approval (2026-10-21). Every other entity is pending; Hamilton has two approved subjects. The sections below describe the gate as first introduced, when no hub was approved.
+
+## Discovery
+
+The eligible set from `selectHubs` (the same one the sitemap and search destinations use) also drives reader navigation. Nothing links a pending hub; withdrawing an approval removes every link on the next build:
+
+- the blog index's “Θέματα” list (`buildHubLinks`);
+- a section page's aside, when at least one of the hub's approved stories is in that section;
+- the cover kicker of each approved story, after its section link (`withTopicLinks`, outside the article body).
+
+Approved subjects also rank NEXT UP (`related-score.js`), whether or not their hub is published; `npm run links:report` suggests body links from the same approvals.
 
 ## Architecture
 

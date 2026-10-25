@@ -92,19 +92,96 @@ function checkBodyLinks(posts, options = {}) {
 
 function summarize(reports) {
     const links = reports.flatMap(report => report.links);
+    const count = kind => links.filter(link => link.kind === kind).length;
     return {
         inspected: reports.length,
         none: reports.filter(report => report.contextual === 0).length,
         one: reports.filter(report => report.contextual === 1).length,
         twoPlus: reports.filter(report => report.contextual >= 2).length,
-        broken: links.filter(link => link.kind === 'broken').length,
-        hubLinks: links.filter(link => link.kind === 'hub').length,
-        pageLinks: links.filter(link => link.kind === 'page').length,
+        broken: count('broken'),
+        articleLinks: count('article'),
+        hubLinks: count('hub'),
+        sectionLinks: count('section'),
+        pageLinks: count('page'),
+        laterLinks: count('later'),
+        unpublishedLinks: count('unpublished'),
         attention: reports.filter(report => report.isNew && report.contextual < RECOMMENDED).map(report => report.id)
     };
 }
 
-function renderReport(reports) {
+// Editorial suggestions, never changes: earlier stories (or a published topic hub) a story could link, with the
+// evidence behind each. `subjects`: article id → entity ids a human approved it as a substantive subject of;
+// `hubLinks`: published hubs ({ href, label, articleIds }); `entityNames`: entity id → name. Already-linked targets
+// are skipped. Shared tags alone never prove a relationship, so those suggestions are capped and always need review.
+const TAG_SUGGESTIONS = 10;
+function linkOpportunities(reports, posts, { subjects = new Map(), hubLinks = [], entityNames = new Map() } = {}) {
+    const { topicTags, tagWeights } = require('./related-score');
+    const byId = new Map(posts.map(post => [post.id, post]));
+    const linked = new Map(reports.map(report => [report.id, new Set(report.links.map(link => link.path))]));
+    const storyPath = id => `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
+    const decoded = id => `/blog-module/blog-entries/${id}/article.html`;
+    const has = (source, target) => linked.get(source)?.has(target) || false;
+    const visible = reports.map(report => byId.get(report.id)).filter(Boolean);
+    const order = (a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    const suggestion = (source, target, reason, evidence, review) => ({
+        source: source.id, title: source.title, target: target.path, url: `https://f1-stories.gr${target.path}`, targetTitle: target.title,
+        reason, evidence, review
+    });
+    const out = [];
+    // 1. Both stories are approved subjects of the same entity: the newer can point to the older.
+    for (const source of visible.slice().sort(order)) {
+        for (const entity of [...(subjects.get(source.id) || [])].sort()) {
+            for (const target of visible.filter(other => other.id !== source.id && other.date <= source.date && subjects.get(other.id)?.has(entity)).sort(order)) {
+                if (has(source.id, decoded(target.id))) continue;
+                out.push(suggestion(source, { path: storyPath(target.id), title: target.title },
+                    `Both stories are approved substantive subjects of ${entityNames.get(entity) || entity}`,
+                    `blog-module/build/entities/associations.json: approved ${entity} associations for ${source.id} and ${target.id}`,
+                    'yes: choose the sentence and wording'));
+            }
+        }
+    }
+    // 2. An approved subject of a published topic hub that does not link the hub.
+    for (const hub of hubLinks.slice().sort((a, b) => a.href < b.href ? -1 : 1)) {
+        for (const source of (hub.articleIds || []).map(id => byId.get(id)).filter(post => post && linked.has(post.id)).sort(order)) {
+            if (has(source.id, hub.href)) continue;
+            out.push(suggestion(source, { path: hub.href, title: hub.label }, `An approved subject of the published topic page ${hub.label}`,
+                'blog-module/build/entities/registry.json: hub publication and introduction approved; associations.json: approved substantive subject',
+                'yes: choose the sentence and wording'));
+        }
+    }
+    // 3. The strongest rare-tag overlaps with an earlier story (a shared tag on at most three stories).
+    const weights = tagWeights(visible);
+    const rare = Math.log(visible.length / 3);
+    const pairs = [];
+    for (const source of visible) {
+        const mine = new Set(topicTags(source));
+        for (const target of visible) {
+            if (target.id === source.id || target.date > source.date || has(source.id, decoded(target.id))) continue;
+            const theirs = topicTags(target), shared = theirs.filter(tag => mine.has(tag));
+            const uncommon = shared.filter(tag => (weights.get(tag) || 0) >= rare);
+            if (!uncommon.length) continue;
+            const union = [...new Set([...mine, ...theirs])].reduce((sum, tag) => sum + (weights.get(tag) || 0), 0);
+            const score = shared.reduce((sum, tag) => sum + (weights.get(tag) || 0), 0) / (union || 1);
+            pairs.push({ source, target, uncommon, score });
+        }
+    }
+    pairs.sort((a, b) => b.score - a.score || order(a.source, b.source) || (a.target.id < b.target.id ? -1 : 1));
+    const seen = new Set(out.map(item => `${item.source}>${item.target}`));
+    let tagged = 0;
+    const stories = tag => Math.round(visible.length / Math.exp(weights.get(tag)));
+    for (const { source, target, uncommon } of pairs) {
+        if (tagged === TAG_SUGGESTIONS) break;
+        const key = `${source.id}>${storyPath(target.id)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        tagged++;
+        out.push(suggestion(source, { path: storyPath(target.id), title: target.title }, 'The two stories share uncommon tags',
+            `shared uncommon tags: ${uncommon.map(tag => `${tag} (on ${stories(tag)} stories)`).join(', ')}`, 'yes: confirm the stories are really related before linking'));
+    }
+    return out;
+}
+
+function renderReport(reports, opportunities = []) {
     const counts = summarize(reports);
     const broken = reports.flatMap(report => report.links.filter(link => link.kind === 'broken').map(link => `  - ${report.id}: ${link.href}`));
     const other = reports.flatMap(report => report.links.filter(link => ['self', 'later', 'unpublished'].includes(link.kind)).map(link => `  - ${report.id}: ${link.href} (${link.kind})`));
@@ -115,16 +192,30 @@ function renderReport(reports) {
         `- With one: ${counts.one}`,
         `- With two or more: ${counts.twoPlus}`,
         `- Broken internal body links: ${counts.broken}`, ...broken,
+        `- Body links to earlier articles: ${counts.articleLinks}`,
         `- Body links to approved topic hubs: ${counts.hubLinks}`,
+        `- Body links to category sections: ${counts.sectionLinks}`,
         `- Body links to other site pages, such as the data tools (not counted): ${counts.pageLinks}`,
-        `- Self, later-published or unpublished targets (not counted): ${other.length}`, ...other,
-        `- New articles needing editorial attention: ${counts.attention.length}${counts.attention.length ? ` (${counts.attention.join(', ')})` : ''}`
+        `- Self, later-published or unpublished targets (not counted): ${other.length} (later-published: ${counts.laterLinks}, unpublished: ${counts.unpublishedLinks})`, ...other,
+        `- New articles needing editorial attention: ${counts.attention.length}${counts.attention.length ? ` (${counts.attention.join(', ')})` : ''}`,
+        ...(opportunities.length ? ['', `Editorial linking opportunities: ${opportunities.length} suggestions; nothing is changed, every one needs a human decision`,
+            ...opportunities.map(item => [`- ${item.source} (${item.title}) → ${item.url} (${item.targetTitle})`,
+                `  Reason: ${item.reason}.`, `  Evidence: ${item.evidence}.`, `  Human review: ${item.review}.`].join('\n'))] : [])
     ].join('\n') + '\n';
 }
 
 if (require.main === module) {
     const { posts } = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog-module/blog-data.json'), 'utf8'));
-    process.stdout.write(renderReport(analyzeArticles(posts)));
+    const { loadFoundation } = require('./entities/index');
+    const { selectHubs, hubPath } = require('./entities/hubs');
+    const { registry, manifest, articles } = loadFoundation();
+    const hubs = selectHubs(registry, manifest, articles);
+    const { approvedSubjects } = require('./related-score');
+    const hubLinks = hubs.filter(hub => hub.eligible).map(hub => ({ href: hubPath(hub.entity), label: hub.entity.labelEl, articleIds: hub.posts.map(post => post.id) }));
+    const reports = analyzeArticles(posts);
+    process.stdout.write(renderReport(reports, linkOpportunities(reports, posts, {
+        subjects: approvedSubjects(hubs), hubLinks, entityNames: new Map(registry.entities.map(entity => [entity.id, entity.name]))
+    })));
 }
 
-module.exports = { CONTEXT_LINKS_SINCE, RECOMMENDED, internalPath, analyzeBody, analyzeArticles, checkBodyLinks, summarize, renderReport };
+module.exports = { CONTEXT_LINKS_SINCE, RECOMMENDED, internalPath, analyzeBody, analyzeArticles, checkBodyLinks, summarize, linkOpportunities, renderReport };

@@ -15,9 +15,9 @@ const { mediaFor, slotOf, isContained, creditLineHtml, cardDisclosureHtml, media
 const { generateSitemap } = require('./sitemap');
 const { generateFeed } = require('./feed');
 const { htmlToPlainText, extractMetadata } = require('./metadata');
-const { injectRelatedArticles } = require('./related');
+const { injectRelatedArticles, approvedSubjects } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
-const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { renderArticleHtml, refreshArticleTaxonomy, withTopicLinks } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { writeAuthorPages } = require('./author-pages');
@@ -215,7 +215,24 @@ function buildCompactIndexData(posts) {
 function buildHubLinks({ hubs, pages }) {
     const generated = new Set(pages.map(page => page.path));
     return hubs.filter(hub => hub.eligible && generated.has(hubPath(hub.entity)))
-        .map(hub => ({ href: hubPath(hub.entity), label: hub.entity.labelEl, count: hub.posts.length }));
+        .map(hub => ({ href: hubPath(hub.entity), label: hub.entity.labelEl, count: hub.posts.length, articleIds: hub.posts.map(post => post.id) }));
+}
+
+// Each approved topic hub on the cover of its approved stories (ordered by route); every other page loses any earlier
+// topic link, so the set always matches the published hubs.
+function injectTopicLinks(blogPosts, hubLinks) {
+    const byArticle = new Map();
+    hubLinks.slice().sort((a, b) => a.href < b.href ? -1 : a.href > b.href ? 1 : 0).forEach(link => (link.articleIds || []).forEach(id => {
+        if (!byArticle.has(id)) byArticle.set(id, []);
+        if (!byArticle.get(id).some(other => other.href === link.href)) byArticle.get(id).push(link);
+    }));
+    for (const post of blogPosts) {
+        const file = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+        if (!fs.existsSync(file)) continue;
+        const html = fs.readFileSync(file, 'utf8');
+        const updated = withTopicLinks(html, byArticle.get(post.id));
+        if (updated !== html) fs.writeFileSync(file, updated);
+    }
 }
 
 // The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
@@ -1146,7 +1163,8 @@ async function processBlogEntries(options = {}) {
         today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }
     });
     const selection = loadEditorialSelection();
-    const edition = injectEdition(indexPosts, selection, { today, hubLinks: buildHubLinks(entities) });
+    const hubLinks = buildHubLinks(entities);
+    const edition = injectEdition(indexPosts, selection, { today, hubLinks });
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1163,7 +1181,8 @@ async function processBlogEntries(options = {}) {
     console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
     generateFeed(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
-    await injectRelatedArticles(blogPosts);
+    await injectRelatedArticles(blogPosts, { today, subjects: approvedSubjects(entities.hubs) });
+    injectTopicLinks(blogPosts, hubLinks);
     injectPrevNextLinks(blogPosts);
     // After the article pages: an author page lists a story only once its page is public.
     checkBodyLinks(blogPosts, { today });
@@ -1192,6 +1211,7 @@ module.exports = {
     buildCompactIndexData,
     loadEditorialSelection,
     buildHubLinks,
+    injectTopicLinks,
     injectEdition,
     renderHomeJournal,
     selectPaddock,

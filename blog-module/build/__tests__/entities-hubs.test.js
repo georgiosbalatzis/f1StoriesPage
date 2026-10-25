@@ -32,7 +32,8 @@ const write = (root, rel, text) => { const file = path.join(root, rel); fs.mkdir
 test('real archive topic descriptors come only from approved generated hubs and four approved members', () => {
     const f = loadFoundation(), before = JSON.stringify(f);
     const result = buildHubPages(f.registry, f.manifest, f.articles, { today, deps });
-    assert.deepEqual(buildHubLinks(result), [{ href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 4 }]);
+    assert.deepEqual(buildHubLinks(result), [{ href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις', count: 4,
+        articleIds: ['20260927G', '20260824W', '20260822W', '20260725W'] }]);
     assert.ok(!result.hubs.find(hub => hub.eligible).posts.some(post => post.id === '20260928G'));
     assert.deepEqual(buildHubLinks({ ...result, pages: [] }), [], 'an eligible hub without a generated first page is not linked');
     assert.equal(JSON.stringify(f), before, 'selection and descriptors do not mutate editorial inputs');
@@ -42,7 +43,8 @@ test('future approved fixtures appear automatically, while withdrawal removes th
     const f = fixture('team');
     const archive = result => buildPages(f.articles, { today, deps, hubLinks: buildHubLinks(result) }).pages[0].main;
     const approved = build(f);
-    assert.deepEqual(buildHubLinks(approved), [{ href: '/blog-module/blog/entities/teams/fixture/', label: f.entity.labelEl, count: 3 }]);
+    assert.deepEqual(buildHubLinks(approved), [{ href: '/blog-module/blog/entities/teams/fixture/', label: f.entity.labelEl, count: 3,
+        articleIds: ['fixture001', 'fixture000', 'fixture002'] }]);
     assert.ok(archive(approved).includes('href="/blog-module/blog/entities/teams/fixture/"'));
     f.entity.hub.review = { status: 'pending' };
     const withdrawn = build(f);
@@ -375,3 +377,49 @@ for (const boundary of ['entities', 'entities/drivers', 'entities/drivers/fixtur
         assert.ok(fs.lstatSync(link).isSymbolicLink(), 'the original symlink is preserved');
     });
 }
+
+// ── Topic links on the cover of approved stories ──
+const { withTopicLinks } = require('../article-render');
+const { injectTopicLinks } = require('../index');
+const kicker = '<p class="rr-kicker"><a href="/blog-module/blog/section/history/">Ιστορία</a><span id="reading-time-value">4 λεπτά ανάγνωσης</span></p>';
+const page = (extra = '') => `<header>\n                    ${kicker.replace('</a>', `</a>${extra}`)}\n</header>\n<div class="rr-body article-content" data-body><p>Σώμα</p></div>\n`;
+
+test('an approved topic follows the section in the cover kicker, on the same line, escaped and idempotent', () => {
+    const links = [{ href: '/blog-module/blog/entities/drivers/lando-norris/', label: 'Λάντο Νόρις' }];
+    const html = withTopicLinks(page(), links);
+    assert.ok(html.includes('<a href="/blog-module/blog/section/history/">Ιστορία</a><a href="/blog-module/blog/entities/drivers/lando-norris/">Λάντο Νόρις</a><span id="reading-time-value">'));
+    assert.equal(html.split('\n').length, page().split('\n').length, 'no line added: evidence line numbers stay valid');
+    assert.equal(withTopicLinks(html, links), html, 'idempotent');
+    assert.ok(html.endsWith('<div class="rr-body article-content" data-body><p>Σώμα</p></div>\n'), 'the body is untouched');
+    const escaped = withTopicLinks(page(), [{ href: '/blog-module/blog/entities/teams/"x"/', label: '<Ομάδα> & "οδηγός"' }]);
+    assert.match(escaped, /href="\/blog-module\/blog\/entities\/teams\/&quot;x&quot;\/">&lt;Ομάδα&gt; &amp; "οδηγός"<\/a>/);
+});
+
+test('a withdrawn or replaced topic leaves the kicker; other pages never gain one', () => {
+    const stale = page('<a href="/blog-module/blog/entities/drivers/lando-norris/">Λάντο Νόρις</a>');
+    assert.equal(withTopicLinks(stale, []), page());
+    assert.equal(withTopicLinks(stale), page());
+    const replaced = withTopicLinks(stale, [{ href: '/blog-module/blog/entities/teams/fixture/', label: 'Ομάδα' }]);
+    assert.doesNotMatch(replaced, /lando-norris/);
+    assert.equal(withTopicLinks(page(), []), page());
+});
+
+test('real approvals put the Norris hub on exactly its four approved stories; pending hubs on none', t => {
+    const f = loadFoundation();
+    const links = buildHubLinks(buildHubPages(f.registry, f.manifest, f.articles, { today, deps }));
+    const dir = temp(t);
+    const original = require('../shared').CONFIG.BLOG_DIR;
+    const ids = ['20260927G', '20260824W', '20260822W', '20260725W', '20260929-2G', '20260608W', '20260928G'];
+    try {
+        require('../shared').CONFIG.BLOG_DIR = dir;
+        ids.forEach(id => write(dir, `${id}/article.html`, page()));
+        injectTopicLinks(ids.map(id => ({ id })), links);
+        const linked = ids.filter(id => fs.readFileSync(path.join(dir, id, 'article.html'), 'utf8').includes('/entities/'));
+        assert.deepEqual(linked, ['20260927G', '20260824W', '20260822W', '20260725W']);
+        // Hamilton's two approved subjects (hub pending) and a reviewed non-member never link a hub.
+        injectTopicLinks(ids.map(id => ({ id })), []);
+        assert.ok(ids.every(id => fs.readFileSync(path.join(dir, id, 'article.html'), 'utf8') === page()), 'withdrawal removes every topic link');
+    } finally {
+        require('../shared').CONFIG.BLOG_DIR = original;
+    }
+});

@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-10-16T06:00:27.203982Z",
   "thresholdPercent": 10,
-  "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails. Ten superseded entries were measured at released baseline 57b1231a (embed controls, navigation/audio, localized labels, archive growth and embed validation). The 10% tolerance and separate graph/route limits remain enforced.",
+  "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails. Ten superseded entries were measured at released baseline 57b1231a (embed controls, navigation/audio, localized labels, archive growth and embed validation). The 10% tolerance and separate graph/route limits remain enforced. Groups budget files that split one feature by their combined size: NEXT UP (related.js + related-score.js) 10,146 B reviewed in PR #338, against 6,780 B for related.js on main eb37aa4b (+3,366 B build-time code for approved-subject ranking, rarity-weighted tags, the published/future filter and deterministic ties; nothing ships to browsers).",
   "files": {
     "styles.css": 41870,
     "home.css": 62746,
@@ -60,6 +60,7 @@
     "blog-module/build/parse-docx.js": 2625,
     "blog-module/build/parse-txt.js": 5854,
     "blog-module/build/related.js": 7174,
+    "blog-module/build/related-score.js": 5575,
     "blog-module/build/nav.js": 2956,
     "blog-module/build/sitemap.js": 3422,
     "blog-module/build/worker.js": 8162,
@@ -110,5 +111,8 @@
     "blog-module/blog/article-embeds.min.js": 13491,
     "blog-module/blog/article-script.min.js": 16192,
     "blog-module/blog-fixes.min.js": 1890
+  },
+  "groups": {
+    "NEXT UP (related.js + related-score.js)": 10146
   }
 }
