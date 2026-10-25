@@ -57,7 +57,7 @@ function site() {
     const entries = path.join(DIST, 'blog-module/blog-entries');
     const ids = fs.readdirSync(entries).filter(id => fs.existsSync(path.join(entries, id, 'article.html')));
     const pages = new Map(ids.map(id => [id, fs.readFileSync(path.join(entries, id, 'article.html'), 'utf8')]));
-    const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog-module/blog-data.json'), 'utf8')).posts;
+    const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog-module/blog-source-cache.json'), 'utf8')).posts;
     const sitemap = locs(fs.readFileSync(path.join(DIST, 'sitemap.xml'), 'utf8'));
     const feed = feedItems(fs.readFileSync(path.join(DIST, 'feed.xml'), 'utf8'));
     return (cache = { ids, pages, posts, sitemap, feed });
