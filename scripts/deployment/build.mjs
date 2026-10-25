@@ -101,6 +101,14 @@ try {
                 metadata.data.refresh.digest = treeDigest(snapshot, app.data.paths);
             }
             command('npm', ['run', app.build], snapshot, false, node.env);
+            if (app.application === 'main') {
+                // The publisher's release gates verify this build's image and social-card reports in the
+                // repository's .build/public-images; the snapshot holding them is deleted after assembly.
+                const images = path.join(snapshot, '.build/public-images');
+                if (!fs.existsSync(images)) throw new Error('main: build produced no .build/public-images reports');
+                fs.rmSync(path.join(mainRoot, '.build/public-images'), { recursive: true, force: true });
+                fs.cpSync(images, path.join(mainRoot, '.build/public-images'), { recursive: true });
+            }
         }
         metadata.directory = path.join(snapshot, app.output);
         if (baseline) {

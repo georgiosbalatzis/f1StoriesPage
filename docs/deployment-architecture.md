@@ -197,3 +197,58 @@ canonical and `og:url` match; the sitemap lists the four tools once; article and
 author pages still load; Main pages request no tool assets; live data loads in each
 tool. Then inspect the four tool URLs in Search Console. Indexing and consolidation
 of old links are not guaranteed and take time.
+
+## Release readiness and cutover (SEO PR 5.1)
+
+**Status: not ready; aggregation disabled** (`enabled:false`, `releaseReady:false`).
+The hosted Ecosystem dry run builds, assembles and browser-tests all five
+applications, but the publisher's own gates fail on the aggregate until the
+upstream runtime-policy fixes are merged and pinned (below).
+
+**Hosted dry run.** `Ecosystem dry run` (`aggregate-dry-run.yml`; manual, and on
+PRs that change the deployment) on `ubuntu-latest` with Node 22 and the lock's
+Node 24, Chromium plus system libraries: `build.mjs --rehearsal` (the pinned
+release build, allowed before `releaseReady`, never used by a publisher), public
+URL integrity, the browser suite, then every gate `build-pages` runs on an
+enabled aggregate, a live read-only API probe (informational) and a step summary.
+It uploads reports only; it has no Pages, OIDC or write permission.
+
+**Pinned sources** (each tree identical to its reviewed PR head):
+Telemetry `99ca01d4fde63481ea915cb08da30e97a9e6af18` (#22), Ghost Car
+`899493e75b3e261b3e23b2380d0874326bfcef34` (#21), TYRES
+`c780d95ffb678f9be710d5e92fce77ac997e0d9a` (#19, squash), BetCast
+`c6ac4e8cc4c19f49e8dc610220b5450216137e27` (#2).
+
+**Open before readiness:** runtime-policy fixes in Telemetry, Ghost Car and BetCast
+(pre-paint theme scripts as files; BetCast fonts self-hosted; the retired domain
+out of Ghost Car's page). After they merge: re-pin their merged commits (check
+the tree equals the reviewed head), and require a green hosted dry run on that
+commit.
+
+**Readiness PR** (after a green dry run on the final pins): `releaseReady:true`
+only. This changes no deployment: Deploy Pages still publishes Main alone while
+`enabled:false`; the setup action starts provisioning Node 24.
+
+**Activation PR** (separate, approved, quiet window): `enabled:true` in its own
+commit. Expected artifact: about 5,221 files and 370–380 MB (Main 4,152 files;
+Telemetry 183, Ghost Car 22, TYRES 837, BetCast 26), 487 sitemap URLs, report in
+the run's `deployment-manifest.json`. Before merging, record the current Pages
+deployment (Settings → Environments → github-pages) as the rollback reference.
+
+**First production deployment checks** (live, after the Deploy Pages run):
+`curl -sI https://f1-stories.gr/{telemetry,ghostcar,tyres,betcast}/` are 200;
+each page's `<link rel="canonical">` and `og:url` are `https://f1-stories.gr/<tool>/`
+(TYRES race pages: their own URL); `/deployment-manifest.json` shows the pinned
+SHAs; `/f1telemetry/?…#…` lands on `/telemetry/` with query and hash; the sitemap
+lists each tool once; an article, an author page and `/standings/` load unchanged;
+each tool loads live data; BetCast article embeds resize and follow the theme.
+
+**Rollback.** Revert the activation commit (`enabled:false`) and run Deploy Pages
+manually; it publishes the Main-only artifact again, stubs included. No DNS,
+domain, HTTPS or child Pages change; no content is deleted.
+
+**Old github.io sites** stay deployed and unchanged through all of this. Publish
+the prepared compatibility pages (`node scripts/deployment/redirects.mjs --site
+<artifact>`: per page, canonical + refresh + script keeping path, query and hash;
+not HTTP 301s) only after the first production deployment has passed the checks
+above, in each child repository, as a separately reviewed change.
