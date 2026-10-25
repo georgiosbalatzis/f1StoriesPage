@@ -1,51 +1,9 @@
 const crypto = require('crypto');
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 const { cardSrcset } = require('./image-sizes');
-const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime } = require('../taxonomy');
+const { authorLabel, formatDate, formatReadingTime } = require('../taxonomy');
 const { mediaAttributes, cardDisclosureHtml } = require('./media-meta');
-
-// `picturesOf(post)` lists keys of the photographs a post shows (cover and card); a candidate whose card repeats the
-// article's own cover or another chosen card is passed over, so one photograph appears once per page.
-function scoreRelatedPosts(blogPosts, post, index, picturesOf = () => []) {
-    const shown = new Set(picturesOf(post));
-    const distinct = candidate => {
-        const keys = picturesOf(candidate).slice(-1);
-        if (keys.some(key => shown.has(key))) return false;
-        keys.forEach(key => shown.add(key));
-        return true;
-    };
-    const taxonomy = getPostTaxonomy(post);
-    const genericTags = new Set(['f1', 'formula 1', 'racing', 'misc', 'random', 'images', 'gallery', 'gp']);
-    const tags = new Set(taxonomy.tags.map(tag => tag.toLocaleLowerCase()).filter(tag => !genericTags.has(tag)));
-    const scored = blogPosts
-        .filter((_, candidateIndex) => candidateIndex !== index)
-        .map(candidate => {
-            let score = 0;
-            const candidateTaxonomy = getPostTaxonomy(candidate);
-            const sharedTags = candidateTaxonomy.tags.filter(tag => tags.has(tag.toLocaleLowerCase()));
-            score += Math.min(sharedTags.length, 3) * 3;
-            if (candidateTaxonomy.category === taxonomy.category) score += 2;
-            if (candidate.author && candidate.author === post.author) score += 1;
-            score += taxonomy.categories.filter(category => candidateTaxonomy.categories.includes(category)).length;
-            const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
-            if (daysDiff <= 30) score += 1;
-            return { post: candidate, score };
-        })
-        .filter(item => item.score > 0)
-        .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
-
-    const relatedPosts = [];
-    for (const candidate of scored.map(item => item.post)) {
-        if (relatedPosts.length === 3) break;
-        if (distinct(candidate)) relatedPosts.push(candidate);
-    }
-    const ids = new Set(relatedPosts.map(candidate => candidate.id));
-    for (const [candidateIndex, candidate] of blogPosts.entries()) {
-        if (relatedPosts.length === 3) break;
-        if (candidateIndex !== index && !ids.has(candidate.id) && distinct(candidate)) relatedPosts.push(candidate);
-    }
-    return relatedPosts;
-}
+const { scoreRelatedPosts, approvedSubjects } = require('./related-score');
 
 // Content hashes of the post's cover file and card source (byte-identical reuse across stories counts as the same picture).
 const pictureHashes = new Map();
@@ -91,19 +49,21 @@ async function buildRelatedPostsHtml(relatedPosts) {
 
 // Every article page is rendered from the template on each build, so the RELATED_ARTICLES
 // slot is always fresh; pages without one (no article body) are left as they are.
-async function injectRelatedArticles(blogPosts) {
+// `options`: { today, subjects } as for scoreRelatedPosts.
+async function injectRelatedArticles(blogPosts, options = {}) {
     for (const [index, post] of blogPosts.entries()) {
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
         if (!fs.existsSync(postHtmlPath)) continue;
         const postHtml = fs.readFileSync(postHtmlPath, 'utf8');
         if (!/^[ \t]*RELATED_ARTICLES[ \t]*$/m.test(postHtml)) continue;
 
-        const relatedPostsHtml = await buildRelatedPostsHtml(scoreRelatedPosts(blogPosts, post, index, pictureKeysOf));
+        const relatedPostsHtml = await buildRelatedPostsHtml(scoreRelatedPosts(blogPosts, post, index, pictureKeysOf, options));
         fs.writeFileSync(postHtmlPath, postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml ? `            ${relatedPostsHtml}` : ''));
     }
 }
 
 module.exports = {
+    approvedSubjects,
     scoreRelatedPosts,
     buildRelatedPostsHtml,
     injectRelatedArticles

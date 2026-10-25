@@ -218,6 +218,16 @@ function categoryLink(category, className = '') {
     return href ? `<a href="${escapeHtmlAttribute(href)}"${attrs}>${label}</a>` : `<span${attrs}>${label}</span>`;
 }
 
+// The cover kicker names the story's section, then each approved topic hub it is an approved subject of
+// (`links`: { href, label } from buildHubLinks). Earlier topic links are replaced, so a withdrawn hub leaves the page
+// on the next build. The kicker stays on its one line, outside the article body.
+const KICKER = /(<p class="rr-kicker">)([^\n]*?)(<span id="reading-time-value">)/;
+const TOPIC_LINK = /<a href="\/blog-module\/blog\/entities\/[^"]*">[^<]*<\/a>/g;
+function withTopicLinks(html, links = []) {
+    return html.replace(KICKER, (block, open, inner, badge) => open + inner.replace(TOPIC_LINK, '')
+        + links.map(link => `<a href="${escapeHtmlAttribute(link.href)}">${escapeHtmlText(link.label)}</a>`).join('') + badge);
+}
+
 // Home → primary section → this story: the one hierarchy the cover strip shows and BreadcrumbList states.
 // A category without a section page falls back to the archive, never to an unrelated section.
 function articleBreadcrumb(category) {
@@ -596,6 +606,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
 module.exports = {
     renderArticleHtml,
     refreshArticleTaxonomy,
+    withTopicLinks,
     getEditorialProfile,
     renderAuthorCard,
     normalizeSourceReferences,

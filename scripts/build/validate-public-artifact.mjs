@@ -569,6 +569,7 @@ function loadSitemapUrls(errors) {
             return;
         }
         const normalized = normalizeSiteUrl(loc);
+        if (/[?#]/.test(loc)) errors.push(`${relPath}: loc ${loc} must be a static route without a query or fragment`);
         if (urls.has(normalized)) errors.push(`${relPath}: duplicate loc ${loc}`);
         urls.add(normalized);
         assertSiteUrlExists(errors, relPath, loc, 'sitemap loc');
@@ -874,6 +875,94 @@ function validateEditorialArticle(errors, html, relPath, editorialRefs) {
 }
 
 // JSON links need explicit validation; the HTML reference crawl never sees them.
+// ── Discovery link graph ─────────────────────────────────
+// Read during the one HTML walk: each page's static anchors (for reachability), its NEXT UP stories, its cover-kicker
+// topic links and any topic-hub links. Checked once the walk is done.
+const ENTITY_HREF = /^\/blog-module\/blog\/entities\//;
+function anchorPaths(html, relPath) {
+    const out = [];
+    for (const match of html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, '').matchAll(/<a\b[^>]*?\shref\s*=\s*(["'])(.*?)\1/gi)) {
+        const href = match[2].replace(/&amp;/g, '&').trim();
+        if (!href || href.startsWith('#')) continue;
+        let url;
+        try { url = new URL(href, `${SITE_ORIGIN}/${relPath}`); } catch (_) { continue; }
+        if (url.origin !== SITE_ORIGIN) continue;
+        let file = url.pathname;
+        try { file = decodeURIComponent(file); } catch (_) { /* keep encoded */ }
+        file = file.slice(1);
+        out.push({ path: url.pathname, file: !file || file.endsWith('/') ? `${file}index.html` : file });
+    }
+    return out;
+}
+export function collectDiscovery(discovery, html, relPath) {
+    const anchors = anchorPaths(html, relPath);
+    discovery.anchors.set(relPath, anchors.map(anchor => anchor.file));
+    const grid = html.indexOf('<div class="rr-next__grid">');
+    const nextUp = grid < 0 ? [] : anchorPaths(html.slice(grid, html.indexOf('<div class="article-navigation"', grid)), relPath);
+    const kicker = (/<p class="rr-kicker">[^\n]*?<span id="reading-time-value">/.exec(html) || [''])[0];
+    const topicBlocks = [...html.matchAll(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/g)].map(block => anchorPaths(block[0], relPath));
+    discovery.pages.set(relPath, {
+        nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_HREF.test(anchor.path)), topicBlocks,
+        hubLinks: anchors.filter(anchor => ENTITY_HREF.test(anchor.path)), redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
+    });
+}
+export function newDiscovery() {
+    return { anchors: new Map(), pages: new Map() };
+}
+// Every generated discovery link is a real, published, direct destination; approved hubs only; nothing duplicated
+// within one region; every sitemap page reachable from the homepage through static links.
+export function validateDiscoveryGraph(errors, discovery, sitemapUrls, {
+    distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles(), today = taxonomy.athensDay()
+} = {}) {
+    const dates = new Map();
+    try {
+        const data = JSON.parse(fs.readFileSync(path.join(distRoot, 'blog-module/blog-index-data.json'), 'utf8'));
+        (data.p || []).forEach(row => dates.set(`blog-module/blog-entries/${row[0]}/article.html`, row[3]));
+    } catch (error) {
+        errors.push(`discovery graph: cannot read blog-index-data.json (${error.message})`);
+    }
+    const duplicates = (anchors, label, relPath) => {
+        const seen = new Set();
+        anchors.forEach(anchor => {
+            if (seen.has(anchor.file)) errors.push(`${relPath}: duplicate ${label} link ${anchor.path}`);
+            seen.add(anchor.file);
+        });
+    };
+    for (const [relPath, page] of discovery.pages) {
+        duplicates(page.nextUp, 'NEXT UP', relPath);
+        duplicates(page.topics, 'topic', relPath);
+        page.topicBlocks.forEach(block => duplicates(block, 'topic list', relPath));
+        for (const anchor of page.nextUp) {
+            const date = dates.get(anchor.file);
+            if (anchor.file === relPath) errors.push(`${relPath}: NEXT UP links the story itself`);
+            else if (!date) errors.push(`${relPath}: NEXT UP links ${anchor.path}, which is not a published story`);
+            else if (!taxonomy.isDay(date) || date > today) errors.push(`${relPath}: NEXT UP links ${anchor.path}, dated ${date}`);
+            else if (discovery.pages.get(anchor.file)?.redirect) errors.push(`${relPath}: NEXT UP links the redirect page ${anchor.path}`);
+        }
+        for (const anchor of page.hubLinks) {
+            if (!approvedFiles.has(anchor.file)) errors.push(`${relPath}: links ${anchor.path}, which is not an approved public topic hub`);
+        }
+    }
+    for (const file of approvedFiles) {
+        const links = (discovery.anchors.get(file) || []).filter(target => /^blog-module\/blog-entries\/[^/]+\/article\.html$/.test(target));
+        if (!links.length) errors.push(`${file}: an approved topic hub must list its stories`);
+    }
+    // Reachability over static links from the homepage.
+    const reached = new Set(['index.html']);
+    const queue = ['index.html'];
+    while (queue.length) for (const next of discovery.anchors.get(queue.shift()) || []) {
+        if (!reached.has(next) && discovery.anchors.has(next)) { reached.add(next); queue.push(next); }
+    }
+    for (const url of sitemapUrls) {
+        const pathname = new URL(url).pathname;
+        let file = pathname;
+        try { file = decodeURIComponent(file); } catch (_) { /* keep encoded */ }
+        file = file.slice(1);
+        if (!file || file.endsWith('/')) file += 'index.html';
+        if (discovery.anchors.has(file) && !reached.has(file)) errors.push(`sitemap.xml: ${url} is not reachable from the homepage through static links`);
+    }
+}
+
 export function validateSearchDestinations(errors, distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles()) {
     const rel = 'blog-module/search-destinations.json';
     try {
@@ -919,6 +1008,7 @@ function main() {
     validateSearchDestinations(errors);
     validateHomepageHero(errors);
     validateRouteMarkers(errors, editorialRefs);
+    const discovery = newDiscovery();
 
     walk(DIST_ROOT, function (abs, relPath) {
         files.push(relPath);
@@ -940,9 +1030,11 @@ function main() {
             validateSearchMetadata(errors, html, relPath);
             validateHtmlRefs(errors, abs, relPath);
             validateSpriteRefs(errors, html, relPath);
+            collectDiscovery(discovery, html, relPath);
         }
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
+    validateDiscoveryGraph(errors, discovery, sitemapUrls);
     validateJsRefs(errors, files);
 
     if (errors.length) {

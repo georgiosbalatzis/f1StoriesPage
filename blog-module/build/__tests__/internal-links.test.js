@@ -321,3 +321,45 @@ test('a new article fails on a dead body link and is advised below two; legacy s
         fs.rmSync(root, { recursive: true, force: true });
     }
 });
+
+// ── Editorial linking opportunities (suggestions only) ──
+const { linkOpportunities } = require('../body-links');
+const opportunityPost = (id, date, tags = [], extra = {}) => ({ id, date, title: `Τίτλος ${id}`, categories: ['News'], tags, ...extra });
+const reportFor = (post, links = []) => ({ id: post.id, date: post.date, isNew: false, contextual: 0, links });
+
+test('the report counts section, article, later and unpublished body links separately', () => {
+    const counts = summarize([reportFor(opportunityPost('a', '2026-01-02'), [
+        { path: '/blog-module/blog/section/news/', kind: 'section' }, { path: '/x', kind: 'article' },
+        { path: '/y', kind: 'later' }, { path: '/z', kind: 'unpublished' }, { path: '/w', kind: 'hub' }])]);
+    assert.deepEqual([counts.sectionLinks, counts.articleLinks, counts.laterLinks, counts.unpublishedLinks, counts.hubLinks], [1, 1, 1, 1, 1]);
+});
+
+test('opportunities: approved subjects point newer to older, hubs are suggested, existing links are skipped', () => {
+    const posts = [opportunityPost('old', '2026-01-01'), opportunityPost('mid', '2026-02-01'), opportunityPost('new', '2026-03-01')];
+    const reports = [reportFor(posts[0]), reportFor(posts[1]), reportFor(posts[2], [{ path: '/blog-module/blog-entries/mid/article.html', kind: 'article' }])];
+    const subjects = new Map(posts.map(post => [post.id, new Set(['driver:x'])]));
+    const hubLinks = [{ href: '/blog-module/blog/entities/drivers/x/', label: 'Χ', articleIds: ['new', 'old'] }];
+    const out = linkOpportunities(reports, posts, { subjects, hubLinks, entityNames: new Map([['driver:x', 'Driver X']]) });
+    const pairs = out.map(item => `${item.source}>${item.target}`);
+    assert.deepEqual(pairs, [
+        'new>/blog-module/blog-entries/old/article.html',
+        'mid>/blog-module/blog-entries/old/article.html',
+        'new>/blog-module/blog/entities/drivers/x/',
+        'old>/blog-module/blog/entities/drivers/x/'
+    ], 'never older → newer, never an existing link (new already links mid)');
+    assert.ok(out.every(item => item.url.startsWith('https://f1-stories.gr/') && item.review.startsWith('yes')));
+    assert.match(out[0].reason, /Driver X/);
+    assert.deepEqual(linkOpportunities(reports, posts, { subjects, hubLinks }), linkOpportunities(reports, posts, { subjects, hubLinks }), 'deterministic');
+});
+
+test('opportunities from tags need an uncommon shared tag, are capped at ten and always need review', () => {
+    const common = Array.from({ length: 30 }, (_, i) => opportunityPost(`c${String(i).padStart(2, '0')}`, `2025-01-${String(i % 28 + 1).padStart(2, '0')}`, ['Ferrari']));
+    const rarePairs = Array.from({ length: 12 }, (_, i) => [
+        opportunityPost(`r${i}a`, '2026-01-01', [`Rare${i}`]), opportunityPost(`r${i}b`, '2026-02-01', [`Rare${i}`])]).flat();
+    const posts = [...common, ...rarePairs];
+    const out = linkOpportunities(posts.map(post => reportFor(post)), posts);
+    assert.equal(out.length, 10);
+    assert.ok(out.every(item => /^shared uncommon tags: rare\d+ \(on 2 stories\)$/.test(item.evidence)), 'a common tag alone never suggests a link');
+    assert.ok(out.every(item => /confirm the stories are really related/.test(item.review)));
+    assert.ok(out.every(item => item.source.endsWith('b') && item.target.endsWith('a/article.html')), 'newer links older');
+});

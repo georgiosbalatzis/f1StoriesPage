@@ -313,9 +313,12 @@ function sectionBody(ctx, section, page) {
         + sechead('ed-list-title', `Όλες οι ιστορίες · ${section.label}`, `${shown} από ${section.posts.length}${front.length ? ` · 1–${front.length} παραπάνω` : ''}`)
         + `<div id="articles-grid">${monthGroups(slice, ctx, { kickerOn: false, level: 4 })}</div>`
         + pagination(page, total, to => route.section(section.kind, to)) + '</section>' : '';
+    // Approved topics with at least one of their approved stories in this section; never a guess from tags.
+    const ids = new Set(section.posts.map(post => post.id));
+    const topics = topicsHtml(ctx.hubLinks.filter(link => (link.articleIds || []).some(id => ids.has(id))));
     const aside = '<aside class="ed-aside"><nav class="ed-aside__block" aria-label="Άλλες ενότητες"><h2 class="ed-label">Άλλες ενότητες</h2><ol class="ed-aside__list">'
         + model.sections.filter(other => other !== section).map(other => `<li data-kind="${other.kind}"><a href="${route.section(other.kind)}"><span>${esc(other.label)}</span>${num(other.posts.length)}</a></li>`).join('')
-        + `</ol></nav><p class="ed-aside__block"><a class="ed-sechead__more" href="${route.archive}">Αρχείο ανά μήνα →</a></p></aside>`;
+        + `</ol></nav>${topics}<p class="ed-aside__block"><a class="ed-sechead__more" href="${route.archive}">Αρχείο ανά μήνα →</a></p></aside>`;
     return `<section class="ed-section" data-kind="${section.kind}" aria-labelledby="ed-section-title">${head}${frontHtml}<div class="ed-columns">${list}${aside}</div></section>`;
 }
 
