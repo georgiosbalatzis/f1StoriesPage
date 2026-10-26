@@ -77,17 +77,51 @@ export const AUTHOR_GENERATE_CSP = [
     "frame-src 'self' https://www.youtube.com https://youtube.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1-stories.gr https://www.f1-stories.gr https://georgiosbalatzis.github.io"
 ].join('; ');
 
+// The deployed dashboard API (services/dashboard-api), e.g. https://dashboard-api.f1-stories.gr.
+// Empty until the owner deploys and tests it: the page then shows "unavailable" and the
+// policy below allows no connection at all. dashboard/index.html repeats this value in its
+// f1s-dashboard-api meta (a test keeps the two equal).
+export const DASHBOARD_API_ORIGIN = '';
+
+// dashboard/index.html: no inline code or style, no third party, and network access only to the API.
+export const DASHBOARD_CSP = [
+    "default-src 'none'",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "form-action 'none'",
+    "script-src 'self'",
+    "script-src-attr 'none'",
+    "style-src 'self'",
+    "style-src-attr 'none'",
+    "font-src 'self'",
+    "img-src 'self'",
+    `connect-src ${DASHBOARD_API_ORIGIN || "'none'"}`,
+    "frame-src 'none'",
+    "worker-src 'none'",
+    "manifest-src 'none'",
+    "media-src 'none'",
+    'upgrade-insecure-requests'
+].join('; ');
+
 export const CSP_PROFILES = Object.freeze({
     public: CONTENT_SECURITY_POLICY,
     'author-tools': AUTHOR_TOOLS_CSP,
-    'author-generate': AUTHOR_GENERATE_CSP
+    'author-generate': AUTHOR_GENERATE_CSP,
+    dashboard: DASHBOARD_CSP
 });
 
 // dist-relative HTML path → CSP profile. Everything else is public.
 export const PAGE_CSP_PROFILES = Object.freeze({
+    'dashboard/index.html': 'dashboard',
     'generate.html': 'author-generate',
     'housekeeping.html': 'author-tools'
 });
+
+// '/dashboard/index.html' → ['/dashboard/index.html', '/dashboard/']; '/generate.html' → [..., '/generate'].
+export function pageRoutes(relPath) {
+    const route = `/${relPath}`;
+    return [route, route.endsWith('/index.html') ? route.slice(0, -'index.html'.length) : route.replace(/\.html$/, '')];
+}
 
 export function cspProfileForPath(relPath) {
     const clean = String(relPath || '').replace(/^\/+/, '');
@@ -136,8 +170,7 @@ export function securityHeadersText() {
         ...SECURITY_HEADERS.map(([name, value]) => `  ${name}: ${value}`)
     ].join('\n')];
     for (const [relPath, profile] of Object.entries(PAGE_CSP_PROFILES)) {
-        const route = `/${relPath}`;
-        for (const pattern of [route, route.replace(/\.html$/, '')]) {
+        for (const pattern of pageRoutes(relPath)) {
             blocks.push(`${pattern}\n  Content-Security-Policy: ${CSP_PROFILES[profile]}`);
         }
     }

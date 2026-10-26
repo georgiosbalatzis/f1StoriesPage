@@ -38,6 +38,9 @@ const REQUIRED_EXACT = [
     '_headers',
     '404.html',
     'CNAME',
+    'dashboard/index.html',
+    'dashboard/dashboard.css',
+    'dashboard/dashboard.js',
     'generate.html',
     'housekeeping.html',
     'index.html',
@@ -134,8 +137,12 @@ function forbiddenReason(relPath) {
     if (relPath === 'images/icons/sprite.svg') return 'build-only icon sprite';
     if (/^images\/sponsors\/.*\.avif$/i.test(relPath)) return 'unused sponsor image variant';
     if (relPath === 'images/logo.png') return 'raw logo source';
+    if (/^services\//.test(relPath)) return 'server-side service source';
     return '';
 }
+
+// A Dashboard Access Key (services/dashboard-api/keys.mjs) or its verifier must never be published.
+const DASHBOARD_SECRET_PATTERN = /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}/;
 
 function resolvePublicPath(fromRelPath, ref) {
     const clean = String(ref || '').split('#')[0].split('?')[0].trim();
@@ -428,7 +435,7 @@ function validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticle
     validateJsonLd(errors, html, relPath, canonicalUrl);
 }
 
-const RESTRICTED_PAGES = new Set(['generate.html', 'housekeeping.html', 'f1telemetry/index.html', 'ghostcar/index.html', 'tyres/index.html']);
+const RESTRICTED_PAGES = new Set(['dashboard/index.html', 'generate.html', 'housekeeping.html','f1telemetry/index.html', 'ghostcar/index.html', 'tyres/index.html']);
 
 function isArticleDate(value) {
     if (articleDates.isCalendarDay(value)) return true;
@@ -1034,6 +1041,10 @@ function main() {
         const size = fs.statSync(abs).size;
         if (size > MAX_FILE_BYTES && !SIZE_ALLOWLIST.has(relPath)) {
             errors.push(`${relPath}: ${fmtBytes(size)} exceeds max ${fmtBytes(MAX_FILE_BYTES)}`);
+        }
+
+        if (/\.(?:html|js|json|css|txt|xml)$/i.test(relPath) && DASHBOARD_SECRET_PATTERN.test(fs.readFileSync(abs, 'utf8'))) {
+            errors.push(`${relPath}: contains a Dashboard Access Key or key verifier`);
         }
 
         if (/\.html$/i.test(relPath) && retiredPages.has(relPath)) {

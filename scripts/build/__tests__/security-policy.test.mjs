@@ -15,11 +15,13 @@ import {
     AUTHOR_TOOLS_CSP,
     CONTENT_SECURITY_POLICY,
     CSP_PROFILES,
+    DASHBOARD_API_ORIGIN,
     PAGE_CSP_PROFILES,
     REFERRER_POLICY,
     contentSecurityPolicyFor,
     cspProfileForPath,
     injectSecurityMeta,
+    pageRoutes,
     parseCsp,
     securityHeadersText,
     securityMetaHtml
@@ -93,8 +95,30 @@ const REVIEWED = {
             'https://www.youtube.com',
             'https://youtube.com'
         ]
+    },
+    // The dashboard login shell: nothing but its own files and, once deployed, its API.
+    dashboard: {
+        'default-src': ["'none'"],
+        'base-uri': ["'none'"],
+        'object-src': ["'none'"],
+        'form-action': ["'none'"],
+        'script-src': ["'self'"],
+        'script-src-attr': ["'none'"],
+        'style-src': ["'self'"],
+        'style-src-attr': ["'none'"],
+        'font-src': ["'self'"],
+        'img-src': ["'self'"],
+        'connect-src': [DASHBOARD_API_ORIGIN || "'none'"],
+        'frame-src': ["'none'"],
+        'worker-src': ["'none'"],
+        'manifest-src': ["'none'"],
+        'media-src': ["'none'"],
+        'upgrade-insecure-requests': []
     }
 };
+
+// Sources a profile may add beyond the public policy: the dashboard's own API exists nowhere else.
+const BEYOND_PUBLIC = { dashboard: new Set([`connect-src ${DASHBOARD_API_ORIGIN}`]) };
 
 const TOOL_PROFILES = Object.keys(REVIEWED);
 
@@ -141,6 +165,7 @@ test('the public policy is unchanged by the profile split', () => {
 
 test('tool pages map to their own profiles; everything else is public', () => {
     assert.deepEqual({ ...PAGE_CSP_PROFILES }, {
+        'dashboard/index.html': 'dashboard',
         'generate.html': 'author-generate',
         'housekeeping.html': 'author-tools'
     });
@@ -163,7 +188,7 @@ for (const profile of TOOL_PROFILES) {
     });
 
     test(`${profile}: is never broader than the public policy`, () => {
-        assert.deepEqual(notBroaderThanPublic(CSP_PROFILES[profile]), []);
+        assert.deepEqual(notBroaderThanPublic(CSP_PROFILES[profile]).filter(source => !BEYOND_PUBLIC[profile]?.has(source)), []);
     });
 
     test(`${profile}: allows no inline, eval, scheme-wide or wildcard script`, () => {
@@ -227,8 +252,23 @@ test('_headers keeps the public rule and adds each tool page policy', () => {
     const text = securityHeadersText();
     assert.ok(text.startsWith(`/*\n  Content-Security-Policy: ${CONTENT_SECURITY_POLICY}\n`));
     for (const [relPath, profile] of Object.entries(PAGE_CSP_PROFILES)) {
-        for (const route of [`/${relPath}`, `/${relPath.replace(/\.html$/, '')}`]) {
+        for (const route of pageRoutes(relPath)) {
             assert.ok(text.includes(`\n${route}\n  Content-Security-Policy: ${CSP_PROFILES[profile]}\n`), route);
         }
     }
+    assert.deepEqual(pageRoutes('dashboard/index.html'), ['/dashboard/index.html', '/dashboard/']);
+    assert.deepEqual(pageRoutes('generate.html'), ['/generate.html', '/generate']);
+});
+
+test('dashboard: fails closed until a same-site API origin is configured in both places', () => {
+    // SameSite session cookies reach the API only from the same site, so it must be a subdomain of f1-stories.gr.
+    if (DASHBOARD_API_ORIGIN) assert.match(DASHBOARD_API_ORIGIN, /^https:\/\/[a-z0-9-]+\.f1-stories\.gr$/);
+    else assert.deepEqual(parseCsp(CSP_PROFILES.dashboard).get('connect-src'), ["'none'"]);
+    const html = fs.readFileSync(path.join(REPO_ROOT, 'dashboard/index.html'), 'utf8');
+    const meta = [...html.matchAll(/<meta name="f1s-dashboard-api" content="([^"]*)">/g)].map(match => match[1]);
+    assert.deepEqual(meta, [DASHBOARD_API_ORIGIN], 'dashboard/index.html f1s-dashboard-api must equal DASHBOARD_API_ORIGIN');
+    assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
+    // Nothing inline: the page has its own script and stylesheet only, and no analytics or consent code.
+    assert.doesNotMatch(html.replace(/<script\b[^>]*\bsrc=[^>]*><\/script>/g, ''), /<script|<style|\sstyle=|\son[a-z]+=/i);
+    assert.deepEqual([...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]), ['/scripts/theme-init.min.js', '/dashboard/dashboard.js']);
 });

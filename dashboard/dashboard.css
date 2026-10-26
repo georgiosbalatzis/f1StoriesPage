@@ -1,0 +1,155 @@
+/* dashboard.css — /dashboard/ shell. Colors and type follow docs/design-tokens.json (editorial system). */
+
+:root {
+    --bg-base: #1b1a19;
+    --bg-surface: #242321;
+    --text-primary: #eee8db;
+    --text-secondary: #b6bbac;
+    --border: #4b5146;
+    --accent: #ff775f;
+    --accent-hover: #ff947f;
+    --accent-contrast: #20251f;
+    --signal: #ed4c32;
+    --font-body: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
+    --font-brand: 'Barlow Condensed', sans-serif;
+    --radius-control: 2px;
+    --control-height-md: 44px;
+    color-scheme: dark;
+}
+
+[data-theme="light"] {
+    --bg-base: #f2eee4;
+    --bg-surface: #e9e3d6;
+    --text-primary: #20251f;
+    --text-secondary: #5b6256;
+    --border: #c8c8b9;
+    --accent: #a82e1c;
+    --accent-hover: #8e281a;
+    --accent-contrast: #f2eee4;
+    color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.dash-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dash-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.dash-brand img { display: block; width: 40px; height: 40px; object-fit: contain; }
+
+.dash-wordmark {
+    font-family: var(--font-brand);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.dash-dot { color: var(--signal); }
+
+.dash-eyebrow {
+    margin-left: auto;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dash-main {
+    width: 100%;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: clamp(40px, 8vw, 96px) 1rem;
+}
+
+.dash-panel {
+    padding: 1.75rem 1.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--signal);
+}
+
+.dash-kicker {
+    margin: 0 0 0.4rem;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dash-panel h1 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-brand);
+    font-size: clamp(2rem, 7vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.dash-copy { margin: 0 0 1rem; color: var(--text-secondary); }
+
+.dash-form { display: grid; gap: 0.6rem; margin-top: 1.25rem; }
+
+.dash-form label { font-weight: 600; }
+
+.dash-form input {
+    width: 100%;
+    min-height: var(--control-height-md);
+    padding: 0 0.75rem;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    font: inherit;
+}
+
+.dash-error { margin: 0; color: var(--accent); font-weight: 600; }
+
+.dash-panel button {
+    min-height: var(--control-height-md);
+    padding: 0 1.25rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-control);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    justify-self: start;
+}
+
+.dash-panel button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.dash-panel button:disabled { opacity: 0.6; cursor: progress; }
+
+.dash-panel .dash-secondary { background: transparent; color: var(--text-primary); border-color: var(--border); }
+.dash-panel .dash-secondary:hover { background: var(--bg-base); border-color: var(--text-secondary); }
+
+.dash-brand:focus-visible,
+.dash-form input:focus-visible,
+.dash-panel button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

@@ -295,7 +295,7 @@ function collectPublicImageRefs() {
         }
     }
 
-    ['authors', 'ghostcar', 'f1telemetry', 'tyres', 'privacy'].forEach(dir => {
+    ['authors', 'dashboard', 'ghostcar', 'f1telemetry', 'tyres', 'privacy'].forEach(dir => {
         const absDir = path.join(REPO_ROOT, dir);
         if (!fs.existsSync(absDir)) return;
         for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
@@ -387,6 +387,8 @@ function shouldCopy(relPath) {
     if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
+    // The dashboard login shell only; its API (services/dashboard-api) is never published.
+    if (/^dashboard\/(?:index\.html|dashboard\.(?:css|js))$/.test(relPath)) return true;
 
     if (/^(?:ghostcar|f1telemetry|tyres|privacy)\//.test(relPath)) {
         return /\.html$/i.test(relPath);
