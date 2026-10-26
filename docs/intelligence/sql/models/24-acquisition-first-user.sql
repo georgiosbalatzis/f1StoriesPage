@@ -19,4 +19,4 @@ FROM site s
 CROSS JOIN window_bounds b
 WHERE s.event_name IN ('first_visit', 'session_start', 'page_view')
 GROUP BY 1, 2, 3, 4, 5, 6
-ORDER BY 10 DESC, 4, 5, 6;
+ORDER BY page_view_events DESC, 4, 5, 6;
