@@ -93,7 +93,9 @@ test('pinned standings require available season/round and preserve values/proven
     await page.locator('details').filter({ has: page.locator('#research-season') }).evaluate(node => { node.open = true; });
     assert.equal(await page.locator('#research-season').inputValue(), ''); assert.equal(await page.locator('#research-round').isDisabled(), true);
     await page.locator('#research-season').selectOption('2026');
-    assert.equal(await page.locator('#research-round option[value="18"]').count(), 0);
+    // The first round without a snapshot: the scheduled standings refresh keeps adding them.
+    const missing = Math.max(...fs.readdirSync(path.join(root, 'standings/rounds')).map(name => Number(/^2026-(\d+)\.json$/.exec(name)?.[1] || 0))) + 1;
+    assert.equal(await page.locator(`#research-round option[value="${missing}"]`).count(), 0);
     await page.locator('#research-round').selectOption('17');
     await page.waitForSelector('#research-standing-entry');
     const data = JSON.parse(fs.readFileSync(path.join(root, 'standings/rounds/2026-17.json')));
