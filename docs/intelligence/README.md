@@ -1,11 +1,15 @@
 # F1 Stories Intelligence — I-01 infrastructure and event inventory
 
-Status: **no model is production-validated.** The I-03, I-04 and I-05 models are statically tested only, and their
-BigQuery dry-runs are BLOCKED ([bigquery-validation.md](bigquery-validation.md)). The owner ran targeted, adapted
-exploratory queries over 2026-10-19 → 22, confirming 416 GA4 events and initial Web Vitals integrity. It has **not**
-been established that the repository's I-01 `sql/02` and `sql/03` were executed as written. The I-02 record (PR #353)
-was closed without merging, so no I-02 validation is on `main`. Nothing here changes tracking, consent, deployment,
-GA4 settings or BigQuery.
+Status: **all 20 I-03, I-04 and I-05 models are `PRODUCTION_EXECUTED`; none is production-validated.** The
+validation environment that prepared these docs has no BigQuery access, so its dry-runs were BLOCKED. On 2026-10-26
+the owner then executed every model in the BigQuery Console for 2026-10-19 → 22 (`as_of_day = 2026-10-26`, RUM
+time zone `America/Los_Angeles`). The reported reconciliations passed. Results, reconciliations and what is still
+outstanding: [bigquery-validation.md](bigquery-validation.md).
+
+The owner also ran targeted, adapted exploratory queries over the same days, confirming 416 GA4 events and initial
+Web Vitals integrity. It has **not** been established that the repository's I-01 `sql/02` and `sql/03` were
+executed as written. The I-02 record (PR #353) was closed without merging, so no I-02 validation is on `main`.
+Nothing here changes tracking, consent, deployment, GA4 settings or BigQuery.
 
 Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 `https://f1-stories.gr/deployment-manifest.json` (read 2026-10-26).
@@ -19,7 +23,7 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [performance-model.md](performance-model.md) | I-05: real-user LCP/INP/CLS (+FCP/TTFB) observations, p75 and ratings by coverage, page group, viewport, navigation type and period |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
 | [validation.md](validation.md) | I-01 report: what was checked, unknowns, SQL dry-run status, public artifact impact, the I-02 criteria and blockers as planned then |
-| [bigquery-validation.md](bigquery-validation.md) | Phase-1 BigQuery validation: per-model status, schema compatibility, owner dry-run commands, prepared production checks, blockers |
+| [bigquery-validation.md](bigquery-validation.md) | BigQuery validation: per-model status, the owner's Console results and reconciliations for 19–22 Oct, schema compatibility, owner commands, production checks, outstanding items |
 
 The Web Vitals contract and its p75 report are owned by [perf/rum-pilot/](../../perf/rum-pilot/README.md) and are
 referenced, not copied.

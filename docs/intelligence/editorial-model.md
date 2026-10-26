@@ -1,10 +1,11 @@
 # Editorial data model (I-03)
 
-Status: **reproducible and statically tested, not run in production.** The models have not been dry-run or executed
-against `f1-stories-analytics.analytics_485678890`. The synthetic tests check identity mapping, SQL text and SQL
-rules executed in JavaScript, and they prove nothing about production data. The I-02 record
-([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging. Current dry-run
-status and owner steps: [bigquery-validation.md](bigquery-validation.md).
+Status: **statically tested and `PRODUCTION_EXECUTED`, not production-validated.** On 2026-10-26 the owner executed
+`10`–`15` against `f1-stories-analytics.analytics_485678890` in the BigQuery Console, for 2026-10-19 → 22. The
+reported reconciliations passed: 40 article page-view events across 11 articles, and no unexplained unmapped
+events. The synthetic tests check identity mapping, SQL text and SQL rules executed in JavaScript, and they prove
+nothing about production data. The I-02 record ([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353))
+was closed without merging. Results and outstanding items: [bigquery-validation.md](bigquery-validation.md).
 
 ## Architecture
 
@@ -119,13 +120,13 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
 
 ## Still blocked
 
-I-02 (#353) was closed without merging, so nothing below has been done. See
-[bigquery-validation.md](bigquery-validation.md).
+I-02 (#353) was closed without merging. The owner's 19–22 Oct Console runs (`as_of_day = 2026-10-26`) cover the
+first execution. The owner reported 219.08 KB for `10`; no figure is recorded for the other models. Still open (see
+[bigquery-validation.md](bigquery-validation.md#outstanding)):
 - The 2026-10-19 → 25 validation; that window is not mature before 2026-10-29.
 - GA4 Admin confirmation that property `485678890` is `G-X68J6MQKSM`.
-- Then, per model: a dry-run under 100 MB, a `15-coverage` result showing the `analytics_storage` distribution, and
-  the first run with `@as_of_day` recorded. Only aggregate results are recorded, with no production-validated claim
-  before that.
+- Larger samples: 40 article page views in four days. Only aggregate results are recorded, with no
+  production-validated claim before these items close.
 
 ## Tests
 

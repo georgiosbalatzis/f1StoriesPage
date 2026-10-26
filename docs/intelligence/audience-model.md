@@ -1,10 +1,12 @@
 # Audience, acquisition and engagement models (I-04)
 
-Status: **statically tested, not run in production.** No I-04 model has been dry-run or executed. The I-03 models
-they sit beside are equally unvalidated ([editorial-model.md](editorial-model.md)). The I-02 record
+Status: **statically tested and `PRODUCTION_EXECUTED`, not production-validated.** On 2026-10-26 the owner executed
+`20`–`29` in the BigQuery Console for 2026-10-19 → 22. The three attribution scopes each reconcile to 84 page-view
+and 32 `session_start` events, and `29` shows no consent or host loss. The owner's `INFORMATION_SCHEMA` check found
+`default_channel_group` as `STRING` in `events_20261022`, which resolves the I-04 schema risk for that table. The I-03
+models have the same status ([editorial-model.md](editorial-model.md)). The I-02 record
 ([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging. The synthetic tests
-prove nothing about production data. Dry-run status and the top I-04 schema risk:
-[bigquery-validation.md](bigquery-validation.md).
+prove nothing about production data. Results and outstanding items: [bigquery-validation.md](bigquery-validation.md).
 
 ## Architecture
 
@@ -134,20 +136,23 @@ No session duration, bounce rate, retention or engagement time is derived. `enga
 - Use `@min_events = 30` before comparing rows. Do not show cells under 10 events outside the owner. Read 28-day
   windows first.
 - Countries under `@min_events` are merged automatically.
-- The owner reported 84 page views for 19–22 October (closed #353), so most daily, source and navigation rows will be flagged, and the
-  acquisition tables will be dominated by `unattributed` / `direct_or_unknown`.
+- The owner's Console run of `20` gave 84 page-view events for 19–22 October, so most daily, source and navigation
+  rows are flagged. The acquisition tables may still be dominated by `unattributed` / `direct_or_unknown`; the
+  per-field counts were not reported.
 
-## Unverified until a real dry-run and an authorized run
+## Checked by the owner's 19–22 Oct runs, and still unverified
 
-- That `collected_traffic_source` and `session_traffic_source_last_click` exist in `analytics_485678890`. They are
-  expected for an export linked in 2026, but not checked. `cross_channel_campaign.default_channel_group` is not on
-  Google's published schema page, which is the top dry-run risk
-  ([bigquery-validation.md](bigquery-validation.md#schema-compatibility-from-googles-published-schema-not-from-the-dataset)).
-- Their fill rates, and the GA4 channel vocabulary.
-- `analytics_storage` values.
-- `page_location` on the automatic events.
-- `device.category` and `geo.country` fill rates.
-- The property time zone.
+Checked ([bigquery-validation.md](bigquery-validation.md#owner-reported-results-bigquery-console-2026-10-19--22-as_of_day--2026-10-26)):
+- `collected_traffic_source` and `session_traffic_source_last_click` exist, because every I-04 model executed.
+  `cross_channel_campaign.default_channel_group` is not on Google's published schema page
+  ([bigquery-validation.md](bigquery-validation.md#schema-compatibility-from-googles-published-schema-not-from-the-dataset)),
+  but it exists as `STRING` in `events_20261022`. Other tables were not inspected.
+- `analytics_storage` and `page_location`: `29` lost no events through the consent or host filters among 168.
+- Page views by device (81 mobile, 3 desktop) and country (Greece 84) have no unknowns.
+- The property time zone: `America/Los_Angeles`.
+
+Still unverified:
+- Source and channel fill rates, and the GA4 channel vocabulary. The per-field counts from `29` were not reported.
 - That property `485678890` is `G-X68J6MQKSM`.
 
 ## Tests
