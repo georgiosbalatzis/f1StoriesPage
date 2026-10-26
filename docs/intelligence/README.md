@@ -1,7 +1,9 @@
 # F1 Stories Intelligence — I-01 infrastructure and event inventory
 
-Status: **inventory only.** Nothing here changes tracking, consent, deployment, GA4 settings or BigQuery. The SQL has
-**not** been executed or dry-run against any project (see [validation.md](validation.md)).
+Status: **inventory (I-01) plus interim production validation (I-02, final seven-day run pending).** Nothing here
+changes tracking, consent, deployment, GA4 settings or BigQuery. SQL 02 and 03 have been run read-only against the
+production export for 2026-10-19 → 22 (see [production-validation.md](production-validation.md)). The I-01 report
+([validation.md](validation.md)) records the state before that.
 
 Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 `https://f1-stories.gr/deployment-manifest.json` (read 2026-10-26).
@@ -11,7 +13,8 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [event-inventory.md](event-inventory.md) | Every emitted event and parameter, page/path classification, article identity, `/telemetry/` `/ghostcar/` `/tyres/` `/betcast/` coverage |
 | [metrics-contract.md](metrics-contract.md) | Metric definitions, units, versions, revision dedup, GA4 vs BigQuery, freshness, EU location, data minimization |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
-| [validation.md](validation.md) | What was checked, unknowns, SQL dry-run status, public artifact impact, I-02 acceptance criteria and blockers |
+| [validation.md](validation.md) | I-01: what was checked, unknowns, SQL dry-run status, public artifact impact, I-02 acceptance criteria and blockers |
+| [production-validation.md](production-validation.md) | I-02 (interim): verified export, 19–22 October aggregates, limitations, final checks before merge |
 
 The Web Vitals contract and its p75 report are owned by [perf/rum-pilot/](../../perf/rum-pilot/README.md) and are
 referenced, not copied.
