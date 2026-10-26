@@ -22,9 +22,12 @@ no bytes were measured, and no model below is production-validated. Nothing here
 | I-04 `20`–`29` | `STATICALLY_TESTED` | `BLOCKED` (no access) | not executed |
 | I-05 `30`–`33` | `STATICALLY_TESTED` | `BLOCKED` (no access) | not executed |
 
-**I-01 `sql/00`–`03`.** These are not re-run here. The owner reported running them on 2026-10-26: daily tables from
-2026-10-19, 416 events for 19–22 October, official Web Vitals present, production-host checks passing, and a 241.85
-KB estimate for `02`. That record exists only in the **closed, unmerged** PR #353. No I-02 validation is on `main`.
+**I-01 `sql/00`–`03`.** Not run here, and **not established as executed as written**. On 2026-10-26 the owner ran
+targeted, adapted exploratory BigQuery queries over 2026-10-19 → 22. They confirmed 416 GA4 events and initial Web
+Vitals integrity. The same owner report also gave daily tables from 2026-10-19, official Web Vitals present,
+production-host checks passing, and a 241.85 KB estimate for the owner's adapted inventory query. That estimate is
+not a measurement of repository `02`. The exact repository `02` and `03` still need a run of their own. That record
+exists only in the **closed, unmerged** PR #353. No I-02 validation is on `main`.
 
 ## Access check
 

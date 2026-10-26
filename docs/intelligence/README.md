@@ -1,9 +1,11 @@
 # F1 Stories Intelligence — I-01 infrastructure and event inventory
 
 Status: **no model is production-validated.** The I-03, I-04 and I-05 models are statically tested only, and their
-BigQuery dry-runs are BLOCKED ([bigquery-validation.md](bigquery-validation.md)). The owner reported running I-01 `02` and
-`03` on 2026-10-19 → 22, but that I-02 record (PR #353) was closed without merging, so no I-02 validation is on
-`main`. Nothing here changes tracking, consent, deployment, GA4 settings or BigQuery.
+BigQuery dry-runs are BLOCKED ([bigquery-validation.md](bigquery-validation.md)). The owner ran targeted, adapted
+exploratory queries over 2026-10-19 → 22, confirming 416 GA4 events and initial Web Vitals integrity. It has **not**
+been established that the repository's I-01 `sql/02` and `sql/03` were executed as written. The I-02 record (PR #353)
+was closed without merging, so no I-02 validation is on `main`. Nothing here changes tracking, consent, deployment,
+GA4 settings or BigQuery.
 
 Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 `https://f1-stories.gr/deployment-manifest.json` (read 2026-10-26).
