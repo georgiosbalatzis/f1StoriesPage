@@ -6,7 +6,7 @@ const test = require('node:test');
 const P = require('../url-policy');
 
 const SITE = 'https://f1-stories.gr';
-const GREEK_ID = '20260227Τ'; // Greek capital Tau, a real historical folder
+const GREEK_ID = '20260227Τ'; // Greek capital Tau: a real historical id, now a retired duplicate whose URL hands over
 
 // The contract's worked examples: headline → the slug an editor approves once, at first publication.
 const CASES = [

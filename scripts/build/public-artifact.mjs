@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
 import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 import { inlineHeadStylesheets } from './inline-head-css.mjs';
@@ -475,7 +476,15 @@ async function main() {
     assertPreservedPublicMedia(DIST_ROOT);
 
     const social = await buildSocialCards({ repoRoot: REPO_ROOT, distRoot: DIST_ROOT, htmlFiles: copied, maxBytes: PUBLIC_IMAGE_MAX_BYTES });
-    const publicFiles = copied.concat(social.files, writeSecurityHeadersFile()).sort();
+    // A retired duplicate keeps its URL as a hand-over page to the surviving article (blog-module/build/retired.js).
+    const retiredPages = retired.loadRetired().map(entry => {
+        const relPath = retired.articlePath(entry.id);
+        if (fs.existsSync(path.join(REPO_ROOT, path.dirname(relPath)))) throw new Error(`${path.dirname(relPath)}: a retired article must not have a folder`);
+        ensureDir(path.dirname(path.join(DIST_ROOT, relPath)));
+        fs.writeFileSync(path.join(DIST_ROOT, relPath), injectSecurityMeta(retired.stubHtml(entry), relPath), 'utf8');
+        return relPath;
+    });
+    const publicFiles = copied.concat(social.files, retiredPages, writeSecurityHeadersFile()).sort();
     console.log(`✓ social cards: ${social.files.length} JPEG files, ${social.records.filter(r => r.cacheHit).length} reused, ${social.records.filter(r => r.error).length} fallbacks, ${social.elapsedMs}ms`);
     const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
     const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);

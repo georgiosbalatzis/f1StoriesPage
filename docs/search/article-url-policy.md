@@ -21,8 +21,10 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
 
 - **Identity is the folder id**: date plus author code (`20260222T`, `20260610-2J`, older `20250505GF`, bare
   `20220101`). It is never derived from the title. The publication date is parsed from it (`shared.js` `parseDate`).
-- **Encoding:** the id is percent-encoded in URLs and raw on disk. One id is not ASCII: `20260227Τ` (Greek capital Tau
-  U+03A4) → `20260227%CE%A4`. Both forms resolve on GitHub Pages; Latin `20260227T` is a different, absent folder.
+- **Encoding:** the id is percent-encoded in URLs and raw on disk. The one non-ASCII id, `20260227Τ` (Greek capital
+  Tau U+03A4) → `20260227%CE%A4`, is now a retired duplicate (item 1 below); Latin `20260227T` is a different, absent folder.
+- **Retired duplicates** keep their URL as a hand-over page and appear in no listing, sitemap, feed or index
+  (`blog-module/build/retired.js`; checked by `validate-public-artifact.mjs` and the contract test).
 - **One address everywhere:** canonical, `og:url`, Article/NewsArticle `mainEntityOfPage`, the last BreadcrumbList item,
   the sitemap `loc`, the RSS `link` and `guid`, NEXT UP, prev/next, section, archive, author and hub links, the blog
   index search and the homepage. Root-relative or absolute; never relative.
@@ -45,9 +47,9 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
 
 ### Known inconsistencies (recorded, not changed here)
 
-1. **Duplicate article.** `20260227Τ` is a near-copy of `20260222T`: same title, same image files, 447 words, body
-   text 2 characters apart. Both are self-canonical, so one story is indexable at two URLs. Tau is not an author code,
-   so the copy shows the house byline. Owner decision: keep both, point one canonical at the other, or remove one.
+1. **Duplicate article (resolved 2026-10-26).** `20260227Τ` was an accidental copy of `20260222T` (same text and
+   images; the author code `T` typed as Greek Tau, so it showed the house byline). It is retired: the folder is gone and
+   its URL is a hand-over page (canonical + immediate meta refresh) to `20260222T`, listed in `blog-module/retired-articles.json`.
 2. **Sitemap encoding (fixed).** `sitemap.js` wrote the Greek URL as raw Unicode while every other surface used
    `%CE%A4`. It now percent-encodes the id like the canonical, and the tests require each `loc` to equal its canonical.
 3. **Mixed producers.** Encoded: `article-render.js`, `feed.js`, `sitemap.js`, `body-links.js`, `entities/hubs.js`,
@@ -232,8 +234,8 @@ From the code at f69700fe. B = new articles at `/stories/<slug>/`; C = historica
 
 ## Prerequisites
 
-Worth doing under A (each its own approved PR): freeze published folder ids in the housekeeping tool; decide the
-`20260227Τ` duplicate; decide whether scheduled articles may reach main. (Percent-encoding the sitemap `loc` is done.)
+Worth doing under A (each its own approved PR): freeze published folder ids in the housekeeping tool; decide whether
+scheduled articles may reach main. (Percent-encoding the sitemap `loc` and retiring the `20260227Τ` duplicate are done.)
 
 Before B: one URL helper used by every producer in the matrix; slug field (not named `slug` while `home-latest.json`
 uses it), author-tool assignment and uniqueness, frozen after publication; absolute asset URLs; validator, analytics
@@ -248,7 +250,8 @@ Checkpoint, not deadline: 2–4 weeks after the 2026-10-25 tool consolidation (a
 from Search Console:
 
 - indexed and not-indexed article URLs, with reasons;
-- "Duplicate, Google chose different canonical than user" (especially `20260227Τ` / `20260222T`);
+- "Duplicate, Google chose different canonical than user", and whether the retired `20260227Τ` is reported as a
+  redirect consolidated onto `20260222T`;
 - impressions and clicks for article pages, by URL;
 - crawl errors for `/blog-module/blog-entries/` paths.
 

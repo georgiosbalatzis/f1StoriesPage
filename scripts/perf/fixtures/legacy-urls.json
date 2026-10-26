@@ -42,6 +42,6 @@
     { "url": "/blog-module/blog/index.html?category=History&sort=oldest&page=2", "expect": { "category": "History", "sort": "oldest", "page": 2 } },
     { "url": "/blog-module/blog/index.html?author=themis-charvalis&category=History&q=%CF%83%CE%B7%CE%BC", "expect": { "author": "themis-charvalis", "category": "History", "query": "σημ" } }
   ],
-  "articles": ["20261012W", "20250301G", "20260929-2G", "20260923", "20250810WF", "20260227Τ"],
-  "siblings": ["/authors/", "/", "/sitemap.xml"]
+  "articles": ["20261012W", "20250301G", "20260929-2G", "20260923", "20250810WF", "20260222T"],
+  "siblings": ["/authors/", "/", "/sitemap.xml", "/blog-module/blog-entries/20260227%CE%A4/article.html"]
 }
