@@ -65,6 +65,22 @@ test('adding listing dates preserves Edition and article entries, URL order and 
     assert.equal(urls.at(-1).lastmod, '2026-10-20');
 });
 
+test('article locs percent-encode the folder id once and keep the path structure', () => {
+    const ids = ['20261020W', '20261020-2W', '20250505GF', '20260227Τ', '2026%CE'];
+    const urls = entries(renderSitemap(ids.map(id => post(id, '2026-10-20')), [], { today }))
+        .filter(entry => entry.loc.includes('/blog-entries/'));
+    const at = segment => `${origin}/blog-module/blog-entries/${segment}/article.html`;
+    // A literal % in a folder name is encoded too, never read as an existing escape.
+    assert.deepEqual(urls.map(entry => entry.loc),
+        [at('20261020W'), at('20261020-2W'), at('20250505GF'), at('20260227%CE%A4'), at('2026%25CE')]);
+    urls.forEach((entry, index) => {
+        const segments = new URL(entry.loc).pathname.split('/');
+        assert.deepEqual(segments.filter((_, i) => i !== 3), ['', 'blog-module', 'blog-entries', 'article.html']);
+        assert.equal(decodeURIComponent(segments[3]), ids[index]);
+        assert.equal(entry.lastmod, '2026-10-20');
+    });
+});
+
 test('repeated and later unchanged builds are identical; publication updates only relevant entries', () => {
     const posts = [post('old', '2026-10-20')];
     const before = renderSitemap(posts, [], { today });
@@ -112,7 +128,7 @@ test('generated sitemap XML has unique canonical URLs, existing targets and vali
         const html = fs.readFileSync(file, 'utf8');
         const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/);
         assert.ok(canonical, file);
-        assert.equal(new URL(canonical[1]).href, url.href, file);
+        assert.equal(canonical[1], entry.loc, file);
         if (entry.lastmod) assert.ok(isDay(entry.lastmod), entry.loc);
     }
     const result = dates(fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8'));

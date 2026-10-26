@@ -48,10 +48,10 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
 1. **Duplicate article.** `20260227Τ` is a near-copy of `20260222T`: same title, same image files, 447 words, body
    text 2 characters apart. Both are self-canonical, so one story is indexable at two URLs. Tau is not an author code,
    so the copy shows the house byline. Owner decision: keep both, point one canonical at the other, or remove one.
-2. **Sitemap encoding.** `sitemap.js` writes the Greek URL as raw Unicode while every other surface uses `%CE%A4`.
-   The sitemaps protocol expects RFC 3986 URLs; the fix is one `encodeURIComponent` and changes one sitemap line.
-3. **Mixed producers.** Encoded: `article-render.js`, `feed.js`, `body-links.js`, `entities/hubs.js`, `index.js`
-   (hero), `scripts/author/article-index.js`, the validators. Raw interpolation: `sitemap.js`, `nav.js`, `worker.js`
+2. **Sitemap encoding (fixed).** `sitemap.js` wrote the Greek URL as raw Unicode while every other surface used
+   `%CE%A4`. It now percent-encodes the id like the canonical, and the tests require each `loc` to equal its canonical.
+3. **Mixed producers.** Encoded: `article-render.js`, `feed.js`, `sitemap.js`, `body-links.js`, `entities/hubs.js`,
+   `index.js` (hero), `scripts/author/article-index.js`, the validators. Raw interpolation: `nav.js`, `worker.js`
    (`post.url`), `authors-page.js`, `author-pages.js`, `discovery.js` (`route.story`), `home-panels.js`,
    `blog-module/blog-index.js`. Equivalent for ASCII ids; browsers encode the one Greek id on request.
 4. **The id is mutable.** Editing an article's date or author in the housekeeping tool renames its folder: the URL
@@ -209,7 +209,7 @@ From the code at f69700fe. B = new articles at `/stories/<slug>/`; C = historica
 | `article-render.js` | canonical, `og:url`, JSON-LD, share URLs from the encoded folder URL | route through the helper | same | low once centralised |
 | article pages | 4,153 folder-relative asset refs | absolute asset URLs, or images under the new path | rewrite 413 pages | high |
 | `worker.js` | `post.url` raw; date and author parsed from the folder name | add the stored slug; keep date from the source, not the path | same | medium |
-| `sitemap.js` | raw id; no publication filter | helper, percent-encoding | drop legacy URLs | low |
+| `sitemap.js` | percent-encoded id; no publication filter | helper | drop legacy URLs | low |
 | `feed.js` | GUID = canonical, `isPermaLink="true"` | new GUIDs are new URLs | keep legacy GUIDs, `isPermaLink="false"` | high for C |
 | `nav.js` (prev/next) | literal legacy pattern, raw | helper | helper | low |
 | `related.js` / `related-score.js` | `post.url`; images by folder | helper; images by folder | same | low |
@@ -232,8 +232,8 @@ From the code at f69700fe. B = new articles at `/stories/<slug>/`; C = historica
 
 ## Prerequisites
 
-Worth doing under A (each its own approved PR): freeze published folder ids in the housekeeping tool; percent-encode
-the sitemap `loc`; decide the `20260227Τ` duplicate; decide whether scheduled articles may reach main.
+Worth doing under A (each its own approved PR): freeze published folder ids in the housekeeping tool; decide the
+`20260227Τ` duplicate; decide whether scheduled articles may reach main. (Percent-encoding the sitemap `loc` is done.)
 
 Before B: one URL helper used by every producer in the matrix; slug field (not named `slug` while `home-latest.json`
 uses it), author-tool assignment and uniqueness, frozen after publication; absolute asset URLs; validator, analytics
