@@ -438,7 +438,7 @@ async function measureBodySrcsets(html, entryPath, id) {
 }
 
 // Editorial facts come from the source's front matter at render time, so an entry reused from the cache renders
-// exactly like a rebuilt one (rebuilds follow file mtimes, which differ between machines).
+// exactly like a rebuilt one (whether an entry is rebuilt must never change its page).
 function sourceEditorialMetadata(entryPath) {
     const doc = fs.existsSync(entryPath) ? utils.findSourceDocument(fs.readdirSync(entryPath)) : null;
     if (!doc || !/\.(?:txt|md)$/i.test(doc)) return { categories: [] };

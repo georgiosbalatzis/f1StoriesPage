@@ -380,10 +380,10 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
 - **Ταυτότητα inputs.** Για κάθε άρθρο με source, το `inputDigest` (`build/input-digest.js`) υπολογίζει ένα SHA-256 από το όνομα και το περιεχόμενο των inputs του φακέλου: το `source.txt`/`.docx`, τις αρχικές εικόνες, τα CSV, τα embed `.html`/`.htm` και τα `embeds/*.f1embed.json`. Ό,τι γράφει το ίδιο το build δεν μετράει: το `article.html`, τα `.avif`, τα `-sm`/`-mobile`/`-card`/`-thumb` και τα telemetry SVG/JSON.
 - **Πού κρατιέται.** Μετά το build κάθε άρθρου, το digest γράφεται ως `inputDigest` στην εγγραφή του στο `blog-source-cache.json`. Το αρχείο είναι εσωτερικό: δεν ανεβαίνει στο `dist/` και δεν φτάνει σε σελίδα, feed ή index. Στο επόμενο build, ίδιο digest σημαίνει skip και διαφορετικό σημαίνει rebuild.
 - **Τι δεν το ακυρώνει.** Αλλαγές στο template, στα partials (nav, footer), στα σχετικά άρθρα, στους topic links και στο prev/next δεν χρειάζονται worker. Τις περνάει σε όλα τα άρθρα το render από το cache και το stamping σε κάθε build.
-- **Χρονοσφραγίδες.** Δεν παίζουν ρόλο όταν υπάρχει digest. Το build:html ξαναγράφει όλα τα `article.html` πριν από το build του blog, οπότε το `mtime` δεν δείχνει αν ένα source επεξεργάστηκε. Μόνο μια εγγραφή χωρίς `inputDigest` (από πριν υπάρξει το πεδίο) κρατά μία φορά τον παλιό κανόνα του `mtime` και παίρνει το digest της. Δεν γίνεται μαζικό rebuild.
+- **Χρονοσφραγίδες.** Δεν παίζουν ρόλο όταν υπάρχει digest. Το build:html ξαναγράφει όλα τα `article.html` πριν από το build του blog, οπότε το `mtime` δεν δείχνει αν ένα source επεξεργάστηκε. Μια εγγραφή χωρίς έγκυρο `inputDigest` (π.χ. ένας φάκελος που μόλις απέκτησε source) ξαναχτίζεται μία φορά και παίρνει το digest της, χωρίς να εξεταστούν χρόνοι αρχείων. Ένα άρθρο χωρίς εγγραφή στο cache χτίζεται πάντα. Όλες οι σημερινές εγγραφές έχουν digest, οπότε δεν γίνεται μαζικό rebuild.
 - **Cache που λείπει ή είναι άκυρο.** Χωρίς εγγραφή, το άρθρο χτίζεται. Ένα `inputDigest` που δεν είναι SHA-256 hex δεν εμπιστεύεται και το άρθρο ξαναχτίζεται. Το `build:data-contracts` ελέγχει τη μορφή.
 - **Άρθρα χωρίς source και γκαλερί.** Δεν έχουν digest και ακολουθούν την ίδια διαδρομή με πριν: το σώμα τους διατηρείται από το `article.html` και ξαναγίνεται μόνο το περίγραμμα της σελίδας.
-- **Τοπικά και GitHub Actions.** Το αποτέλεσμα είναι το ίδιο, αφού το digest εξαρτάται μόνο από το περιεχόμενο. Το workflow επαναφέρει ακόμη τα git mtimes (ενότητα 13), αλλά η ορθότητα δεν εξαρτάται πλέον από αυτό.
+- **Τοπικά και GitHub Actions.** Το αποτέλεσμα είναι το ίδιο, αφού το digest εξαρτάται μόνο από το περιεχόμενο. Το workflow δεν επαναφέρει πλέον git mtimes (ενότητα 13): ένα φρέσκο checkout, όπου όλα τα αρχεία έχουν την ίδια ώρα, δίνει τις ίδιες αποφάσεις.
 - **Έλεγχος ενός άρθρου.** Αλλάξτε το `source.txt` και τρέξτε `npm run build:public`. Στο log πρέπει να φαίνεται `1 built` και η αλλαγή στο `article.html` και στο `dist/`. Δεν χρειάζεται `touch` ούτε `--force`. Το `npm run test:incremental` κάνει τον ίδιο έλεγχο αυτόματα σε προσωρινό git worktree.
 
 ### 6.2 Παραλλαγές εικόνων
@@ -709,7 +709,7 @@ Site Quality  (build:public, guards, tests)  -- αποτυχία --> το PR μ�
 Publish Article: έλεγχος PR -> merge
         |
         v
-Site Maintenance (reusable, task: blog): mtimes -> blog build -> commit [skip ci] -> push main
+Site Maintenance (reusable, task: blog): blog build -> commit [skip ci] -> push main
         |
         v
 Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
@@ -741,7 +741,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 **Jobs:**
 
-- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα. Ο incremental έλεγχος πλέον συγκρίνει περιεχόμενο (`inputDigest`, ενότητα 6.1) και δεν εξαρτάται από το βήμα αυτό, που παραμένει μόνο για τις εγγραφές χωρίς digest. Μετά `node blog-module/blog-processor.js`, stamp των άρθρων και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`. Στο ίδιο job, το `build-pages` ετοιμάζει και ανεβάζει το Pages artifact από το checkout μετά το commit/rebase. Έτσι το συνηθισμένο article publish χρειάζεται ένα checkout και ένα `npm ci` για generation και packaging. Το χειροκίνητο/reusable blog task χωρίς αλλαγές παραλείπει packaging και deploy.
+- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό (η σειρά δημοσίευσης διαβάζεται από το git). Οι χρόνοι αρχείων του checkout δεν παίζουν ρόλο: ο incremental έλεγχος συγκρίνει περιεχόμενο (`inputDigest`, ενότητα 6.1). Μετά `node blog-module/blog-processor.js`, stamp των άρθρων και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`. Στο ίδιο job, το `build-pages` ετοιμάζει και ανεβάζει το Pages artifact από το checkout μετά το commit/rebase. Έτσι το συνηθισμένο article publish χρειάζεται ένα checkout και ένα `npm ci` για generation και packaging. Το χειροκίνητο/reusable blog task χωρίς αλλαγές παραλείπει packaging και deploy.
 - **`refresh_youtube`**: read-only checkout και `node scripts/build/fetch-youtube.mjs`, χωρίς να κρατά το lock δημοσίευσης άρθρων. Παράγει Git patch μόνο για το `assets/youtube-latest.json` και το `images/youtube/`, μαζί με προσθήκες και διαγραφές εικόνων.
 - **`refresh_standings_data`**: read-only checkout και `npm run build:standings-data`, επίσης χωρίς το lock άρθρων. Το patch περιλαμβάνει τα `standings/*-cache.json`, `standings/dirty-air/` και `standings/rounds/`, μαζί με διαγραμμένα snapshots.
 - **`publish_data`**: τρέχει μόνο όταν ένα refresh ολοκληρωθεί επιτυχώς με αλλαγές. Κατεβάζει το patch artifact (διατηρείται μία ημέρα) μέσω του μοναδικού ID του, κάνει νέο checkout του τρέχοντος `main` με πλήρες ιστορικό και εφαρμόζει `git apply --3way --index`. Έτσι διατηρεί άρθρα που δημοσιεύθηκαν όσο έτρεχε το fetch. Αν τα ίδια δεδομένα έχουν αλλάξει ασύμβατα στο μεταξύ, αποτυγχάνει πριν από το commit/push. Χρησιμοποιεί το `commit-and-push` με τα υπάρχοντα `chore(data): ... [skip ci]` μηνύματα, χωρίς Node setup ή `npm ci`.

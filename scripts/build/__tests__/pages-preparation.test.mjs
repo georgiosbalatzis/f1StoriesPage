@@ -25,6 +25,19 @@ test('trusted article generation prepares Pages with one checkout and dependency
     assert.doesNotMatch(preparation, /actions\/checkout|actions\/setup-node/);
 });
 
+test('article generation runs straight from a plain checkout, with unchanged triggers and privileges', () => {
+    const publisher = job(maintenance, 'publish_blog');
+    // Skip decisions compare content digests (blog-module/build/input-digest.js), so no step restores file times.
+    assert.equal(/mtime|touch -m|utimes/i.test(maintenance), false, 'no step restores file times');
+    const steps = publisher.split('\n    steps:\n')[1];
+    assert.match(steps, /^      - name: Checkout main\n.*\n        with:\n          ref: main\n          fetch-depth: 0\n          persist-credentials: false\n\n      - uses: \.\/\.github\/actions\/setup\n        id: setup\n\n      - name: Run blog processor\n        run: node blog-module\/blog-processor\.js\n/);
+    assert.match(maintenance, /\non:\n  schedule:\n[\s\S]*\n  push:\n    branches: \[main\]\n  workflow_call:\n[\s\S]*\n  workflow_dispatch:\n/);
+    assert.match(maintenance, /\npermissions: \{\}\n/);
+    assert.match(publisher, /^    needs: changes\n    permissions:\n      contents: write\n      pages: read #.*\n    if: >-\n/m);
+    assert.match(publisher, /\n    concurrency:\n      group: content-publishing\n      queue: max\n/);
+    assert.equal((maintenance.match(/contents: write/g) || []).length, 2, 'publish_blog and publish_data only');
+});
+
 test('ready artifacts skip building but failed, cancelled or unprepared builds cannot deploy', () => {
     const buildExpression = job(pages, 'build').match(/if: \$\{\{(.*?)\}\}/)[1];
     const deployExpression = job(pages, 'deploy').match(/if: \$\{\{(.*?)\}\}/)[1];
