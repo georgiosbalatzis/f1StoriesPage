@@ -12,7 +12,7 @@ Lewis Hamilton: να τερματίσει 5ος ή πιο πίσω.
 
 Μπορεί να μη γίνει αυτό πραγματικότητα, όμως οι πιθανότητες για αλλαγή ηγεσίας στο πρωτάθλημα είναι μηδαμινές.
 
-Εμείς εδώ, όπως στο καθιερωμένο μας GridCast πριν από κάθε αγώνα, θα αναλύσουμε όλα τα δεδομένα που έχουμε για το Circuit of the Americas (COTA).
+Εμείς εδώ, όπως στο [καθιερωμένο μας GridCast](/blog-module/blog-entries/20261008J/article.html) πριν από κάθε αγώνα, θα αναλύσουμε όλα τα δεδομένα που έχουμε για το Circuit of the Americas (COTA).
 
 <iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/austin/circuit/" title="Η πίστα: United States Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="434" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
 
