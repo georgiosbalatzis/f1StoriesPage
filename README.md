@@ -675,7 +675,12 @@ npm run build:public
    - δεν έχει αλλαγμένα αρχεία.
 
    Αν το PR αλλάζει οποιοδήποτε αρχείο **έξω** από το `blog-module/blog-entries/`, το job **αποτυγχάνει**.
-2. **Merge.** Τρέχει `gh pr merge --merge --delete-branch`.
+2. **Μόνιμες διευθύνσεις άρθρων.** Το `scripts/deployment/author-pr-guard.mjs`, από το `main` και όχι από το PR, ελέγχει το commit που πέρασε το Site Quality. Το job **αποτυγχάνει** και το PR μένει ανοιχτό για χειροκίνητο έλεγχο αν:
+   - το PR αγγίζει περισσότερους από έναν φακέλους άρθρων (π.χ. μετονομασία φακέλου, δηλαδή αλλαγή URL),
+   - ένα `author/edit/*` αλλάζει φάκελο που δεν υπάρχει στο `main`,
+   - ένα PR εκτός `author/delete/*` αφήνει τον φάκελο χωρίς `source.txt`/`.docx` ή `article.html`,
+   - ένα `author/delete/*` κάνει κάτι άλλο εκτός από αφαίρεση αρχείων ενός υπάρχοντος φακέλου.
+3. **Merge.** Τρέχει `gh pr merge --merge --delete-branch`.
 
 **Job `publish`:** αν έγινε merge, καλεί το `publish-blog.yml` ως reusable workflow με `task: blog`. Εκεί τρέχει το job `publish_blog` (build, commit, push) και, αν έγινε commit, το deploy (ενότητα 13.3). Το build του blog υπάρχει έτσι σε ένα μόνο σημείο.
 

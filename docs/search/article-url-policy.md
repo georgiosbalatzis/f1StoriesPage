@@ -57,6 +57,8 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
 4. **The id was mutable (fixed).** Editing an article's date or author in the housekeeping tool renamed its folder:
    the URL changed and the old one returned 404 with no redirect. A published folder id is permanent, so the tool now
    shows date and author read-only, refuses a changed value at save, and never derives the folder from the form.
+   Server side, Publish Article runs `scripts/deployment/author-pr-guard.mjs` before merging: an author PR may change
+   one article folder, must leave it publishable, and only `author/delete/*` may remove an article.
 5. **No publication gate for pages.** The feed, hubs and NEXT UP skip future-dated, draft and unpublished articles;
    the article page, sitemap and indexes do not (`docs/rss-feed.md`). The contract test now fails the build if such an
    article is in the artifact, so a scheduled article must not reach main before its day.
