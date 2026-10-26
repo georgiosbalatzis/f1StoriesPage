@@ -22,6 +22,9 @@
 //   node scripts/build/stamp-html.mjs --dry   # print planned edits only
 //   node scripts/build/stamp-html.mjs --article-ids=20260913G,20260912W
 //       Refresh only these articles; every article migration pass respects the scope.
+//   node scripts/build/stamp-html.mjs --articles-only
+//       Only the article passes, no shell pages and no minified CSS needed: `npm run build:blog` runs this so the
+//       pages it renders are in their committed (stamped) form, which entity evidence line numbers refer to.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -1155,9 +1158,15 @@ function asyncifyStylesheets(html, relPath) {
 
 function main() {
     articleScope = resolveArticleScope(process.argv.slice(2), REPO_ROOT);
+    const articlesOnly = process.argv.includes('--articles-only');
+    // A fresh checkout has no manifest before build:assets, which then stamps every article itself.
+    if (articlesOnly && !fs.existsSync(MANIFEST_PATH)) {
+        console.log('· article stamping skipped: no asset manifest yet (build:assets creates it and stamps every article)');
+        return;
+    }
     const manifest = loadManifest();
     const patterns = buildPatternsFromManifest(manifest);
-    const critical = loadCriticalCss(manifest);
+    const critical = articlesOnly ? null : loadCriticalCss(manifest);
     const fontsInfo = manifest[FONTS_SOURCE];
     if (!fontsInfo) {
         throw new Error(`manifest missing entry for ${FONTS_SOURCE} — run build:fonts then build:assets:minify`);
@@ -1186,7 +1195,7 @@ function main() {
     let totalArticleRuntimeHits = 0;
     let totalGtmDnsDrops = 0;
 
-    for (const rel of TARGET_HTML) {
+    for (const rel of articlesOnly ? [] : TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
         if (!fs.existsSync(abs)) {
             console.warn(`skip (missing): ${rel}`);

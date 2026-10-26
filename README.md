@@ -347,6 +347,8 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
 
 Το σημείο εισόδου είναι το `blog-module/build/index.js`. Το `blog-module/blog-processor.js`, που καλούν τα workflows, είναι απλώς wrapper του.
 
+Και τα δύο npm scripts τελειώνουν με `stamp-html.mjs --articles-only`, ώστε τα `article.html` να μένουν στη stamped μορφή τους. Σε αυτή τη μορφή αναφέρονται οι γραμμές των entity evidence για τα άρθρα χωρίς source, και έτσι ένα `npm run build:blog` μόνο του, όσες φορές κι αν τρέξει, δεν αλλάζει τις σελίδες. Αν δεν υπάρχει ακόμη `scripts/build/asset-manifest.json` (φρέσκο clone πριν από το `build:assets`), το stamping παραλείπεται: το κάνει το `build:assets`, που ακολουθεί στο `build:public`.
+
 ### 6.1 Βήματα
 
 1. **Εντοπισμός.** Διαβάζει όλους τους φακέλους του `blog-entries/` και αποφασίζει για τον καθένα αν θα χτιστεί, αν θα παραλειφθεί ή αν θα χρησιμοποιηθεί το cache.
