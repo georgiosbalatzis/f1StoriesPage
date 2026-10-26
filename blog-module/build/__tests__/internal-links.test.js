@@ -289,6 +289,30 @@ test('only distinct, existing, earlier F1 Stories destinations in the body count
     }
 });
 
+test('a percent-encoded Greek id counts as its article; a retired hand-over page never counts or is suggested', () => {
+    const { root } = linkSite();
+    try {
+        // A retired id keeps a hand-over page in the artifact (blog-module/build/retired.js) but is no published post.
+        write(root, 'blog-module/blog-entries/20260227Τ/article.html', '<meta http-equiv="refresh" content="0;url=/blog-module/blog-entries/20261001G/article.html">');
+        write(root, 'blog-module/blog-entries/20261002Λ/article.html', '<p>Ελληνικός φάκελος.</p>');
+        const visible = new Map([...published, ['20261002Λ', { id: '20261002Λ', date: '2026-10-02' }]]);
+        const html = '<a href="/blog-module/blog-entries/20261002%CE%9B/article.html">Λ</a> <a href="/blog-module/blog-entries/20260227%CE%A4/article.html">αποσυρμένο</a>';
+        const report = analyzeBody({ id: '20261026G', date: '2026-10-26' }, html, visible, root);
+        assert.deepEqual(report.links.map(link => [link.path, link.kind]), [
+            ['/blog-module/blog-entries/20261002Λ/article.html', 'article'],
+            ['/blog-module/blog-entries/20260227Τ/article.html', 'unpublished']]);
+        assert.equal(report.contextual, 1);
+        // Suggestions draw targets from published posts only, so a retired id is never proposed.
+        const posts = [...visible.values()].map(post => ({ ...post, title: post.id, categories: ['News'],
+            tags: ['20261026G', '20261002Λ'].includes(post.id) ? ['rare-tag'] : [post.id] }));
+        const targets = linkOpportunities(posts.map(post => ({ id: post.id, date: post.date, isNew: false, contextual: 0, links: [] })), posts)
+            .map(item => item.target);
+        assert.ok(targets.length > 0 && targets.every(target => !target.includes('20260227')));
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+});
+
 test('a new article fails on a dead body link and is advised below two; legacy stories only report', () => {
     const { root, body } = linkSite();
     const options = { today: '2026-10-29', root, isPublic: () => true };
