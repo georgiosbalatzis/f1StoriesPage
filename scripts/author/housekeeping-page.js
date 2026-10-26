@@ -257,7 +257,7 @@
 
     var editBackdrop  = byId('hk-edit-backdrop');
     var editFolderEl  = byId('hk-edit-folder');
-    var editFolderNote = byId('hk-edit-folder-note');
+    var editIdentityNote = byId('hk-edit-identity-note');
     var editTagEl     = byId('hk-edit-tag');
     var editCatEl     = byId('hk-edit-category');
     var editAuthorEl  = byId('hk-edit-author');
@@ -297,17 +297,6 @@
         tokenBtn.classList.toggle('has-token', has);
     }
 
-    // Mirrors blog-processor.js AUTHOR_MAP — changing author on an
-    // edit rewrites the folder name so the processor picks up the
-    // right code (author from source is hard-overridden by the code
-    // in the folder name).
-    var AUTHOR_CODES = {};
-    window.F1S_TAXONOMY.AUTHORS.forEach(function (author) { AUTHOR_CODES[author.name] = author.code; });
-    var AUTHOR_CODE_TO_NAME = {};
-    Object.keys(AUTHOR_CODES).forEach(function (name) {
-        AUTHOR_CODE_TO_NAME[AUTHOR_CODES[name]] = name;
-    });
-
     // "20260416G" → { date: "2026-04-16", suffix: null, authorCode: "G" }
     // "20260416-2G" → { date: "2026-04-16", suffix: 2,    authorCode: "G" }
     function folderParts(folderName) {
@@ -318,11 +307,6 @@
             suffix:     m[4] ? Number(m[4]) : null,
             authorCode: m[5] || ''
         };
-    }
-    function buildFolderName(isoDate, authorCode, suffix) {
-        var digits = String(isoDate || '').replace(/-/g, '');
-        if (!/^\d{8}$/.test(digits)) return null;
-        return digits + (suffix ? '-' + suffix : '') + (authorCode || '');
     }
     async function findNextFolderSuffix(token, isoDate, authorCode) {
         var digits = String(isoDate).replace(/-/g, '');
@@ -1391,25 +1375,12 @@
         renderEditExcerpt();
         editImagesEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση…'));
 
-        // Seed author + date from the folder name (single source of truth — the
-        // processor derives both from the folder prefix). Non-standard folder
-        // names cannot be rebuilt from the form, so author and date are locked
-        // and the save keeps the folder (and URL) as it is.
-        var parts = folderParts(post.id);
-        var locked = !parts;
-        if (parts) {
-            editAuthorEl.value = AUTHOR_CODE_TO_NAME[parts.authorCode] || 'F1 Stories Team';
-            editDateEl.value = parts.date;
-        } else {
-            editAuthorEl.value = post.author || 'F1 Stories Team';
-            editDateEl.value = (post.dateISO || post.date || '').slice(0, 10);
-        }
-        editAuthorEl.disabled = locked;
-        editDateEl.disabled = locked;
-        editFolderNote.hidden = !locked;
-        editFolderNote.textContent = locked
-            ? 'Το όνομα φακέλου «' + post.id + '» δεν είναι τυπικό. Συντάκτης και ημερομηνία δεν αλλάζουν εδώ, ώστε ο φάκελος και το URL να μείνουν ίδια.'
-            : '';
+        // Every article listed here is published (the list is the public index). Its folder name is its permanent
+        // URL and the source of its date (and, for standard names, its author), so both are shown read-only.
+        editAuthorEl.value = post.author || 'F1 Stories Team';
+        editDateEl.value = (post.dateISO || post.date || '').slice(0, 10);
+        // What the form showed at open; the save refuses anything else (the DOM can be changed).
+        var identity = { author: editAuthorEl.value, date: editDateEl.value };
 
         editBackdrop.classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -1436,8 +1407,7 @@
             renderEditTitleWarnings();
             renderEditExcerpt();
 
-            // 3. Compute existing slots from folder, keep full file list so we
-            //    can rename the folder by reusing blob SHAs for non-slot files.
+            // 3. Compute existing slots from folder.
             var slots = slotsInFolder(files);
             var slotMap = {};
             slots.forEach(function (n) { slotMap[n] = filesForSlot(files, n); });
@@ -1446,10 +1416,9 @@
                 token: token,
                 post: post,
                 folder: post.id,
-                folderLocked: locked,
+                identity: identity,
                 srcName: srcFile.name,
                 sourceMetadata: parsed.metadata,
-                files: files,
                 slotMap: slotMap,      // slot → [{ name, sha, ... }]
                 imageOps: {},          // slot → { op, file }
                 addContent: []         // File[] to append at slot 3/4/… beyond current max
@@ -1608,136 +1577,67 @@
     editSaveBtn.addEventListener('click', async function () {
         if (!editState) return;
         var token = editState.token;
-        var oldFolder = editState.folder;
+        // A published article keeps its folder, and with it its URL, date and author.
+        var folder = editState.folder;
 
         var tag       = editTagEl.value.trim();
         var category  = editCatEl.value;
         var title     = editTitleEl.value.trim();
         var body      = editBodyEl.value.trim();
-        var isoDate   = (editDateEl.value || '').trim();
-        var authorName = editAuthorEl.value;
-        var authorCode = AUTHOR_CODES[authorName];
-        if (authorCode === undefined) authorCode = '';
 
-        if (!title)   { await showAlert('Ο τίτλος είναι υποχρεωτικός.'); editTitleEl.focus(); return; }
-        if (!body)    { await showAlert('Το κείμενο είναι υποχρεωτικό.');  editBodyEl.focus();  return; }
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
-            await showAlert('Χρειάζεται έγκυρη ημερομηνία (YYYY-MM-DD).');
-            editDateEl.focus();
+        if (editAuthorEl.value !== editState.identity.author || editDateEl.value !== editState.identity.date) {
+            await showAlert(editIdentityNote.textContent);
             return;
         }
+        if (!title)   { await showAlert('Ο τίτλος είναι υποχρεωτικός.'); editTitleEl.focus(); return; }
+        if (!body)    { await showAlert('Το κείμενο είναι υποχρεωτικό.');  editBodyEl.focus();  return; }
 
-        // The folder name encodes date + author — rebuild it from the form.
-        // Keep the existing -N suffix if the source folder had one so we
-        // don't collide with other same-day posts by the same author.
-        // Non-standard folders keep their name (author/date are locked).
-        var newFolder = oldFolder;
-        if (!editState.folderLocked) {
-            var oldParts = folderParts(oldFolder);
-            newFolder = buildFolderName(isoDate, authorCode, oldParts.suffix);
-            if (!newFolder) { await showAlert('Δεν γίνεται να σχηματιστεί όνομα φακέλου από ημερομηνία/συντάκτη.'); return; }
-        }
-
-        var isRename = (newFolder !== oldFolder);
-
-        // A renamed folder is a new article for the build, and a description once written stays required.
+        // A description once written stays required.
         var excerpt = articleSource.normalizeExcerpt(editExcerptEl.value);
         var excerptIssue = articleSource.excerptIssues(excerpt)[0];
-        if (excerptIssue && (excerpt || isRename || articleSource.normalizeExcerpt(editState.sourceMetadata.excerpt))) {
-            await showAlert(articleSource.excerptMessage(excerptIssue) + (excerpt ? '' : isRename
-                ? ' Η αλλαγή συντάκτη ή ημερομηνίας δημιουργεί νέο φάκελο, άρα νέο άρθρο.'
-                : ' Το άρθρο έχει ήδη περιγραφή· διόρθωσέ τη αντί να τη σβήσεις.'));
+        if (excerptIssue && (excerpt || articleSource.normalizeExcerpt(editState.sourceMetadata.excerpt))) {
+            await showAlert(articleSource.excerptMessage(excerptIssue) + (excerpt ? '' : ' Το άρθρο έχει ήδη περιγραφή· διόρθωσέ τη αντί να τη σβήσεις.'));
             editExcerptEl.focus();
             return;
         }
         if (excerpt) editState.sourceMetadata.excerpt = excerpt;
         else delete editState.sourceMetadata.excerpt;
 
-        // Collision check: if the computed folder already exists elsewhere,
-        // offer the next free -N suffix or abort.
-        if (isRename) {
-            var exists = false;
-            try {
-                await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(newFolder), token);
-                exists = true;
-            } catch (e) {
-                if (e.status !== 404) throw e;
-            }
-            if (exists) {
-                var pickNext = await showConfirm(
-                    'Ο φάκελος προορισμού υπάρχει ήδη:\n\n  blog-entries/' + newFolder + '\n\nΝα χρησιμοποιηθεί το επόμενο ελεύθερο -N;',
-                    { title: 'Ο φάκελος υπάρχει', okLabel: 'Επόμενο -N', cancelLabel: 'Ακύρωση αποθήκευσης' }
-                );
-                if (!pickNext) return;
-                newFolder = await findNextFolderSuffix(token, isoDate, authorCode);
-            }
-        }
-
-        // Plan: deletes are full folder-relative paths, additions carry either
-        // a File (new upload) or a reuseSha (keep existing blob at new path).
+        // Plan: deletes are full folder-relative paths, additions carry a File (new upload) or text.
         var newSource = buildSourceTxt(tag, category, title, body, editState.sourceMetadata);
         var deletes = [];
         var additions = [];
 
-        additions.push({ path: newFolder + '/' + editState.srcName, text: newSource });
+        additions.push({ path: folder + '/' + editState.srcName, text: newSource });
 
         var existingSlots = Object.keys(editState.slotMap).map(Number);
         var maxSlot = existingSlots.length ? Math.max.apply(null, existingSlots) : 2;
         var nextSlot = Math.max(maxSlot + 1, 3);
 
-        if (isRename) {
-            // Rename = wipe everything from the old folder and re-land it
-            // under the new name. Kept images reuse the existing blob SHA so
-            // we don't re-upload megabytes of variants.
-            editState.files.forEach(function (f) {
-                if (f.type === 'file') deletes.push(oldFolder + '/' + f.name);
-            });
-            Object.keys(editState.imageOps).forEach(function (slotStr) {
-                var slot = Number(slotStr);
-                var op = editState.imageOps[slot];
-                var currentFiles = editState.slotMap[slot] || [];
-                if (op.op === 'keep') {
-                    currentFiles.forEach(function (f) {
-                        additions.push({ path: newFolder + '/' + f.name, reuseSha: f.sha });
-                    });
-                } else if (op.op === 'replace') {
-                    additions.push({ path: newFolder + '/' + slot + '.webp', file: op.file, convertToWebp: true });
-                }
-                // 'remove' → drop; already deleted above
-            });
-        } else {
-            // Same folder — only touch slots with an op attached.
-            Object.keys(editState.imageOps).forEach(function (slotStr) {
-                var slot = Number(slotStr);
-                var op = editState.imageOps[slot];
-                var currentFiles = editState.slotMap[slot] || [];
-                if (op.op === 'replace') {
-                    currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
-                    additions.push({ path: oldFolder + '/' + slot + '.webp', file: op.file, convertToWebp: true });
-                } else if (op.op === 'remove') {
-                    currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
-                }
-            });
-        }
+        // Only touch slots with an op attached.
+        Object.keys(editState.imageOps).forEach(function (slotStr) {
+            var slot = Number(slotStr);
+            var op = editState.imageOps[slot];
+            var currentFiles = editState.slotMap[slot] || [];
+            if (op.op === 'replace') {
+                currentFiles.forEach(function (f) { deletes.push(folder + '/' + f.name); });
+                additions.push({ path: folder + '/' + slot + '.webp', file: op.file, convertToWebp: true });
+            } else if (op.op === 'remove') {
+                currentFiles.forEach(function (f) { deletes.push(folder + '/' + f.name); });
+            }
+        });
 
         editState.addContent.forEach(function (file, idx) {
             var slot = nextSlot + idx;
-            additions.push({ path: newFolder + '/' + slot + '.webp', file: file, convertToWebp: true });
+            additions.push({ path: folder + '/' + slot + '.webp', file: file, convertToWebp: true });
         });
 
-        var newUploadCount = additions.filter(function (a) { return a.file || a.text != null; }).length;
-        var summary = isRename
-            ? ('Μετονομασία + αποθήκευση:\n\n' +
-               '  ' + oldFolder + '\n    ↓\n  ' + newFolder + '\n\n' +
-               '• ' + plural(editState.files.length, 'αρχείο', 'αρχεία') + ' μεταφέρονται\n' +
-               '• ' + plural(newUploadCount, 'ανέβασμα', 'ανεβάσματα') + ' (source + νέες/αντικατεστημένες εικόνες)\n' +
-               '• Οι εικόνες που μένουν μεταφέρονται με SHA (χωρίς νέο ανέβασμα)\n' +
-               '• Το URL του άρθρου αλλάζει')
-            : ('Αποθήκευση στο ' + oldFolder + ';\n\n' +
+        var newUploadCount = additions.length;
+        var summary = 'Αποθήκευση στο ' + folder + ';\n\n' +
                '• Το source.txt ξαναγράφεται\n' +
                '• ' + plural(deletes.length, 'αρχείο', 'αρχεία') + ' για διαγραφή\n' +
                '• ' + plural(newUploadCount - 1, 'ανέβασμα εικόνας', 'ανεβάσματα εικόνων') +
-               (editState.addContent.length ? ' (' + editState.addContent.length + ' νέες)' : ''));
+               (editState.addContent.length ? ' (' + editState.addContent.length + ' νέες)' : '');
         if (!(await showConfirm(summary, { title: 'Άνοιγμα PR επεξεργασίας', okLabel: 'Άνοιγμα PR' }))) return;
 
         editSaveBtn.disabled = true;
@@ -1750,10 +1650,6 @@
             var pathToSha = {};
             for (var i = 0; i < additions.length; i++) {
                 var a = additions[i];
-                if (a.reuseSha) {
-                    pathToSha[a.path] = a.reuseSha;
-                    continue;
-                }
                 editStatusEl.textContent = 'Ανέβασμα ' + a.path + ' (' + (i + 1) + '/' + additions.length + ')…';
                 var uploadFile = a.file;
                 if (uploadFile && a.convertToWebp) {
@@ -1776,18 +1672,16 @@
                 tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: pathToSha[p] });
             });
 
-            var commitMsg = isRename
-                ? ('edit(blog): rename ' + oldFolder + ' to ' + newFolder + ' (' + title + ')')
-                : ('edit(blog): ' + title + ' (' + oldFolder + ')');
+            var commitMsg = 'edit(blog): ' + title + ' (' + folder + ')';
             var post = editState.post;
             var prResult = await createAuthorPullRequest(
                 token,
                 'edit',
-                newFolder,
+                folder,
                 tree,
                 commitMsg,
                 commitMsg,
-                'Author tool edit for `' + ENTRIES_PATH + '/' + oldFolder + '`' + (isRename ? ' -> `' + ENTRIES_PATH + '/' + newFolder + '`.' : '.'),
+                'Author tool edit for `' + ENTRIES_PATH + '/' + folder + '`.',
                 function (msg) { editStatusEl.textContent = msg; }
             );
 

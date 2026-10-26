@@ -54,9 +54,9 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
    `index.js` (hero), `scripts/author/article-index.js`, the validators. Raw interpolation: `nav.js`, `worker.js`
    (`post.url`), `authors-page.js`, `author-pages.js`, `discovery.js` (`route.story`), `home-panels.js`,
    `blog-module/blog-index.js`. Equivalent for ASCII ids; browsers encode the one Greek id on request.
-4. **The id is mutable.** Editing an article's date or author in the housekeeping tool renames its folder: the URL
-   changes and the old one returns 404 with no redirect. Under this policy a **published** folder id is permanent;
-   until the tool enforces it, editors must not change the date or author of a published article.
+4. **The id was mutable (fixed).** Editing an article's date or author in the housekeeping tool renamed its folder:
+   the URL changed and the old one returned 404 with no redirect. A published folder id is permanent, so the tool now
+   shows date and author read-only, refuses a changed value at save, and never derives the folder from the form.
 5. **No publication gate for pages.** The feed, hubs and NEXT UP skip future-dated, draft and unpublished articles;
    the article page, sitemap and indexes do not (`docs/rss-feed.md`). The contract test now fails the build if such an
    article is in the artifact, so a scheduled article must not reach main before its day.
@@ -226,7 +226,7 @@ From the code at f69700fe. B = new articles at `/stories/<slug>/`; C = historica
 | `validate-data-contracts.mjs` | article path and GUID = canonical | accept story routes | legacy GUID rule | medium |
 | `public-artifact.mjs`, `article-scope.mjs`, `stamp-html.mjs` | copy and stamp `blog-entries/*/article.html` | also `stories/*/index.html` | same | medium |
 | author tool (`generate-page.js`) | folder = date + author code, `-N` on collision | slug field, uniqueness check, preview | none | medium |
-| housekeeping tool | renames the folder on date/author edits | freeze id and slug after publication | same | **high (fix under A too)** |
+| housekeeping tool | keeps the folder; date and author read-only | freeze the slug after publication too | same | low |
 | `404.html` / GitHub Pages | plain 404, no fallback | none | needs proxy or other host for 301s | **blocking for C** |
 | Search Console | no data in the repository | baseline before launch | coverage and canonical baseline first | blocking for C |
 

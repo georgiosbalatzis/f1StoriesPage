@@ -108,7 +108,7 @@ test('artifact: nothing unreleased or future-dated is public', t => {
     if (!built(t)) return;
     const today = athensDay();
     for (const p of site().posts) {
-        assert.ok(p.date <= today, `${p.id}: dated ${p.date}, after ${today}`);
+        assert.ok(p.date <= today, `${p.id}: dated ${p.date}, after ${today}; keep it off main until then (docs/rss-feed.md)`);
         assert.ok(![true, 'true'].includes(p.draft) && ![false, 'false'].includes(p.published)
             && (!p.status || p.status === 'published'), `${p.id}: not released`);
     }
