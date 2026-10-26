@@ -10,6 +10,7 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | --- | --- |
 | [event-inventory.md](event-inventory.md) | Every emitted event and parameter, page/path classification, article identity, `/telemetry/` `/ghostcar/` `/tyres/` `/betcast/` coverage |
 | [metrics-contract.md](metrics-contract.md) | Metric definitions, units, versions, revision dedup, GA4 vs BigQuery, freshness, EU location, data minimization |
+| [editorial-model.md](editorial-model.md) | I-03: article metadata mapping, identity normalization, article/category/engagement/discovery/age SQL models |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
 | [validation.md](validation.md) | What was checked, unknowns, SQL dry-run status, public artifact impact, I-02 acceptance criteria and blockers |
 

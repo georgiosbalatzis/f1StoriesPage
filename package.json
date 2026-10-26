@@ -41,6 +41,7 @@
     "links:report": "node blog-module/build/body-links.js",
     "descriptions:report": "node blog-module/build/description.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",
+    "test:intelligence": "node --test scripts/intelligence/__tests__/*.test.mjs",
     "test:standings": "node --test standings/core/__tests__/*.test.mjs",
     "test:security": "node --test scripts/build/__tests__/security-policy.test.mjs scripts/quality/__tests__/*.test.mjs",
     "pages:guard": "node scripts/build/pages-source-guard.mjs",
