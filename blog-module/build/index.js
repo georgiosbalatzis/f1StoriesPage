@@ -16,6 +16,7 @@ const { generateSitemap } = require('./sitemap');
 const { generateFeed } = require('./feed');
 const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles, approvedSubjects } = require('./related');
+const { inputDigest, isInputDigest } = require('./input-digest');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy, withTopicLinks } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
@@ -938,7 +939,7 @@ function classifyEntry(entryPath, options = {}) {
         return {
             folderName,
             kind: 'source-backed',
-            action: utils.shouldSkip(entryPath, forceRebuild) ? 'skip' : 'build',
+            action: utils.shouldSkip(entryPath, forceRebuild, cachedPostsById.get(folderName)) ? 'skip' : 'build',
             hasSourceDocument: true,
             hasGalleryImages,
             cached: cachedPostsById.has(folderName)
@@ -975,6 +976,17 @@ function classifyEntry(entryPath, options = {}) {
         hasGalleryImages,
         cached: false
     };
+}
+
+// Source-backed posts keep the digest of the inputs they were built from (input-digest.js), taken after the worker
+// ran; the next build compares it instead of file times. A record without one gets it here, once.
+function recordInputDigests(posts, classifications, builtIds) {
+    posts.forEach(post => {
+        if (classifications.get(post.id)?.kind !== 'source-backed') return;
+        if (builtIds.has(post.id) || !isInputDigest(post.inputDigest)) {
+            post.inputDigest = inputDigest(path.join(CONFIG.BLOG_DIR, post.id));
+        }
+    });
 }
 
 async function processBlogEntries(options = {}) {
@@ -1095,6 +1107,7 @@ async function processBlogEntries(options = {}) {
         ...rebuiltSkippedPosts,
         ...cachedPosts.filter(post => !freshIds.has(post.id))
     ];
+    recordInputDigests(blogPosts, classifications, freshIds);
 
     fixMissingAuthors(blogPosts);
     syncCachedReadingTimes(blogPosts);
@@ -1225,5 +1238,6 @@ module.exports = {
     loadExistingPosts,
     renderCachedArticlePages,
     classifyEntry,
+    recordInputDigests,
     processBlogEntries
 };

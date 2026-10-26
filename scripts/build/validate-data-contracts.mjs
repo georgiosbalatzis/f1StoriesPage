@@ -356,6 +356,7 @@ function validateBlogSourceCache() {
         validateReadingTime(`${label}.readingTime`, requireString(post, 'readingTime', label, { maxLength: 20 }));
         if (post.imageWidth != null) requireInteger(post, 'imageWidth', label, { min: 0, max: 8000 });
         if (post.imageHeight != null) requireInteger(post, 'imageHeight', label, { min: 0, max: 8000 });
+        if (post.inputDigest !== undefined) assertCondition(/^[0-9a-f]{64}$/.test(post.inputDigest), label, 'inputDigest must be a SHA-256 hex digest');
     });
 }
 

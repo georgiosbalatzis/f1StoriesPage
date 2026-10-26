@@ -202,7 +202,7 @@ const utils = {
         return Boolean(utils.findSourceDocument(folderFiles) || utils.hasGalleryImages(entryPath, folderFiles));
     },
 
-    shouldSkip(entryPath, forceRebuild) {
+    shouldSkip(entryPath, forceRebuild, cachedPost) {
         if (forceRebuild) return false;
 
         const folderFiles = fs.readdirSync(entryPath);
@@ -236,6 +236,9 @@ const utils = {
         } catch (_) {
             return false;
         }
+
+        const recorded = require('./input-digest').matchesRecorded(entryPath, cachedPost);
+        if (recorded !== undefined) return recorded;
 
         const docMtime = fs.statSync(path.join(entryPath, docFile)).mtimeMs;
         const htmlMtime = fs.statSync(articlePath).mtimeMs;
