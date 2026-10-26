@@ -30,7 +30,7 @@ test('fixtures: every producer derives the same legacy URL from the folder id, G
         const url = legacy(id);
         assert.equal(articleUrl(post(id)), url, `${id}: hub and author links`);
         assert.equal(new URL(route.story(post(id)), SITE).href, url, `${id}: discovery links`);
-        assert.equal(sitemap.filter(loc => new URL(loc).href === url).length, 1, `${id}: sitemap once`);
+        assert.equal(sitemap.filter(loc => loc === url).length, 1, `${id}: sitemap once, written exactly as the canonical`);
         assert.deepEqual(feed.filter(item => item.link === url), [{ link: url, guid: url }], `${id}: RSS link and GUID`);
     }
     assert.equal(legacy(GREEK_IDS[0]), `${SITE}/blog-module/blog-entries/20260227%CE%A4/article.html`);
@@ -95,7 +95,7 @@ test('artifact: canonical, og:url, JSON-LD and breadcrumb name the page itself',
 test('artifact: the sitemap lists each article exactly once and RSS GUIDs are the canonical URLs', t => {
     if (!built(t)) return;
     const { ids, sitemap, feed } = site();
-    const articles = sitemap.filter(loc => loc.includes('/blog-entries/')).map(loc => new URL(loc).href);
+    const articles = sitemap.filter(loc => loc.includes('/blog-entries/'));
     assert.deepEqual(articles.slice().sort(), ids.map(legacy).sort());
     assert.ok(feed.length > 0);
     for (const item of feed) {

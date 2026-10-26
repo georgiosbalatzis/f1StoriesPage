@@ -47,7 +47,8 @@ function renderSitemap(articles = [], edition = [], { today = athensDay(), legal
 
     (articles || []).forEach(article => {
         entries.push(sitemapUrl(
-            `https://f1-stories.gr/blog-module/blog-entries/${article.id}/article.html`,
+            // Same encoding as the article canonical (article-render.js), so loc and canonical are one string.
+            `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(article.id)}/article.html`,
             'monthly',
             '0.6',
             formatSitemapDate(article.date || article.dateISO)
