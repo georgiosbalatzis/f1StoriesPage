@@ -1,9 +1,11 @@
 # Real User Performance models (I-05)
 
-Status: **statically tested, not run in production.** No I-05 model has been dry-run or executed. The I-03 and I-04
-models are equally unvalidated. The I-02 interim validation draft
-([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging, so no production
-validation is recorded on `main`. The synthetic tests prove nothing about
+Status: **statically tested and `PRODUCTION_EXECUTED`, not production-validated.** On 2026-10-26 the owner executed
+`30`–`33` in the BigQuery Console, for 2026-10-19 → 22 with `@report_timezone = America/Los_Angeles`, the
+confirmed property time zone. All four models reconcile to 171 observations. The earlier `Europe/Athens` runs gave
+124, and are superseded. The I-03 and I-04 models have the same status. The I-02 interim validation draft
+([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging. Results and
+outstanding items: [bigquery-validation.md](bigquery-validation.md). The synthetic tests prove nothing about
 production data. The collector and its event contract are owned by [perf/rum-pilot](../../perf/rum-pilot/README.md),
 which remains the source of truth.
 
@@ -44,7 +46,7 @@ I-05 does not replace it.
 | --- | --- | --- |
 | `@start_day`, `@end_day` | DATE | Navigation cohort, in `@report_timezone` |
 | `@as_of_day` | DATE | Extraction cutoff (run date); tables after `@as_of_day − 4` are immature and not read |
-| `@report_timezone` | STRING | Time zone for navigation dates, e.g. `Europe/Athens`; use the property's time zone once confirmed |
+| `@report_timezone` | STRING | Time zone for navigation dates: the property's, `America/Los_Angeles` (confirmed 2026-10-26) |
 | `@min_observations` | INT64 | 30, 31, 32: rows below it are flagged, not hidden |
 | `@period` | STRING | 32 only: `day` or `week` (ISO weeks) |
 
@@ -52,7 +54,7 @@ I-05 does not replace it.
 node scripts/intelligence/editorial-model.mjs render 30-cwv-summary --project=f1-stories-analytics --property=485678890 > /tmp/m30.sql
 bq query --location=EU --use_legacy_sql=false --dry_run \
   --parameter=start_day:DATE:2026-10-19 --parameter=end_day:DATE:2026-10-25 --parameter=as_of_day:DATE:2026-10-30 \
-  --parameter=report_timezone:STRING:Europe/Athens --parameter=min_observations:INT64:30 "$(cat /tmp/m30.sql)"
+  --parameter=report_timezone:STRING:America/Los_Angeles --parameter=min_observations:INT64:30 "$(cat /tmp/m30.sql)"
 ```
 
 Dry-run each model and record the bytes. An authorized analyst then runs it with `--maximum_bytes_billed=104857600`
@@ -135,15 +137,21 @@ collector. `nav_type` values outside the library's list become `other`, and a mi
 
 ## Known production-validation gaps
 
-- `analytics_storage` values and `page_location` presence on `web_vital`. If either is missing, eligible counts
-  fall to zero, and 33 shows it at `scan_consent` / `scan_host`. The filters are never relaxed.
-- The property time zone (for `@report_timezone` and the table-date margin).
-- The numeric types of `metric_revision`, `nav_start_ms` and `observation_start_ms` (never confirmed; I-02's final
-  run did not land).
+Settled by the owner's 19–22 Oct Console runs:
+- `analytics_storage` values and `page_location` presence on `web_vital`: 171 observations reached the cohort. Had
+  either been missing, eligible counts would have fallen to zero at `scan_consent` / `scan_host`. The filters are
+  never relaxed.
+- The property time zone: `America/Los_Angeles`, for `@report_timezone` and the table-date margin.
+- BigQuery accepts `QUALIFY` after `WHERE TRUE` and the analytic `PERCENTILE_CONT` pattern: `30`–`33` executed.
+  `report.sql` itself has not run in production.
+
+Still open:
+- The numeric types of `metric_revision`, `nav_start_ms` and `observation_start_ms`. They are not confirmed by
+  inventory, and I-01 `02` has not been run as written.
 - The first production day of `wv6.2.3-rum1`.
-- That the dry-run accepts `QUALIFY` after `WHERE TRUE` and the analytic `PERCENTILE_CONT` pattern. Both follow
-  `report.sql`, which itself has not run in production.
 - That property `485678890` is `G-X68J6MQKSM`.
+- Sample size: delayed-existing LCP n = 26 and INP n = 7, both below `min_observations = 30`.
+- Agreement with the 28-day `report.sql` reference, from 2026-11-19.
 
 ## Tests
 

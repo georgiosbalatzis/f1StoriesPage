@@ -157,15 +157,48 @@ export function renderModel(name, { project, property, index, retired, modelsDir
     return fill(fill(sql, 'ARTICLE_ALIAS', aliasSql(aliases)), 'ARTICLE_LOOKUP', lookupSql(articles));
 }
 
+// Query parameters a rendered model references, ignoring comments and string literals.
+export function queryParameters(sql) {
+    const bare = sql.replace(/--.*$/gm, '').replace(/'(?:[^'\\]|\\.)*'/g, "''");
+    return [...new Set((bare.match(/@[a-z_]+/g) || []).map(p => p.slice(1)))].sort();
+}
+
+const PARAMETERS = {
+    start_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/], end_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/], as_of_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/],
+    report_timezone: ['STRING', /^[A-Za-z]+(?:\/[A-Za-z_+-]+)*$/], period: ['STRING', /^(?:day|week)$/],
+    min_events: ['INT64', /^\d+$/], min_observations: ['INT64', /^\d+$/]
+};
+
+// A copy-paste command that DRY-RUNS one model: free, validates and estimates bytes, never executes the query.
+// Only the parameters the model references are passed; values are checked so the printed line is shell-safe.
+export function dryRunCommand(name, { project, property, index, retired, values }) {
+    const flags = queryParameters(renderModel(name, { project, property, index, retired })).map(parameter => {
+        if (!PARAMETERS[parameter]) throw new Error(`${name}: unknown parameter @${parameter}`);
+        const [type, valid] = PARAMETERS[parameter];
+        if (!valid.test(values[parameter] ?? '')) throw new Error(`${name}: missing or invalid value for @${parameter}`);
+        return `--parameter=${parameter}:${type}:${values[parameter]}`;
+    });
+    return `node scripts/intelligence/editorial-model.mjs render ${name} --project=${project} --property=${property}`
+        + ` | bq query --dry_run --location=EU --use_legacy_sql=false --project_id=${project} ${flags.join(' ')}`;
+}
+
 function main(argv) {
     const [command, model, ...rest] = argv;
-    const options = Object.fromEntries(rest.map(arg => arg.match(/^--([a-z]+)=(.*)$/)).filter(Boolean).map(m => [m[1], m[2]]));
+    const options = Object.fromEntries(rest.map(arg => arg.match(/^--([a-z-]+)=(.*)$/)).filter(Boolean).map(m => [m[1], m[2]]));
     if (command === 'metadata') {
         process.stdout.write(`${JSON.stringify(buildMapping(readInputs()), null, 2)}\n`);
     } else if (command === 'render') {
         process.stdout.write(renderModel(model, { ...readInputs(), project: options.project, property: options.property }));
+    } else if (command === 'dry-run-command') {
+        const values = { start_day: options.start, end_day: options.end, as_of_day: options['as-of'], report_timezone: options.timezone,
+            period: options.period, min_events: options.min, min_observations: options.min };
+        const names = model === 'all' ? [...MODELS, ...AUDIENCE_MODELS, ...RUM_MODELS] : [model];
+        for (const name of names) {
+            process.stdout.write(`${dryRunCommand(name, { ...readInputs(), project: options.project, property: options.property, values })}\n`);
+        }
     } else {
-        process.stderr.write('usage: editorial-model.mjs metadata | render <model> --project=<id> --property=<numeric id>\n');
+        process.stderr.write('usage: editorial-model.mjs metadata | render <model> --project=<id> --property=<numeric id>\n'
+            + '       | dry-run-command <model|all> --project= --property= --start= --end= --as-of= [--timezone=] [--min=] [--period=day|week]\n');
         process.exitCode = 2;
     }
 }

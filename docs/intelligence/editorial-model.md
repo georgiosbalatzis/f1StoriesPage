@@ -1,9 +1,11 @@
 # Editorial data model (I-03)
 
-Status: **reproducible and statically tested, not run in production.** The models have not been dry-run or executed
-against `f1-stories-analytics.analytics_485678890`. The synthetic tests check identity mapping, SQL text and SQL
-rules executed in JavaScript, and they prove nothing about production data. Production use waits for I-02
-([draft PR #353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)).
+Status: **statically tested and `PRODUCTION_EXECUTED`, not production-validated.** On 2026-10-26 the owner executed
+`10`–`15` against `f1-stories-analytics.analytics_485678890` in the BigQuery Console, for 2026-10-19 → 22. The
+reported reconciliations passed: 40 article page-view events across 11 articles, and no unexplained unmapped
+events. The synthetic tests check identity mapping, SQL text and SQL rules executed in JavaScript, and they prove
+nothing about production data. The I-02 record ([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353))
+was closed without merging. Results and outstanding items: [bigquery-validation.md](bigquery-validation.md).
 
 ## Architecture
 
@@ -49,7 +51,7 @@ a key count, never listed.
 
 ## SQL contracts
 
-Render, then dry-run and run by hand in the EU dataset, with maximum bytes billed of 100 MB (the I-02 rule):
+Render, then dry-run and run by hand in the EU dataset, with maximum bytes billed of 100 MB:
 
 ```sh
 node scripts/intelligence/editorial-model.mjs render 10-article-pageviews --project=f1-stories-analytics --property=485678890 > /tmp/m10.sql
@@ -100,7 +102,7 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
   the render commit: articles published later are absent, and retired articles appear only through their survivor.
 - **Sample counts.** `meets_min_events` flags rows; nothing is dropped. Use `@min_events = 30` before ranking
   articles, comparing categories or quoting the engagement ratio. Do not show cells under 10 events outside the
-  owner. I-02 observed 84 page views in four days, so most article rows will be flagged. Read categories and age
+  owner. The owner reported 84 page views for 19–22 October (closed #353), so most article rows will be flagged. Read categories and age
   buckets over 28-day windows first.
 
 ## Known limitations
@@ -116,13 +118,15 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
 - Locally, only the regular expressions and CASE rules are executed. Joins, `GROUP BY` and BigQuery type checks are
   first exercised by an analyst dry-run.
 
-## Blocked by I-02
+## Still blocked
 
-- Final 2026-10-19 → 25 validation and merge of #353.
+I-02 (#353) was closed without merging. The owner's 19–22 Oct Console runs (`as_of_day = 2026-10-26`) cover the
+first execution. The owner reported 219.08 KB for `10`; no figure is recorded for the other models. Still open (see
+[bigquery-validation.md](bigquery-validation.md#outstanding)):
+- The 2026-10-19 → 25 validation; that window is not mature before 2026-10-29.
 - GA4 Admin confirmation that property `485678890` is `G-X68J6MQKSM`.
-- Then, per model: a dry-run under 100 MB, a `15-coverage` result showing the `analytics_storage` distribution, and
-  the first run with `@as_of_day` recorded. Only aggregate results are recorded, with no production-validated claim
-  before that.
+- Larger samples: 40 article page views in four days. Only aggregate results are recorded, with no
+  production-validated claim before these items close.
 
 ## Tests
 
