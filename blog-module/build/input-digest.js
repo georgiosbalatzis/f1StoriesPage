@@ -27,10 +27,12 @@ function isInputDigest(value) {
     return typeof value === 'string' && /^[0-9a-f]{64}$/.test(value);
 }
 
-// The skip decision for a cached record that holds a digest: equal content only, and a malformed digest never
-// matches. undefined for a record from before digests existed, which keeps the timestamp rule once (shared.js).
+// The skip decision for a source-backed article with a cache record: equal content only. A record without a digest
+// (a folder that has just gained a source document, or a record from before digests) or with a malformed one is
+// rebuilt and then records its digest; file times are never consulted. undefined without a record: the build
+// rebuilds such an entry as uncached metadata either way (index.js).
 function matchesRecorded(entryPath, cachedPost) {
-    if (!cachedPost || cachedPost.inputDigest === undefined) return undefined;
+    if (!cachedPost) return undefined;
     return isInputDigest(cachedPost.inputDigest) && cachedPost.inputDigest === inputDigest(entryPath);
 }
 

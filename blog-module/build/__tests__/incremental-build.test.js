@@ -138,19 +138,26 @@ test('F: media, CSV, embed and telemetry-bundle edits rebuild; touching an uncha
     assert.equal(action(dir, cached), 'build');
 });
 
-test('G: records without a digest keep the timestamp rule once and are initialised; bad digests are not trusted', t => {
+test('G: a record without a digest is rebuilt whatever the file times, then records it; bad digests are not trusted', t => {
     const root = workspace(t);
+    // A source-less page whose folder has just gained a source document: the cached record has no digest and the old
+    // page is newer than the new source. Restored or misleading times must not keep that page.
     const dir = entry(root, '20261026G', { 'source.txt': SOURCE('Κείμενο.'), 'article.html': PAGE });
-    stamp(dir);
     const legacy = { id: '20261026G' };
+    for (const newest of ['article.html', 'source.txt', null]) {
+        stamp(dir, newest);
+        assert.equal(action(dir, legacy), 'build', `no digest, newest ${newest || 'none'}: rebuilt`);
+    }
     const classifications = new Map([['20261026G', classifyEntry(dir, { cachedPostsById: new Map([['20261026G', legacy]]) })]]);
-    assert.equal(classifications.get('20261026G').action, 'skip', 'no digest yet: the old rule, no mass rebuild');
-    recordInputDigests([legacy], classifications, new Set());
+    recordInputDigests([legacy], classifications, new Set(['20261026G']));
     assert.equal(legacy.inputDigest, inputDigest(dir));
     const again = { ...legacy };
     recordInputDigests([again], classifications, new Set());
     assert.equal(again.inputDigest, legacy.inputDigest, 'stable on the next run');
-    assert.equal(action(dir, legacy), 'skip');
+    for (const newest of ['article.html', 'source.txt', null]) {
+        stamp(dir, newest);
+        assert.equal(action(dir, legacy), 'skip', `recorded and unchanged, newest ${newest || 'none'}: skipped`);
+    }
     for (const bad of ['abc', 'A'.repeat(64), 123, null, '0'.repeat(64)]) {
         assert.equal(action(dir, { id: '20261026G', inputDigest: bad }), 'build', JSON.stringify(bad));
     }
