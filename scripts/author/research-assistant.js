@@ -36,19 +36,77 @@
             })) throw new Error('Ο δημόσιος κατάλογος άρθρων δεν έχει έγκυρο σχήμα v2.');
         return global.F1S_AUTHOR_ARTICLE_INDEX.expandCompactPosts(data);
     }
+    // Archive lookup for editors: candidates to read, never a judgement that two stories are related.
+    // Stories matching more of the query words come first. Within that, a word scores in the most telling field it
+    // appears in: headline 6, specific tag 3, excerpt 2, author 1; half that when only the beginning matches (Greek
+    // endings: Ουγγαρία / Ουγγαρίας). Labels nearly every story shares (F1, Racing, News, a season) and
+    // articles/prepositions never count. The whole phrase in the headline or excerpt adds a bonus. Ties: newer first, then ID.
+    var FIELDS = [['title', 'Τίτλος', 6], ['tags', 'Ετικέτες', 3], ['excerpt', 'Περίληψη', 2], ['author', 'Συντάκτης', 1]];
+    var GENERIC_TAGS = new Set(['f1', 'formula 1', 'formula1', 'racing', 'news', 'misc', 'random', 'gp', 'grand prix', 'historical', 'history', 'analysis', 'αναλυση']);
+    var STOP_WORDS = new Set('ο η το οι τα του τησ των τον την τη στο στη στην στον στα στισ στουσ και σε με για απο να θα δεν που ωσ ενα ενασ μια μιασ the a an of in on at and for to vs'.split(' '));
+    var ARTICLE_PATH = /^\/blog-module\/blog-entries\/[^/?#]+\/article\.html$/;
+    var fieldCache = new WeakMap();
+    function words(text) { return normal(text).split(/[^\p{L}\p{N}]+/u).filter(Boolean); }
+    function generic(tag) { var value = normal(tag).trim(); return GENERIC_TAGS.has(value) || /^(?:19|20)\d\d(?: season)?$/.test(value); }
+    function postFields(post) {
+        if (!fieldCache.has(post)) {
+            fieldCache.set(post, { title: words(post.title), excerpt: words(post.excerpt), author: words(post.author),
+                tags: [].concat.apply([], (post.tags || []).filter(function (tag) { return !generic(tag); }).map(words)),
+                titleText: words(post.title).join(' '), excerptText: words(post.excerpt).join(' ') });
+        }
+        return fieldCache.get(post);
+    }
+    // Numbers (years, IDs) and short words match exactly; longer words also by a shared beginning.
+    function stemmable(word) { return word.length >= 4 && !/\d/.test(word); }
+    function wordMatch(list, token) {
+        if (list.includes(token)) return 1;
+        return stemmable(token) && list.some(function (word) { return stemmable(word) && (word.startsWith(token) || token.startsWith(word)); }) ? 0.5 : 0;
+    }
+    // Published stories only: a real day not after today (Athens), on the permanent article route.
+    function eligible(posts, today) {
+        return posts.filter(function (post) {
+            return global.F1S_TAXONOMY.isDay(post.date) && post.date <= today && ARTICLE_PATH.test(post.url)
+                && post.url === '/blog-module/blog-entries/' + encodeURIComponent(post.id) + '/article.html';
+        });
+    }
     function search(posts, query) {
-        var q = normal(query.trim()), tokens = q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+        var raw = String(query || '').trim(), original = raw.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+        var tokens = [], shown = {};
+        original.forEach(function (word) {
+            var token = normal(word);
+            if (!STOP_WORDS.has(token) && !tokens.includes(token)) { tokens.push(token); shown[token] = word; }
+        });
         if (!tokens.length) return [];
+        var phrase = tokens.length > 1 ? tokens.join(' ') : '';
         return posts.map(function (post) {
-            var subjects = [post.id, post.title, post.author].concat(post.tags || [], post.categories || [] ).map(normal);
-            var haystack = subjects.join(' '), words = haystack.split(/[^\p{L}\p{N}]+/u);
-            var exact = subjects.includes(q), whole = tokens.filter(function (token) { return words.includes(token); }).length;
-            var partial = tokens.filter(function (token) { return haystack.includes(token); }).length;
-            return { post: post, exact: exact, score: exact ? 10000 : whole * 100 + partial,
-                reason: exact ? 'Ακριβής αντιστοίχιση πεδίου' : whole + '/' + tokens.length + ' πλήρεις λέξεις · ' + partial + '/' + tokens.length + ' μερικές αντιστοιχίσεις' };
+            var f = postFields(post), terms = {}, score = 0;
+            if (normal(raw) === normal(post.id) || words(raw).join(' ') === f.titleText) {
+                return { post: post, matched: tokens.length + 1, score: 1000, terms: {}, reason: normal(raw) === normal(post.id) ? 'Ακριβές ID' : 'Ακριβής τίτλος' };
+            }
+            var matched = 0;
+            tokens.forEach(function (token) {
+                var best = 0, where = '';
+                FIELDS.forEach(function (field) {
+                    var value = wordMatch(f[field[0]], token) * field[2];
+                    if (value > best) { best = value; where = field[1]; }
+                });
+                if (best) { matched++; score += best; (terms[where] = terms[where] || []).push(shown[token]); }
+            });
+            if (phrase && (' ' + f.titleText + ' ').includes(' ' + phrase + ' ')) score += 10;
+            else if (phrase && (' ' + f.excerptText + ' ').includes(' ' + phrase + ' ')) score += 4;
+            return { post: post, matched: matched, score: score, terms: terms, reason: FIELDS.map(function (field) { return field[1]; })
+                .filter(function (label) { return terms[label]; }).map(function (label) { return label + ': ' + terms[label].join(', '); }).join(' · ') };
         }).filter(function (hit) { return hit.score > 0; }).sort(function (a, b) {
-            return Number(b.exact) - Number(a.exact) || b.score - a.score || String(b.post.date).localeCompare(String(a.post.date)) || String(a.post.id).localeCompare(String(b.post.id));
-        }).slice(0, 8);
+            return b.matched - a.matched || b.score - a.score || String(b.post.date).localeCompare(String(a.post.date)) || String(a.post.id).localeCompare(String(b.post.id));
+        }).slice(0, 24);
+    }
+    // The author's own phrase as anchor text; the old headline is never substituted for it.
+    function markdownLink(anchor, post) {
+        var text = String(anchor || '').trim();
+        if (!text) throw new Error('Επίλεξε μια φράση στο κείμενό σου ή γράψε τη στο πεδίο «Φράση συνδέσμου».');
+        if (/[\[\]\n\r]/.test(text) || text.length > 200) throw new Error('Η φράση συνδέσμου πρέπει να είναι μία γραμμή, έως 200 χαρακτήρες, χωρίς αγκύλες [ ].');
+        if (!ARTICLE_PATH.test(post.url)) throw new Error('Το άρθρο δεν έχει έγκυρη διεύθυνση.');
+        return '[' + text + '](' + post.url + ')';
     }
     function validateCatalog(data) {
         if (!data || data.version !== 1 || !Array.isArray(data.rounds) || data.rounds.length > 2000 || !data.rounds.every(function (pair) {
@@ -133,8 +191,9 @@
     }
 
     // Only notebook-owned elements and approved public reads. No editor state or mutation interface.
-    function attach(panel, toggle) {
-        var notes = [], cache = new Map(), catalog, searchRevision = 0, standingRevision = 0, initialized = false;
+    function attach(panel, toggle, archive) {
+        // decoded: the eligible posts of each loaded index, so repeated searches rank without decoding again.
+        var notes = [], cache = new Map(), decoded = new WeakMap(), catalog, searchRevision = 0, standingRevision = 0, initialized = false;
         function el(tag, text, className) {
             var node = document.createElement(tag);
             if (text != null) node.textContent = text;
@@ -166,11 +225,44 @@
             }).catch(function (error) { cache.delete(path); throw error; }).finally(function () { clearTimeout(timer); });
             cache.set(path, request); return request;
         }
-        var status, question, season, round, articles, standings, tools, noteList, fallback, form, fields = {};
+        var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, fallback, form, fields = {}, hits = [], opener = toggle;
         function message(text) { status.textContent = text; }
-        async function copy(text) {
-            try { await navigator.clipboard.writeText(text); fallback.hidden = true; message('Αντιγράφηκε μαζί με τις πηγές. Επικόλλησε χειροκίνητα στο άρθρο.'); }
-            catch (_) { fallback.hidden = false; fallback.value = text; fallback.focus(); fallback.select(); message('Δεν επιτράπηκε το πρόχειρο. Επίλεξε και αντέγραψε το κείμενο παρακάτω.'); }
+        // note: an optional line beside the button, so the outcome is visible where the author clicked.
+        async function copy(text, done, note) {
+            done = done || 'Αντιγράφηκε μαζί με τις πηγές. Επικόλλησε χειροκίνητα στο άρθρο.';
+            try { await navigator.clipboard.writeText(text); fallback.hidden = true; message(done); if (note) note.textContent = done; }
+            catch (_) {
+                fallback.hidden = false; fallback.value = text; fallback.focus(); fallback.select(); message('Δεν επιτράπηκε το πρόχειρο. Επίλεξε και αντέγραψε το κείμενο παρακάτω.');
+                if (note) note.textContent = 'Δεν επιτράπηκε το πρόχειρο: το κείμενο είναι επιλεγμένο στο πεδίο χειροκίνητης αντιγραφής.';
+            }
+        }
+        // Read-only: the phrase selected in the article body, offered as anchor text. The body is never written here.
+        function selectedPhrase() {
+            var body = document.getElementById('gen-content');
+            return body ? body.value.slice(body.selectionStart, body.selectionEnd).trim() : '';
+        }
+        function copyMarkdown(post, note) {
+            var phrase = anchor.value.trim() || selectedPhrase();
+            try {
+                var text = markdownLink(phrase, post);
+                copy(text, 'Αντιγράφηκε: ' + text + ' — επικόλλησε τον σύνδεσμο στη θέση της φράσης. Το κείμενο του άρθρου δεν άλλαξε.', note);
+            } catch (error) { message(error.message); note.textContent = error.message; anchor.focus(); }
+        }
+        function renderHits() {
+            var start = articles.children.length;
+            hits.slice(start, start + 8).forEach(function (hit) {
+                var post = hit.post, row = el('li', null, 'gb-research-result'), note = el('p', '', 'gb-hint');
+                row.append(el('h3', post.title), el('p', post.categories.map(global.F1S_TAXONOMY.categoryLabel).join(', ') + ' · ' + post.date + ' · ' + post.author, 'gb-hint'),
+                    el('p', post.excerpt), el('p', 'Ταιριάζει σε: ' + hit.reason, 'gb-hint'),
+                    link('Άνοιγμα άρθρου', post.url), el('p', post.url, 'gb-hint'),
+                    button('Αντιγραφή URL', function () { copy(post.url, 'Αντιγράφηκε η διεύθυνση ' + post.url + '. Επικόλλησε τη μέσα σε [φράση](…).', note); }),
+                    button('Αντιγραφή συνδέσμου Markdown', function () { copyMarkdown(post, note); }),
+                    button('Αντιγραφή αναφοράς', function () { copy(articleText(post), null, note); }), note);
+                articles.appendChild(row);
+            });
+            var left = hits.length - articles.children.length;
+            more.hidden = left <= 0; more.textContent = 'Περισσότερα αποτελέσματα (' + left + ')';
+            if (start && articles.children[start]) articles.children[start].querySelector('a').focus();
         }
         function completeBrief() { return brief(question.value, season.value && round.value ? season.value + ' / γύρος ' + round.value : '', notes); }
         function renderNotes() {
@@ -190,20 +282,17 @@
             });
         }
         async function findArticles() {
-            var revision = ++searchRevision, query = question.value.trim(); articles.replaceChildren();
+            var revision = ++searchRevision, query = question.value.trim(); hits = []; articles.replaceChildren(); more.hidden = true;
             if (!query) { message('Γράψε θέμα ή λέξεις αναζήτησης.'); question.focus(); return; }
             message('Αναζήτηση στον δημόσιο κατάλογο…');
             try {
-                var posts = decodeIndex(await load('/blog-module/blog-index-data.json'));
-                if (revision !== searchRevision) return;
-                var found = search(posts, query);
-                found.forEach(function (hit) {
-                    var post = hit.post, row = el('li', null, 'gb-research-result');
-                    row.append(el('h3', post.title), el('p', post.categories.map(global.F1S_TAXONOMY.categoryLabel).join(', ') + ' · ' + post.date + ' · ' + post.author, 'gb-hint'),
-                        el('p', hit.reason, 'gb-hint'), link('Άνοιγμα άρθρου', post.url), el('p', 'https://f1-stories.gr' + post.url, 'gb-hint'));
-                    row.append(button('Αντιγραφή αναφοράς', function () { copy(articleText(post)); })); articles.appendChild(row);
+                var posts = await load('/blog-module/blog-index-data.json').then(function (data) {
+                    if (!decoded.has(data)) decoded.set(data, eligible(decodeIndex(data), global.F1S_TAXONOMY.athensDay()));
+                    return decoded.get(data);
                 });
-                message(found.length ? found.length + ' εσωτερικές αναφορές. Δεν αποτελούν ανεξάρτητη επαλήθευση.' : 'Δεν βρέθηκαν άρθρα. Δοκίμασε όνομα ή λιγότερες λέξεις.');
+                if (revision !== searchRevision) return;
+                hits = search(posts, query); renderHits();
+                message(hits.length ? hits.length + ' άρθρα προς έλεγχο: διάβασέ τα πριν τα συνδέσεις. Δεν αποτελούν ανεξάρτητη επαλήθευση.' : 'Δεν βρέθηκαν άρθρα. Δοκίμασε όνομα ή λιγότερες λέξεις.');
             } catch (error) { cache.delete('/blog-module/blog-index-data.json'); if (revision === searchRevision) message('Ο κατάλογος άρθρων δεν φορτώθηκε. ' + error.message); }
         }
         function resetStanding() { ++standingRevision; standings.replaceChildren(); }
@@ -236,7 +325,7 @@
                 if (revision === standingRevision) standings.replaceChildren(el('p', 'Το επιλεγμένο στιγμιότυπο δεν μπορεί να χρησιμοποιηθεί. ' + error.message + ' Δεν έγινε αντικατάσταση γύρου.', 'gb-hint is-warn'), button('Επανάληψη στιγμιοτύπου', loadStandings));
             }
         }
-        async function loadCatalog() {
+        async function loadCatalog(event) {
             try {
                 catalog = validateCatalog(await load('/scripts/author/research-catalog.json'));
                 season.replaceChildren(el('option', 'Επίλεξε σεζόν')); season.firstChild.value = '';
@@ -245,21 +334,28 @@
                 });
                 setRounds();
                 tools.replaceChildren(); catalog.tools.forEach(function (tool) { var row = el('p'); row.append(link(tool.label, safeURL(tool.href)), el('span', ' — ' + TOOL_LIMITS[tool.id])); tools.appendChild(row); });
-                message('Διαθέσιμοι γύροι και εργαλεία φορτώθηκαν. Δεν έχει επιλεγεί αυτόματα στιγμιότυπο.');
-            } catch (error) { cache.delete('/scripts/author/research-catalog.json'); message('Δεν φορτώθηκαν οι διαθέσιμοι γύροι / εργαλεία. ' + error.message); }
+                // The background load on opening never replaces a search message that arrived first; a retry always reports.
+                if (event || !status.textContent || status.textContent === catalogNote) catalogMessage('Διαθέσιμοι γύροι και εργαλεία φορτώθηκαν. Δεν έχει επιλεγεί αυτόματα στιγμιότυπο.');
+            } catch (error) { cache.delete('/scripts/author/research-catalog.json'); catalogMessage('Δεν φορτώθηκαν οι διαθέσιμοι γύροι / εργαλεία. ' + error.message); }
         }
+        function catalogMessage(text) { catalogNote = text; message(text); }
         function initialize() {
             initialized = true;
             var head = el('div', null, 'gb-research-actions'), heading = el('h2', 'Ερευνητικό σημειωματάριο'); heading.id = 'research-heading';
             head.append(heading, button('Κλείσιμο έρευνας', hide)); panel.append(head,
                 el('p', 'Μόνο για αυτή τη συνεδρία. Το κλείσιμο διατηρεί τις σημειώσεις· η ανανέωση τις χάνει. Κατέβασέ τες πριν φύγεις. Δεν αποθηκεύονται στα πρόχειρα άρθρων.', 'gb-hint'),
-                el('p', 'Αναζήτηση τίτλου, ετικετών, κατηγορίας, συντάκτη και ID. Δεν γίνεται αναζήτηση στο σώμα άρθρων ή απάντηση με AI.', 'gb-hint'));
+                el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη και ID δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Δεν γίνεται αναζήτηση στο σώμα άρθρων ή απάντηση με AI.', 'gb-hint'));
             status = el('p', '', 'gb-hint'); status.id = 'research-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); panel.appendChild(status);
             question = field(panel, 'question', 'Εκδοτικό ερώτημα / λέξεις αναζήτησης');
-            question.addEventListener('input', function () { ++searchRevision; articles.replaceChildren(); });
+            question.addEventListener('input', function () { ++searchRevision; hits = []; articles.replaceChildren(); more.hidden = true; });
+            question.addEventListener('keydown', function (event) { if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); findArticles(); } });
             panel.appendChild(button('Εύρεση αναφορών', findArticles));
-            var searchDetails = detail('Εσωτερικά άρθρα', true); articles = el('ol', null, 'gb-research-results'); searchDetails.appendChild(articles);
-            searchDetails.firstChild.after(el('p', 'Οι αντιστοιχίσεις είναι εσωτερικές αναφορές, όχι ανεξάρτητη επαλήθευση ή πρωτογενείς πηγές.', 'gb-hint'));
+            var searchDetails = detail('Εσωτερικά άρθρα', true); articles = el('ol', null, 'gb-research-results');
+            searchDetails.append(el('p', 'Σύνδεσε προηγούμενα άρθρα μόνο όταν προσφέρουν ουσιαστικό πλαίσιο. Προτίμησε φυσικές φράσεις μέσα στο κείμενο.', 'gb-hint'));
+            anchor = field(searchDetails, 'anchor', 'Φράση συνδέσμου (προαιρετικά)'); anchor.maxLength = 200;
+            searchDetails.append(el('p', 'Για σύνδεσμο Markdown χρησιμοποιείται αυτή η φράση ή, αν είναι κενή, ό,τι έχεις επιλέξει στο κείμενο του άρθρου. Ο τίτλος του παλιού άρθρου δεν μπαίνει ποτέ αυτόματα.', 'gb-hint'), articles);
+            more = button('Περισσότερα αποτελέσματα', renderHits); more.hidden = true; searchDetails.appendChild(more);
+            searchDetails.firstChild.after(el('p', 'Οι αντιστοιχίσεις είναι υποψήφια άρθρα για ανάγνωση, όχι επιβεβαιωμένη σχέση, ανεξάρτητη επαλήθευση ή πρωτογενείς πηγές.', 'gb-hint'));
             var dataDetails = detail('Βαθμολογία συγκεκριμένου γύρου');
             dataDetails.appendChild(el('p', 'Επίλεξε ρητά σεζόν και διαθέσιμο γύρο. Φορτώνεται μόνο το συγκεκριμένο αρχείο, χωρίς αντικατάσταση από το τελευταίο.', 'gb-hint'));
             var scope = el('div', null, 'gb-research-scope'); dataDetails.appendChild(scope);
@@ -300,22 +396,27 @@
                     var hasNotes = notes.length || question.value.trim() || Object.keys(fields).some(function (key) { return ['INPUT', 'TEXTAREA'].includes(fields[key].tagName) && fields[key].value.trim(); });
                     if (hasNotes && !(await global.F1S_AUTHOR_DIALOGS.confirm('Να διαγραφούν οι σημειώσεις αυτής της συνεδρίας;', { title: 'Καθαρισμός έρευνας', okLabel: 'Καθαρισμός' }))) return;
                     ++searchRevision; resetStanding(); notes = []; question.value = ''; season.value = ''; setRounds(); form.reset(); fields.type.value = 'unverified'; fields.section.value = 'unverified';
-                    articles.replaceChildren(); fallback.value = ''; fallback.hidden = true; formStatus.textContent = ''; renderNotes(); message('Το σημειωματάριο καθαρίστηκε.'); question.focus();
+                    hits = []; anchor.value = ''; more.hidden = true; articles.replaceChildren(); fallback.value = ''; fallback.hidden = true; formStatus.textContent = ''; renderNotes(); message('Το σημειωματάριο καθαρίστηκε.'); question.focus();
                 })); panel.appendChild(actions);
             var fallbackLabel = el('label', 'Κείμενο για χειροκίνητη αντιγραφή', 'gb-sr'); fallbackLabel.htmlFor = 'research-copy-fallback';
             fallback = el('textarea', null, 'gb-input'); fallback.id = 'research-copy-fallback'; fallback.readOnly = true; fallback.hidden = true; fallback.rows = 8; panel.append(fallbackLabel, fallback);
             panel.addEventListener('keydown', function (event) { if (event.key === 'Escape') { event.preventDefault(); hide(); } });
         }
-        function hide() { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); }
-        toggle.addEventListener('click', function () {
-            if (!panel.hidden) { hide(); return; }
-            if (!initialized) initialize();
-            panel.hidden = false; toggle.setAttribute('aria-expanded', 'true'); question.focus();
-            if (!catalog) loadCatalog();
+        // Both buttons open the same notebook; focus returns to the one that opened it.
+        var openers = [toggle, archive].filter(Boolean);
+        function expanded(value) { openers.forEach(function (node) { node.setAttribute('aria-expanded', String(value)); }); }
+        function hide() { panel.hidden = true; expanded(false); opener.focus(); }
+        openers.forEach(function (node) {
+            node.addEventListener('click', function () {
+                if (!panel.hidden) { hide(); return; }
+                if (!initialized) initialize();
+                opener = node; panel.hidden = false; expanded(true); question.focus();
+                if (!catalog) loadCatalog();
+            });
         });
     }
-    global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, search: search, validateCatalog: validateCatalog,
+    global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, markdownLink: markdownLink, validateCatalog: validateCatalog,
         snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');
-    if (panel) attach(panel, document.getElementById('research-toggle'));
+    if (panel) attach(panel, document.getElementById('research-toggle'), document.getElementById('archive-toggle'));
 })(window);
