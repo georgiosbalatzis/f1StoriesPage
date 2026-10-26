@@ -95,6 +95,26 @@ jobs:
           echo "number=$pr_number" >> "$GITHUB_OUTPUT"
           echo "publish=true" >> "$GITHUB_OUTPUT"
 
+      # The guard comes from main, never from the PR, and runs without a persisted token.
+      - name: Check out the URL guard
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: scripts/deployment/author-pr-guard.mjs
+          sparse-checkout-cone-mode: false
+
+      # One article folder per PR, edits keep their folder publishable, only author/delete/* removes an article.
+      - name: Keep published article URLs
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/deployment/author-pr-guard.mjs --repo "$REPO" --pr "$NUMBER" --sha "$TESTED_SHA"
+
       - name: Merge author PR
         if: ${{ steps.pr.outputs.publish == 'true' }}
         env:
