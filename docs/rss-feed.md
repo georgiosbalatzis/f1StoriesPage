@@ -26,8 +26,11 @@ Publication dates are the existing **Europe/Athens folder calendar dates**. No e
 time is available in article metadata. The feed represents each day as Athens midnight, with the
 correct winter/summer offset, and emits RFC 822 dates in GMT. It does not claim a precise merge time.
 Local author drafts stay in browser storage. Unmerged article PRs are absent from the production checkout and feed.
-A future-dated article manually placed on main becomes feed-eligible on the next blog build
-on or after its Athens publication day; the feed itself does not trigger deployments.
+There is no scheduled publication. The feed, sitemap `lastmod`, sections, archives, hubs, author pages
+and NEXT UP skip a future-dated article, but its page, sitemap entry, search index row and homepage
+slots are built as soon as its folder is on main. So a future-dated article must stay off main until its
+Athens publication day: the URL contract test (`article-url-contract.test.js`) fails Site Quality when
+one is in the artifact, which also stops the author PR from being merged automatically.
 
 No current build timestamp is emitted: `lastBuildDate` is the newest included publication date,
 and empty feeds omit it. Identical publishing metadata and eligibility produce identical bytes.
