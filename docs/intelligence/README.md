@@ -12,6 +12,7 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [metrics-contract.md](metrics-contract.md) | Metric definitions, units, versions, revision dedup, GA4 vs BigQuery, freshness, EU location, data minimization |
 | [editorial-model.md](editorial-model.md) | I-03: article metadata mapping, identity normalization, article/category/engagement/discovery/age SQL models |
 | [audience-model.md](audience-model.md) | I-04: daily activity, sections, device, country, three separate acquisition scopes, engagement and navigation SQL models |
+| [performance-model.md](performance-model.md) | I-05: real-user LCP/INP/CLS (+FCP/TTFB) observations, p75 and ratings by coverage, page group, viewport, navigation type and period |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
 | [validation.md](validation.md) | What was checked, unknowns, SQL dry-run status, public artifact impact, I-02 acceptance criteria and blockers |
 
