@@ -183,6 +183,8 @@ function cliFixture(t) {
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
+    write(root, 'blog-module/build/retired.js', fs.readFileSync(new URL('../../../blog-module/build/retired.js', import.meta.url)));
+    write(root, 'blog-module/retired-articles.json', '{ "retired": [] }');
     write(root, 'blog-module/taxonomy.js', fs.readFileSync(new URL('../../../blog-module/taxonomy.js', import.meta.url)));
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];

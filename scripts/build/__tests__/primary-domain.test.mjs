@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import retired from '../../../blog-module/build/retired.js';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const publicRoot = path.join(root, 'dist');
@@ -17,13 +18,15 @@ test('public metadata and article routes use the primary domain without retired 
     assert.ok(fs.readFileSync(path.join(publicRoot, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap.xml`));
     const sitemap = fs.readFileSync(path.join(publicRoot, 'sitemap.xml'), 'utf8');
     let articles = 0;
+    // Retired duplicates are hand-over pages, checked by validate-public-artifact.mjs and the URL contract test.
+    const handOvers = new Set(retired.loadRetired().map(entry => retired.articlePath(entry.id)));
     for (const file of walk(publicRoot)) {
         if (!/\.(?:html|js|css|json|xml|txt|webmanifest)$/.test(file)) continue;
         const text = fs.readFileSync(file, 'utf8');
         assert.ok(!text.includes(retiredDomain), `${file}: retired domain`);
         assert.ok(!text.toLowerCase().includes(retiredDomain.replace('.', '%2e')), `${file}: encoded retired domain`);
         const rel = path.relative(publicRoot, file);
-        if (!/^blog-module\/blog-entries\/[^/]+\/article\.html$/.test(rel)) continue;
+        if (!/^blog-module\/blog-entries\/[^/]+\/article\.html$/.test(rel) || handOvers.has(rel)) continue;
         articles++;
         const canonical = /rel="canonical" href="([^"]+)"/.exec(text)?.[1];
         assert.equal(decodeURI(canonical || ''), `${origin}/${rel}`, `${rel}: canonical route`);

@@ -9,8 +9,9 @@ import { buildSync } from 'esbuild';
 import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
 import articleDates from '../../blog-module/build/article-dates.js';
+import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
-import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
+import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -983,6 +984,15 @@ export function validateSearchDestinations(errors, distRoot = DIST_ROOT, approve
     } catch (error) { errors.push(`${rel}: ${error.message}`); }
 }
 
+// A retired duplicate is exactly its hand-over page, to an article that is published and listed; it is never listed itself.
+function validateRetiredPage(errors, html, relPath, entry, sitemapUrls, indexedArticleUrls) {
+    if (html !== injectSecurityMeta(retired.stubHtml(entry), relPath)) errors.push(`${relPath}: retired article must be its hand-over page to ${entry.target}`);
+    const target = normalizeSiteUrl(retired.articleUrl(entry.target));
+    if (!indexedArticleUrls.has(target) || !sitemapUrls.has(target)) errors.push(`${relPath}: hands over to ${entry.target}, which is not a published article`);
+    const own = normalizeSiteUrl(retired.articleUrl(entry.id));
+    if (indexedArticleUrls.has(own) || sitemapUrls.has(own)) errors.push(`${relPath}: a retired article must not be listed in the index or sitemap`);
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -994,6 +1004,10 @@ function main() {
     const editorialRefs = loadEditorialAssetRefs(errors);
     const sitemapUrls = loadSitemapUrls(errors);
     const indexedArticleUrls = loadIndexedArticleUrls(errors);
+    const retiredPages = new Map(retired.loadRetired().map(entry => [retired.articlePath(entry.id), entry]));
+    for (const relPath of retiredPages.keys()) {
+        if (!fs.existsSync(path.join(DIST_ROOT, relPath))) errors.push(`missing retired article hand-over page: ${relPath}`);
+    }
 
     for (const relPath of REQUIRED_EXACT) {
         if (!fs.existsSync(path.join(DIST_ROOT, relPath))) {
@@ -1022,7 +1036,9 @@ function main() {
             errors.push(`${relPath}: ${fmtBytes(size)} exceeds max ${fmtBytes(MAX_FILE_BYTES)}`);
         }
 
-        if (/\.html$/i.test(relPath)) {
+        if (/\.html$/i.test(relPath) && retiredPages.has(relPath)) {
+            validateRetiredPage(errors, fs.readFileSync(abs, 'utf8'), relPath, retiredPages.get(relPath), sitemapUrls, indexedArticleUrls);
+        } else if (/\.html$/i.test(relPath)) {
             const html = fs.readFileSync(abs, 'utf8');
             validateEditorialArticle(errors, html, relPath, editorialRefs);
             validateHtmlSecurityMeta(errors, html, relPath);

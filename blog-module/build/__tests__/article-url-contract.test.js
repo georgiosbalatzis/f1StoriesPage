@@ -2,8 +2,10 @@
 // /blog-module/blog-entries/<folder id>/article.html and every surface names that one address.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+const retired = require('../retired');
 const { renderSitemap } = require('../sitemap');
 const { renderFeed } = require('../feed');
 const { route } = require('../discovery');
@@ -13,7 +15,7 @@ const { athensDay } = require('../../taxonomy');
 const SITE = 'https://f1-stories.gr';
 const ROOT = path.resolve(__dirname, '../../..');
 const DIST = path.join(ROOT, 'dist');
-const GREEK_IDS = ['20260227Τ', '20261101Λ']; // Greek capital Tau (a real folder) and Lambda
+const GREEK_IDS = ['20260227Τ', '20261101Λ']; // Greek capital Tau (a real, now retired, id) and Lambda
 const legacy = id => `${SITE}/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 const post = (id, extra = {}) => ({ id, date: '2026-10-20', title: 'Ιστορίες Formula 1', excerpt: 'Ανάλυση.',
     author: 'Themis Charvalis', categories: ['History'], url: `/blog-module/blog-entries/${id}/article.html`, ...extra });
@@ -55,7 +57,8 @@ let cache;
 function site() {
     if (cache) return cache;
     const entries = path.join(DIST, 'blog-module/blog-entries');
-    const ids = fs.readdirSync(entries).filter(id => fs.existsSync(path.join(entries, id, 'article.html')));
+    const handOvers = new Set(retired.loadRetired().map(entry => entry.id));
+    const ids = fs.readdirSync(entries).filter(id => !handOvers.has(id) && fs.existsSync(path.join(entries, id, 'article.html')));
     const pages = new Map(ids.map(id => [id, fs.readFileSync(path.join(entries, id, 'article.html'), 'utf8')]));
     const posts = JSON.parse(fs.readFileSync(path.join(ROOT, 'blog-module/blog-source-cache.json'), 'utf8')).posts;
     const sitemap = locs(fs.readFileSync(path.join(DIST, 'sitemap.xml'), 'utf8'));
@@ -73,7 +76,6 @@ test('artifact: one legacy page per published article, and only those', t => {
     assert.ok(ids.length > 0);
     assert.deepEqual(ids.slice().sort(), posts.map(p => p.id).sort(), 'pages and published posts are the same set');
     for (const id of ids) assert.match(id, /^[\p{L}\p{N}_-]+$/u, `${id}: folder id`);
-    assert.ok(ids.includes(GREEK_IDS[0]), 'the Greek-id article is still published at its legacy URL');
 });
 
 test('artifact: canonical, og:url, JSON-LD and breadcrumb name the page itself', t => {
@@ -156,4 +158,49 @@ test('artifact: nothing is published or linked under /stories/', t => {
     assert.ok(!fs.existsSync(path.join(DIST, 'stories')));
     assert.ok(!site().sitemap.some(loc => new URL(loc).pathname.startsWith('/stories/')));
     for (const html of site().pages.values()) assert.ok(!/href="(?:https:\/\/f1-stories\.gr)?\/stories\//.test(html));
+});
+
+test('retired list: each entry hands over to a different, unretired article with a plain folder id', t => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-retired-'));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+    const load = retiredList => {
+        const file = path.join(dir, 'retired.json');
+        fs.writeFileSync(file, JSON.stringify({ retired: retiredList }));
+        return retired.loadRetired(file);
+    };
+    assert.deepEqual(load([{ id: '20260227Τ', target: '20260222T' }]).map(entry => entry.target), ['20260222T']);
+    for (const bad of [[{ id: 'a', target: 'a' }], [{ id: 'a', target: 'b' }, { id: 'b', target: 'c' }],
+        [{ id: '../x', target: 'b' }], [{ id: 'a/b', target: 'c' }], [{ id: 'a', target: '' }], [{ id: 'a', target: 'b' }, { id: 'a', target: 'c' }]]) {
+        assert.throws(() => load(bad), /retired-articles\.json/, JSON.stringify(bad));
+    }
+    const html = retired.stubHtml({ id: '20260227Τ', target: '20260222T' });
+    assert.deepEqual(tagValue(html, /<link rel="canonical" href="([^"]*)">/g), [legacy('20260222T')]);
+    assert.deepEqual(tagValue(html, /<meta http-equiv="refresh" content="0;url=([^"]*)">/g), [legacy('20260222T')]);
+    assert.doesNotMatch(html, /<script/);
+});
+
+test('artifact: a retired duplicate keeps its URL as a hand-over page and is listed nowhere', t => {
+    if (!built(t)) return;
+    const { ids, posts, sitemap, feed } = site();
+    const entries = retired.loadRetired();
+    assert.ok(entries.some(entry => entry.id === GREEK_IDS[0] && entry.target === '20260222T'), 'the Greek-id duplicate is retired');
+    const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+        e.isDirectory() ? walk(path.join(dir, e.name)) : /\.(html|json|xml)$/.test(e.name) ? [path.join(dir, e.name)] : []);
+    const files = walk(DIST);
+    for (const entry of entries) {
+        const own = path.join(DIST, retired.articlePath(entry.id));
+        const html = fs.readFileSync(own, 'utf8');
+        assert.deepEqual(tagValue(html, /<link rel="canonical" href="([^"]*)">/g), [legacy(entry.target)]);
+        assert.deepEqual(tagValue(html, /<meta http-equiv="refresh" content="0;url=([^"]*)">/g), [legacy(entry.target)]);
+        assert.ok(ids.includes(entry.target) && posts.some(p => p.id === entry.target), `${entry.target}: still published`);
+        assert.ok(!fs.existsSync(path.join(ROOT, 'blog-module/blog-entries', entry.id)), `${entry.id}: its folder is gone`);
+        assert.ok(!posts.some(p => p.id === entry.id), `${entry.id}: not a post`);
+        assert.ok(!sitemap.some(loc => new URL(loc).href === legacy(entry.id)), `${entry.id}: not in the sitemap`);
+        assert.ok(!feed.some(item => item.link === legacy(entry.id)), `${entry.id}: not in the feed`);
+        const forms = [`blog-entries/${entry.id}/`, `blog-entries/${encodeURIComponent(entry.id)}/`, JSON.stringify(entry.id)];
+        for (const file of files.filter(file => file !== own)) {
+            const text = fs.readFileSync(file, 'utf8');
+            assert.ok(!forms.some(form => text.includes(form)), `${path.relative(DIST, file)} still names ${entry.id}`);
+        }
+    }
 });
