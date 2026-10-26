@@ -1,7 +1,9 @@
 # F1 Stories Intelligence — I-01 infrastructure and event inventory
 
-Status: **inventory only.** Nothing here changes tracking, consent, deployment, GA4 settings or BigQuery. The SQL has
-**not** been executed or dry-run against any project (see [validation.md](validation.md)).
+Status: **no model is production-validated.** The I-03, I-04 and I-05 models are statically tested only, and their
+BigQuery dry-runs are BLOCKED ([bigquery-validation.md](bigquery-validation.md)). The owner reported running I-01 `02` and
+`03` on 2026-10-19 → 22, but that I-02 record (PR #353) was closed without merging, so no I-02 validation is on
+`main`. Nothing here changes tracking, consent, deployment, GA4 settings or BigQuery.
 
 Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 `https://f1-stories.gr/deployment-manifest.json` (read 2026-10-26).
@@ -14,7 +16,8 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [audience-model.md](audience-model.md) | I-04: daily activity, sections, device, country, three separate acquisition scopes, engagement and navigation SQL models |
 | [performance-model.md](performance-model.md) | I-05: real-user LCP/INP/CLS (+FCP/TTFB) observations, p75 and ratings by coverage, page group, viewport, navigation type and period |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
-| [validation.md](validation.md) | What was checked, unknowns, SQL dry-run status, public artifact impact, I-02 acceptance criteria and blockers |
+| [validation.md](validation.md) | I-01 report: what was checked, unknowns, SQL dry-run status, public artifact impact, the I-02 criteria and blockers as planned then |
+| [bigquery-validation.md](bigquery-validation.md) | Phase-1 BigQuery validation: per-model status, schema compatibility, owner dry-run commands, prepared production checks, blockers |
 
 The Web Vitals contract and its p75 report are owned by [perf/rum-pilot/](../../perf/rum-pilot/README.md) and are
 referenced, not copied.

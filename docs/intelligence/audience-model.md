@@ -1,9 +1,10 @@
 # Audience, acquisition and engagement models (I-04)
 
 Status: **statically tested, not run in production.** No I-04 model has been dry-run or executed. The I-03 models
-they sit beside are equally unvalidated ([editorial-model.md](editorial-model.md)), and I-02 is still a draft
-([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)). The synthetic tests prove nothing about
-production data.
+they sit beside are equally unvalidated ([editorial-model.md](editorial-model.md)). The I-02 record
+([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging. The synthetic tests
+prove nothing about production data. Dry-run status and the top I-04 schema risk:
+[bigquery-validation.md](bigquery-validation.md).
 
 ## Architecture
 
@@ -43,7 +44,7 @@ bq query --location=EU --use_legacy_sql=false --dry_run \
 
 1. Dry-run each model and record the bytes. A dry-run failure on `collected_traffic_source` or
    `session_traffic_source_last_click` means the export lacks that record. Stop: there is no fallback.
-2. Run with `--maximum_bytes_billed=104857600` (100 MB, the I-02 rule) by an authorized analyst.
+2. Run with `--maximum_bytes_billed=104857600` (100 MB) by an authorized analyst.
 3. Run **29-audience-coverage** with the same parameters and keep it next to every result.
 4. Keep only the aggregate output, with `@as_of_day` recorded. Nothing runs automatically.
 
@@ -133,13 +134,15 @@ No session duration, bounce rate, retention or engagement time is derived. `enga
 - Use `@min_events = 30` before comparing rows. Do not show cells under 10 events outside the owner. Read 28-day
   windows first.
 - Countries under `@min_events` are merged automatically.
-- I-02 observed 84 page views in four days, so most daily, source and navigation rows will be flagged, and the
+- The owner reported 84 page views for 19–22 October (closed #353), so most daily, source and navigation rows will be flagged, and the
   acquisition tables will be dominated by `unattributed` / `direct_or_unknown`.
 
-## Unverified until I-02 closes and a dry-run runs
+## Unverified until a real dry-run and an authorized run
 
 - That `collected_traffic_source` and `session_traffic_source_last_click` exist in `analytics_485678890`. They are
-  expected for an export linked in 2026, but not checked.
+  expected for an export linked in 2026, but not checked. `cross_channel_campaign.default_channel_group` is not on
+  Google's published schema page, which is the top dry-run risk
+  ([bigquery-validation.md](bigquery-validation.md#schema-compatibility-from-googles-published-schema-not-from-the-dataset)).
 - Their fill rates, and the GA4 channel vocabulary.
 - `analytics_storage` values.
 - `page_location` on the automatic events.

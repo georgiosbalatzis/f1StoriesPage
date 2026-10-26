@@ -2,8 +2,9 @@
 
 Status: **reproducible and statically tested, not run in production.** The models have not been dry-run or executed
 against `f1-stories-analytics.analytics_485678890`. The synthetic tests check identity mapping, SQL text and SQL
-rules executed in JavaScript, and they prove nothing about production data. Production use waits for I-02
-([draft PR #353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)).
+rules executed in JavaScript, and they prove nothing about production data. The I-02 record
+([#353](https://github.com/georgiosbalatzis/f1StoriesPage/pull/353)) was closed without merging. Current dry-run
+status and owner steps: [bigquery-validation.md](bigquery-validation.md).
 
 ## Architecture
 
@@ -49,7 +50,7 @@ a key count, never listed.
 
 ## SQL contracts
 
-Render, then dry-run and run by hand in the EU dataset, with maximum bytes billed of 100 MB (the I-02 rule):
+Render, then dry-run and run by hand in the EU dataset, with maximum bytes billed of 100 MB:
 
 ```sh
 node scripts/intelligence/editorial-model.mjs render 10-article-pageviews --project=f1-stories-analytics --property=485678890 > /tmp/m10.sql
@@ -100,7 +101,7 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
   the render commit: articles published later are absent, and retired articles appear only through their survivor.
 - **Sample counts.** `meets_min_events` flags rows; nothing is dropped. Use `@min_events = 30` before ranking
   articles, comparing categories or quoting the engagement ratio. Do not show cells under 10 events outside the
-  owner. I-02 observed 84 page views in four days, so most article rows will be flagged. Read categories and age
+  owner. The owner reported 84 page views for 19–22 October (closed #353), so most article rows will be flagged. Read categories and age
   buckets over 28-day windows first.
 
 ## Known limitations
@@ -116,9 +117,11 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
 - Locally, only the regular expressions and CASE rules are executed. Joins, `GROUP BY` and BigQuery type checks are
   first exercised by an analyst dry-run.
 
-## Blocked by I-02
+## Still blocked
 
-- Final 2026-10-19 → 25 validation and merge of #353.
+I-02 (#353) was closed without merging, so nothing below has been done. See
+[bigquery-validation.md](bigquery-validation.md).
+- The 2026-10-19 → 25 validation; that window is not mature before 2026-10-29.
 - GA4 Admin confirmation that property `485678890` is `G-X68J6MQKSM`.
 - Then, per model: a dry-run under 100 MB, a `15-coverage` result showing the `analytics_storage` distribution, and
   the first run with `@as_of_day` recorded. Only aggregate results are recorded, with no production-validated claim
