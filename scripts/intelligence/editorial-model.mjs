@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// editorial-model.mjs — article metadata mapping and SQL rendering for the I-03 editorial data model.
+// editorial-model.mjs — article metadata mapping and SQL rendering for the I-03 editorial and I-04 audience models.
 // It reads the committed compact index and retired-article map and prints JSON or SQL. It never runs a query.
 //
 //   node scripts/intelligence/editorial-model.mjs metadata
@@ -12,6 +12,19 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 export const MODELS_DIR = path.join(REPO_ROOT, 'docs', 'intelligence', 'sql', 'models');
 export const MODELS = ['10-article-pageviews', '11-category-pageviews', '12-article-engagement',
     '13-article-discovery', '14-publication-age', '15-coverage'];
+// I-04 audience, acquisition and engagement models (audience-base.sql).
+export const AUDIENCE_MODELS = ['20-daily-activity', '21-site-sections', '22-device-category', '23-country',
+    '24-acquisition-first-user', '25-acquisition-collected', '26-acquisition-session', '27-engagement-events',
+    '28-internal-navigation', '29-audience-coverage'];
+const FRAGMENTS = { EDITORIAL_BASE: 'base.sql', AUDIENCE_BASE: 'audience-base.sql', AUDIENCE_FUNCTIONS: 'audience-functions.sql' };
+
+// I-01's path classifier, taken verbatim from the inventory query so the site has one set of path classes.
+export function classifyPathSql(modelsDir = MODELS_DIR) {
+    const inventory = fs.readFileSync(path.join(modelsDir, '..', '02-event-inventory.sql'), 'utf8');
+    const match = inventory.match(/^CREATE TEMP FUNCTION classify_path\(path STRING\) AS \([\s\S]*?^\);$/m);
+    if (!match) throw new Error('02-event-inventory.sql: classify_path function not found');
+    return match[0];
+}
 
 function isIsoDay(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -113,14 +126,17 @@ export function buildMapping({ index, retired }) {
 }
 
 export function renderModel(name, { project, property, index, retired, modelsDir = MODELS_DIR }) {
-    if (!MODELS.includes(name)) throw new Error(`unknown model ${name}; expected one of ${MODELS.join(', ')}`);
+    const known = [...MODELS, ...AUDIENCE_MODELS];
+    if (!known.includes(name)) throw new Error(`unknown model ${name}; expected one of ${known.join(', ')}`);
     // Google Cloud project ids: 6–30 chars, lower-case letters, digits, hyphens. GA4 property ids are numeric.
     if (!/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(project || '')) throw new Error('--project must be a Google Cloud project id');
     if (!/^\d+$/.test(property || '')) throw new Error('--property must be the numeric GA4 property id');
     const { articles, aliases } = buildMapping({ index, retired });
     const fill = (text, key, value) => text.replaceAll(`{{${key}}}`, () => value); // a function keeps "$" literal
     let sql = fs.readFileSync(path.join(modelsDir, `${name}.sql`), 'utf8');
-    sql = fill(sql, 'EDITORIAL_BASE', fs.readFileSync(path.join(modelsDir, 'base.sql'), 'utf8').trimEnd());
+    // Bases first: they carry the function and project placeholders.
+    for (const [key, file] of Object.entries(FRAGMENTS)) sql = fill(sql, key, fs.readFileSync(path.join(modelsDir, file), 'utf8').trimEnd());
+    if (sql.includes('{{CLASSIFY_PATH}}')) sql = fill(sql, 'CLASSIFY_PATH', classifyPathSql(modelsDir));
     sql = fill(fill(sql, 'PROJECT_ID', project), 'GA4_PROPERTY_ID', property);
     const left = sql.match(/\{\{(?!ARTICLE_LOOKUP\}\}|ARTICLE_ALIAS\}\})[A-Z0-9_]+\}\}/);
     if (left) throw new Error(`unfilled placeholder ${left[0]} in ${name}`);
