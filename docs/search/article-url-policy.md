@@ -23,7 +23,8 @@ https://f1-stories.gr/blog-module/blog-entries/<folder id>/article.html
   `20220101`). It is never derived from the title. The publication date is parsed from it (`shared.js` `parseDate`).
 - **Encoding:** the id is percent-encoded in URLs and raw on disk. The one non-ASCII id, `20260227Τ` (Greek capital
   Tau U+03A4) → `20260227%CE%A4`, is now a retired duplicate (item 1 below); Latin `20260227T` is a different, absent folder.
-- **Retired duplicates** keep their URL as a hand-over page and appear in no listing, sitemap, feed or index
+- **Retired URLs** (the duplicate below, and `20260822G`, which an author change renamed to `20260822J` in #144 before
+  the housekeeping fix) keep their URL as a hand-over page and appear in no listing, sitemap, feed or index
   (`blog-module/build/retired.js`; checked by `validate-public-artifact.mjs` and the contract test).
 - **One address everywhere:** canonical, `og:url`, Article/NewsArticle `mainEntityOfPage`, the last BreadcrumbList item,
   the sitemap `loc`, the RSS `link` and `guid`, NEXT UP, prev/next, section, archive, author and hub links, the blog

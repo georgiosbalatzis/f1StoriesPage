@@ -5,6 +5,12 @@
       "target": "20260222T",
       "approved": "2026-10-26",
       "reason": "Accidental copy of 20260222T: same text and images; the author code T was typed as Greek capital Tau, so it showed the house byline."
+    },
+    {
+      "id": "20260822G",
+      "target": "20260822J",
+      "approved": "2026-10-26",
+      "reason": "Renamed by an author change in the old housekeeping editor (PR #144); the old URL returned 404."
     }
   ]
 }
