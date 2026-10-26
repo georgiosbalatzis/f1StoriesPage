@@ -25,15 +25,91 @@ test('research reuses compact v2 decoding and actual taxonomy/date/author metada
     assert.equal(cast.url, '/blog-module/blog-entries/20261010J/article.html');
     assert.throws(() => api.decodeIndex({ v: 1, p: [] }), /v2/);
 });
-test('ranking prefers exact subject fields, then whole words, then partial words, with stable ties and eight results', () => {
-    const base = { categories: ['Analysis'], author: 'Author', date: '2026-10-01', tags: [] };
-    const posts = [{ ...base, id: 'partial', title: 'Hamiltonian' }, { ...base, id: 'word', title: 'Hamilton wins' },
-        { ...base, id: 'exact', title: 'Other', tags: ['Hamilton'] }];
-    assert.equal(Array.from(api.search(posts, 'Hamilton'), hit => hit.post.id).join(','), 'exact,word,partial');
-    assert.equal(api.search([{ ...base, id: 'greek', title: 'Οδηγός' }], 'οδηγος')[0].post.id, 'greek');
-    assert.equal(api.search([{ ...base, id: 'body', title: 'Other', excerpt: 'Hamilton', body: 'Hamilton' }], 'Hamilton').length, 0);
-    assert.equal(api.search(Array.from({ length: 20 }, (_, i) => ({ ...base, id: String(i), title: 'Hamilton' })), 'Hamilton').length, 8);
-    assert.equal(api.search(posts, '!!!').length, 0);
+const base = { categories: ['Analysis'], author: 'Author', date: '2026-10-01', tags: [], excerpt: '' };
+const ids = hits => Array.from(hits, hit => hit.post.id).join(',');
+test('ranking: more query words first, then headline > specific tag > excerpt > author, newer then ID on ties', () => {
+    const posts = [{ ...base, id: 'author', title: 'Other', author: 'Hamilton' }, { ...base, id: 'excerpt', title: 'Other', excerpt: 'Hamilton wins' },
+        { ...base, id: 'tag', title: 'Other', tags: ['Hamilton'] }, { ...base, id: 'title', title: 'Hamilton wins' },
+        { ...base, id: 'stem', title: 'Hamiltons' }];
+    // A headline word's beginning (6 × ½) equals an exact specific tag (3): the ID breaks the tie.
+    assert.equal(ids(api.search(posts, 'Hamilton')), 'title,stem,tag,excerpt,author');
+    assert.equal(api.search([{ ...base, id: 'year', title: '2026 review' }], '20261').length, 0, 'numbers match exactly');
+    // Both words in the excerpt beat one word in the headline; the whole phrase in the headline beats scattered words.
+    const coverage = [{ ...base, id: 'one', title: 'Pole lap' }, { ...base, id: 'both', title: 'Other', excerpt: 'pole at the Hungaroring' },
+        { ...base, id: 'phrase', title: 'Hungaroring pole' }, { ...base, id: 'scattered', title: 'Pole, then Hungaroring' }];
+    assert.equal(ids(api.search(coverage, 'Hungaroring pole')), 'phrase,scattered,both,one');
+    const ties = [{ ...base, id: 'b', title: 'Brno' }, { ...base, id: 'a', title: 'Brno' }, { ...base, id: 'new', title: 'Brno', date: '2026-10-05' }];
+    assert.equal(ids(api.search(ties, 'Brno')), 'new,a,b');
+    assert.equal(ids(api.search(ties.slice().reverse(), 'Brno')), ids(api.search(ties, 'Brno')), 'input order does not matter');
+    assert.deepEqual(api.search(ties, 'Brno'), api.search(ties, 'Brno'), 'repeatable');
+    assert.equal(api.search(Array.from({ length: 40 }, (_, i) => ({ ...base, id: String(i), title: 'Hamilton' })), 'Hamilton').length, 24);
+    assert.equal(api.search([{ ...base, id: 'exact', title: 'Ο τίτλος' }, { ...base, id: 'x', title: 'Ο τίτλος, και άλλο' }], 'ο ΤΙΤΛΟΣ')[0].reason, 'Ακριβής τίτλος');
+});
+test('Greek and Latin input ignore accents, case and final sigma; endings match by their beginning only', () => {
+    const posts = [{ ...base, id: 'gr', title: 'Grand Prix Ουγγαρίας: η ΝΊΚΗ' }, { ...base, id: 'lat', title: 'McLaren in BAKU' }];
+    for (const query of ['ουγγαρια', 'ΟΥΓΓΑΡΊΑ', 'Ουγγαρίας', 'νικη', 'Νίκη']) assert.equal(ids(api.search(posts, query)), 'gr', query);
+    for (const query of ['baku', 'Baku', 'mclaren']) assert.equal(ids(api.search(posts, query)), 'lat', query);
+    // No equivalences between scripts or invented synonyms.
+    assert.equal(api.search(posts, 'Hungary').length, 0);
+    assert.equal(api.search(posts, 'Μπακού').length, 0);
+    // Short tokens match whole words only.
+    assert.equal(api.search([{ ...base, id: 'x', title: 'Ferrari' }], 'fer').length, 0);
+});
+test('generic tags, stop words, categories and article bodies never make a match; empty input finds nothing', () => {
+    const posts = [{ ...base, id: 'generic', title: 'Other', tags: ['F1', 'Racing', 'News', '2026', '2026 season', 'GP'], categories: ['News'] },
+        { ...base, id: 'body', title: 'Other', body: 'Hamilton' }];
+    for (const query of ['F1', 'Racing', 'News', '2026', 'GP', 'του', 'και', 'the']) assert.equal(api.search(posts, query).length, 0, query);
+    assert.equal(api.search(posts, 'Hamilton').length, 0);
+    for (const query of ['', '   ', '!!!', '—']) assert.deepEqual(Array.from(api.search(posts, query)), []);
+    // A specific tag still counts next to generic ones, and the reason names what matched.
+    const hit = api.search([{ ...base, id: 'specific', title: 'Other', tags: ['F1', 'Benetton'] }], 'Benetton')[0];
+    assert.equal(hit.reason, 'Ετικέτες: Benetton');
+    assert.equal(api.search([{ ...base, id: 'none', title: 'Other' }], 'Benetton').length, 0);
+});
+test('only published stories on the permanent article route are candidates; Greek IDs stay percent-encoded', () => {
+    const decode = rows => api.eligible(api.decodeIndex({ v: 2, a: ['Author'], c: ['News'], t: [], p: rows.map(([id, date]) => [id, 'Τίτλος ' + id, 0, date, 400, 188, '', '1 min', [0], []]) }), '2026-10-26');
+    const posts = decode([['20261026G', '2026-10-26'], ['20261025W', '2026-10-25'], ['20261027G', '2026-10-27'], ['20261001Λ', '2026-10-01']]);
+    assert.deepEqual(posts.map(post => post.id), ['20261026G', '20261025W', '20261001Λ'], 'same day kept, future excluded');
+    assert.equal(posts[2].url, '/blog-module/blog-entries/20261001%CE%9B/article.html');
+    const forged = { ...posts[0], url: '/generate.html' }, foreign = { ...posts[0], url: 'https://example.com/blog-module/blog-entries/x/article.html' };
+    assert.deepEqual(api.eligible([forged, foreign, { ...posts[0], date: 'soon' }, { ...posts[0], url: '/blog-module/blog-entries/OTHER/article.html' }], '2026-10-26'), []);
+});
+test('the real published index holds no retired, future or missing destinations', () => {
+    const posts = api.decodeIndex(read('blog-module/blog-index-data.json'));
+    const today = context.F1S_TAXONOMY.athensDay();
+    const live = api.eligible(posts, today);
+    assert.equal(live.length, posts.filter(post => post.date <= today).length);
+    const retired = read('blog-module/retired-articles.json').retired.map(entry => entry.id);
+    assert.deepEqual(retired.slice().sort(), ['20260227Τ', '20260822G']);
+    for (const id of retired) {
+        assert.equal(live.some(post => post.id === id), false, id);
+        assert.equal(api.search(live, id).length, 0, id);
+    }
+    for (const post of live) assert.ok(fs.existsSync(path.join(root, 'blog-module/blog-entries', post.id, 'article.html')), post.id);
+});
+test('Markdown links use the author-supplied phrase and the exact canonical path, never the old headline', () => {
+    const post = api.eligible(api.decodeIndex({ v: 2, a: ['A'], c: ['News'], t: [], p: [['20261001Λ', 'Παλιός τίτλος', 0, '2026-10-01', 400, 188, '', '1 min', [0], []]] }), '2026-10-26')[0];
+    assert.equal(api.markdownLink('  η νίκη στην Ουγγαρία ', post), '[η νίκη στην Ουγγαρία](/blog-module/blog-entries/20261001%CE%9B/article.html)');
+    for (const anchor of ['', '   ', null]) assert.throws(() => api.markdownLink(anchor, post), /Φράση συνδέσμου/);
+    for (const anchor of ['με [αγκύλη]', 'δύο\nγραμμές', 'x'.repeat(201)]) assert.throws(() => api.markdownLink(anchor, post), /μία γραμμή/);
+    assert.throws(() => api.markdownLink('φράση', { ...post, url: 'javascript:alert(1)' }), /έγκυρη διεύθυνση/);
+});
+test('PR 8 decisions: accepted targets are found by natural searches; rejected pairs are only text matches', () => {
+    const live = api.eligible(api.decodeIndex(read('blog-module/blog-index-data.json')), '2026-10-26');
+    const rank = (query, id) => api.search(live, query).findIndex(hit => hit.post.id === id) + 1;
+    // Hungary pole, the Norris Hungary win, McLaren's Baku package, the Brno Sprint, the earlier GridCast, Spa 1995.
+    for (const [query, id] of [['Hungary pole', '20260725W'], ['νίκη Norris', '20260727G'], ['McLaren Baku upgrade', '20260928G'],
+        ['Brno Sprint', '20260620W'], ['Gridcast Singapore', '20261008J'], ['Spa 1995 Schumacher', '20260418W']]) assert.equal(rank(query, id), 1, query);
+    assert.ok(rank('GridCast', '20261008J') <= 8);
+    // Metadata cannot see the race inside the article: the Hungary win names neither Hungary nor Ουγγαρία.
+    assert.ok(rank('Norris Ουγγαρία', '20260727G') > 1);
+    // Rejected in PR 8 after reading. They may surface as text matches, labelled only with the fields that matched.
+    for (const [query, id] of [['Safety Car Sepang', '20261006G'], ['Le Mans', '20260601W'], ['Hamilton Ferrari', '20260608W']]) {
+        const hit = api.search(live, query).find(value => value.post.id === id);
+        assert.ok(hit, query);
+        assert.match(hit.reason, /^(?:(?:Τίτλος|Ετικέτες|Περίληψη|Συντάκτης): [^·]+)(?: · (?:Τίτλος|Ετικέτες|Περίληψη|Συντάκτης): [^·]+)*$/);
+        assert.deepEqual(Object.keys(hit).sort(), ['matched', 'post', 'reason', 'score', 'terms']);
+    }
 });
 test('catalogue inventories only existing round files and confirmed tool destinations', () => {
     const data = api.validateCatalog(read('scripts/author/research-catalog.json'));
@@ -92,8 +168,12 @@ test('brief contains eight sections, exact Greek notes, uncertainty and citation
     for (const label of ['Εκδοτικό ερώτημα', 'Επιβεβαιωμένα γεγονότα', 'Αγωνιστικά στατιστικά', 'Πρωτογενείς πηγές', 'Τεχνικές ερμηνείες', 'Ανταγωνιστικές εξηγήσεις', 'Μη επαληθευμένοι ισχυρισμοί', 'Εσωτερικές αναφορές', 'Εκκρεμεί', 'Ακριβές α\u0301', 'https://example.com']) assert.ok(text.includes(label));
     assert.match(text, /Δεν έχουν καταγραφεί στοιχεία/);
 });
-test('module has no editor, persistence, publishing, arbitrary fetch or executable HTML access', () => {
+test('module has no editor writes, persistence, publishing, arbitrary fetch or executable HTML access', () => {
     const source = fs.readFileSync(path.join(root, 'scripts/author/research-assistant.js'), 'utf8');
-    assert.doesNotMatch(source, /gen-content|gen-title|gen-category|gen-tag|gen-author|gen-publish|F1S_LOCAL_DRAFTS|F1S_DRAFT_MANAGER|GITHUB|SESSION_TOKEN|api\.github|indexedDB|localStorage|sessionStorage|innerHTML|insertAdjacentHTML|eval\(/);
+    // The one editor reference reads the selected phrase of the article body; nothing writes to it.
+    assert.equal(source.match(/gen-content/g).length, 1);
+    assert.match(source, /var body = document\.getElementById\('gen-content'\);\n\s+return body \? body\.value\.slice\(body\.selectionStart, body\.selectionEnd\)\.trim\(\) : '';/);
+    assert.doesNotMatch(source, /body\.value\s*=|setRangeText|execCommand|dispatchEvent|setSelectionRange|\.select\(\)(?!;\s*message\('Δεν επιτράπηκε)/);
+    assert.doesNotMatch(source, /gen-title|gen-category|gen-tag|gen-author|gen-publish|F1S_LOCAL_DRAFTS|F1S_DRAFT_MANAGER|GITHUB|SESSION_TOKEN|api\.github|indexedDB|localStorage|sessionStorage|innerHTML|insertAdjacentHTML|eval\(/);
     assert.match(source, /credentials: 'omit'/); assert.match(source, /redirect: 'error'/);
 });

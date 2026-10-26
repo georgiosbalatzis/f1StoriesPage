@@ -2,16 +2,32 @@
 
 Baseline: `d2bfbc01d257cb680247a2dae89e196018497e30` (latest main, fetched again before PR preparation).
 
-Step 2 offers **Έρευνα — προαιρετικά**. The notebook sits beside the writing area at wide desktop widths and above it on smaller screens. It uses the existing author controls and editorial tokens. Closing hides it without clearing notes. The five steps, editor, article drafts, preview and publishing code are unchanged.
+Step 2 offers **Βρες σχετικά άρθρα** and **Έρευνα — προαιρετικά**. Both open the same notebook, and focus returns to the button that opened it. The notebook sits beside the writing area at wide desktop widths and above it on smaller screens. It uses the existing author controls and editorial tokens. Closing hides it without clearing notes. The five steps, editor, article drafts, preview and publishing code are unchanged.
 
 ## Author workflow
 
-1. Enter a question or discovery keywords. **Εύρεση αναφορών** searches the public compact v2 index through the existing article decoder and taxonomy.
-2. Review up to eight internal references. Ranking prefers exact normalized field matches, then whole-word matches, then partial matches; ties use date and article ID. Each result explains its match and includes title, category, date, author and URL. This searches metadata, never article bodies. Internal publications are not independent verification or primary sources.
-3. Optionally choose a season and an available round. The catalogue inventories actual files in `standings/rounds/`, not the presumed race calendar. It currently offers 2026 rounds 1–17. Only the selected file is loaded. There is no latest-round fallback, external API request or merged cross-round result.
-4. Add structured notes. Each has text, section, type, source title/URL/date, event/session, verification status and limitations. Calculated statistics additionally require units, sample period, source, formula and operands. Confirmed facts require an explicit author verification decision and source/evidence fields. Unverified types/sections cannot be marked confirmed.
-5. Copy an individual note, article reference or standings record; manually paste material where useful. **Αντιγραφή brief** copies the recorded notebook sections. Search results and displayed standings are not automatically added to the brief or article.
-6. **Λήψη σημειώσεων** downloads readable UTF-8 `brief.txt`. Clipboard denial exposes a focused, selected, read-only textarea. Explicit clear asks for confirmation when notes or typed research text exist.
+1. Enter a question or discovery keywords. **Εύρεση αναφορών** (or Enter) searches the public compact v2 index through the existing article decoder and taxonomy. The index loads on the first search and is reused while the page stays open.
+2. Review the candidates, eight at a time (up to 24, via **Περισσότερα αποτελέσματα**). Only published stories are candidates: a real date not after today (Athens) on the permanent `/blog-module/blog-entries/<encoded id>/article.html` route. Retired IDs have no index row (`retired-articles.json`).
+   - **Ranking:**
+     - stories matching more of the query words come first;
+     - each word then scores in the most telling field it appears in: headline 6, specific tag 3, excerpt 2, author 1;
+     - a word of four or more letters with no digits can also match by its beginning, for half the points (Ουγγαρία / Ουγγαρίας);
+     - the whole phrase in the headline (+10) or the excerpt (+4) adds a bonus;
+     - an exact headline or ID comes first;
+     - ties go newer first, then by ID.
+   - **Never counted:** article bodies, categories, labels nearly every story shares (F1, Racing, News, GP, a season) and Greek/English articles and prepositions. Accents, case and final sigma are ignored. There are no cross-script equivalents or synonyms: "Hungary" does not find "Ουγγαρία".
+   - **Each result shows:** title, category, date, author, excerpt, the words that matched and where, the article link and its canonical path.
+   - A result is a candidate to read, not a confirmed relationship. Internal publications are not independent verification or primary sources.
+3. To link a candidate, use **Αντιγραφή URL** (the canonical path) or **Αντιγραφή συνδέσμου Markdown**.
+   - The Markdown link uses the phrase typed in **Φράση συνδέσμου**, or else the text selected in the article body. It never uses the old headline.
+   - With neither, nothing is copied and the field is focused.
+   - The notebook only reads the body's selection. The author pastes the link, and the draft never changes on its own.
+   - A confirmation appears beside the button and in the status line.
+   - The 2–3 contextual links advice remains advice. Nothing requires a link.
+4. Optionally choose a season and an available round. The catalogue inventories actual files in `standings/rounds/`, not the presumed race calendar. It currently offers 2026 rounds 1–17. Only the selected file is loaded. There is no latest-round fallback, external API request or merged cross-round result.
+5. Add structured notes. Each has text, section, type, source title/URL/date, event/session, verification status and limitations. Calculated statistics additionally require units, sample period, source, formula and operands. Confirmed facts require an explicit author verification decision and source/evidence fields. Unverified types/sections cannot be marked confirmed.
+6. Copy an individual note, article reference or standings record; manually paste material where useful. **Αντιγραφή brief** copies the recorded notebook sections. Search results and displayed standings are not automatically added to the brief or article.
+7. **Λήψη σημειώσεων** downloads readable UTF-8 `brief.txt`. Clipboard denial exposes a focused, selected, read-only textarea. Explicit clear asks for confirmation when notes or typed research text exist.
 
 The brief has the editorial question followed by confirmed facts, sporting statistics, primary sources, technical interpretations, competing explanations, unverified claims and internal references. Empty sections contain “Δεν έχουν καταγραφεί στοιχεία.” No filler is generated.
 
@@ -118,6 +134,10 @@ docs/editorial-research-notebook/screenshots/390-dark.webp
 docs/editorial-research-notebook/screenshots/390-dark-standings.webp
 docs/editorial-research-notebook/screenshots/390-light.webp
 docs/editorial-research-notebook/screenshots/390-light-standings.webp
+docs/editorial-research-notebook/screenshots/archive-1440-dark.webp
+docs/editorial-research-notebook/screenshots/archive-1440-light.webp
+docs/editorial-research-notebook/screenshots/archive-390-dark.webp
+docs/editorial-research-notebook/screenshots/archive-390-light.webp
 ```
 
 Minified JavaScript remains generated/ignored under the existing repository policy; CI rebuilds it. No article, draft-system, preview-renderer or publishing implementation was changed.

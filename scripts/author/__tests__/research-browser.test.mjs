@@ -235,6 +235,94 @@ test('late responses after clear/selection changes cannot restore obsolete searc
     assert.match(await page.locator('#research-notebook .gb-research-text').textContent(), /Γύρος: 16/);
 });
 
+test('archive discovery: find related articles, copy the canonical URL or a Markdown link, never touch the draft', async t => {
+    const { page, requests } = await pageFor(t);
+    const body = 'Η McLaren πήγε στο Baku με μεγάλο πακέτο.\n\nΔεύτερη παράγραφος ά.';
+    await page.evaluate(text => { const node = document.getElementById('gen-content'); node.value = text; node.dispatchEvent(new Event('input', { bubbles: true })); }, body);
+    await page.locator('.gb-step[data-step="4"]').click(); await page.locator('#gen-save-draft').click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε τοπικά'));
+    await page.locator('.gb-step[data-step="1"]').click();
+    const before = await savedState(page);
+    const indexURL = origin + '/blog-module/blog-index-data.json';
+    await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.researchCopied = text; } } }));
+
+    const archive = page.getByRole('button', { name: 'Βρες σχετικά άρθρα', exact: true });
+    await archive.click();
+    assert.equal(await archive.getAttribute('aria-expanded'), 'true');
+    assert.equal(await page.locator('#research-question').evaluate(node => node === document.activeElement), true);
+    assert.equal(requests.filter(url => url === indexURL).length, 0, 'opening does not load the archive');
+    await page.keyboard.type('McLaren Baku upgrade'); await page.keyboard.press('Enter');
+    await page.waitForSelector('.gb-research-results li');
+    const first = page.locator('.gb-research-results li').first();
+    assert.match(await first.locator('h3').textContent(), /Baku ήταν το τελευταίο upgrade test της McLaren/);
+    assert.match(await first.textContent(), /Ταιριάζει σε: Τίτλος: McLaren, Baku, upgrade/);
+    assert.match(await first.textContent(), /πακέτο αναβαθμίσεων/);
+    assert.match(await page.locator('#research-notebook').textContent(), /Σύνδεσε προηγούμενα άρθρα μόνο όταν προσφέρουν ουσιαστικό πλαίσιο/);
+    assert.equal(await first.getByRole('link', { name: 'Άνοιγμα άρθρου' }).getAttribute('href'), '/blog-module/blog-entries/20260928G/article.html');
+
+    await first.getByRole('button', { name: 'Αντιγραφή URL', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.researchCopied), '/blog-module/blog-entries/20260928G/article.html');
+    assert.match(await page.locator('#research-status').textContent(), /Αντιγράφηκε η διεύθυνση/);
+    assert.match(await first.textContent(), /Αντιγράφηκε η διεύθυνση \/blog-module\/blog-entries\/20260928G\/article\.html/, 'confirmed beside the button');
+    // No phrase typed or selected: nothing is copied and the headline is not used.
+    await page.evaluate(() => { const node = document.getElementById('gen-content'); node.setSelectionRange(0, 0); window.researchCopied = 'unchanged'; });
+    await first.getByRole('button', { name: 'Αντιγραφή συνδέσμου Markdown', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.researchCopied), 'unchanged');
+    assert.equal(await page.locator('#research-anchor').evaluate(node => node === document.activeElement), true);
+    // The phrase selected in the article body becomes the anchor; the typed phrase wins over it.
+    await page.evaluate(() => { const node = document.getElementById('gen-content'); const start = node.value.indexOf('μεγάλο πακέτο'); node.setSelectionRange(start, start + 'μεγάλο πακέτο'.length); });
+    await first.getByRole('button', { name: 'Αντιγραφή συνδέσμου Markdown', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.researchCopied), '[μεγάλο πακέτο](/blog-module/blog-entries/20260928G/article.html)');
+    assert.match(await page.locator('#research-status').textContent(), /Το κείμενο του άρθρου δεν άλλαξε/);
+    await page.locator('#research-anchor').fill('το πακέτο του Baku');
+    await first.getByRole('button', { name: 'Αντιγραφή συνδέσμου Markdown', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.researchCopied), '[το πακέτο του Baku](/blog-module/blog-entries/20260928G/article.html)');
+    assert.equal(await page.locator('#gen-content').inputValue(), body);
+
+    await page.locator('#research-question').fill('McLaren'); await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.querySelectorAll('.gb-research-results li').length === 8);
+    const more = page.getByRole('button', { name: /^Περισσότερα αποτελέσματα/ });
+    await more.click(); assert.equal(await page.locator('.gb-research-results li').count(), 16);
+    assert.equal(await page.locator('.gb-research-results li').nth(8).getByRole('link', { name: 'Άνοιγμα άρθρου' }).evaluate(node => node === document.activeElement), true);
+    assert.equal(requests.filter(url => url === indexURL).length, 1, 'one archive request for every search');
+
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#research-notebook').isVisible(), false);
+    assert.equal(await archive.evaluate(node => node === document.activeElement), true);
+    assert.equal(await page.locator('#research-toggle').getAttribute('aria-expanded'), 'false');
+    assert.deepEqual(await savedState(page), before);
+    assert.equal(await page.locator('#gen-draft-status').textContent(), before.status);
+
+    // The author pastes the link; the preview renders it as an internal article link.
+    await page.locator('#gen-content').fill('Η McLaren πήγε στο Baku με [μεγάλο πακέτο](/blog-module/blog-entries/20260928G/article.html).');
+    await page.locator('.gb-step[data-step="3"]').click();
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').srcdoc.includes('href="/blog-module/blog-entries/20260928G/article.html"'));
+});
+
+test('archive discovery on a phone: long Greek headlines wrap without page overflow, and the editor stays usable offline', async t => {
+    const { page } = await pageFor(t, 390);
+    await page.route('**/blog-index-data.json', route => route.abort());
+    await page.locator('#gen-next').click();
+    await page.getByRole('button', { name: 'Βρες σχετικά άρθρα', exact: true }).click();
+    await page.locator('#research-question').fill('Hamilton'); await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.querySelector('#research-status').textContent.includes('δεν φορτώθηκε'));
+    await page.locator('#gen-content').fill('Γράφω κανονικά χωρίς σύνδεση.');
+    assert.equal(await page.locator('#gen-content').inputValue(), 'Γράφω κανονικά χωρίς σύνδεση.');
+    await page.unroute('**/blog-index-data.json');
+    await page.locator('#research-question').fill('Ιστορία'); await page.keyboard.press('Enter');
+    await page.waitForSelector('.gb-research-results li');
+    for (const theme of ['light', 'dark']) {
+        await page.evaluate(value => { if (value === 'light') document.documentElement.dataset.theme = value; else delete document.documentElement.dataset.theme; }, theme);
+        const dimensions = await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth,
+            widest: Math.max(...Array.from(document.querySelectorAll('.gb-research-results li'), node => node.getBoundingClientRect().right)) }));
+        assert.ok(dimensions.width <= dimensions.viewport && dimensions.widest <= dimensions.viewport, JSON.stringify(dimensions));
+        if (process.env.F1S_RESEARCH_QA_DIR) {
+            await page.locator('.gb-research-results li').first().scrollIntoViewIfNeeded();
+            await page.screenshot({ path: path.join(process.env.F1S_RESEARCH_QA_DIR, `archive-390-${theme}.png`) });
+        }
+    }
+});
+
 test('desktop/mobile, light/dark, focus and overflow QA use actual public references and pinned records', async t => {
     const output = process.env.F1S_RESEARCH_QA_DIR;
     for (const width of [1440, 390]) {
