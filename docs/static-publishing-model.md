@@ -146,7 +146,7 @@ homeImage: graphic
 
 The spread then starts the image after the "TECHNICAL" mast on desktop and drops the photograph shade, colour filter and hover zoom. At every width, the graphic keeps its proportions and the caption sits below it. Below 992px, the layout stacks and the data panel also starts below the graphic, so printed artwork stays visible. Leave it out for photographs, which keep the crossing. It describes the image only; it does not choose the story.
 
-After changing an existing article's flag, run `npm run build:blog` before `npm run build:public` to refresh its cached metadata.
+After changing an existing article's flag, `npm run build:public` rebuilds that article: the incremental build compares the content of its inputs with the `inputDigest` in `blog-source-cache.json`, not file times (README section 6.1).
 
 For manual local article work:
 

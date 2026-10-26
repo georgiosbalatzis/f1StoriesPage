@@ -350,10 +350,10 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
 ### 6.1 Βήματα
 
 1. **Εντοπισμός.** Διαβάζει όλους τους φακέλους του `blog-entries/` και αποφασίζει για τον καθένα αν θα χτιστεί, αν θα παραλειφθεί ή αν θα χρησιμοποιηθεί το cache.
-2. **Incremental έλεγχος** (`utils.shouldSkip`). Ένα άρθρο ξαναχτίζεται όταν:
-   - δεν υπάρχει `article.html`,
-   - το source, κάποια εικόνα, CSV ή embed έχει νεότερο `mtime` από το `article.html`,
-   - το `article.html` έχει inline `data:image` ή δεν έχει responsive `srcset` στο hero.
+2. **Incremental έλεγχος** (`utils.shouldSkip`). Ένα άρθρο με source ξαναχτίζεται όταν:
+   - δεν υπάρχει `article.html` ή εγγραφή του στο cache,
+   - το περιεχόμενο των inputs του διαφέρει από το `inputDigest` της εγγραφής του (βλ. «Πότε ξαναχτίζεται ένα άρθρο» παρακάτω),
+   - το `article.html` έχει inline `data:image`, δεν έχει responsive `srcset` στο hero ή παλιό BetCast snapshot.
 3. **Worker pool.** Κάθε άρθρο χτίζεται σε δικό του `worker_thread` (`build/worker.js`). Ο αριθμός των workers είναι όσοι οι πυρήνες της CPU, ή όσο ορίζει το `BLOG_WORKERS`.
 4. **Ανά άρθρο:**
    - parse του source (`parse-txt.js` ή `parse-docx.js` μέσω mammoth),
@@ -372,6 +372,17 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
 8. **Static render.** Γράφει στο `blog/index.html` το πρωτοσέλιδο του Journal (κύριο θέμα, δύο δευτερεύοντα, «Πρόσφατα», «Για αργή ανάγνωση»· επιλογή στο `blog-module/editorial-selection.json`) και την πρώτη σελίδα του αρχείου ως λίστα, το κύριο άρθρο στο `index.html` και τον κατάλογο συντακτών στο `authors/index.html` (από τη λίστα `AUTHORS` του `taxonomy.js`).
 9. **Sitemap.** Ξαναγράφει το `sitemap.xml`.
 10. **Διασύνδεση.** Βάζει σχετικά άρθρα (`related.js`) και συνδέσμους προηγούμενο/επόμενο (`nav.js`) σε κάθε `article.html`.
+
+#### Πότε ξαναχτίζεται ένα άρθρο
+
+- **Ταυτότητα inputs.** Για κάθε άρθρο με source, το `inputDigest` (`build/input-digest.js`) υπολογίζει ένα SHA-256 από το όνομα και το περιεχόμενο των inputs του φακέλου: το `source.txt`/`.docx`, τις αρχικές εικόνες, τα CSV, τα embed `.html`/`.htm` και τα `embeds/*.f1embed.json`. Ό,τι γράφει το ίδιο το build δεν μετράει: το `article.html`, τα `.avif`, τα `-sm`/`-mobile`/`-card`/`-thumb` και τα telemetry SVG/JSON.
+- **Πού κρατιέται.** Μετά το build κάθε άρθρου, το digest γράφεται ως `inputDigest` στην εγγραφή του στο `blog-source-cache.json`. Το αρχείο είναι εσωτερικό: δεν ανεβαίνει στο `dist/` και δεν φτάνει σε σελίδα, feed ή index. Στο επόμενο build, ίδιο digest σημαίνει skip και διαφορετικό σημαίνει rebuild.
+- **Τι δεν το ακυρώνει.** Αλλαγές στο template, στα partials (nav, footer), στα σχετικά άρθρα, στους topic links και στο prev/next δεν χρειάζονται worker. Τις περνάει σε όλα τα άρθρα το render από το cache και το stamping σε κάθε build.
+- **Χρονοσφραγίδες.** Δεν παίζουν ρόλο όταν υπάρχει digest. Το build:html ξαναγράφει όλα τα `article.html` πριν από το build του blog, οπότε το `mtime` δεν δείχνει αν ένα source επεξεργάστηκε. Μόνο μια εγγραφή χωρίς `inputDigest` (από πριν υπάρξει το πεδίο) κρατά μία φορά τον παλιό κανόνα του `mtime` και παίρνει το digest της. Δεν γίνεται μαζικό rebuild.
+- **Cache που λείπει ή είναι άκυρο.** Χωρίς εγγραφή, το άρθρο χτίζεται. Ένα `inputDigest` που δεν είναι SHA-256 hex δεν εμπιστεύεται και το άρθρο ξαναχτίζεται. Το `build:data-contracts` ελέγχει τη μορφή.
+- **Άρθρα χωρίς source και γκαλερί.** Δεν έχουν digest και ακολουθούν την ίδια διαδρομή με πριν: το σώμα τους διατηρείται από το `article.html` και ξαναγίνεται μόνο το περίγραμμα της σελίδας.
+- **Τοπικά και GitHub Actions.** Το αποτέλεσμα είναι το ίδιο, αφού το digest εξαρτάται μόνο από το περιεχόμενο. Το workflow επαναφέρει ακόμη τα git mtimes (ενότητα 13), αλλά η ορθότητα δεν εξαρτάται πλέον από αυτό.
+- **Έλεγχος ενός άρθρου.** Αλλάξτε το `source.txt` και τρέξτε `npm run build:public`. Στο log πρέπει να φαίνεται `1 built` και η αλλαγή στο `article.html` και στο `dist/`. Δεν χρειάζεται `touch` ούτε `--force`. Το `npm run test:incremental` κάνει τον ίδιο έλεγχο αυτόματα σε προσωρινό git worktree.
 
 ### 6.2 Παραλλαγές εικόνων
 
@@ -728,7 +739,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 **Jobs:**
 
-- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα, οπότε χωρίς αυτό το βήμα ο incremental έλεγχος θα παρέλειπε άρθρα που άλλαξαν. Μετά `node blog-module/blog-processor.js`, stamp των άρθρων και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`. Στο ίδιο job, το `build-pages` ετοιμάζει και ανεβάζει το Pages artifact από το checkout μετά το commit/rebase. Έτσι το συνηθισμένο article publish χρειάζεται ένα checkout και ένα `npm ci` για generation και packaging. Το χειροκίνητο/reusable blog task χωρίς αλλαγές παραλείπει packaging και deploy.
+- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα. Ο incremental έλεγχος πλέον συγκρίνει περιεχόμενο (`inputDigest`, ενότητα 6.1) και δεν εξαρτάται από το βήμα αυτό, που παραμένει μόνο για τις εγγραφές χωρίς digest. Μετά `node blog-module/blog-processor.js`, stamp των άρθρων και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`. Στο ίδιο job, το `build-pages` ετοιμάζει και ανεβάζει το Pages artifact από το checkout μετά το commit/rebase. Έτσι το συνηθισμένο article publish χρειάζεται ένα checkout και ένα `npm ci` για generation και packaging. Το χειροκίνητο/reusable blog task χωρίς αλλαγές παραλείπει packaging και deploy.
 - **`refresh_youtube`**: read-only checkout και `node scripts/build/fetch-youtube.mjs`, χωρίς να κρατά το lock δημοσίευσης άρθρων. Παράγει Git patch μόνο για το `assets/youtube-latest.json` και το `images/youtube/`, μαζί με προσθήκες και διαγραφές εικόνων.
 - **`refresh_standings_data`**: read-only checkout και `npm run build:standings-data`, επίσης χωρίς το lock άρθρων. Το patch περιλαμβάνει τα `standings/*-cache.json`, `standings/dirty-air/` και `standings/rounds/`, μαζί με διαγραμμένα snapshots.
 - **`publish_data`**: τρέχει μόνο όταν ένα refresh ολοκληρωθεί επιτυχώς με αλλαγές. Κατεβάζει το patch artifact (διατηρείται μία ημέρα) μέσω του μοναδικού ID του, κάνει νέο checkout του τρέχοντος `main` με πλήρες ιστορικό και εφαρμόζει `git apply --3way --index`. Έτσι διατηρεί άρθρα που δημοσιεύθηκαν όσο έτρεχε το fetch. Αν τα ίδια δεδομένα έχουν αλλάξει ασύμβατα στο μεταξύ, αποτυγχάνει πριν από το commit/push. Χρησιμοποιεί το `commit-and-push` με τα υπάρχοντα `chore(data): ... [skip ci]` μηνύματα, χωρίς Node setup ή `npm ci`.
@@ -989,7 +1000,7 @@ Actions > Site Maintenance > Run workflow > `standings`. Τοπικά: `npm run 
 |---|---|
 | Το site δεν φορτώνει CSS/JS τοπικά | Λείπουν τα `.min` αρχεία. Τρέξτε `npm run preview` ή `npm run build:assets`. |
 | Σελίδες χωρίς στυλ ή με 404 σε `file://` | Το site χρειάζεται server. Τρέξτε `npm run preview`. |
-| Το άρθρο δεν ξαναχτίστηκε μετά από αλλαγή | Το incremental build βασίζεται στο `mtime`. Κάντε `touch` στο `source.txt` ή τρέξτε `npm run build:blog:force`. |
+| Το άρθρο δεν ξαναχτίστηκε μετά από αλλαγή | Το incremental build συγκρίνει το περιεχόμενο των inputs με το `inputDigest` του cache (ενότητα 6.1). Αν το source άλλαξε και παρ' όλα αυτά δεν ξαναχτίστηκε, ελέγξτε ότι ο φάκελος έχει `source.txt`/`.docx`. Για πλήρες rebuild: `npm run build:blog:force`. |
 | Το Publish Article δεν έκανε τίποτα | Ελέγξτε ότι το PR δεν είναι draft, ότι το branch είναι `author/*`, ότι είναι από το ίδιο repo και ότι το Site Quality πέτυχε. |
 | Το Publish Article απέτυχε με «files outside blog entries» | Το PR αλλάζει αρχεία εκτός του `blog-module/blog-entries/`. Κάντε merge χειροκίνητα μετά από review, ή χωρίστε το PR. |
 | Το Site Maintenance έτρεξε αλλά δεν έγινε deploy | Το job δεν έκανε commit γιατί δεν υπήρχαν αλλαγές. Αυτό είναι αναμενόμενο. Για deploy, τρέξτε χειροκίνητα το Deploy Pages. |

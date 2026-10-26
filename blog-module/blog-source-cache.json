@@ -27,7 +27,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "d0797817f1fadbb0e3739ec09f43bea0457690f7bebd82c19eb72a21c56f07e6"
     },
     {
       "id": "20261023G",
@@ -65,7 +66,8 @@
       "imageWidth": 1350,
       "imageHeight": 900,
       "backgroundImageWidth": 682,
-      "backgroundImageHeight": 450
+      "backgroundImageHeight": 450,
+      "inputDigest": "640bcba7e3078ded53e1a64055661690c8e8790435a0c94a35c8d70c42717435"
     },
     {
       "id": "20261023W",
@@ -94,7 +96,8 @@
       "imageWidth": 516,
       "imageHeight": 308,
       "backgroundImageWidth": 788,
-      "backgroundImageHeight": 389
+      "backgroundImageHeight": 389,
+      "inputDigest": "688243884b3356fe2473cde958cfd31789fbe6b52590345742d8a3d5a40142b8"
     },
     {
       "id": "20261022J",
@@ -123,7 +126,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "deee7849889c5f2363e18031c832ce217ad23f784dd27142fa037367c998ed6b"
     },
     {
       "id": "20261021W",
@@ -152,7 +156,8 @@
       "imageWidth": 738,
       "imageHeight": 415,
       "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "160b031a8bfde5fee2ba79cf4d91aba91c50e4a9858c864a35c129b98e4727b4"
     },
     {
       "id": "20261020W",
@@ -183,7 +188,8 @@
       "imageWidth": 1600,
       "imageHeight": 1161,
       "backgroundImageWidth": 768,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "54f9909a3925d7cdc0d0416e0e4f5b4666b8575220e9a97870ae9d8541cfffeb"
     },
     {
       "id": "20261019W",
@@ -212,7 +218,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 596,
-      "backgroundImageHeight": 335
+      "backgroundImageHeight": 335,
+      "inputDigest": "7886ba4390356f1b528d6d31aab2b14ddc88fbc03d4ed1fa1ba9e179d9a58341"
     },
     {
       "id": "20261018W",
@@ -241,7 +248,8 @@
       "imageWidth": 1330,
       "imageHeight": 600,
       "backgroundImageWidth": 490,
-      "backgroundImageHeight": 626
+      "backgroundImageHeight": 626,
+      "inputDigest": "488c32a1a1504d2d827de892d7f7e23bf957310140abc885d23e367b48691cce"
     },
     {
       "id": "20261017W",
@@ -271,7 +279,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "302e61f65c8adb0bb351289cd3b63a9cdd6aacb2655d812f62937a8853378aa9"
     },
     {
       "id": "20261016W",
@@ -303,7 +312,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "abb080e1e3651cd40781f885306787b69c4bef1a4d95b45eae018a13e97eaebc"
     },
     {
       "id": "20261015W",
@@ -335,7 +345,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 677,
-      "backgroundImageHeight": 453
+      "backgroundImageHeight": 453,
+      "inputDigest": "7417a0951b6b2f5e5fe556d674a987921d9f06638f253839b74e70d2ae3dd85d"
     },
     {
       "id": "20261015G",
@@ -372,7 +383,8 @@
       "imageWidth": 1050,
       "imageHeight": 791,
       "backgroundImageWidth": 1050,
-      "backgroundImageHeight": 791
+      "backgroundImageHeight": 791,
+      "inputDigest": "173a7a0fc6a4ab2638a761d5ef0555ea091b9974d147fac3f089e6eb51a4cf81"
     },
     {
       "id": "20261014W",
@@ -403,7 +415,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 743
+      "backgroundImageHeight": 743,
+      "inputDigest": "9b77f334ffff4a7733f8294b5d49b1d5bcc099668081359d91698486eea5143c"
     },
     {
       "id": "20261014F",
@@ -432,7 +445,8 @@
       "imageWidth": 1200,
       "imageHeight": 800,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 800
+      "backgroundImageHeight": 800,
+      "inputDigest": "7f801b4db94b1a8cade57e4afdaa3ef2b1491dce5073f50b070d6ede3c83bd6d"
     },
     {
       "id": "20261014G",
@@ -467,7 +481,8 @@
       "imageWidth": 474,
       "imageHeight": 316,
       "backgroundImageWidth": 474,
-      "backgroundImageHeight": 316
+      "backgroundImageHeight": 316,
+      "inputDigest": "0bf74607ac066dcec98013c9b5fd5e0f321be2ae525f10e46863c10a9113a0d6"
     },
     {
       "id": "20261013W",
@@ -499,7 +514,8 @@
       "imageWidth": 540,
       "imageHeight": 370,
       "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "feb49b6740e6a858cc3b61250d6c0747335b416b942de10ea5b9440637448152"
     },
     {
       "id": "20261013G",
@@ -537,7 +553,8 @@
       "imageWidth": 1200,
       "imageHeight": 800,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 800
+      "backgroundImageHeight": 800,
+      "inputDigest": "bfcd84807705c18841f1e2079ded5d782ce3fc369e7d9f474a8ab2567119c45d"
     },
     {
       "id": "20261012W",
@@ -567,7 +584,8 @@
       "imageWidth": 1200,
       "imageHeight": 704,
       "backgroundImageWidth": 764,
-      "backgroundImageHeight": 401
+      "backgroundImageHeight": 401,
+      "inputDigest": "9c33638a40e960e42eb2b8de1861d3d18aa09ce322555add7d3bbff40eb291d2"
     },
     {
       "id": "20261011J",
@@ -597,7 +615,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "be834f1c18c857d36f6b874dec2c0cf396753bbdab89b325ff5fe8f2965f89f0"
     },
     {
       "id": "20261011W",
@@ -627,7 +646,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 770,
-      "backgroundImageHeight": 513
+      "backgroundImageHeight": 513,
+      "inputDigest": "500ae7a9987cc1ebe036909334aa13be92d8c05a4b43f4e91ce3597e86b690f0"
     },
     {
       "id": "20261010W",
@@ -656,7 +676,8 @@
       "imageWidth": 640,
       "imageHeight": 426,
       "backgroundImageWidth": 350,
-      "backgroundImageHeight": 233
+      "backgroundImageHeight": 233,
+      "inputDigest": "21de4eaab7764d9d2ce0a82e137f7c65b6310e38286478030a6fe03715e1bd57"
     },
     {
       "id": "20261010J",
@@ -684,7 +705,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "13bfb4014a194472226b58becbe9350088136b276728bc3ddc477f1cd193ee24"
     },
     {
       "id": "20261009W",
@@ -716,7 +738,8 @@
       "imageWidth": 399,
       "imageHeight": 501,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "b16d8e8728b371a9470c3fe20e543e470534571b30b12c49589413a74aebf250"
     },
     {
       "id": "20261008J",
@@ -747,7 +770,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "c9014f37a82bcfc8843d24edf7b5442d4be74aa6b7b4ea18a3c0c8e4c113fc4b"
     },
     {
       "id": "20261008W",
@@ -776,7 +800,8 @@
       "imageWidth": 1600,
       "imageHeight": 1106,
       "backgroundImageWidth": 588,
-      "backgroundImageHeight": 340
+      "backgroundImageHeight": 340,
+      "inputDigest": "97a3ccac7d8de454ac299ad68e3eb0500f5616dce24103b4d500ad46ea3873e4"
     },
     {
       "id": "20261007F",
@@ -805,7 +830,8 @@
       "imageWidth": 770,
       "imageHeight": 513,
       "backgroundImageWidth": 770,
-      "backgroundImageHeight": 513
+      "backgroundImageHeight": 513,
+      "inputDigest": "a6d0db461d4fcbf191e38d01a8bc9cc8cd6afcba59245f881eca1e3bf55c3566"
     },
     {
       "id": "20261007G",
@@ -839,7 +865,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "3edc584fc5246e55d2a5693f6ca072bf3229689117ac8a286f0b757c984282e3"
     },
     {
       "id": "20261007W",
@@ -870,7 +897,8 @@
       "imageWidth": 1092,
       "imageHeight": 683,
       "backgroundImageWidth": 1350,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "7678149310b8597410fc09781e1383bfa41a724901a376a3aff897da18b1825a"
     },
     {
       "id": "20261006F",
@@ -901,7 +929,8 @@
       "imageWidth": 1200,
       "imageHeight": 800,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 800
+      "backgroundImageHeight": 800,
+      "inputDigest": "b1310b3e686e110ef0dd0092d9e5a169f6d7686b79d9ef59ba3ffa88348fef07"
     },
     {
       "id": "20261006G",
@@ -939,7 +968,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "13b540ad7f8f4c8f2295eabc2bdb1f9292a09c5528c4edf60b41586025a8fff4"
     },
     {
       "id": "20261005W",
@@ -970,7 +1000,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 980,
-      "backgroundImageHeight": 735
+      "backgroundImageHeight": 735,
+      "inputDigest": "8f023bccc65d5505dd6ac2324285000b6d5ec0f18952dbbfc51831e3a6b4b6e8"
     },
     {
       "id": "20261005G",
@@ -999,7 +1030,8 @@
       "imageWidth": 1024,
       "imageHeight": 576,
       "backgroundImageWidth": 1024,
-      "backgroundImageHeight": 576
+      "backgroundImageHeight": 576,
+      "inputDigest": "0b3550e0ea2809da025161ea87129b2e3be7fe676f20b4a35441068de73d34ad"
     },
     {
       "id": "20261004J",
@@ -1028,7 +1060,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "6189144db24044c16635b86331bc4852c9678d7b5fabe887c95331fd87add8f1"
     },
     {
       "id": "20261004W",
@@ -1058,7 +1091,8 @@
       "imageWidth": 547,
       "imageHeight": 365,
       "backgroundImageWidth": 554,
-      "backgroundImageHeight": 554
+      "backgroundImageHeight": 554,
+      "inputDigest": "0466403a6c82094f2756f2bcd03a672de51e1c947303d960d0d6d1c12871b492"
     },
     {
       "id": "20261002J",
@@ -1088,7 +1122,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "0921e211b96baca3e7a0c65bfbce953df6369c1fd012467d7d6d75648d1e968f"
     },
     {
       "id": "20261002W",
@@ -1117,7 +1152,8 @@
       "imageWidth": 800,
       "imageHeight": 533,
       "backgroundImageWidth": 1170,
-      "backgroundImageHeight": 740
+      "backgroundImageHeight": 740,
+      "inputDigest": "f93b8be1b742dabbdda9cd9a79b55b9c6772e3543bd7ddcc3235bbbae9ccf554"
     },
     {
       "id": "20261001W",
@@ -1146,7 +1182,8 @@
       "imageWidth": 1200,
       "imageHeight": 720,
       "backgroundImageWidth": 682,
-      "backgroundImageHeight": 450
+      "backgroundImageHeight": 450,
+      "inputDigest": "f82186dc0206bc22a1c23bd9e8ad31bbd83fba5c03a489a9bac5f092514389fc"
     },
     {
       "id": "20260930J",
@@ -1175,7 +1212,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "e3455111438894c7063726a132e92e975e7077df783b2190ef4c5098a75d9dcf"
     },
     {
       "id": "20260930G",
@@ -1208,7 +1246,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "71ce60d28ce4f9889587e2c0243c161dabef0c00c91dc1464a3b45490b6bf2bf"
     },
     {
       "id": "20260929W",
@@ -1235,7 +1274,8 @@
       "imageWidth": 547,
       "imageHeight": 365,
       "backgroundImageWidth": 701,
-      "backgroundImageHeight": 438
+      "backgroundImageHeight": 438,
+      "inputDigest": "0531830ffd72b1449a98ddb8597a5c75982ee538fa54906e1582ef913baf80b3"
     },
     {
       "id": "20260929-2G",
@@ -1266,7 +1306,8 @@
       "imageWidth": 800,
       "imageHeight": 449,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 449
+      "backgroundImageHeight": 449,
+      "inputDigest": "f6565af2c98e89ea18cb63d997e6680ab8088c9dbef646a0f8d6fd23db4f2b98"
     },
     {
       "id": "20260929F",
@@ -1297,7 +1338,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "de8df21a37ffecb9d94a6a07b64924d67092863e30a77703f945c2802f3b01a4"
     },
     {
       "id": "20260929G",
@@ -1326,7 +1368,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "eb0fd23c3f0d8defd8241006a3d10e79291bd0cfb19f1281a08cc9fdde04fbaa"
     },
     {
       "id": "20260928W",
@@ -1360,7 +1403,8 @@
       "imageWidth": 1200,
       "imageHeight": 768,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "c75c87faba6c3638f65466c5bd630f5dd2d879a88ee196679360634f1fbc3ea9"
     },
     {
       "id": "20260928-2G",
@@ -1392,7 +1436,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "3a83499f316dce4f6df31188be9cb01de183c4f1b95962b518b34393cc23e1a7"
     },
     {
       "id": "20260928F",
@@ -1421,7 +1466,8 @@
       "imageWidth": 1620,
       "imageHeight": 1080,
       "backgroundImageWidth": 1620,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "385683c9489ccbd3e05a51695d6e6d5fcdadc0c907528c8e131f261f1c58b813"
     },
     {
       "id": "20260928G",
@@ -1454,7 +1500,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "a37fac9878750a2c1bf2176afa8e720bf21bdf89cd4615c5e34dfdc9eb6f11a6"
     },
     {
       "id": "20260927-2G",
@@ -1483,7 +1530,8 @@
       "imageWidth": 1092,
       "imageHeight": 683,
       "backgroundImageWidth": 1092,
-      "backgroundImageHeight": 683
+      "backgroundImageHeight": 683,
+      "inputDigest": "bf22b68e582bc023552311dd372cfc24e3db511089f5ebd4f56bebf7326241f6"
     },
     {
       "id": "20260927-2W",
@@ -1510,7 +1558,8 @@
       "imageWidth": 724,
       "imageHeight": 483,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "60c7f7c4d3f8c5fc4f066c614d320f334a5eb0923284e3bf01cec036a778e821"
     },
     {
       "id": "20260927G",
@@ -1541,7 +1590,8 @@
       "imageWidth": 768,
       "imageHeight": 432,
       "backgroundImageWidth": 768,
-      "backgroundImageHeight": 432
+      "backgroundImageHeight": 432,
+      "inputDigest": "64e64d6d65253460f824b6cfa8ad722b68496dc15ba64835abd80cc2b198e61d"
     },
     {
       "id": "20260927W",
@@ -1568,7 +1618,8 @@
       "imageWidth": 768,
       "imageHeight": 432,
       "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "abff9665e5910ca15342f64080381193db16d367b9cbdd45cafb5f8ef5d12ed7"
     },
     {
       "id": "20260926G",
@@ -1596,7 +1647,8 @@
       "imageWidth": 1300,
       "imageHeight": 867,
       "backgroundImageWidth": 1300,
-      "backgroundImageHeight": 867
+      "backgroundImageHeight": 867,
+      "inputDigest": "a62b8e7b479e7e079771f6b9d3a296ab3102d3acaed40413b523886d1b17d9e5"
     },
     {
       "id": "20260926D",
@@ -1625,7 +1677,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "1cee9920e78493b3257764e9853759f843e11fa4d13e07f90b6d040a1e54fca2"
     },
     {
       "id": "20260925W",
@@ -1653,7 +1706,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "3a81a9d64203b91f572dfe811c89ad32f85f0394ff0f17a03e61518cf6bf3b3b"
     },
     {
       "id": "20260924W",
@@ -1682,7 +1736,8 @@
       "imageWidth": 1920,
       "imageHeight": 916,
       "backgroundImageWidth": 750,
-      "backgroundImageHeight": 460
+      "backgroundImageHeight": 460,
+      "inputDigest": "856f769bdf7eeb3f9a2fa64c47194dc587091739a3800dbb40a56c792a3b3d57"
     },
     {
       "id": "20260924J",
@@ -1709,7 +1764,8 @@
       "imageWidth": 300,
       "imageHeight": 300,
       "backgroundImageWidth": 300,
-      "backgroundImageHeight": 300
+      "backgroundImageHeight": 300,
+      "inputDigest": "497895fb5cbb57bb3ed4ee16f61eab44a54e4647c30a8348c79851fd9d6d76fd"
     },
     {
       "id": "20260923W",
@@ -1739,7 +1795,8 @@
       "imageWidth": 588,
       "imageHeight": 330,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "e4b2e86fb85c3c04b5864e77c7cf1b36335e8e9230851b79e214894c0cd54bb4"
     },
     {
       "id": "20260923",
@@ -1767,7 +1824,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "7750fa2765cc23597b0c70398653127521a8774c14e1074be07e40981d0df36f"
     },
     {
       "id": "20260923-2G",
@@ -1795,7 +1853,8 @@
       "imageWidth": 1170,
       "imageHeight": 530,
       "backgroundImageWidth": 1170,
-      "backgroundImageHeight": 530
+      "backgroundImageHeight": 530,
+      "inputDigest": "3a840a11f62bf791e478daedc72394b8f201196031c99f104019e59fb7ef5ee5"
     },
     {
       "id": "20260923G",
@@ -1823,7 +1882,8 @@
       "imageWidth": 474,
       "imageHeight": 266,
       "backgroundImageWidth": 474,
-      "backgroundImageHeight": 266
+      "backgroundImageHeight": 266,
+      "inputDigest": "5cd164c0c3f39197c886ad6d819ad9c596a0a204c94cdf99655f57d6357b0c54"
     },
     {
       "id": "20260922W",
@@ -1854,7 +1914,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533
+      "backgroundImageHeight": 533,
+      "inputDigest": "0b5321b90d4767025fdae73008924e8dff9304c62bdbc2246c7b99fc14c404fd"
     },
     {
       "id": "20260920W",
@@ -1886,7 +1947,8 @@
       "imageWidth": 1600,
       "imageHeight": 1200,
       "backgroundImageWidth": 681,
-      "backgroundImageHeight": 450
+      "backgroundImageHeight": 450,
+      "inputDigest": "bacae0f997285e097f0881da12aea9656fe8d70a663512f085b53d834cfc2a29"
     },
     {
       "id": "20260918W",
@@ -1916,7 +1978,8 @@
       "imageWidth": 3200,
       "imageHeight": 1801,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageHeight": 1908,
+      "inputDigest": "4d3ab61b0fa735fa8b8cfb433a200fb27d148c2c716243d728be491140ba1952"
     },
     {
       "id": "20260918G",
@@ -1944,7 +2007,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "0f7fc80d832e22bc61e34fa112321d963252fdc1b1d82ac3d14330c8522ebd71"
     },
     {
       "id": "20260918-2G",
@@ -1972,7 +2036,8 @@
       "imageWidth": 2000,
       "imageHeight": 1333,
       "backgroundImageWidth": 2000,
-      "backgroundImageHeight": 1333
+      "backgroundImageHeight": 1333,
+      "inputDigest": "b3b91258d2a7221f9f9e4e2b750d57fbeab9fb7570599e31cae607a41e688927"
     },
     {
       "id": "20260916W",
@@ -2002,7 +2067,8 @@
       "imageWidth": 460,
       "imageHeight": 276,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1067
+      "backgroundImageHeight": 1067,
+      "inputDigest": "7003a0e563b62d37eba953b00f25bb897adaaf68c420fa1dc29a20fc7e1c8ed9"
     },
     {
       "id": "20260916G",
@@ -2030,7 +2096,8 @@
       "imageWidth": 1320,
       "imageHeight": 742,
       "backgroundImageWidth": 1320,
-      "backgroundImageHeight": 742
+      "backgroundImageHeight": 742,
+      "inputDigest": "2d17bf2bda54b25e78d6e9ba5f7521dc93121fa7b94541e0f18d36c7dd0765a3"
     },
     {
       "id": "20260914W",
@@ -2060,7 +2127,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1056
+      "backgroundImageHeight": 1056,
+      "inputDigest": "670c85c49aa81a096273c94e0eac4463a17240d7320f288ba650173734a133b5"
     },
     {
       "id": "20260914J",
@@ -2090,7 +2158,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "c64bb9c77680ed5dcb1f20cad2fbcb6a8842a2a655314b7203519938183ae7d5"
     },
     {
       "id": "20260913W",
@@ -2120,7 +2189,8 @@
       "imageWidth": 679,
       "imageHeight": 452,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 675
+      "backgroundImageHeight": 675,
+      "inputDigest": "68da68d9c17c7015f564c30521b10308a05e2c1315302561ea1aa984bd90060a"
     },
     {
       "id": "20260913G",
@@ -2150,7 +2220,8 @@
       "imageWidth": 474,
       "imageHeight": 316,
       "backgroundImageWidth": 474,
-      "backgroundImageHeight": 316
+      "backgroundImageHeight": 316,
+      "inputDigest": "b2cb2bf41a768f05176427804a6e4ff66d4c32ac3297d65d0a7db72a2c876ce9"
     },
     {
       "id": "20260912W",
@@ -2183,7 +2254,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "667cdee3a7e3e5e362dcb029ef606b87bab127451441060161ab6fe431296c69"
     },
     {
       "id": "20260912J",
@@ -2214,7 +2286,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "6a0b0ac6909304e57116ea40e0ff8b817e16662b693f3a1a2f2414037d600494"
     },
     {
       "id": "20260911W",
@@ -2245,7 +2318,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 500
+      "backgroundImageHeight": 500,
+      "inputDigest": "1dbab4dd9fbcb3d16894e95fd04e43f5eb7f4754a1954c1884368abcca298399"
     },
     {
       "id": "20260910G",
@@ -2274,7 +2348,8 @@
       "imageWidth": 1052,
       "imageHeight": 689,
       "backgroundImageWidth": 1052,
-      "backgroundImageHeight": 689
+      "backgroundImageHeight": 689,
+      "inputDigest": "0bc8371478bfccae9dffadc74855eff66a7972fc03b8b95a8f6043adeb82f7d9"
     },
     {
       "id": "20260910-5G",
@@ -2302,7 +2377,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "2fb07ffe77790f9ddb393f3fb82808a639c9c2d7ac7387d1b541782af73f3ea6"
     },
     {
       "id": "20260910-4G",
@@ -2332,7 +2408,8 @@
       "imageWidth": 1600,
       "imageHeight": 2133,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 2133
+      "backgroundImageHeight": 2133,
+      "inputDigest": "94ad52a7c7d7903db79bcd6069eacc6a8a406268ff177239e939119786ff9e24"
     },
     {
       "id": "20260910-3G",
@@ -2362,7 +2439,8 @@
       "imageWidth": 768,
       "imageHeight": 512,
       "backgroundImageWidth": 768,
-      "backgroundImageHeight": 512
+      "backgroundImageHeight": 512,
+      "inputDigest": "414afc9fc049d25d22a960e83209622caa4ffe4d0fb63a952e17cd2146d99916"
     },
     {
       "id": "20260910-2G",
@@ -2392,7 +2470,8 @@
       "imageWidth": 1359,
       "imageHeight": 835,
       "backgroundImageWidth": 1359,
-      "backgroundImageHeight": 835
+      "backgroundImageHeight": 835,
+      "inputDigest": "3c73909c99a481a7896cbd1f54fe88364d15d500fd7dfa4557842032704011ab"
     },
     {
       "id": "20260910",
@@ -2420,7 +2499,8 @@
       "imageWidth": 500,
       "imageHeight": 400,
       "backgroundImageWidth": 500,
-      "backgroundImageHeight": 400
+      "backgroundImageHeight": 400,
+      "inputDigest": "21e8a64c603c2a5d1a880a802ca3d652ff07cb3d661c4d7578e70d5c6a6951ae"
     },
     {
       "id": "20260909W",
@@ -2451,7 +2531,8 @@
       "imageWidth": 1572,
       "imageHeight": 980,
       "backgroundImageWidth": 547,
-      "backgroundImageHeight": 365
+      "backgroundImageHeight": 365,
+      "inputDigest": "5e27df3c0f6762b3b01cc1fc261e5d4c7eaa4c745367638f3b6515332e5bd8e9"
     },
     {
       "id": "20260909J",
@@ -2479,7 +2560,8 @@
       "imageWidth": 1672,
       "imageHeight": 940,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 940
+      "backgroundImageHeight": 940,
+      "inputDigest": "84728b8a3479bb79cc548e90ce0a68d020206e0a28ddef146354a6eda88ad89b"
     },
     {
       "id": "20260906W",
@@ -2509,7 +2591,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 674,
-      "backgroundImageHeight": 455
+      "backgroundImageHeight": 455,
+      "inputDigest": "42085a5b20e48442e797b78d107ce580d575681f8453272034101fe079764c0c"
     },
     {
       "id": "20260905J",
@@ -2537,7 +2620,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "712d6c1bc59ea2a406e3e06ab4013e4b95402354c929108ad10352bbba73d8d5"
     },
     {
       "id": "20260904W",
@@ -2568,7 +2652,8 @@
       "imageWidth": 1067,
       "imageHeight": 1067,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "557de4235c3a611647ac565b571d80749f50e4a80dd97dfb3d64e240ee6d84ab"
     },
     {
       "id": "20260903W",
@@ -2598,7 +2683,8 @@
       "imageWidth": 758,
       "imageHeight": 404,
       "backgroundImageWidth": 707,
-      "backgroundImageHeight": 282
+      "backgroundImageHeight": 282,
+      "inputDigest": "0d90bad9794f70e8c5700a7cc944406e68e9de1b2a72fa3b9e95df7bb0c11cca"
     },
     {
       "id": "20260901W",
@@ -2627,7 +2713,8 @@
       "imageWidth": 500,
       "imageHeight": 400,
       "backgroundImageWidth": 683,
-      "backgroundImageHeight": 449
+      "backgroundImageHeight": 449,
+      "inputDigest": "c52de624ae3dc9a4256aab70609ebf45fd69cf7d150f4cbb767f4176f1588cf5"
     },
     {
       "id": "20260901J",
@@ -2655,7 +2742,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "4ba7b0ce555cf528311d28478be4c015f77d67998a263b19add077ec59bc5825"
     },
     {
       "id": "20260831W",
@@ -2686,7 +2774,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 480,
-      "backgroundImageHeight": 639
+      "backgroundImageHeight": 639,
+      "inputDigest": "38b4797627f258ca26c1fb84279da838c006990524c62496de6471e36a2a80b1"
     },
     {
       "id": "20260830W",
@@ -2716,7 +2805,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 875,
-      "backgroundImageHeight": 623
+      "backgroundImageHeight": 623,
+      "inputDigest": "d7b54e7d5c7326547fae8e159e1fffbc0375413e45664a0780f6adf8683e1398"
     },
     {
       "id": "20260829W",
@@ -2747,7 +2837,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageHeight": 1908,
+      "inputDigest": "50c475c99b670c46cf1aacd8087591a8160606c044c600afe7df351347bcd6ad"
     },
     {
       "id": "20260828W",
@@ -2778,7 +2869,8 @@
       "imageWidth": 3392,
       "imageHeight": 1908,
       "backgroundImageWidth": 677,
-      "backgroundImageHeight": 704
+      "backgroundImageHeight": 704,
+      "inputDigest": "0c617d64fd9a01f1bbcf815dc1d7d9cb7719ad26f4b062fc29f88f682e3b70fd"
     },
     {
       "id": "20260827W",
@@ -2808,7 +2900,8 @@
       "imageWidth": 1200,
       "imageHeight": 800,
       "backgroundImageWidth": 1125,
-      "backgroundImageHeight": 750
+      "backgroundImageHeight": 750,
+      "inputDigest": "30aa78d48847bc4ba5b85bbbe345992fdba2ce1abab79f7895c53d8e0ea13852"
     },
     {
       "id": "20260826W",
@@ -2840,7 +2933,8 @@
       "imageWidth": 600,
       "imageHeight": 397,
       "backgroundImageWidth": 700,
-      "backgroundImageHeight": 442
+      "backgroundImageHeight": 442,
+      "inputDigest": "63bf704649977c1722f27cceaddd39ed4b0483a7ba8cb74b23cb8ead580d2467"
     },
     {
       "id": "20260825W",
@@ -2872,7 +2966,8 @@
       "imageWidth": 2560,
       "imageHeight": 1440,
       "backgroundImageWidth": 300,
-      "backgroundImageHeight": 202
+      "backgroundImageHeight": 202,
+      "inputDigest": "4c7b0295570b0e672da9168733f26037a232701e5b24391d9fbc9642560b195a"
     },
     {
       "id": "20260824W",
@@ -2902,7 +2997,8 @@
       "imageWidth": 557,
       "imageHeight": 359,
       "backgroundImageWidth": 3840,
-      "backgroundImageHeight": 2160
+      "backgroundImageHeight": 2160,
+      "inputDigest": "73f4e695864fe38a0a6df55c87d16950b888cbe985463ef3dd89787850c2c4a5"
     },
     {
       "id": "20260824J",
@@ -2930,7 +3026,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "6ab449d602d48eee38b29356bcc40f17b70cdd770292b94ec118d33b7613a24f"
     },
     {
       "id": "20260824D",
@@ -2958,7 +3055,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "5983d5c949f9e1bd6150d3cbd92e6d50a4a3271f857ce74ae3d4404322a774be"
     },
     {
       "id": "20260822W",
@@ -2989,7 +3087,8 @@
       "imageWidth": 547,
       "imageHeight": 365,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 801
+      "backgroundImageHeight": 801,
+      "inputDigest": "e350a070c153838b5b6b61da7919a73e38685258cc564daed351aa79d84899a5"
     },
     {
       "id": "20260822J",
@@ -3017,7 +3116,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "27029ede1db961fb0bec3799c999a809ac94992dd24ff068589907d4d4eb2b16"
     },
     {
       "id": "20260820W",
@@ -3047,7 +3147,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 1260,
-      "backgroundImageHeight": 1149
+      "backgroundImageHeight": 1149,
+      "inputDigest": "695662a0aedabf2743b01edbae06ffbec811245228f3345db9fdd2ffdb20453c"
     },
     {
       "id": "20260817J",
@@ -3075,7 +3176,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "ec4bcab692cc4e23ae5db11d2b3a4483a226be810d9d8d09e7d4ebb07341a2f5"
     },
     {
       "id": "20260815W",
@@ -3110,7 +3212,8 @@
       "imageWidth": 399,
       "imageHeight": 501,
       "backgroundImageWidth": 3840,
-      "backgroundImageHeight": 1488
+      "backgroundImageHeight": 1488,
+      "inputDigest": "e1c54cb24d34f550b2de7af80e996a1dc1bfef48587ff3831b4e2bace7f0f8c5"
     },
     {
       "id": "20260803W",
@@ -3140,7 +3243,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1282
+      "backgroundImageHeight": 1282,
+      "inputDigest": "0e3f2095ef5bf6da11b13074f79756547bc051a2d6ca121b9eb74f1f24f868b6"
     },
     {
       "id": "20260802W",
@@ -3172,7 +3276,8 @@
       "imageWidth": 1799,
       "imageHeight": 1191,
       "backgroundImageWidth": 1280,
-      "backgroundImageHeight": 821
+      "backgroundImageHeight": 821,
+      "inputDigest": "6b68234d3e82a9d7f648970801e3c4440fbb62ccca19123db34ba5107b9715b5"
     },
     {
       "id": "20260801W",
@@ -3202,7 +3307,8 @@
       "imageWidth": 3392,
       "imageHeight": 1908,
       "backgroundImageWidth": 700,
-      "backgroundImageHeight": 457
+      "backgroundImageHeight": 457,
+      "inputDigest": "dfba5a5db30bbbd197a3434970b837df72fb6f55fdd340ad7a14f73d70612b8f"
     },
     {
       "id": "20260730W",
@@ -3234,7 +3340,8 @@
       "imageWidth": 424,
       "imageHeight": 471,
       "backgroundImageWidth": 640,
-      "backgroundImageHeight": 414
+      "backgroundImageHeight": 414,
+      "inputDigest": "dc521694ceeaac9d20e72711b7eb86b53b64f6cc5c5437a9c0e54899a969ae82"
     },
     {
       "id": "20260729W",
@@ -3263,7 +3370,8 @@
       "imageWidth": 640,
       "imageHeight": 480,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "0f5b0b034bbe68e4fde59df7d67198b174deff4585a22442d4099be3446e8e04"
     },
     {
       "id": "20260727J",
@@ -3291,7 +3399,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "6091a2709c74cca574af16a248111ebc0f2a410eb6b2e2997ad8f609c1eb975b"
     },
     {
       "id": "20260727G",
@@ -3319,7 +3428,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "2589f8f5b2584eed18118768f2121533297f525fe43349f339d6b045b6363913"
     },
     {
       "id": "20260726W",
@@ -3351,7 +3461,8 @@
       "imageWidth": 737,
       "imageHeight": 416,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 630
+      "backgroundImageHeight": 630,
+      "inputDigest": "24004a3a052df61e754a5ad1e86341651ff30da504b2257ae8bf5d4a58a57415"
     },
     {
       "id": "20260726D",
@@ -3379,7 +3490,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "1dce3c418eca5f1de9cb97a3a4ef31948b19d78f09229ef0801157046aa0f7f8"
     },
     {
       "id": "20260725W",
@@ -3410,7 +3522,8 @@
       "imageWidth": 668,
       "imageHeight": 459,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "62ea1cd6cb4c07efe63a25fe682b8a741e4241aefc3100d6096dfeebb878ef5d"
     },
     {
       "id": "20260725J",
@@ -3438,7 +3551,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "6ceb218f1cf9864b17096e89705050c9f8ab343c8d6327a130bdcfcf79d22460"
     },
     {
       "id": "20260724W",
@@ -3467,7 +3581,8 @@
       "imageWidth": 1000,
       "imageHeight": 666,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageHeight": 1908,
+      "inputDigest": "a2ef121cbd89e5283045562c9d189137e385d2e98d87fa42a67e1ab4ede9cf4e"
     },
     {
       "id": "20260724G",
@@ -3495,7 +3610,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "a93d132046d406faae28fe92e5878f084f198d04e83805335e6db0afb984a278"
     },
     {
       "id": "20260722T",
@@ -3523,7 +3639,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "37d98c46a7cff991c28442046c8942aa64041b49b7275e0a13b1b50d975677d9"
     },
     {
       "id": "20260722G",
@@ -3551,7 +3668,8 @@
       "imageWidth": 1600,
       "imageHeight": 1066,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1066
+      "backgroundImageHeight": 1066,
+      "inputDigest": "6b8258d4d8d3e767079b662302e34e821514197a57d0f504fb308cda241c6ca3"
     },
     {
       "id": "20260722",
@@ -3579,7 +3697,8 @@
       "imageWidth": 1500,
       "imageHeight": 1000,
       "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1000
+      "backgroundImageHeight": 1000,
+      "inputDigest": "3771a5cace0c9cf49d3ecd3df87d5ab8b59f809c8f8154ef8daf255b1089c71b"
     },
     {
       "id": "20260721W",
@@ -3610,7 +3729,8 @@
       "imageWidth": 640,
       "imageHeight": 480,
       "backgroundImageWidth": 374,
-      "backgroundImageHeight": 371
+      "backgroundImageHeight": 371,
+      "inputDigest": "449601cde5a2344bfe55efd412ac85ba2d4e04e42e93466650af5d4037edfa1e"
     },
     {
       "id": "20260720W",
@@ -3641,7 +3761,8 @@
       "imageWidth": 700,
       "imageHeight": 420,
       "backgroundImageWidth": 725,
-      "backgroundImageHeight": 423
+      "backgroundImageHeight": 423,
+      "inputDigest": "c0f09dc6550fbdebfbb8f8d83e2d10095be84e7626b4e450db1242a6d8070446"
     },
     {
       "id": "20260719J",
@@ -3669,7 +3790,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "7f5da66a19ca87c498e692ca2801853950e573595dd41205dab7ab8c50641868"
     },
     {
       "id": "20260718W",
@@ -3698,7 +3820,8 @@
       "imageWidth": 1092,
       "imageHeight": 683,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageHeight": 1908,
+      "inputDigest": "aed0a995842975883fb6fe02fac1f7cdad6a0f80c0ce16e59c262d9ef5898b6b"
     },
     {
       "id": "20260717W",
@@ -3729,7 +3852,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 935,
-      "backgroundImageHeight": 622
+      "backgroundImageHeight": 622,
+      "inputDigest": "0e112d44432c3a53ed3eb36812f6e75a048ac255987e7a0db7ea557d470f873b"
     },
     {
       "id": "20260716W",
@@ -3760,7 +3884,8 @@
       "imageWidth": 501,
       "imageHeight": 399,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "9e0fc3f3d42a1238948efc28bb427edc19eded4bab9f4be1b08ea87e84021608"
     },
     {
       "id": "20260715W",
@@ -3792,7 +3917,8 @@
       "imageWidth": 1500,
       "imageHeight": 1500,
       "backgroundImageWidth": 792,
-      "backgroundImageHeight": 396
+      "backgroundImageHeight": 396,
+      "inputDigest": "7aa181ac3a777c869babb08c9be481c6b0f293fc267025afa125fdff080e711a"
     },
     {
       "id": "20260715-2W",
@@ -3821,7 +3947,8 @@
       "imageWidth": 680,
       "imageHeight": 451,
       "backgroundImageWidth": 250,
-      "backgroundImageHeight": 180
+      "backgroundImageHeight": 180,
+      "inputDigest": "369362c91ac74528a774b57752e8fa57d689a651ac01cd34ad7104d52fc107a1"
     },
     {
       "id": "20260713W",
@@ -3851,7 +3978,8 @@
       "imageWidth": 668,
       "imageHeight": 459,
       "backgroundImageWidth": 679,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "5435770f24d78f9695cc105b6e8d749f3ffc70fd720e560633aabb57c1fef719"
     },
     {
       "id": "20260713J",
@@ -3879,7 +4007,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "9bde3fd34dfb8b61a6c5ea1e3ad3f70fd233437529543dd664624de8c6980925"
     },
     {
       "id": "20260712W",
@@ -3911,7 +4040,8 @@
       "imageWidth": 1200,
       "imageHeight": 800,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 600
+      "backgroundImageHeight": 600,
+      "inputDigest": "d4d42e9c8e4446bfa4cbae3bd95df12ee868a7b6ba0f459ce28915c828d7f668"
     },
     {
       "id": "20260712-2W",
@@ -3941,7 +4071,8 @@
       "imageWidth": 1200,
       "imageHeight": 675,
       "backgroundImageWidth": 545,
-      "backgroundImageHeight": 366
+      "backgroundImageHeight": 366,
+      "inputDigest": "e657c2759c6d529d9736848d3f481515c45fa9c81427df21a49ccda78e83b5ab"
     },
     {
       "id": "20260711W",
@@ -3972,7 +4103,8 @@
       "imageWidth": 1506,
       "imageHeight": 786,
       "backgroundImageWidth": 679,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "483ccc280e2811b5f91d2ce7a708268aeab22cafde0c3881f523290cdc83b80a"
     },
     {
       "id": "20260710W",
@@ -4006,7 +4138,8 @@
       "imageWidth": 1680,
       "imageHeight": 1050,
       "backgroundImageWidth": 646,
-      "backgroundImageHeight": 475
+      "backgroundImageHeight": 475,
+      "inputDigest": "e9598aac0b508955279ea8f433f9a24cce0b42de075c234196e9c1b168aaffc8"
     },
     {
       "id": "20260709J",
@@ -4034,7 +4167,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "81b996e538c299570dd5437a708f0791c1a171677056e056fb09d1f7216b474b"
     },
     {
       "id": "20260708W",
@@ -4065,7 +4199,8 @@
       "imageWidth": 687,
       "imageHeight": 447,
       "backgroundImageWidth": 500,
-      "backgroundImageHeight": 400
+      "backgroundImageHeight": 400,
+      "inputDigest": "5aaefa65385dd5b70d429b589eb31fac37e0b94ea43614c326345155bced8b73"
     },
     {
       "id": "20260708-2W",
@@ -4096,7 +4231,8 @@
       "imageWidth": 750,
       "imageHeight": 800,
       "backgroundImageWidth": 724,
-      "backgroundImageHeight": 483
+      "backgroundImageHeight": 483,
+      "inputDigest": "221c854899c24a4109be7002851dbde28f82588842ab59c13e1a2b61b6f17df7"
     },
     {
       "id": "20260706W",
@@ -4124,7 +4260,8 @@
       "imageWidth": 3020,
       "imageHeight": 4026,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1350
+      "backgroundImageHeight": 1350,
+      "inputDigest": "49be95069da4259c5d8365fd47525e9d9299ec2797e3601e8c8264e7f1ee3a28"
     },
     {
       "id": "20260706D",
@@ -4152,7 +4289,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "0f2100d35df433baf12536cc03f9d3e38ed33440edc449077b5e57bde9fd569c"
     },
     {
       "id": "20260706-2W",
@@ -4181,7 +4319,8 @@
       "imageWidth": 399,
       "imageHeight": 501,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2258
+      "backgroundImageHeight": 2258,
+      "inputDigest": "1e9ab7fc6ef3d02daff3774f49b8e9ad5f1fadbced39bf06e6fb65c5024aa810"
     },
     {
       "id": "20260704W",
@@ -4211,7 +4350,8 @@
       "imageWidth": 2048,
       "imageHeight": 1152,
       "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "ffdbedc954ec83cf6d1bd04d2dcd96757fed908cdcb5d03bb02065dd3501b9b4"
     },
     {
       "id": "20260704J",
@@ -4239,7 +4379,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "83215632d25798233ed8883d04a5b3d970892c3674951d22add97ab122786af1"
     },
     {
       "id": "20260703W",
@@ -4270,7 +4411,8 @@
       "imageWidth": 1092,
       "imageHeight": 683,
       "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1000
+      "backgroundImageHeight": 1000,
+      "inputDigest": "d1bab695ed230e0cb6674d6ff72e417dc300ee70c8dffc04b8a9b6cfbfb116a9"
     },
     {
       "id": "20260702W",
@@ -4300,7 +4442,8 @@
       "imageWidth": 480,
       "imageHeight": 288,
       "backgroundImageWidth": 1024,
-      "backgroundImageHeight": 532
+      "backgroundImageHeight": 532,
+      "inputDigest": "6a4d1ca0029d6ae622bc21e8b67b541f39ad51edb32f22c63b0d68f1c82d3ceb"
     },
     {
       "id": "20260701W",
@@ -4334,7 +4477,8 @@
       "imageWidth": 1080,
       "imageHeight": 727,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 662
+      "backgroundImageHeight": 662,
+      "inputDigest": "ece4834f638310b15f58c361befb7e430983014cd40a033c4475c33dcf18d12c"
     },
     {
       "id": "20260701G",
@@ -4362,7 +4506,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "b5bba0e97c90678eb4da8739872d61c39dee4839d24b3b0eb7f3b601eb0aabef"
     },
     {
       "id": "20260701D",
@@ -4390,7 +4535,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "f5b4791b85107999d40afd02bec5216bc76ac5a81cdb31b9637fc322b6c39661"
     },
     {
       "id": "20260630W",
@@ -4421,7 +4567,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageHeight": 1080,
+      "inputDigest": "da126cc573fcb4538ec82dea3e635cb29c7adc87a7612c7ae51281eb75eb5d24"
     },
     {
       "id": "20260628W",
@@ -4451,7 +4598,8 @@
       "imageWidth": 1024,
       "imageHeight": 576,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533
+      "backgroundImageHeight": 533,
+      "inputDigest": "647edc33d43ad0670ef9d737ab1f20a1f11411091e9cd3fd5047040e3aad611b"
     },
     {
       "id": "20260627J",
@@ -4479,7 +4627,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "f89194f72c8ce02f807cd84282bf137e970f78fa74a9cba7b764472ddca9307e"
     },
     {
       "id": "20260627G",
@@ -4508,7 +4657,8 @@
       "imageWidth": 1693,
       "imageHeight": 929,
       "backgroundImageWidth": 1693,
-      "backgroundImageHeight": 929
+      "backgroundImageHeight": 929,
+      "inputDigest": "3184959f8b6805b4134d4ca0225a9644c009a13a0a76d4c22021b5855ec5c386"
     },
     {
       "id": "20260626W",
@@ -4540,7 +4690,8 @@
       "imageWidth": 3840,
       "imageHeight": 2558,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2261
+      "backgroundImageHeight": 2261,
+      "inputDigest": "18d0d69c319ca554a505ef05944f82e474faad4ac9cbff555436587654a0c5e0"
     },
     {
       "id": "20260624W",
@@ -4571,7 +4722,8 @@
       "imageWidth": 1080,
       "imageHeight": 720,
       "backgroundImageWidth": 642,
-      "backgroundImageHeight": 360
+      "backgroundImageHeight": 360,
+      "inputDigest": "4b4ec122fff4f793c5ec3a96ff6947d1f4a03a2e544aeec9d8638d1e629a8d68"
     },
     {
       "id": "20260624G",
@@ -4599,7 +4751,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "738a038ce8767d149180541355b5db75f61d8c1e8bac7aac50882999a40e6488"
     },
     {
       "id": "20260622W",
@@ -4630,7 +4783,8 @@
       "imageWidth": 460,
       "imageHeight": 276,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2262
+      "backgroundImageHeight": 2262,
+      "inputDigest": "5b69806a139c71f09dfb5cec8c7539edb29cf2535c3457c78186b0507e863a26"
     },
     {
       "id": "20260621W",
@@ -4662,7 +4816,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
+      "backgroundImageHeight": 415,
+      "inputDigest": "d0fd7392136e42a1a16ad19c01da83f4cfe896cd45920b9e9207a0fc25bc41ca"
     },
     {
       "id": "20260620W",
@@ -4694,7 +4849,8 @@
       "imageWidth": 1506,
       "imageHeight": 786,
       "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "backgroundImageHeight": 452,
+      "inputDigest": "9e8bcd0a8e60f60951ca41c393dd0e7e6af383c2c102482efa8bc180ecd456de"
     },
     {
       "id": "20260620J",
@@ -4722,7 +4878,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "d4cbfd3be8fc58103c9bda81f0f9f196c16a668a6a7db58b7c2ebf9fda9390df"
     },
     {
       "id": "20260619W",
@@ -4754,7 +4911,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 904
+      "backgroundImageHeight": 904,
+      "inputDigest": "75fbfdebd6e66a8fbbc3283988b14a9851eb4a44fac907736ce3d7eb90b827be"
     },
     {
       "id": "20260618W",
@@ -4786,7 +4944,8 @@
       "imageWidth": 635,
       "imageHeight": 381,
       "backgroundImageWidth": 640,
-      "backgroundImageHeight": 639
+      "backgroundImageHeight": 639,
+      "inputDigest": "67cac278bab46b78efc9c013c1068e71c03684d3a7d29a7f0ddfaf539915cfa3"
     },
     {
       "id": "20260616W",
@@ -4818,7 +4977,8 @@
       "imageWidth": 437,
       "imageHeight": 575,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1040
+      "backgroundImageHeight": 1040,
+      "inputDigest": "74bd19068457a118a8c13e9f293d99e47f09e5d773b50977d437c17cb4ce2dbc"
     },
     {
       "id": "20260614W",
@@ -4848,7 +5008,8 @@
       "imageWidth": 1092,
       "imageHeight": 683,
       "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageHeight": 1908,
+      "inputDigest": "f06944b75b7d403d7dd740dfc481750e9be97eaced6418817232059547a9f599"
     },
     {
       "id": "20260613J",
@@ -4876,7 +5037,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "702ae29d8d6260894e62175733188ff90f086b4d5a440b55a570a3f633d5bcc2"
     },
     {
       "id": "20260612W",
@@ -4907,7 +5069,8 @@
       "imageWidth": 1600,
       "imageHeight": 1050,
       "backgroundImageWidth": 620,
-      "backgroundImageHeight": 462
+      "backgroundImageHeight": 462,
+      "inputDigest": "45df139e8fcb036d3a35ab87dbd5abb4fcbb6fca1255d16c425d23c86a88513e"
     },
     {
       "id": "20260611W",
@@ -4937,7 +5100,8 @@
       "imageWidth": 1080,
       "imageHeight": 709,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1405
+      "backgroundImageHeight": 1405,
+      "inputDigest": "cd93ca0ed2d588ba8deb0242dfeaa17d7740d7a65507cdce72dae8a83a4e7aa9"
     },
     {
       "id": "20260610W",
@@ -4967,7 +5131,8 @@
       "imageWidth": 470,
       "imageHeight": 287,
       "backgroundImageWidth": 2400,
-      "backgroundImageHeight": 1350
+      "backgroundImageHeight": 1350,
+      "inputDigest": "1c7e5028b2d2da2fae1e786de592e016f7f78687e7fa1f5152c83c08a6f8ebe2"
     },
     {
       "id": "20260610G",
@@ -4995,7 +5160,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "915100ae01763a1b8dffc5ec294500f80de8356d1331fbdb672ff26a531cca02"
     },
     {
       "id": "20260610-2J",
@@ -5023,7 +5189,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "9fd35dc342529385ec3875b7cade7b12c84268a22e6f73e50a478704cfa50948"
     },
     {
       "id": "20260608W",
@@ -5054,7 +5221,8 @@
       "imageWidth": 1920,
       "imageHeight": 1080,
       "backgroundImageWidth": 864,
-      "backgroundImageHeight": 486
+      "backgroundImageHeight": 486,
+      "inputDigest": "c422f4918ce03e4e1b5aa64d693c13f56eada1beb418fe4f6e21e08a616213fa"
     },
     {
       "id": "20260607D",
@@ -5082,7 +5250,8 @@
       "imageWidth": 533,
       "imageHeight": 717,
       "backgroundImageWidth": 533,
-      "backgroundImageHeight": 717
+      "backgroundImageHeight": 717,
+      "inputDigest": "9ad73bd6213059ebf3c54997c2f85a874e1c4703a7872fc917fb3e815d72cd68"
     },
     {
       "id": "20260606J",
@@ -5110,7 +5279,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "36dad871f4fda58ca3faec14b1b435ad29ed19a059a2580309d2baa73947da80"
     },
     {
       "id": "20260605W",
@@ -5143,7 +5313,8 @@
       "imageWidth": 1080,
       "imageHeight": 738,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 726
+      "backgroundImageHeight": 726,
+      "inputDigest": "1d8f450ff696a86b9d4d3ae2dd81949ebec2fcf1e39456b5852e47a819dcf4ed"
     },
     {
       "id": "20260605G",
@@ -5171,7 +5342,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "3c5f03da70e3c93ee55fa246f0cb3d5e0ba21101ef4a160f2dd020960c4ed6ed"
     },
     {
       "id": "20260605-2W",
@@ -5200,7 +5372,8 @@
       "imageWidth": 2560,
       "imageHeight": 1440,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 795
+      "backgroundImageHeight": 795,
+      "inputDigest": "b3d8f5619a752ff6ca50d0ce66695c467ef2daa7345ad6a2320f97683181fa97"
     },
     {
       "id": "20260605",
@@ -5228,7 +5401,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "16c650e83848cc584aea33bb3501aee83b2fba5ec4bf73fc2901a77e311f1cf0"
     },
     {
       "id": "20260604T",
@@ -5256,7 +5430,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "7690ad3c89065597147dcae96a2bfb27c56a45eb153473e02b4c164f174daaa9"
     },
     {
       "id": "20260604G",
@@ -5284,7 +5459,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "42cdd988431eac97c6bb74844f9a6aa341c522de810483717455f84a143eed84"
     },
     {
       "id": "20260604",
@@ -5312,7 +5488,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "a97f0fe42fd024d7e4bed7e045f69076d563a374b0540d1a5466f3b734cc4185"
     },
     {
       "id": "20260603W",
@@ -5344,7 +5521,8 @@
       "imageWidth": 739,
       "imageHeight": 415,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1078
+      "backgroundImageHeight": 1078,
+      "inputDigest": "55baf0e511838cfc07ba3adb9a73df6d1187afc3c19e901307b1272d7a87b789"
     },
     {
       "id": "20260602W",
@@ -5374,7 +5552,8 @@
       "imageWidth": 3392,
       "imageHeight": 1908,
       "backgroundImageWidth": 2048,
-      "backgroundImageHeight": 1152
+      "backgroundImageHeight": 1152,
+      "inputDigest": "5850db6e72e691336f909f3b7ad32a947fd76b9a591374b0c812fb3fd211880d"
     },
     {
       "id": "20260601W",
@@ -5405,7 +5584,8 @@
       "imageWidth": 720,
       "imageHeight": 1043,
       "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1000
+      "backgroundImageHeight": 1000,
+      "inputDigest": "f9e87def09ebc6f42ec84c14cc8b4b73ba43350fc87b3f2644c2e5383ba17b01"
     },
     {
       "id": "20260531W",
@@ -5435,7 +5615,8 @@
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "bfa6a2c0ccf45a20b61af3df94754706434485d0218c8e54ef17d49a5c38384d"
     },
     {
       "id": "20260530W",
@@ -5463,7 +5644,8 @@
       "imageWidth": 441,
       "imageHeight": 453,
       "backgroundImageWidth": 596,
-      "backgroundImageHeight": 335
+      "backgroundImageHeight": 335,
+      "inputDigest": "496866b901125e52f6fc7c284b8f41bf6c6e40112e3cd0111dcd41ead95249f0"
     },
     {
       "id": "20260526D",
@@ -5491,7 +5673,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "83ea7d83e86e34c53a8864afd19d87ada017f3cc9a1bce17421b080460918021"
     },
     {
       "id": "20260525W",
@@ -5521,7 +5704,8 @@
       "imageWidth": 720,
       "imageHeight": 405,
       "backgroundImageWidth": 1280,
-      "backgroundImageHeight": 720
+      "backgroundImageHeight": 720,
+      "inputDigest": "e9ba38a71876c1c7206ca2f0220d2fb708c796602b69d8641e12e9f7a29681c4"
     },
     {
       "id": "20260525-2W",
@@ -5552,7 +5736,8 @@
       "imageWidth": 2550,
       "imageHeight": 1435,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533
+      "backgroundImageHeight": 533,
+      "inputDigest": "68f4c49c08d294931d8d88ec484bfad607c9952a4cf8b2a0a7955dfc00f2373a"
     },
     {
       "id": "20260523J",
@@ -5580,7 +5765,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "7d71d679733180b3f349c208fee7a4f10ad06039bc7129b0a715ee5a07a6e4a6"
     },
     {
       "id": "20260515W",
@@ -5611,7 +5797,8 @@
       "imageWidth": 678,
       "imageHeight": 452,
       "backgroundImageWidth": 681,
-      "backgroundImageHeight": 450
+      "backgroundImageHeight": 450,
+      "inputDigest": "f1ec5356647e419960b648b829c4c090890506933dfeade04c5f5c90e93bd75e"
     },
     {
       "id": "20260513W",
@@ -5642,7 +5829,8 @@
       "imageWidth": 1920,
       "imageHeight": 1280,
       "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1358
+      "backgroundImageHeight": 1358,
+      "inputDigest": "38526686af1b231d084d1c8fa4401ec92434efc72a1e5056690e3d9189232a55"
     },
     {
       "id": "20260513J",
@@ -5670,7 +5858,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "4c7c599a71c0a002f0bafc0d9490cdf24854202208787a460d337f54749c0edf"
     },
     {
       "id": "20260511W",
@@ -5702,7 +5891,8 @@
       "imageWidth": 693,
       "imageHeight": 442,
       "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1034
+      "backgroundImageHeight": 1034,
+      "inputDigest": "d8d0e927184c998dfdcfe0cf94334d5c2e7e662fedf8359f3095356acf08da15"
     },
     {
       "id": "20260508W",
@@ -5733,7 +5923,8 @@
       "imageWidth": 1080,
       "imageHeight": 687,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 701
+      "backgroundImageHeight": 701,
+      "inputDigest": "4ae00cd52f4fbc59819fb01504e9c66e5169cee830c0d581631d9b919b0d45aa"
     },
     {
       "id": "20260507D",
@@ -5761,7 +5952,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "0bb38891238e492a341cadc6bc1f4737151b184568625e646d3d1a8d374e5a48"
     },
     {
       "id": "20260506J",
@@ -5789,7 +5981,8 @@
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "backgroundImageHeight": 941,
+      "inputDigest": "27ed262a4a1c528dedaaf47464e442503718af47b495eb705fce2b32ae6adc1f"
     },
     {
       "id": "20260506-2W",
@@ -5820,7 +6013,8 @@
       "imageWidth": 596,
       "imageHeight": 335,
       "backgroundImageWidth": 635,
-      "backgroundImageHeight": 381
+      "backgroundImageHeight": 381,
+      "inputDigest": "09019cbbc17e7a3c03d83526f34119506fb7e3a3b3a42c207392fc8433a91654"
     },
     {
       "id": "20260502W",
@@ -5851,7 +6045,8 @@
       "imageWidth": 955,
       "imageHeight": 617,
       "backgroundImageWidth": 671,
-      "backgroundImageHeight": 457
+      "backgroundImageHeight": 457,
+      "inputDigest": "aacfbf905ac723c6d94b30b81840f3ac6a8d2df0cc077ed55556d0aa7939859a"
     },
     {
       "id": "20260502J",
@@ -5879,7 +6074,8 @@
       "imageWidth": 1536,
       "imageHeight": 1024,
       "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024
+      "backgroundImageHeight": 1024,
+      "inputDigest": "7a71da4c216d4411dd00720507a2705cf16f10e2ced996e1262a4c90de46cd0c"
     },
     {
       "id": "20260430W",
@@ -5910,7 +6106,8 @@
       "imageWidth": 1024,
       "imageHeight": 682,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533
+      "backgroundImageHeight": 533,
+      "inputDigest": "ff8801663a6f78d91c40cfde5b04e049fdeb4ea9fc71444cc137f74714611e71"
     },
     {
       "id": "20260429W",
@@ -5940,7 +6137,8 @@
       "imageWidth": 800,
       "imageHeight": 450,
       "backgroundImageWidth": 447,
-      "backgroundImageHeight": 447
+      "backgroundImageHeight": 447,
+      "inputDigest": "03dd0186ad8e42da19abf3fb7fe746351ca8be3301b10fc859251a62a4c34cbf"
     },
     {
       "id": "20260428J",
@@ -5967,7 +6165,8 @@
       "imageWidth": 753,
       "imageHeight": 494,
       "backgroundImageWidth": 753,
-      "backgroundImageHeight": 494
+      "backgroundImageHeight": 494,
+      "inputDigest": "15688c516042782ad74602afce63e4960c140d4078bcaf516cc9408aa53d219e"
     },
     {
       "id": "20260427G",
@@ -5995,7 +6194,8 @@
       "imageWidth": 528,
       "imageHeight": 352,
       "backgroundImageWidth": 528,
-      "backgroundImageHeight": 352
+      "backgroundImageHeight": 352,
+      "inputDigest": "3c90ad5c0a9bcf9bd4d0f58dadb0fc7552cd3c4d7a83fe94f086ddb4c8b4ad5f"
     },
     {
       "id": "20260425-2W",
@@ -6024,7 +6224,8 @@
       "imageWidth": 1080,
       "imageHeight": 1604,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1604
+      "backgroundImageHeight": 1604,
+      "inputDigest": "bea8736b9608d8d0694c73196e33289b6ed179d4543be45d2d711ac48fda22c4"
     },
     {
       "id": "20260423G",
@@ -6052,7 +6253,8 @@
       "imageWidth": 1600,
       "imageHeight": 899,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 899
+      "backgroundImageHeight": 899,
+      "inputDigest": "dd03aa4312e11465aafd650aafd04c8ca4d3bda716fa4294b1a47d0b65aa5dab"
     },
     {
       "id": "20260422G",
@@ -6080,7 +6282,8 @@
       "imageWidth": 1544,
       "imageHeight": 1030,
       "backgroundImageWidth": 1544,
-      "backgroundImageHeight": 1030
+      "backgroundImageHeight": 1030,
+      "inputDigest": "45515bad3b45609902b961f99d38c9703a27f92d65522a9d019a0c134b6df31f"
     },
     {
       "id": "20260421-2J",
@@ -6108,7 +6311,8 @@
       "imageWidth": 590,
       "imageHeight": 393,
       "backgroundImageWidth": 590,
-      "backgroundImageHeight": 393
+      "backgroundImageHeight": 393,
+      "inputDigest": "ea9f9d18ad9c8070f9cef15cbcb8723230b0a03f5d8f1a40e82e7c4bdf408bac"
     },
     {
       "id": "20260420W",
@@ -6138,7 +6342,8 @@
       "imageWidth": 1080,
       "imageHeight": 565,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 565
+      "backgroundImageHeight": 565,
+      "inputDigest": "088828bf7e7ab66fd6eb9f25bc0ee90ec17bf9722423d6bb2f8bee739d7d08de"
     },
     {
       "id": "20260418W",
@@ -6169,7 +6374,8 @@
       "imageWidth": 1024,
       "imageHeight": 676,
       "backgroundImageWidth": 1024,
-      "backgroundImageHeight": 676
+      "backgroundImageHeight": 676,
+      "inputDigest": "f5496d04842315409580a6d40ee4764570a77a52cab9d196b8e6f942507ca7f7"
     },
     {
       "id": "20260417W",
@@ -6197,7 +6403,8 @@
       "imageWidth": 1200,
       "imageHeight": 900,
       "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 900
+      "backgroundImageHeight": 900,
+      "inputDigest": "1505812e4eef2d3ad176cc1a3dc014cf6cbe6c7b52d72c2747d1a5134272f3c5"
     },
     {
       "id": "20260416W",
@@ -6226,7 +6433,8 @@
       "imageWidth": 1600,
       "imageHeight": 1067,
       "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1067
+      "backgroundImageHeight": 1067,
+      "inputDigest": "bc981bf0687418b6d81faf24fd8bfe5363d20eb3dc07b822a0abcd00f775e13c"
     },
     {
       "id": "20260416G",
@@ -6253,7 +6461,8 @@
       "imageWidth": 800,
       "imageHeight": 450,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 450
+      "backgroundImageHeight": 450,
+      "inputDigest": "904d0f38c74eae5cd2f389121863c06e873a0ae78a09c6e850d52463c1867d6f"
     },
     {
       "id": "20260415",
@@ -6281,7 +6490,8 @@
       "imageWidth": 1080,
       "imageHeight": 1349,
       "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1350
+      "backgroundImageHeight": 1350,
+      "inputDigest": "c217c46cfd7865a92afa679a26998a295943dc0208fbd4baed70248b599354b9"
     },
     {
       "id": "20260414W",
@@ -10946,5 +11156,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-26T07:23:24.300Z"
+  "lastUpdated": "2026-10-26T10:03:39.141Z"
 }
