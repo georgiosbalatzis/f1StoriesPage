@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// editorial-model.mjs — article metadata mapping and SQL rendering for the I-03 editorial and I-04 audience models.
+// editorial-model.mjs — article metadata mapping and SQL rendering for the I-03 editorial, I-04 audience and I-05
+// performance models.
 // It reads the committed compact index and retired-article map and prints JSON or SQL. It never runs a query.
 //
 //   node scripts/intelligence/editorial-model.mjs metadata
@@ -16,13 +17,24 @@ export const MODELS = ['10-article-pageviews', '11-category-pageviews', '12-arti
 export const AUDIENCE_MODELS = ['20-daily-activity', '21-site-sections', '22-device-category', '23-country',
     '24-acquisition-first-user', '25-acquisition-collected', '26-acquisition-session', '27-engagement-events',
     '28-internal-navigation', '29-audience-coverage'];
-const FRAGMENTS = { EDITORIAL_BASE: 'base.sql', AUDIENCE_BASE: 'audience-base.sql', AUDIENCE_FUNCTIONS: 'audience-functions.sql' };
+// I-05 Real User Performance models (rum-base.sql).
+export const RUM_MODELS = ['30-cwv-summary', '31-cwv-breakdown', '32-cwv-trend', '33-rum-coverage'];
+const FRAGMENTS = { EDITORIAL_BASE: 'base.sql', AUDIENCE_BASE: 'audience-base.sql', AUDIENCE_FUNCTIONS: 'audience-functions.sql',
+    RUM_BASE: 'rum-base.sql' };
 
 // I-01's path classifier, taken verbatim from the inventory query so the site has one set of path classes.
 export function classifyPathSql(modelsDir = MODELS_DIR) {
     const inventory = fs.readFileSync(path.join(modelsDir, '..', '02-event-inventory.sql'), 'utf8');
     const match = inventory.match(/^CREATE TEMP FUNCTION classify_path\(path STRING\) AS \([\s\S]*?^\);$/m);
     if (!match) throw new Error('02-event-inventory.sql: classify_path function not found');
+    return match[0];
+}
+
+// The rum-pilot revision rule (highest revision, then latest event), taken verbatim so it exists once.
+export function rumLatestRevisionSql(modelsDir = MODELS_DIR) {
+    const report = fs.readFileSync(path.join(modelsDir, '..', '..', '..', '..', 'perf', 'rum-pilot', 'report.sql'), 'utf8');
+    const match = report.match(/^ {2}QUALIFY ROW_NUMBER\(\) OVER \([\s\S]*?^ {2}\) = 1$/m);
+    if (!match) throw new Error('perf/rum-pilot/report.sql: revision QUALIFY clause not found');
     return match[0];
 }
 
@@ -126,7 +138,7 @@ export function buildMapping({ index, retired }) {
 }
 
 export function renderModel(name, { project, property, index, retired, modelsDir = MODELS_DIR }) {
-    const known = [...MODELS, ...AUDIENCE_MODELS];
+    const known = [...MODELS, ...AUDIENCE_MODELS, ...RUM_MODELS];
     if (!known.includes(name)) throw new Error(`unknown model ${name}; expected one of ${known.join(', ')}`);
     // Google Cloud project ids: 6–30 chars, lower-case letters, digits, hyphens. GA4 property ids are numeric.
     if (!/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(project || '')) throw new Error('--project must be a Google Cloud project id');
@@ -137,6 +149,7 @@ export function renderModel(name, { project, property, index, retired, modelsDir
     // Bases first: they carry the function and project placeholders.
     for (const [key, file] of Object.entries(FRAGMENTS)) sql = fill(sql, key, fs.readFileSync(path.join(modelsDir, file), 'utf8').trimEnd());
     if (sql.includes('{{CLASSIFY_PATH}}')) sql = fill(sql, 'CLASSIFY_PATH', classifyPathSql(modelsDir));
+    if (sql.includes('{{RUM_LATEST_REVISION}}')) sql = fill(sql, 'RUM_LATEST_REVISION', rumLatestRevisionSql(modelsDir));
     sql = fill(fill(sql, 'PROJECT_ID', project), 'GA4_PROPERTY_ID', property);
     const left = sql.match(/\{\{(?!ARTICLE_LOOKUP\}\}|ARTICLE_ALIAS\}\})[A-Z0-9_]+\}\}/);
     if (left) throw new Error(`unfilled placeholder ${left[0]} in ${name}`);
