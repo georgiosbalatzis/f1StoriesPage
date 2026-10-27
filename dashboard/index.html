@@ -83,6 +83,14 @@
             <details><summary>Πίνακας</summary><div class="dash-scroll" data-table="activity"></div></details>
         </section>
 
+        <section class="dash-panel" aria-labelledby="acquisition-title">
+            <h2 id="acquisition-title">Από πού έρχονται οι αναγνώστες</h2>
+            <p class="dash-copy">Απόδοση καναλιού τελευταίου κλικ της GA4 (session scope). Μόνο consented γεγονότα και το τελευταίο διάστημα έως 7 πλήρων ημερών: <span data-field="acquisition-window">—</span>. Μετράμε <code>session_start</code> και <code>page_view</code> events, όχι μοναδικούς επισκέπτες ή ακριβείς συνεδρίες.</p>
+            <div class="dash-scroll" data-table="acquisition"></div>
+            <ul class="dash-checks" data-list="acquisition-quality"></ul>
+            <p class="dash-copy">Το «unattributed» σημαίνει ότι η GA4 δεν προσδιόρισε έγκυρη πηγή· δεν είναι Direct. Οι ταξινομήσεις έχουν μικρό δείγμα και δεν ταυτίζονται με το Google Search Console.</p>
+        </section>
+
         <section class="dash-panel" aria-labelledby="articles-title">
             <h2 id="articles-title">Άρθρα με τις περισσότερες προβολές</h2>
             <p class="dash-copy">Έως 15 άρθρα, βάσει των συναινετικών γεγονότων page_view. Δεν πρόκειται για μοναδικούς αναγνώστες ή κατάταξη δημοφιλίας χωρίς στατιστική αβεβαιότητα. Κάθε άρθρο με λιγότερα από 30 γεγονότα επισημαίνεται ως «μικρό δείγμα».</p>
