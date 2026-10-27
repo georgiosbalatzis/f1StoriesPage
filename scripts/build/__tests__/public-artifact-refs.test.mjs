@@ -193,7 +193,7 @@ function cliFixture(t) {
         'blog-module/blog/index.html': [...common, 'blog-module/blog/archive-editorial.css'],
         'standings/index.html': [...common, 'standings/standings-editorial.css'],
         'authors/index.html': [...common, 'styles/authors.css'],
-        '404.html': [], 'generate.html': [], 'housekeeping.html': [],
+        '404.html': [], 'generate.html': [], 'housekeeping.html': [], 'dashboard/index.html': [],
         'blog-module/blog-entries/story/article.html': [...common, 'blog-module/blog/article-editorial.css']
     };
     for (const route of ['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/']) {
@@ -219,8 +219,8 @@ function cliFixture(t) {
         const links = css.map(key => `<link rel="stylesheet" href="/${manifest.files[key].min}?v=12345678">`).join('\n');
         const canonical = file.startsWith('blog-module/blog/')
             ? `<link rel="canonical" href="https://f1-stories.gr/${file.replace(/index\.html$/, '')}">` : '';
-        // As in the real shells: public pages share the head-meta policy, the author tools keep their noindex.
-        const robots = ['generate.html', 'housekeeping.html'].includes(file)
+        // As in the real shells: public pages share the head-meta policy, the author tools and dashboard keep their noindex.
+        const robots = ['generate.html', 'housekeeping.html', 'dashboard/index.html'].includes(file)
             ? '<meta name="robots" content="noindex, nofollow">'
             : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
         write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
