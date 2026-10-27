@@ -169,7 +169,15 @@ try {
         notes: document.querySelector('.dash-notes').textContent,
         discoveryWindow: document.querySelector('[data-field="discovery-window"]').textContent,
         discoveryPending: document.querySelector('[data-table="discovery-surfaces"]').textContent,
-        cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden
+        cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden,
+        metricLabels: [...document.querySelectorAll('[data-metrics] .dash-metric-label')].map(el => el.textContent),
+        metricValues: [...document.querySelectorAll('[data-metrics] .dash-metric-value')].map(el => el.textContent),
+        chartLine: document.querySelectorAll('[data-chart="activity"] path.dash-chart-line').length,
+        chartArea: document.querySelectorAll('[data-chart="activity"] path.dash-chart-area').length,
+        rankedArticles: [...document.querySelectorAll('[data-viz="articles"] .dash-ranking-name')].map(el => el.textContent),
+        rankedChannels: [...document.querySelectorAll('[data-viz="acquisition"] .dash-ranking-name')].map(el => el.textContent),
+        vitalCards: [...document.querySelectorAll('[data-viz="vitals"] .dash-vital-name')].map(el => el.textContent),
+        navHrefs: [...document.querySelectorAll('.dash-jump-nav a')].map(el => el.getAttribute('href'))
     }));
     assert.match(report.title, /^Στοιχεία έως \d{1,2} [^\s]+ \d{4}$/);
     assert.match(report.updated, /Τελευταία επιτυχής ενημέρωση/);
@@ -192,13 +200,23 @@ try {
     assert.equal(report.discoveryWindow, 'σε αναμονή');
     assert.match(report.discoveryPending, /μία φορά την εβδομάδα/);
     assert.equal(report.cwvCarried, true, 'RUM ran today: no carried label');
+    assert.deepEqual(report.metricLabels, ['PAGE VIEWS', 'LAST ' + Math.min(freshDays, 7) + ' DAYS', 'SESSION STARTS', 'ACTIVE DAYS']);
+    assert.equal(report.metricValues.length, 4, 'exactly four data-derived KPI cards');
+    assert.equal(report.chartLine, 1);
+    assert.equal(report.chartArea, 1, 'trend and area augment, not replace, the original one-bar-per-day data');
+    assert.deepEqual(report.rankedArticles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
+    assert.equal(report.rankedChannels.length, 4);
+    assert.deepEqual(report.vitalCards, ['LCP', 'INP', 'CLS']);
+    assert.deepEqual(report.navHrefs, ['#activity-title', '#acquisition-title', '#articles-title', '#discovery-title', '#cwv-title']);
+    assert.equal(await page.evaluate(() => document.querySelectorAll('[data-state="report"] script, [data-state="report"] img').length), 0,
+        'metadata rendered in charts and rankings must never be executable markup');
     if (shots) {
         fs.mkdirSync(shots, { recursive: true });
         await page.screenshot({ path: path.join(shots, 'dashboard-mobile-dark.png'), fullPage: true });
     }
     await page.click('[data-lock]');
     assert.ok(await visible(page, 'locked'), 'lock returns to the key form');
-    assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-chart], [data-table], [data-list]')].every(element => !element.children.length)), true,
+    assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-chart], [data-table], [data-list], [data-viz], [data-metrics]')].every(element => !element.children.length)), true,
         'locking removes every decrypted value');
     await finish(session, 'fresh');
 
@@ -213,12 +231,14 @@ try {
     await unlock(session.page, key);
     assert.ok(await visible(session.page, 'report'), 'the old four-model snapshot must still open');
     assert.match(await session.page.$eval('[data-table="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
+    assert.match(await session.page.$eval('[data-viz="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
     await finish(session, 'legacy snapshot');
 
     session = await open(editorialOnly);
     await unlock(session.page, key);
     assert.ok(await visible(session.page, 'report'), 'five-model snapshot remains valid');
     assert.match(await session.page.$eval('[data-table="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
+    assert.match(await session.page.$eval('[data-viz="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
     await finish(session, 'editorial-only legacy');
 
     // I-06C3 discovery day: discovery ran today over the primary window; the RUM pair is labelled as carried.
@@ -237,6 +257,8 @@ try {
                 injected: document.querySelectorAll('[data-state="report"] img, [data-state="report"] script').length,
                 notes: document.querySelectorAll('[aria-labelledby="discovery-title"] .dash-notes li').length,
                 overflowing: [...document.querySelectorAll('[data-table^="discovery-"]')].filter(el => el.scrollWidth > el.clientWidth).map(el => el.dataset.table),
+                rankedSurfaces: [...document.querySelectorAll('[data-viz="discovery-surfaces"] .dash-ranking-name')].map(el => el.textContent),
+                rankedTransitions: [...document.querySelectorAll('[data-viz="discovery-transitions"] .dash-ranking-name')].map(el => el.textContent),
                 cwv: document.querySelector('[data-field="cwv-carried"]'), rum: document.querySelector('[data-field="rum-carried"]')
             };
         });
@@ -260,6 +282,8 @@ try {
         assert.deepEqual(discovery.transitions[0], ['Αρχική · home', 'Άρθρο · article', '34', 'επαρκές']);
         assert.deepEqual(discovery.transitions.at(-1), ['Αρχική · home', 'Χωρίς διαδρομή · missing', '1', 'μικρό δείγμα']);
         assert.equal(discovery.transitions.length, 8);
+        assert.ok(discovery.rankedSurfaces[0].includes('Αρχική'), 'visual source ranking uses real aggregated data');
+        assert.ok(discovery.rankedTransitions[0].includes('→'), 'visual transitions are click groups, not inferred journeys');
         assert.equal(discovery.notes, 3, 'the click, consent and small-sample limits are stated');
         assert.deepEqual(discovery.overflowing, [], `every discovery column stays in view at ${width}px, without sideways scrolling`);
         for (const [hidden, note] of carried) {
@@ -268,7 +292,7 @@ try {
         }
         if (shots) await (await session.page.$('[aria-labelledby="discovery-title"]')).screenshot({ path: path.join(shots, `dashboard-discovery-${width}.png`) });
         await session.page.click('[data-lock]');
-        assert.equal(await session.page.evaluate(() => document.querySelectorAll('[data-table^="discovery-"] *').length), 0, 'locking clears discovery');
+        assert.equal(await session.page.evaluate(() => document.querySelectorAll('[data-table^="discovery-"] *, [data-viz^="discovery-"] *').length), 0, 'locking clears discovery');
         await finish(session, `discovery day ${width}`);
     }
 
