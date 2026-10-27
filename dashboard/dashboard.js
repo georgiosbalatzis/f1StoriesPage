@@ -75,22 +75,35 @@
         target.appendChild(element);
     }
 
+    // Hybrid area + column chart. The area is context, not a second metric; exact counts stay in the data table.
+    // One bar per actual GA4 export day, so even a 1-day window renders without invented history.
     function activityChart(target, rows) {
-        var width = 560, height = 180, slotWidth = width / rows.length, barWidth = Math.min(slotWidth - 2, 28);
+        var width = 560, height = 180, slotWidth = width / rows.length, barWidth = Math.min(slotWidth - 3, 24);
         var max = Math.max.apply(null, rows.map(function (row) { return row.page_view_events; }).concat(1));
-        var chart = shape('svg', { viewBox: '0 0 ' + width + ' ' + (height + 24), role: 'img',
+        var chart = shape('svg', { viewBox: '0 0 ' + width + ' ' + (height + 30), role: 'img',
             'aria-label': 'Ημερήσιες προβολές σελίδας, ' + day(rows[0].event_day) + ' έως ' + day(rows[rows.length - 1].event_day) + ', μέγιστο ' + integer.format(max) });
+        for (var k = 1; k <= 4; k++) {
+            var y = (height * k / 4).toFixed(1);
+            chart.appendChild(shape('line', { x1: 0, x2: width, y1: y, y2: y, class: 'dash-chart-grid' }));
+        }
+        var points = rows.map(function (row, i) {
+            return [((i + 0.5) * slotWidth).toFixed(2), (height - row.page_view_events / max * (height - 9)).toFixed(2)];
+        });
+        var line = points.map(function (point, i) { return (i ? 'L' : 'M') + point.join(' '); }).join(' ');
+        chart.appendChild(shape('path', { d: 'M ' + points[0][0] + ' ' + height + ' ' + line + ' L ' + points[points.length - 1][0] + ' ' + height + ' Z', class: 'dash-chart-area', 'aria-hidden': 'true' }));
         rows.forEach(function (row, i) {
-            var barHeight = Math.max(row.page_view_events ? 2 : 0, Math.round(row.page_view_events / max * height));
-            chart.appendChild(shape('rect', { x: (i * slotWidth + (slotWidth - barWidth) / 2).toFixed(1), y: height - barHeight, width: barWidth.toFixed(1), height: barHeight, rx: 2,
+            var barHeight = Math.max(row.page_view_events ? 2 : 0, Math.round(row.page_view_events / max * (height - 9)));
+            chart.appendChild(shape('rect', { x: (i * slotWidth + (slotWidth - barWidth) / 2).toFixed(1), y: height - barHeight,
+                width: Math.max(1, barWidth).toFixed(1), height: barHeight, rx: 2,
                 class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' },
                 day(row.event_day) + ': ' + integer.format(row.page_view_events) + ' προβολές' + (row.meets_min_events ? '' : ' (μικρό δείγμα)')));
         });
+        chart.appendChild(shape('path', { d: line, class: 'dash-chart-line', 'aria-hidden': 'true' }));
         chart.appendChild(shape('line', { x1: 0, x2: width, y1: height + 0.5, y2: height + 0.5, class: 'dash-axis' }));
         [[0, 'start'], [rows.length - 1, 'end']].forEach(function (end) {
-            chart.appendChild(shape('text', { x: end[1] === 'start' ? 0 : width, y: height + 18, 'text-anchor': end[1], class: 'dash-tick' })).textContent = day(rows[end[0]].event_day);
+            chart.appendChild(shape('text', { x: end[1] === 'start' ? 0 : width, y: height + 20, 'text-anchor': end[1], class: 'dash-tick' })).textContent = day(rows[end[0]].event_day);
         });
-        chart.appendChild(shape('text', { x: 0, y: 12, class: 'dash-tick' })).textContent = 'μέγ. ' + integer.format(max);
+        chart.appendChild(shape('text', { x: 0, y: 13, class: 'dash-tick dash-chart-top' })).textContent = 'Μέγ. ' + integer.format(max) + ' page_view';
         target.appendChild(chart);
     }
 
@@ -105,6 +118,74 @@
             item.appendChild(node('span', integer.format(row.page_view_events) + (row.meets_min_events ? '' : ' · μικρό δείγμα'), 'dash-bars-value'));
         });
         target.appendChild(list);
+    }
+
+    // Data-derived executive overview: events, never users or inferred sessions.
+    function overview(target, rows, min) {
+        var total = rows.reduce(function (sum, row) { return sum + row.page_view_events; }, 0);
+        var week = rows.slice(-7).reduce(function (sum, row) { return sum + row.page_view_events; }, 0);
+        var sessionEvents = rows.reduce(function (sum, row) { return sum + row.session_start_events; }, 0);
+        var activeDays = rows.filter(function (row) { return row.page_view_events > 0; }).length;
+        [
+            ['PAGE VIEWS', total, 'Γεγονότα προβολής στο πλήρες παράθυρο', total >= min],
+            ['LAST ' + Math.min(rows.length, 7) + ' DAYS', week, 'Page views στο πρόσφατο διάστημα', week >= min],
+            ['SESSION STARTS', sessionEvents, 'Γεγονότα session_start, όχι συνεδρίες', sessionEvents >= min],
+            ['ACTIVE DAYS', activeDays + ' / ' + rows.length, 'Ημέρες με τουλάχιστον ένα page_view', null]
+        ].forEach(function (metric, index) {
+            var card = target.appendChild(node('article', undefined, 'dash-metric dash-metric-' + index));
+            card.appendChild(node('p', metric[0], 'dash-metric-label'));
+            card.appendChild(node('p', typeof metric[1] === 'number' ? integer.format(metric[1]) : metric[1], 'dash-metric-value'));
+            card.appendChild(node('p', metric[2], 'dash-metric-detail'));
+            if (metric[3] === false) card.appendChild(node('span', 'Μικρό δείγμα', 'dash-metric-sample'));
+        });
+    }
+
+    // Ranked horizontal tracks use SVG widths, never inline style attributes (CSP style-src-attr 'none').
+    // Absolute event counts remain first-class; normalized bars do not imply a conversion or audience share.
+    function rankings(target, rows, count, label, value, adequate, empty) {
+        if (!Array.isArray(rows) || !rows.length) {
+            target.appendChild(node('p', empty || 'Δεν υπάρχουν ακόμη μετρήσεις.', 'dash-copy'));
+            return;
+        }
+        var ranked = rows.slice().sort(function (a, b) { return value(b) - value(a) || label(a).localeCompare(label(b), 'el'); }).slice(0, count);
+        var max = Math.max.apply(null, ranked.map(value).concat(1));
+        var list = target.appendChild(node('ol', undefined, 'dash-ranking-list'));
+        ranked.forEach(function (row, i) {
+            var item = list.appendChild(node('li', undefined, 'dash-ranking-item' + (adequate(row) ? '' : ' is-small')));
+            item.appendChild(node('span', String(i + 1).padStart(2, '0'), 'dash-ranking-index'));
+            var content = item.appendChild(node('div', undefined, 'dash-ranking-content'));
+            var meta = content.appendChild(node('div', undefined, 'dash-ranking-meta'));
+            meta.appendChild(node('span', label(row), 'dash-ranking-name'));
+            meta.appendChild(node('strong', integer.format(value(row)), 'dash-ranking-count'));
+            var track = content.appendChild(shape('svg', { viewBox: '0 0 100 6', preserveAspectRatio: 'none',
+                'aria-hidden': 'true', class: 'dash-ranking-track' }));
+            track.appendChild(shape('rect', { x: 0, y: 0, width: 100, height: 6, rx: 3, class: 'dash-ranking-rail' }));
+            track.appendChild(shape('rect', { x: 0, y: 0, width: Math.max(value(row) ? 1 : 0, value(row) / max * 100).toFixed(2),
+                height: 6, rx: 3, class: 'dash-ranking-fill' }));
+            if (!adequate(row)) content.appendChild(node('span', 'μικρό δείγμα', 'dash-ranking-note'));
+        });
+    }
+
+    // One consistent, explicitly named RUM cohort; other cohorts remain in the exact data table.
+    // No performance grade is claimed below the original observation threshold.
+    function vitalCards(target, rows) {
+        var cohort = rows.filter(function (r) { return r.core_web_vital && r.coverage === 'delayed_existing'; });
+        if (!cohort.length) {
+            target.appendChild(node('p', 'Δεν υπάρχουν ακόμη μετρήσεις για την κλάση delayed_existing.', 'dash-copy'));
+            return;
+        }
+        var limits = { LCP: '≤ 2.500 ms', INP: '≤ 200 ms', CLS: '≤ 0,1' };
+        ['LCP', 'INP', 'CLS'].forEach(function (name) {
+            var row = cohort.find(function (item) { return item.metric === name; });
+            if (!row) return;
+            var card = target.appendChild(node('article', undefined, 'dash-vital'));
+            card.appendChild(node('span', name, 'dash-vital-name'));
+            card.appendChild(node('p', p75(row), 'dash-vital-value'));
+            card.appendChild(node('p', 'p75 · ' + integer.format(row.observations) + ' παρατηρήσεις', 'dash-vital-meta'));
+            card.appendChild(node('p', 'Όριο καλής απόδοσης: ' + limits[name], 'dash-vital-limit'));
+            card.appendChild(node('span', sample(row.meets_min_observations), row.meets_min_observations ? 'dash-vital-sample' : 'dash-vital-sample is-low'));
+        });
+        target.appendChild(node('p', 'Μόνο η κλάση delayed_existing · οι υπόλοιπες κλάσεις βρίσκονται στον αναλυτικό πίνακα.', 'dash-vital-footnote'));
     }
 
     // Greek names for the models' own classes (13 source_surface, 28 classify_path, link_section_class). The raw
@@ -245,6 +326,7 @@
         stale.textContent = 'Παλιό στιγμιότυπο: η ημερήσια ενημέρωση δεν έχει πετύχει για πάνω από 48 ώρες.';
 
         var activity = models['20-daily-activity'];
+        overview(document.querySelector('[data-metrics]'), activity, payload.minEvents);
         activityChart(slot('chart', 'activity'), activity);
         table(slot('table', 'activity'), [
             ['Ημέρα', function (r) { return day(r.event_day, true); }],
@@ -275,6 +357,8 @@
             if (!rankedChannels.length) {
                 acquisitionTarget.appendChild(node('p', 'Δεν υπάρχουν καταγεγραμμένα γεγονότα απόκτησης για την περίοδο.', 'dash-copy'));
             } else {
+                rankings(slot('viz', 'acquisition'), rankedChannels, 6, function (r) { return r.channel_class + ' · ' + r.source_family; },
+                    function (r) { return r.session_start_events; }, function (r) { return r.meets_min_events; });
                 table(acquisitionTarget, [
                     ['Κανάλι GA4', function (r) { return r.channel_class; }],
                     ['Πηγή', function (r) { return r.source_family; }],
@@ -313,6 +397,8 @@
             if (!ranked.length) {
                 articleTarget.appendChild(node('p', 'Δεν υπάρχουν ακόμη προβολές σε αναγνωρισμένα άρθρα για την περίοδο.', 'dash-copy'));
             } else {
+                rankings(slot('viz', 'articles'), ranked, 6, function (r) { return r.title || 'Άρθρο χωρίς τίτλο'; },
+                    function (r) { return r.page_view_events; }, function (r) { return r.meets_min_events; });
                 table(articleTarget, [
                     ['Άρθρο', function (r) { return r.title || 'Άρθρο χωρίς τίτλο'; }],
                     ['Κατηγορία', function (r) { return r.primary_category || '—'; }],
@@ -342,6 +428,7 @@
             ['Δείγμα', function (r) { return sample(r.meets_min_events); }]
         ], categories);
 
+        vitalCards(slot('viz', 'vitals'), models['30-cwv-summary']);
         table(slot('table', 'cwv'), [
             ['Κάλυψη', function (r) { return r.coverage; }],
             ['Μετρική', function (r) { return r.metric; }],
@@ -362,7 +449,7 @@
 
     // Removes every decrypted value from the page; only the encrypted file stays in memory.
     function clear() {
-        document.querySelectorAll('[data-chart], [data-table], [data-list]').forEach(function (target) {
+        document.querySelectorAll('[data-chart], [data-table], [data-list], [data-viz], [data-metrics]').forEach(function (target) {
             target.replaceChildren();
         });
     }
