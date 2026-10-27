@@ -30,7 +30,8 @@ export const DEFAULT_PATHS = [
     '/blog-module/blog/index.html',
     '/standings/',
     '/generate.html',
-    '/housekeeping.html'
+    '/housekeeping.html',
+    '/dashboard/'
 ];
 export const MIN_HSTS_MAX_AGE = 31536000;
 

@@ -205,6 +205,16 @@ const BANNED_TEXT_PATTERNS = [
         files: /^(?!package-lock\.json$).*/,
         pattern: /\b(?:github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9_]{20,})\b/,
         reason: 'possible GitHub token committed to source'
+    },
+    {
+        files: /.*/,
+        pattern: /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}/,
+        reason: 'Dashboard Access Keys and their verifiers live only in the server-side key store (Secret Manager), never in Git'
+    },
+    {
+        files: /^dashboard\//,
+        pattern: /\b(?:localStorage|sessionStorage|indexedDB)\b|document\.cookie/,
+        reason: 'the dashboard page keeps no credentials in the browser; its session is an HttpOnly API cookie'
     }
 ];
 
