@@ -387,8 +387,8 @@ function shouldCopy(relPath) {
     if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
-    // The dashboard login shell only; its API (services/dashboard-api) is never published.
-    if (/^dashboard\/(?:index\.html|dashboard\.(?:css|js))$/.test(relPath)) return true;
+    // The dashboard page and its one encrypted snapshot; nothing else under dashboard/ is published.
+    if (/^dashboard\/(?:index\.html|dashboard\.(?:css|js)|snapshot-crypto\.js|data\/snapshot\.json)$/.test(relPath)) return true;
 
     if (/^(?:ghostcar|f1telemetry|tyres|privacy)\//.test(relPath)) {
         return /\.html$/i.test(relPath);

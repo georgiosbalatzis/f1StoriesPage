@@ -163,7 +163,7 @@ export function queryParameters(sql) {
     return [...new Set((bare.match(/@[a-z_]+/g) || []).map(p => p.slice(1)))].sort();
 }
 
-const PARAMETERS = {
+export const PARAMETERS = {
     start_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/], end_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/], as_of_day: ['DATE', /^\d{4}-\d{2}-\d{2}$/],
     report_timezone: ['STRING', /^[A-Za-z]+(?:\/[A-Za-z_+-]+)*$/], period: ['STRING', /^(?:day|week)$/],
     min_events: ['INT64', /^\d+$/], min_observations: ['INT64', /^\d+$/]

@@ -23,7 +23,7 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [performance-model.md](performance-model.md) | I-05: real-user LCP/INP/CLS (+FCP/TTFB) observations, p75 and ratings by coverage, page group, viewport, navigation type and period |
 | [sql/](sql/) | Read-only, parameterized, suffix-bounded inventory queries |
 | [validation.md](validation.md) | I-01 report: what was checked, unknowns, SQL dry-run status, public artifact impact, the I-02 criteria and blockers as planned then |
-| [dashboard-api.md](dashboard-api.md) | I-06A: private `/dashboard/` login shell, key/session authentication API, future report API contract, deployment prerequisites, limitations |
+| [dashboard-snapshots.md](dashboard-snapshots.md) | I-06B: daily encrypted `/dashboard/` snapshots: workflow, cost guards and their limits, encryption, one-time owner setup, enablement (replaces the retired I-06A API) |
 | [bigquery-validation.md](bigquery-validation.md) | BigQuery validation: per-model status, the owner's Console results and reconciliations for 19–22 Oct, schema compatibility, owner commands, production checks, outstanding items |
 
 The Web Vitals contract and its p75 report are owned by [perf/rum-pilot/](../../perf/rum-pilot/README.md) and are

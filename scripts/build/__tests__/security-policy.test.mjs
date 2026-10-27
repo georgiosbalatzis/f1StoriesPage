@@ -15,7 +15,6 @@ import {
     AUTHOR_TOOLS_CSP,
     CONTENT_SECURITY_POLICY,
     CSP_PROFILES,
-    DASHBOARD_API_ORIGIN,
     PAGE_CSP_PROFILES,
     REFERRER_POLICY,
     contentSecurityPolicyFor,
@@ -96,7 +95,7 @@ const REVIEWED = {
             'https://youtube.com'
         ]
     },
-    // The dashboard login shell: nothing but its own files and, once deployed, its API.
+    // The dashboard: nothing but its own files and its own encrypted snapshot.
     dashboard: {
         'default-src': ["'none'"],
         'base-uri': ["'none'"],
@@ -108,7 +107,7 @@ const REVIEWED = {
         'style-src-attr': ["'none'"],
         'font-src': ["'self'"],
         'img-src': ["'self'"],
-        'connect-src': [DASHBOARD_API_ORIGIN || "'none'"],
+        'connect-src': ["'self'"],
         'frame-src': ["'none'"],
         'worker-src': ["'none'"],
         'manifest-src': ["'none'"],
@@ -116,9 +115,6 @@ const REVIEWED = {
         'upgrade-insecure-requests': []
     }
 };
-
-// Sources a profile may add beyond the public policy: the dashboard's own API exists nowhere else.
-const BEYOND_PUBLIC = { dashboard: new Set([`connect-src ${DASHBOARD_API_ORIGIN}`]) };
 
 const TOOL_PROFILES = Object.keys(REVIEWED);
 
@@ -188,7 +184,7 @@ for (const profile of TOOL_PROFILES) {
     });
 
     test(`${profile}: is never broader than the public policy`, () => {
-        assert.deepEqual(notBroaderThanPublic(CSP_PROFILES[profile]).filter(source => !BEYOND_PUBLIC[profile]?.has(source)), []);
+        assert.deepEqual(notBroaderThanPublic(CSP_PROFILES[profile]), []);
     });
 
     test(`${profile}: allows no inline, eval, scheme-wide or wildcard script`, () => {
@@ -260,15 +256,19 @@ test('_headers keeps the public rule and adds each tool page policy', () => {
     assert.deepEqual(pageRoutes('generate.html'), ['/generate.html', '/generate']);
 });
 
-test('dashboard: fails closed until a same-site API origin is configured in both places', () => {
-    // SameSite session cookies reach the API only from the same site, so it must be a subdomain of f1-stories.gr.
-    if (DASHBOARD_API_ORIGIN) assert.match(DASHBOARD_API_ORIGIN, /^https:\/\/[a-z0-9-]+\.f1-stories\.gr$/);
-    else assert.deepEqual(parseCsp(CSP_PROFILES.dashboard).get('connect-src'), ["'none'"]);
+test('dashboard: reaches only its own origin, and its script requests only the encrypted snapshot', () => {
+    assert.deepEqual(parseCsp(CSP_PROFILES.dashboard).get('connect-src'), ["'self'"]);
     const html = fs.readFileSync(path.join(REPO_ROOT, 'dashboard/index.html'), 'utf8');
-    const meta = [...html.matchAll(/<meta name="f1s-dashboard-api" content="([^"]*)">/g)].map(match => match[1]);
-    assert.deepEqual(meta, [DASHBOARD_API_ORIGIN], 'dashboard/index.html f1s-dashboard-api must equal DASHBOARD_API_ORIGIN');
+    const scripts = ['dashboard.js', 'snapshot-crypto.js'].map(file => fs.readFileSync(path.join(REPO_ROOT, 'dashboard', file), 'utf8'));
+    // One fetch, of one same-origin path; no XHR, beacon, socket, worker, import, form post or old API.
+    assert.deepEqual(scripts.map(source => [...source.matchAll(/\bfetch\(/g)].length), [1, 0]);
+    assert.match(scripts[0], /var SNAPSHOT_URL = '\/dashboard\/data\/snapshot\.json';\n[\s\S]*\bfetch\(SNAPSHOT_URL, /);
+    for (const source of scripts) {
+        assert.doesNotMatch(source, /XMLHttpRequest|sendBeacon|WebSocket|EventSource|Worker\(|import\(|\.submit\(|\/api\/|https?:\/\/(?!www\.w3\.org\/2000\/svg')/);
+    }
+    assert.doesNotMatch(html, /f1s-dashboard-api|method="post"|action=/);
     assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
     // Nothing inline: the page has its own script and stylesheet only, and no analytics or consent code.
     assert.doesNotMatch(html.replace(/<script\b[^>]*\bsrc=[^>]*><\/script>/g, ''), /<script|<style|\sstyle=|\son[a-z]+=/i);
-    assert.deepEqual([...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]), ['/scripts/theme-init.min.js', '/dashboard/dashboard.js']);
+    assert.deepEqual([...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(match => match[1]), ['/scripts/theme-init.min.js', '/dashboard/snapshot-crypto.js', '/dashboard/dashboard.js']);
 });

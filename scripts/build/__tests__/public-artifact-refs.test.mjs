@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,6 +9,7 @@ import test from 'node:test';
 import { validateHtmlRefs, validateJsRefs, validateSearchDestinations } from '../validate-public-artifact.mjs';
 import { injectSecurityMeta, securityHeadersText } from '../security-policy.mjs';
 import taxonomy from '../../../blog-module/taxonomy.js';
+import { sealSnapshot } from '../../intelligence/snapshot.mjs';
 
 const validator = fileURLToPath(new URL('../validate-public-artifact.mjs', import.meta.url));
 
@@ -180,6 +182,9 @@ function cliFixture(t) {
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
+    for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
+        write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));
+    }
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
@@ -245,6 +250,30 @@ function cliFixture(t) {
         cwd: root, encoding: 'utf8', timeout: 20000
     }) };
 }
+
+test('validator CLI publishes only a valid encrypted snapshot, and no plaintext analytics or credential anywhere', t => {
+    const { dist, run } = cliFixture(t);
+    const window = { asOf: '2026-11-19', start: '2026-10-19', end: '2026-11-15' };
+    const envelope = sealSnapshot({ models: {} }, crypto.randomBytes(32), { generatedAt: '2026-11-20T01:00:00.000Z', window });
+    write(dist, 'dashboard/data/snapshot.json', envelope);
+    const valid = run();
+    assert.equal(valid.status, 0, valid.stdout + valid.stderr);
+    for (const [relPath, content, message] of [
+        ['dashboard/data/snapshot.json', envelope.replace('"iv"', '"nonce"'), /dashboard\/data\/snapshot\.json: not a valid encrypted snapshot envelope/],
+        ['dashboard/data/snapshot.json', JSON.stringify({ format: 'f1s-dashboard-snapshot-payload', models: { '20-daily-activity': [] } }), /contains plaintext dashboard analytics/],
+        ['dashboard/data/rows.json', '[]', /only the encrypted snapshot may be published under dashboard\/data\//],
+        ['blog-module/leak.json', JSON.stringify({ '30-cwv-summary': [{ p75: 1 }] }), /blog-module\/leak\.json: contains plaintext dashboard analytics/],
+        ['blog-module/token.js', `const t = "ya29.${'a'.repeat(40)}";`, /blog-module\/token\.js: contains a credential/],
+        ['blog-module/sa.json', JSON.stringify({ type: 'service_account' }), /blog-module\/sa\.json: contains a credential/]
+    ]) {
+        write(dist, relPath, content);
+        const result = run();
+        assert.equal(result.status, 1, relPath);
+        assert.match(result.stderr, message);
+        if (relPath === 'dashboard/data/snapshot.json') write(dist, relPath, envelope);
+        else fs.unlinkSync(path.join(dist, relPath));
+    }
+});
 
 test('actual validator CLI accepts valid artifacts and exits nonzero for missing script/import targets', t => {
     const { dist, run } = cliFixture(t);

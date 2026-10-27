@@ -102,8 +102,8 @@ jobs:
       - name: Run security policy tests
         run: npm run test:security
 
-      - name: Run dashboard authentication tests (local server, generated keys only)
-        run: npm run test:dashboard
+      - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
+        run: npm run test:dashboard && npm run test:dashboard:browser
 
       - name: Run aggregate deployment gate tests
         run: npm run test:deployment

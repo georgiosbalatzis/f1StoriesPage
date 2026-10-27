@@ -1,0 +1,169 @@
+name: Intelligence Snapshot
+
+# I-06B (docs/intelligence/dashboard-snapshots.md): once a day, run four existing BigQuery models over the
+# latest mature 28 days, encrypt the aggregates, commit only the encrypted envelope, then dispatch Deploy Pages.
+# Billable refreshes stay off until scripts/intelligence/snapshot.mjs sets ENABLED; until then scheduled runs
+# stop at the plan step. A manual run defaults to a dry-run, which BigQuery does not bill.
+
+on:
+  schedule:
+    # Best effort: GitHub may start it late or not at all. The as_of day is computed when the job runs, so a
+    # late, repeated or DST-shifted run never reads an immature table and never refreshes one day twice.
+    - cron: '0 3 * * *'
+      timezone: Europe/Athens
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run validates and costs the queries without running them; refresh runs them (only once enabled)'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - refresh
+
+# Granted per job: only refresh can mint a Google token, only publish can push, only deploy can dispatch.
+permissions: {}
+
+concurrency:
+  group: intelligence-snapshot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Query and encrypt
+    # Credentials exist for main only: schedules run there, and a dispatch from any other ref stops here.
+    # The environment (main-only branch policy) holds the snapshot key; the Google trust policy checks the ref too.
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: intelligence-snapshots
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MODE: ${{ github.event_name == 'schedule' && 'refresh' || inputs.mode }}
+    outputs:
+      envelope: ${{ steps.refresh.outputs.envelope }}
+      artifact: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      # snapshot.mjs uses only Node built-ins: no dependency is installed next to the credentials.
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Plan (fails closed on missing configuration)
+        id: plan
+        env:
+          DASHBOARD_SNAPSHOT_KEY: ${{ secrets.DASHBOARD_SNAPSHOT_KEY }}
+          WIF_PROVIDER: ${{ vars.INTELLIGENCE_WIF_PROVIDER }}
+          WIF_SERVICE_ACCOUNT: ${{ vars.INTELLIGENCE_SERVICE_ACCOUNT }}
+        run: node scripts/intelligence/snapshot.mjs plan --mode="$MODE"
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation, no key file)
+        id: auth
+        if: ${{ steps.plan.outputs.due == 'true' }}
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.INTELLIGENCE_WIF_PROVIDER }}
+          service_account: ${{ vars.INTELLIGENCE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 1800s
+          create_credentials_file: false
+          export_environment_variables: false
+
+      - name: Dry-run, cost-check and run the models
+        id: refresh
+        if: ${{ steps.plan.outputs.due == 'true' }}
+        env:
+          DASHBOARD_SNAPSHOT_KEY: ${{ secrets.DASHBOARD_SNAPSHOT_KEY }}
+          WIF_PROVIDER: ${{ vars.INTELLIGENCE_WIF_PROVIDER }}
+          WIF_SERVICE_ACCOUNT: ${{ vars.INTELLIGENCE_SERVICE_ACCOUNT }}
+          BIGQUERY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          OUT: ${{ runner.temp }}/snapshot.json
+        run: |
+          set -eu
+          node scripts/intelligence/snapshot.mjs refresh --mode="$MODE" --out="$OUT"
+          if [ -f "$OUT" ]; then echo "envelope=true" >> "$GITHUB_OUTPUT"; fi
+
+      # The encrypted envelope only: it is the same file the site publishes.
+      - name: Upload the encrypted envelope
+        id: upload
+        if: ${{ steps.refresh.outputs.envelope == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: intelligence-snapshot-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/snapshot.json
+          retention-days: 1
+          if-no-files-found: error
+
+  publish:
+    name: Commit the encrypted snapshot
+    needs: refresh
+    if: ${{ needs.refresh.result == 'success' && needs.refresh.outputs.envelope == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    # Shares the content publishers' lock, so it never races a blog or data commit to main.
+    concurrency:
+      group: content-publishing
+      queue: max
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Download the encrypted envelope
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.refresh.outputs.artifact }}
+          path: ${{ runner.temp }}/snapshot
+
+      # Replaces dashboard/data/snapshot.json only with a valid envelope for a newer as_of day.
+      - name: Install the snapshot if newer
+        run: node scripts/intelligence/snapshot.mjs install "$RUNNER_TEMP/snapshot/snapshot.json"
+
+      - name: Commit the snapshot
+        id: commit
+        uses: ./.github/actions/commit-and-push
+        with:
+          message: 'chore(intelligence): refresh encrypted dashboard snapshot [skip ci]'
+          paths: dashboard/data/snapshot.json
+          token: ${{ github.token }}
+
+  deploy:
+    name: Dispatch Deploy Pages
+    needs: publish
+    if: ${{ needs.publish.result == 'success' && needs.publish.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      # A push made with GITHUB_TOKEN starts no workflow, so the existing Pages deployment is dispatched. Its
+      # build checks out main after this push, so the artifact carries the new snapshot.
+      - name: Dispatch the Pages deployment of main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: gh api --method POST "repos/$REPO/actions/workflows/deploy-pages.yml/dispatches" -f ref=main

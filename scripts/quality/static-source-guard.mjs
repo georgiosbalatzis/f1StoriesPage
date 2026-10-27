@@ -209,12 +209,27 @@ const BANNED_TEXT_PATTERNS = [
     {
         files: /.*/,
         pattern: /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}/,
-        reason: 'Dashboard Access Keys and their verifiers live only in the server-side key store (Secret Manager), never in Git'
+        reason: 'retired I-06A Dashboard Access Keys and their verifiers must never be in Git'
+    },
+    {
+        files: /.*/,
+        pattern: /\bya29\.[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|"type"\s*:\s*"(?:service_account|external_account)"/,
+        reason: 'Google credentials never enter Git: the snapshot workflow authenticates through Workload Identity Federation'
+    },
+    {
+        files: /.*/,
+        pattern: /"(?:11-category-pageviews|20-daily-activity|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/,
+        reason: 'dashboard analytics are committed only as the encrypted snapshot envelope'
     },
     {
         files: /^dashboard\//,
-        pattern: /\b(?:localStorage|sessionStorage|indexedDB)\b|document\.cookie/,
-        reason: 'the dashboard page keeps no credentials in the browser; its session is an HttpOnly API cookie'
+        pattern: /\b(?:localStorage|sessionStorage|indexedDB|caches)\b|document\.cookie/,
+        reason: 'the dashboard keeps its key and decrypted analytics in memory only'
+    },
+    {
+        files: /^dashboard\//,
+        pattern: /\b(?:innerHTML|outerHTML|insertAdjacentHTML|createContextualFragment)\b|document\.write/,
+        reason: 'dashboard values are rendered with textContent and attributes only, never parsed as HTML'
     }
 ];
 
