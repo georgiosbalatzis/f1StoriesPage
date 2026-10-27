@@ -11,9 +11,9 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { readInputs, renderModel } from '../editorial-model.mjs';
 import {
-    DAILY_MAX_BYTES, ENABLED, MATURITY_DAYS, MAX_BYTES_BILLED, PROJECT, PROPERTY, REPORT_TIMEZONE, SNAPSHOT_MODELS, SNAPSHOT_PATH,
-    WINDOW_DAYS, assertEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh, resultRows,
-    sealSnapshot, snapshotWindow
+    DAILY_MAX_BYTES, ENABLED, EXPORT_START, MATURITY_DAYS, MAX_BYTES_BILLED, PROJECT, PROPERTY, REPORT_TIMEZONE, SNAPSHOT_MODELS,
+    SNAPSHOT_PATH, WINDOW_DAYS, assertEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh,
+    resultRows, scannedTables, sealSnapshot, snapshotWindow, windowDays, windowFor
 } from '../snapshot.mjs';
 import { fakeClient, queryResult, syntheticRows } from './snapshot-fixture.mjs';
 
@@ -70,25 +70,86 @@ test('the refresh is scheduled once a day at 03:00 Europe/Athens, plus manual ru
     assert.match(workflow, /mode:\n\s+description: [^\n]+\n\s+required: true\n\s+default: dry-run\n/);
 });
 
-test('the window is the latest 28 mature days in the property time zone, wherever the run lands', () => {
+test('the window is the latest mature days in the property time zone: up to 28, never before the export or immature', () => {
     assert.equal(REPORT_TIMEZONE, 'America/Los_Angeles');
+    assert.equal(EXPORT_START, '2026-10-19');
     assert.deepEqual(snapshotWindow(NOW), WINDOW);
+    // The export started on 19 Oct: until 28 days have matured, every mature day since then, with no gap.
+    for (const [asOf, start, end, days] of [
+        ['2026-10-23', '2026-10-19', '2026-10-19', 1],
+        ['2026-10-26', '2026-10-19', '2026-10-22', 4],
+        ['2026-10-29', '2026-10-19', '2026-10-25', 7],
+        ['2026-11-19', '2026-10-19', '2026-11-15', 28],
+        ['2026-11-20', '2026-10-20', '2026-11-16', 28]
+    ]) {
+        const window = windowFor(asOf);
+        assert.deepEqual(window, { asOf, start, end }, asOf);
+        assert.equal(windowDays(window), days, asOf);
+    }
+    // Before the first export day matures there is no window, and nothing is planned (before any credential is read).
+    assert.ok(windowFor('2026-10-22').start > windowFor('2026-10-22').end);
+    for (const mode of ['dry-run', 'refresh']) {
+        const result = plan({ mode, enabled: true, env: {}, now: new Date('2026-10-23T01:00:00Z'), root: tempRoot() });
+        assert.deepEqual([result.due, result.reason], [false, 'no mature daily export yet (the first, 2026-10-19, matures 4 days later)']);
+    }
     for (const [instant, asOf] of [
         ['2026-10-25T01:00:00Z', '2026-10-24'], // EU already on winter time, US still on summer time
         ['2026-11-02T01:00:00Z', '2026-11-01'], // the US change
-        ['2026-03-09T01:00:00Z', '2026-03-08'],
-        ['2026-03-29T00:00:00Z', '2026-03-28'],
+        ['2027-03-09T01:00:00Z', '2027-03-08'],
+        ['2027-03-29T00:00:00Z', '2027-03-28'],
         ['2026-11-20T07:59:00Z', '2026-11-19'], // a schedule seven hours late is still the same as_of day
         ['2026-11-20T08:00:00Z', '2026-11-20'] // after Los Angeles midnight it is the next day, never an immature one
     ]) {
         const window = snapshotWindow(new Date(instant));
         assert.equal(window.asOf, asOf, instant);
         assert.equal((Date.parse(window.asOf) - Date.parse(window.end)) / 86400000, MATURITY_DAYS);
-        assert.equal((Date.parse(window.end) - Date.parse(window.start)) / 86400000 + 1, WINDOW_DAYS);
+        assert.ok(window.start >= EXPORT_START && windowDays(window) >= 1 && windowDays(window) <= WINDOW_DAYS, instant);
     }
     // The models' own maturity rule is the same 4 days, so the window never asks for more than they read.
     for (const model of Object.keys(SNAPSHOT_MODELS)) {
         assert.match(renderModel(model, { project: PROJECT, property: PROPERTY, ...readInputs() }), /DATE_SUB\(@as_of_day, INTERVAL 4 DAY\)/);
+    }
+});
+
+for (const [asOf, days] of [['2026-10-26', 4], ['2026-10-29', 7], ['2026-11-19', 28]]) {
+    test(`a ${days}-day window refreshes, seals and opens with exactly ${days} daily rows and ${days} checked tables`, async () => {
+        const window = windowFor(asOf);
+        const keyText = newKey();
+        const client = fakeClient(window);
+        const now = new Date(`${asOf}T23:00:00Z`); // 16:00 in Los Angeles
+        assert.equal(snapshotWindow(now).asOf, asOf);
+        const text = await run({ client, now, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) });
+        assert.deepEqual(client.calls.tables, Array.from({ length: days }, (_, i) => new Date(Date.parse(window.start) + i * 86400000).toISOString().slice(0, 10)));
+        assert.deepEqual(client.calls.dryRuns[0].parameters.filter(p => p.name.endsWith('_day')).map(p => [p.name, p.parameterValue.value]),
+            [['as_of_day', asOf], ['end_day', window.end], ['start_day', window.start]]);
+        const { header } = assertEnvelope(text);
+        assert.deepEqual([header.asOf, header.start, header.end], [asOf, window.start, window.end]);
+        const browser = browserSnapshot();
+        const { payload } = await browser.open(browser.parseEnvelope(text), keyText);
+        assert.equal(payload.models['20-daily-activity'].length, days);
+        assert.equal(payload.models['20-daily-activity'][0].event_day, '2026-10-19');
+        assert.equal(payload.models['30-cwv-summary'].length, 15);
+        // A daily result that skips or adds a day is incomplete.
+        for (const rows of [days - 1, days + 1]) {
+            const bad = fakeClient(window, { mutate: (model, result) => (model === '20-daily-activity'
+                ? { ...result, rows: rows < days ? result.rows.slice(1) : [...result.rows, result.rows[0]], totalRows: String(rows) } : result) });
+            await assert.rejects(run({ client: bad, now }), new RegExp(`20-daily-activity: expected ${days} rows, got ${rows}`));
+        }
+    });
+}
+
+test('envelopes accept any valid 1-28 day window and nothing else', () => {
+    const key = crypto.randomBytes(32);
+    const seal = window => sealSnapshot({}, key, { generatedAt: NOW.toISOString(), window });
+    for (const asOf of ['2026-10-23', '2026-10-26', '2026-10-29', '2026-11-19', '2027-06-01']) assert.ok(assertEnvelope(seal(windowFor(asOf))));
+    for (const window of [
+        { asOf: '2026-10-26', start: '2026-10-20', end: '2026-10-22' }, // a shorter window than is available
+        { asOf: '2026-10-26', start: '2026-10-18', end: '2026-10-22' }, // a day before the export began
+        { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-23' }, // an immature day
+        { asOf: '2026-11-20', start: '2026-10-19', end: '2026-11-16' }, // 29 days
+        { asOf: '2026-10-22', start: '2026-10-19', end: '2026-10-18' } // no mature day
+    ]) {
+        assert.throws(() => assertEnvelope(seal(window)), /window is not the mature window/, JSON.stringify(window));
     }
 });
 
@@ -106,29 +167,56 @@ test('each model gets exactly its validated parameters, and a malformed one fail
     assert.throws(() => parametersFor('SELECT @unknown_thing', WINDOW), /@unknown_thing/);
 });
 
-test('cost caps are fixed: 100 MB per query, a lower combined daily ceiling, and billable runs off', () => {
+test('cost caps are fixed: 400 MiB per query, 1600 MiB per day, four allowlisted models, billable runs off', async () => {
     assert.equal(ENABLED, false);
-    assert.equal(MAX_BYTES_BILLED, 104857600);
-    assert.ok(DAILY_MAX_BYTES < Object.keys(SNAPSHOT_MODELS).length * MAX_BYTES_BILLED);
+    assert.equal(MAX_BYTES_BILLED, 400 * 1048576);
+    assert.equal(DAILY_MAX_BYTES, 1600 * 1048576);
     assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['11-category-pageviews', '20-daily-activity', '30-cwv-summary', '33-rum-coverage']);
+    // Disabled means a refresh never starts, whatever the configuration.
+    const client = fakeClient(WINDOW);
+    await assert.rejects(refresh({ mode: 'refresh', root: tempRoot(), env: env(), now: NOW, client, log: quiet }), /billable refreshes are disabled/);
+    assert.deepEqual(client.calls, { tables: [], dryRuns: [], runs: [] });
 });
 
-test('preflight rejects oversized, per-table-minimum and combined estimates before anything runs', async () => {
-    const job = (processed, tables) => ({ statistics: { query: { totalBytesProcessed: processed, referencedTables: Array(tables).fill({}) } } });
-    assert.equal(conservativeBytes(job('1000', 1)).estimate, 10 * 1048576);
-    assert.equal(conservativeBytes(job('1000', 28)).estimate, 280 * 1048576); // the 10 MB minimum per referenced table
-    assert.throws(() => preflight([{ model: 'm', estimate: conservativeBytes(job('1000', 28)).estimate }]), /per-query cap; nothing was run/);
-    assert.throws(() => preflight([{ model: 'm', estimate: MAX_BYTES_BILLED + 1 }]), /per-query cap/);
-    assert.throws(() => preflight(Array(4).fill({ model: 'm', estimate: 90 * 1048576 })), /daily ceiling; nothing was run/);
-    assert.throws(() => conservativeBytes({ statistics: {} }), /no byte estimate/);
-    assert.throws(() => conservativeBytes(job('1e9', 1)), /no byte estimate/);
+test('estimates count every scanned daily table, even when a dry-run lists the wildcard as one', () => {
+    const job = (processed, tables) => ({ statistics: { query: { totalBytesProcessed: processed, referencedTables: Array(tables).fill({ tableId: 'events_*' }) } } });
+    // The editorial and audience bases read the window's days; the RUM base also reads the day before.
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, WINDOW)), [28, 28, 29, 29]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, windowFor('2026-10-26'))), [4, 4, 5, 5]);
+    // One listed wildcard table: the 10 MiB per-table minimum still applies to all 28 or 29 tables.
+    assert.deepEqual(conservativeBytes(job('1000', 1), 28), { processed: 1000, referenced: 1, tables: 28, estimate: 280 * 1048576 });
+    assert.equal(conservativeBytes(job('1000', 1), 29).estimate, 290 * 1048576);
+    // A dry-run listing more tables than expected, or processing more bytes, raises the estimate.
+    assert.equal(conservativeBytes(job('1000', 31), 28).estimate, 310 * 1048576);
+    assert.equal(conservativeBytes(job(String(350 * 1048576 + 1), 1), 28).estimate, 351 * 1048576);
+    assert.throws(() => conservativeBytes(job('1000', 1)), /no scanned table count/);
+    assert.throws(() => conservativeBytes({ statistics: {} }, 28), /no byte estimate/);
+    assert.throws(() => conservativeBytes(job('1e9', 1), 28), /no byte estimate/);
+});
 
-    for (const options of [{ processed: String(MAX_BYTES_BILLED + 1) }, { tables: 28 }, { processed: String(80 * 1048576) }]) {
-        const client = fakeClient(WINDOW, options);
-        await assert.rejects(run({ client }), /nothing was run/);
-        assert.equal(client.calls.dryRuns.length, 4);
-        assert.equal(client.calls.runs.length, 0);
+test('preflight enforces the per-query cap and the combined daily ceiling before anything runs', async () => {
+    const MiB = 1048576;
+    // A full 28-day refresh at the table minimums: 280 + 280 + 290 + 290 = 1140 MiB, within both limits.
+    const client = fakeClient(WINDOW, { processed: '1000', tables: 1 });
+    const logs = [];
+    await run({ client, log: line => logs.push(line) });
+    assert.equal(client.calls.runs.length, 4);
+    assert.ok(logs.includes('preflight passed: ≤ 1140.00 MiB of the 1600.00 MiB daily ceiling; per-query cap 400.00 MiB'), logs.join('\n'));
+    assert.ok(logs.includes('dry-run 30-cwv-summary: 0.00 MiB processed, 1 table(s) listed, 29 counted, ≤ 290.00 MiB billed'));
+
+    assert.equal(preflight(Array(4).fill({ model: 'm', estimate: 400 * MiB })), 1600 * MiB);
+    assert.throws(() => preflight([{ model: 'm', estimate: 400 * MiB + 1 }]), /m: estimate 400.00 MiB exceeds the 400.00 MiB per-query cap; nothing was run/);
+    assert.throws(() => preflight([...Array(4).fill({ model: 'm', estimate: 400 * MiB }), { model: 'n', estimate: MiB }]), /combined estimate 1601.00 MiB exceeds the 1600.00 MiB daily ceiling; nothing was run/);
+    for (const options of [{ processed: String(400 * MiB + 1) }, { tables: 41 }]) {
+        const rejected = fakeClient(WINDOW, options);
+        await assert.rejects(run({ client: rejected }), /per-query cap; nothing was run/);
+        assert.equal(rejected.calls.dryRuns.length, 4);
+        assert.equal(rejected.calls.runs.length, 0);
     }
+    // Billed bytes are checked after each query: a query billing more than planned stops the rest.
+    const overbilled = fakeClient(WINDOW, { billed: 900 * MiB });
+    await assert.rejects(run({ client: overbilled }), /billed bytes 1800.00 MiB passed the daily ceiling; stopping/);
+    assert.equal(overbilled.calls.runs.length, 2);
 });
 
 test('missing or malformed configuration fails closed before any network call', async () => {
@@ -158,6 +246,10 @@ test('a missing daily export table stops the refresh before any query', async ()
     const dry = fakeClient(WINDOW, { missingDay: '2026-11-01' });
     await assert.rejects(run({ client: dry, mode: 'dry-run', enabled: false }), /1 daily export table\(s\) missing \(first 2026-11-01\): a refresh would fail closed/);
     assert.deepEqual([dry.calls.tables.length, dry.calls.dryRuns.length, dry.calls.runs.length], [WINDOW_DAYS, 4, 0]);
+    // The same in a short window: a gap in the first days is never skipped or filled.
+    const early = fakeClient(windowFor('2026-10-29'), { missingDay: '2026-10-21' });
+    await assert.rejects(run({ client: early, now: new Date('2026-10-29T23:00:00Z') }), /events_20261021 is missing/);
+    assert.deepEqual([early.calls.tables, early.calls.dryRuns.length], [['2026-10-19', '2026-10-20', '2026-10-21'], 0]);
     // Every reporting day is checked, never a day after the mature end.
     const complete = fakeClient(WINDOW);
     await run({ client: complete });
@@ -199,7 +291,7 @@ test('the REST client caps every query, never retries one, and reuses an existin
     assert.equal(requests[0].body.configuration.dryRun, true);
     assert.equal(requests[1].body.configuration.dryRun, undefined);
     for (const request of requests.slice(0, 2)) {
-        assert.equal(request.body.configuration.query.maximumBytesBilled, '104857600');
+        assert.equal(request.body.configuration.query.maximumBytesBilled, '419430400'); // 400 MiB
         assert.equal(request.body.configuration.query.useLegacySql, false);
         assert.equal(request.body.jobReference.location, 'EU');
         assert.equal(request.auth, 'Bearer t');

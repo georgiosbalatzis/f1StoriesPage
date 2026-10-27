@@ -76,13 +76,13 @@
     }
 
     function activityChart(target, rows) {
-        var width = 560, height = 180, slotWidth = width / rows.length;
+        var width = 560, height = 180, slotWidth = width / rows.length, barWidth = Math.min(slotWidth - 2, 28);
         var max = Math.max.apply(null, rows.map(function (row) { return row.page_view_events; }).concat(1));
         var chart = shape('svg', { viewBox: '0 0 ' + width + ' ' + (height + 24), role: 'img',
             'aria-label': 'Ημερήσιες προβολές σελίδας, ' + day(rows[0].event_day) + ' έως ' + day(rows[rows.length - 1].event_day) + ', μέγιστο ' + integer.format(max) });
         rows.forEach(function (row, i) {
             var barHeight = Math.max(row.page_view_events ? 2 : 0, Math.round(row.page_view_events / max * height));
-            chart.appendChild(shape('rect', { x: (i * slotWidth + 1).toFixed(1), y: height - barHeight, width: (slotWidth - 2).toFixed(1), height: barHeight, rx: 2,
+            chart.appendChild(shape('rect', { x: (i * slotWidth + (slotWidth - barWidth) / 2).toFixed(1), y: height - barHeight, width: barWidth.toFixed(1), height: barHeight, rx: 2,
                 class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' },
                 day(row.event_day) + ': ' + integer.format(row.page_view_events) + ' προβολές' + (row.meets_min_events ? '' : ' (μικρό δείγμα)')));
         });
@@ -142,7 +142,10 @@
         var header = snapshot.header, payload = snapshot.payload, models = payload.models;
         var generated = new Date(header.generatedAt);
         field('end').textContent = day(header.end, true);
-        field('window').textContent = day(header.start, true) + ' – ' + day(header.end, true);
+        // 1–28 days: fewer while the export (from 19 Oct 2026) is younger than 28 mature days.
+        var days = Math.round((Date.parse(header.end) - Date.parse(header.start)) / 86400000) + 1;
+        field('window').textContent = (days === 28 ? 'Τελευταίες 28 πλήρεις ημέρες' : days + (days === 1 ? ' πλήρης ημέρα' : ' πλήρεις ημέρες')
+            + ', όσες υπάρχουν από την έναρξη της εξαγωγής') + ' · ' + day(header.start, true) + ' – ' + day(header.end, true);
         field('updated').textContent = 'Τελευταία επιτυχής ενημέρωση: ' + generated.toLocaleString('el-GR',
             { timeZone: 'Europe/Athens', dateStyle: 'long', timeStyle: 'short' }) + ' (ώρα Αθήνας).';
         field('timezone').textContent = payload.window.timezone;

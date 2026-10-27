@@ -1,6 +1,6 @@
 // Synthetic stand-ins for BigQuery in the snapshot tests: invented aggregate rows in the REST result format.
 // No real analytics, no network.
-import { WINDOW_DAYS } from '../snapshot.mjs';
+import { windowDays } from '../snapshot.mjs';
 
 const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
 const TYPES = { p75: 'FLOAT', good_share: 'FLOAT', meets_min_events: 'BOOLEAN', meets_min_observations: 'BOOLEAN',
@@ -24,7 +24,7 @@ export function syntheticRows(window) {
         '11-category-pageviews': [['Ανάλυση', 412, 18, 120, true], ['Ιστορία <b>', 96, 7, 80, true], ['(unmapped)', 4, 0, 0, false]]
             .map(([category, page_view_events, articles_with_events, catalog_articles, meets_min_events]) =>
                 ({ ...base, category, page_view_events, articles_with_events, catalog_articles, meets_min_events })),
-        '20-daily-activity': Array.from({ length: WINDOW_DAYS }, (_, i) => {
+        '20-daily-activity': Array.from({ length: windowDays(window) }, (_, i) => {
             const views = 12 + (i * 37) % 61;
             return { ...base, event_day: addDays(window.start, i), page_view_events: views, session_start_events: Math.round(views / 3),
                 first_visit_events: Math.round(views / 5), meets_min_events: views >= 30 };
@@ -44,7 +44,7 @@ export function queryResult(rows) {
 }
 
 // A model-level client double for refresh(): records every call; options inject each failure mode.
-export function fakeClient(window, { processed = '2400000', tables = 1, missingDay = null, failRun = null, mutate = null } = {}) {
+export function fakeClient(window, { processed = '2400000', tables = 1, billed = 10485760, missingDay = null, failRun = null, mutate = null } = {}) {
     const rows = syntheticRows(window);
     const calls = { tables: [], dryRuns: [], runs: [] };
     return {
@@ -63,7 +63,7 @@ export function fakeClient(window, { processed = '2400000', tables = 1, missingD
             const model = Object.keys(rows).find(name => jobId.includes(`_${name.replaceAll('-', '_')}_`));
             if (failRun === calls.runs.length) throw new Error(`query ${jobId} failed: synthetic failure`);
             const result = queryResult(rows[model]);
-            return { billed: 10485760, result: mutate ? mutate(model, result) : result };
+            return { billed, result: mutate ? mutate(model, result) : result };
         }
     };
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // snapshot.mjs — I-06B daily encrypted Intelligence snapshot (docs/intelligence/dashboard-snapshots.md).
 // Runs four existing models, rendered by editorial-model.mjs and never redefined here, over the latest mature
-// 28 days. Every query is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per
+// days: 28, or every mature day since the export began while there are fewer. Every query is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per
 // day. The aggregate rows exist only in memory and leave this process only as an AES-256-GCM envelope.
 // Rows, keys and tokens are never printed.
 //
@@ -12,7 +12,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PARAMETERS, queryParameters, readInputs, renderModel } from './editorial-model.mjs';
+import { PARAMETERS, RUM_MODELS, queryParameters, readInputs, renderModel } from './editorial-model.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -22,12 +22,14 @@ export const PROJECT = 'f1-stories-analytics';
 export const PROPERTY = '485678890';
 export const LOCATION = 'EU';
 export const REPORT_TIMEZONE = 'America/Los_Angeles'; // the property's time zone: GA4 names daily tables in it
-export const WINDOW_DAYS = 28;
+export const WINDOW_DAYS = 28; // at most; fewer while the export is younger than that
+export const EXPORT_START = '2026-10-19'; // the first GA4 daily export table; no earlier day exists
 export const MATURITY_DAYS = 4; // base.sql: days newer than as_of_day - 4 may still change
 export const MIN_SAMPLE = 30; // @min_events and @min_observations, as in the model docs
-export const MAX_BYTES_BILLED = 100 * 1024 * 1024; // per query, enforced by BigQuery
-export const DAILY_MAX_BYTES = 300 * 1024 * 1024; // all queries of one refresh, by conservative estimate
-export const MIN_BYTES_PER_TABLE = 10 * 1024 * 1024; // on-demand pricing bills at least 10 MB per referenced table
+// On-demand pricing bills at least 10 MiB per referenced table, so 28-29 daily tables bill >= 280-290 MiB.
+export const MIN_BYTES_PER_TABLE = 10 * 1024 * 1024;
+export const MAX_BYTES_BILLED = 400 * 1024 * 1024; // per query, enforced by BigQuery
+export const DAILY_MAX_BYTES = 1600 * 1024 * 1024; // all queries of one refresh: planned by estimate, then by billed bytes
 export const SNAPSHOT_PATH = 'dashboard/data/snapshot.json';
 export const ENVELOPE_FORMAT = 'f1s-dashboard-snapshot';
 export const PAYLOAD_FORMAT = 'f1s-dashboard-snapshot-payload';
@@ -36,7 +38,7 @@ export const KEY_CHECK_LABEL = 'f1s-dashboard-snapshot-key-check-v1\u0000';
 // Columns the dashboard reads; a result without them is incomplete. Exact row counts where the model fixes them.
 export const SNAPSHOT_MODELS = {
     '11-category-pageviews': { columns: ['category', 'page_view_events', 'articles_with_events', 'catalog_articles', 'meets_min_events'] },
-    '20-daily-activity': { columns: ['event_day', 'page_view_events', 'session_start_events', 'first_visit_events', 'meets_min_events'], rows: WINDOW_DAYS },
+    '20-daily-activity': { columns: ['event_day', 'page_view_events', 'session_start_events', 'first_visit_events', 'meets_min_events'], rows: 'days' },
     '30-cwv-summary': { columns: ['cohort_truncated', 'coverage', 'metric', 'core_web_vital', 'observations', 'p75', 'good', 'needs_improvement', 'poor', 'good_share', 'meets_min_observations'], rows: 15 },
     '33-rum-coverage': { columns: ['cohort_truncated', 'stage', 'category', 'count'] }
 };
@@ -55,11 +57,20 @@ export function propertyDay(now, timeZone = REPORT_TIMEZONE) {
     return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 }
 
-// The latest WINDOW_DAYS mature days: through as_of_day - MATURITY_DAYS, never later.
-export function snapshotWindow(now) {
-    const asOf = propertyDay(now);
+// The latest mature days for an as_of day: through as_of_day - MATURITY_DAYS, at most WINDOW_DAYS of them, and
+// none before EXPORT_START. Before the first export day has matured, start is after end (no window).
+export function windowFor(asOf) {
     const end = addDays(asOf, -MATURITY_DAYS);
-    return { asOf, start: addDays(end, -(WINDOW_DAYS - 1)), end };
+    const earliest = addDays(end, -(WINDOW_DAYS - 1));
+    return { asOf, start: earliest > EXPORT_START ? earliest : EXPORT_START, end };
+}
+
+export const snapshotWindow = now => windowFor(propertyDay(now));
+export const windowDays = window => (Date.parse(window.end) - Date.parse(window.start)) / 86400000 + 1;
+
+// Daily tables a model's base scans for a window: the RUM base also reads the day before (time-zone margin).
+export function scannedTables(model, window) {
+    return windowDays(window) + (RUM_MODELS.includes(model) ? 1 : 0);
 }
 
 export function parseKey(text) {
@@ -96,12 +107,15 @@ export function parametersFor(sql, window) {
     });
 }
 
-// Bytes BigQuery could bill for a dry-run: processed bytes rounded up to a MiB, or the per-table minimum.
-export function conservativeBytes(dryRunJob) {
+// Bytes BigQuery could bill for a dry-run: processed bytes rounded up to a MiB, or the per-table minimum. A dry-run
+// may list a wildcard scan as one table, so the count is never below the daily tables the model's base reads.
+export function conservativeBytes(dryRunJob, scanned) {
     const processed = dryRunJob?.statistics?.query?.totalBytesProcessed ?? dryRunJob?.statistics?.totalBytesProcessed;
     if (typeof processed !== 'string' || !/^\d+$/.test(processed)) throw new Error('dry-run returned no byte estimate');
-    const tables = Math.max(1, (dryRunJob.statistics.query?.referencedTables || []).length);
-    return { processed: Number(processed), tables,
+    if (!Number.isInteger(scanned) || scanned < 1) throw new Error('no scanned table count for the estimate');
+    const referenced = (dryRunJob.statistics.query?.referencedTables || []).length;
+    const tables = Math.max(referenced, scanned);
+    return { processed: Number(processed), referenced, tables,
         estimate: Math.max(Math.ceil(Number(processed) / 1048576) * 1048576, tables * MIN_BYTES_PER_TABLE) };
 }
 
@@ -139,7 +153,8 @@ export function resultRows(model, result, window) {
         if (!names.includes(column)) throw new Error(`${model}: result has no ${column} column`);
     }
     const objects = rows.map(row => Object.fromEntries(fields.map((field, i) => [field.name, cell(field.type, row.f?.[i]?.v)])));
-    if (spec.rows !== undefined && objects.length !== spec.rows) throw new Error(`${model}: expected ${spec.rows} rows, got ${objects.length}`);
+    const expected = spec.rows === 'days' ? windowDays(window) : spec.rows;
+    if (expected !== undefined && objects.length !== expected) throw new Error(`${model}: expected ${expected} rows, got ${objects.length}`);
     for (const row of objects) {
         if (row.from_day !== window.start || row.through_day !== window.end || row.cohort_truncated === true) {
             throw new Error(`${model}: result does not cover ${window.start} → ${window.end}`);
@@ -170,8 +185,8 @@ export function assertEnvelope(text) {
     if (!header || Object.keys(header).join() !== HEADER_KEYS.join()) throw new Error('snapshot envelope: unexpected header fields');
     if (header.format !== ENVELOPE_FORMAT || header.v !== 1 || header.alg !== 'AES-256-GCM') throw new Error('snapshot envelope: unsupported version');
     if (![header.asOf, header.start, header.end].every(day => ISO_DAY.test(day))
-        || header.end !== addDays(header.asOf, -MATURITY_DAYS) || header.start !== addDays(header.end, -(WINDOW_DAYS - 1))) {
-        throw new Error('snapshot envelope: window is not the mature 28-day window of its as_of day');
+        || header.end !== addDays(header.asOf, -MATURITY_DAYS) || header.start !== windowFor(header.asOf).start || header.start > header.end) {
+        throw new Error('snapshot envelope: window is not the mature window of its as_of day');
     }
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(header.generatedAt) || !/^[A-Za-z0-9_-]{22}$/.test(header.keyCheck)) {
         throw new Error('snapshot envelope: malformed header');
@@ -194,13 +209,14 @@ export function publishedHeader(root = REPO_ROOT) {
 export function plan({ mode, env, now, root = REPO_ROOT, enabled = ENABLED }) {
     if (mode !== 'refresh' && mode !== 'dry-run') throw new Error(`unknown mode ${mode}`);
     const window = snapshotWindow(now);
+    if (window.start > window.end) return { due: false, window, reason: `no mature daily export yet (the first, ${EXPORT_START}, matures 4 days later)` };
     if (mode === 'refresh' && !enabled) return { due: false, window, reason: 'billable refreshes are disabled (snapshot.mjs ENABLED)' };
     const published = publishedHeader(root);
     if (mode === 'refresh' && published && published.asOf >= window.asOf) {
         return { due: false, window, reason: `the snapshot for as_of ${published.asOf} is already published` };
     }
     requireConfiguration(env);
-    return { due: true, window, reason: `${mode} for ${window.start} → ${window.end} (as_of ${window.asOf})` };
+    return { due: true, window, reason: `${mode} for ${window.start} → ${window.end}, ${windowDays(window)} day(s) (as_of ${window.asOf})` };
 }
 
 // The BigQuery REST API, with the job id fixed per day, model and SQL: a rerun finds the earlier job instead of
@@ -276,9 +292,10 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
     });
     const estimates = [];
     for (const query of queries) {
-        const { processed, tables, estimate } = conservativeBytes(await client.dryRun(query.sql, query.parameters));
+        const { processed, referenced, tables, estimate } = conservativeBytes(await client.dryRun(query.sql, query.parameters),
+            scannedTables(query.model, window));
         estimates.push({ model: query.model, estimate });
-        log(`dry-run ${query.model}: ${mib(processed)} processed, ${tables} referenced table(s), ≤ ${mib(estimate)} billed`);
+        log(`dry-run ${query.model}: ${mib(processed)} processed, ${referenced} table(s) listed, ${tables} counted, ≤ ${mib(estimate)} billed`);
     }
     const total = preflight(estimates);
     log(`preflight passed: ≤ ${mib(total)} of the ${mib(DAILY_MAX_BYTES)} daily ceiling; per-query cap ${mib(MAX_BYTES_BILLED)}`);

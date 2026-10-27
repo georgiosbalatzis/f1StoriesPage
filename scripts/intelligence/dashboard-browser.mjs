@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { Launcher } from 'chrome-launcher';
-import { refresh, snapshotWindow } from './snapshot.mjs';
+import { refresh, snapshotWindow, windowDays } from './snapshot.mjs';
 import { fakeClient } from './__tests__/snapshot-fixture.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -26,6 +26,8 @@ async function seal(now) {
 }
 
 const fresh = await seal(new Date());
+const freshDays = windowDays(snapshotWindow(new Date()));
+const fourDays = await seal(new Date('2026-10-26T23:00:00Z')); // as_of 26 Oct: 19–22 Oct, all the export has
 const stale = await seal(new Date(Date.now() - 3 * 86400000));
 const tampered = (() => {
     const envelope = JSON.parse(fresh);
@@ -113,6 +115,7 @@ try {
     assert.ok(await visible(page, 'report'), 'right key: report');
     const report = await page.evaluate(() => ({
         title: document.getElementById('report-title').textContent,
+        window: document.querySelector('[data-field="window"]').textContent,
         updated: document.querySelector('[data-field="updated"]').textContent,
         stale: document.querySelector('[data-stale]').hidden,
         days: document.querySelectorAll('[data-chart="activity"] rect').length,
@@ -126,7 +129,8 @@ try {
     assert.match(report.title, /^Στοιχεία έως \d{1,2} [^\s]+ \d{4}$/);
     assert.match(report.updated, /Τελευταία επιτυχής ενημέρωση/);
     assert.equal(report.stale, true, 'a fresh snapshot shows no stale warning');
-    assert.equal(report.days, 28);
+    assert.equal(report.days, freshDays);
+    assert.match(report.window, freshDays === 28 ? /^Τελευταίες 28 πλήρεις ημέρες · / : new RegExp(`^${freshDays} πλήρεις? ημέρ.ς, όσες υπάρχουν από την έναρξη της εξαγωγής · `));
     assert.ok(report.small > 0, 'small-sample days are marked');
     assert.deepEqual(report.categories, ['Ανάλυση', 'Ιστορία <b>', '(unmapped)']);
     assert.equal(report.injected, 0, 'snapshot text is never parsed as HTML');
@@ -149,6 +153,14 @@ try {
         await session.page.screenshot({ path: path.join(shots, 'dashboard-desktop-light.png'), fullPage: true });
         await finish(session, 'desktop light');
     }
+
+    session = await open(fourDays);
+    await unlock(session.page, key);
+    assert.deepEqual(await session.page.evaluate(() => [document.querySelector('[data-field="window"]').textContent,
+        document.getElementById('report-title').textContent, document.querySelectorAll('[data-chart="activity"] rect').length]),
+    ['4 πλήρεις ημέρες, όσες υπάρχουν από την έναρξη της εξαγωγής · 19 Οκτ 2026 – 22 Οκτ 2026', 'Στοιχεία έως 22 Οκτ 2026', 4]);
+    if (shots) await session.page.screenshot({ path: path.join(shots, 'dashboard-4-days.png'), fullPage: true });
+    await finish(session, 'four days');
 
     session = await open(stale);
     await unlock(session.page, key);

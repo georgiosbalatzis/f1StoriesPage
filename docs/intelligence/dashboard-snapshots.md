@@ -1,5 +1,8 @@
 # I-06B — Daily encrypted Intelligence snapshots
 
+Project constraint: the owner's **total Google Cloud budget is 10 EUR/month** (all services, not per service).
+Nothing in this workflow can enforce that total; see [Cost controls](#cost-controls).
+
 Status: implemented, **not enabled**. Nothing has run in BigQuery, no IAM resource, secret or variable exists, and
 `scripts/intelligence/snapshot.mjs` ships with `ENABLED = false`.
 
@@ -31,14 +34,27 @@ browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the k
 | Models | `11-category-pageviews`, `20-daily-activity`, `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
 | Source | `f1-stories-analytics.analytics_485678890`, location `EU`, daily `events_YYYYMMDD` tables only |
 | `@as_of_day` | today in the property time zone `America/Los_Angeles`, computed when the job runs |
-| Window | `end_day = as_of_day − 4` (the models' maturity rule), `start_day = end_day − 27`: 28 days |
+| Window | `end_day = as_of_day − 4` (the models' maturity rule); `start_day = max(end_day − 27, 2026-10-19)`: the latest 28 mature days, or every mature day since the export began while there are fewer (1–28) |
 | Samples | `@min_events = @min_observations = 30`; `meets_min_*` flags are kept and shown, never used to drop rows |
 
-The refresh fails closed when any of the 28 daily tables is missing, a result is incomplete (unfinished job, extra
-page, row count mismatch, missing column), a row does not cover exactly the requested window, or the RUM cohort is
-truncated. The export starts on 2026-10-19, so **the first complete window is `as_of_day` 2026-11-19**
-(19 Oct → 15 Nov). Before that date every refresh fails, by design, and the dashboard shows its empty state.
-The 28-day window is not shortened to fit, and the cost cap is not raised.
+The export starts on 2026-10-19, so snapshots are useful as soon as the owner setup is done:
+
+| `as_of_day` | Window | Days |
+| --- | --- | --- |
+| 2026-10-26 | 19 → 22 Oct | 4 |
+| 2026-10-29 | 19 → 25 Oct | 7 |
+| 2026-11-19 | 19 Oct → 15 Nov | 28 |
+| 2026-11-20 and later | the latest 28 mature days | 28 |
+
+No day before the export, no immature day (newer than `as_of_day − 4`) and no synthetic day is ever included. The
+models' SQL, the RUM revision rule and the coverage-class separation are unchanged: the window only sets
+`@start_day` and `@end_day`. The page states the number of days and, while it is under 28, that the window covers
+everything since the export began.
+
+The refresh fails closed when any daily table in the window is missing (a gap is never skipped or filled), a result
+is incomplete (unfinished job, extra page, row count mismatch, including a daily result without exactly one row per
+window day, or a missing column), a row does not cover exactly the requested window, or the RUM cohort is truncated.
+The envelope check accepts only the window this rule gives for its `as_of_day`.
 
 ## Schedule, reruns and DST
 
@@ -59,50 +75,60 @@ The 28-day window is not shortened to fit, and the cost cap is not raised.
 
 ## Cost controls
 
-The owner's whole Google Cloud budget is **10 EUR/month**. Nothing here can guarantee a hard cap on total cloud
-spend. Budget alerts only notify, and the controls below limit BigQuery query processing by this workflow only.
+The owner's whole Google Cloud budget is **10 EUR/month**, and it is a project constraint. **These controls are not
+a guaranteed 10 EUR total-cloud cap**, and nothing here can provide one: budget alerts only notify, and the limits
+below apply only to this workflow's BigQuery queries.
 
 | Control | Where |
 | --- | --- |
 | Billable runs disabled until the owner flips `ENABLED` | `snapshot.mjs`; a test pins `false` |
 | Manual runs default to `dry-run` (free) | workflow input |
+| Four allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
 | Mandatory dry-run of all four queries before any execution | `refresh()` |
-| Conservative estimate per query: max(processed bytes rounded up to 1 MiB, 10 MiB × referenced tables) | `conservativeBytes()` |
-| Per query: estimate ≤ 100 MiB, else nothing runs | `preflight()` |
-| `maximumBytesBilled = 104857600` (100 MiB) on every query, enforced by BigQuery | `bigQuery().run()` |
-| Combined daily ceiling 300 MiB: the sum of estimates, checked before running; billed bytes, checked after each query | `DAILY_MAX_BYTES` |
-| No retries: one insert per query, no retry loop; reruns reuse the same job id | `bigQuery().run()` |
-| One refresh per `as_of_day`; one schedule per day | `plan()`, workflow |
+| Conservative estimate per query: max(processed bytes rounded up to 1 MiB, 10 MiB × tables) | `conservativeBytes()` |
+| Table count: max(tables the dry-run lists, daily tables the model's base scans), so one listed wildcard still counts 28/29 | `scannedTables()` |
+| Per query: estimate ≤ 400 MiB, else nothing runs | `preflight()` |
+| `maximumBytesBilled = 419430400` (400 MiB) on every query, enforced by BigQuery | `bigQuery().run()` |
+| Combined daily ceiling 1600 MiB: the sum of estimates, checked before running; billed bytes, checked after each query | `DAILY_MAX_BYTES` |
+| No billable retries: one insert per query, no retry loop; reruns reuse the same job id | `bigQuery().run()` |
+| One successful refresh per `as_of_day`; one schedule per day | `plan()`, workflow |
 | No browser query: the page has `connect-src 'self'` and fetches one static file | CSP, tests |
 
-Worst case by these caps: 4 × 100 MiB per day, ≈ 12 GiB per month. That is well inside BigQuery's free on-demand
-monthly allowance, and pennies at list price. Check the current EU on-demand price and free tier on Google's pricing
-page; they are not restated as fact here.
+**Why 400 MiB.** On-demand pricing bills at least 10 MiB per referenced table. The editorial and audience models scan
+the window's daily tables (28 at full length), and the RUM models also scan the day before (29). At the minimums, a
+full refresh plans 280 + 280 + 290 + 290 = **1140 MiB**. That is under the 1600 MiB ceiling, and every query is under
+400 MiB. The previous 100 MiB cap could never fit a 28-table scan. A dry-run may list a wildcard scan as a single
+table, so the estimate never uses fewer tables than the base actually scans. Short windows plan less (4 days: 40 + 40 + 50 + 50 = 180 MiB).
+
+**Expected volume.** About 1.1 GiB per day at the per-table minimums, ≈ 35 GiB per month. The caps allow at most
+1600 MiB per day, ≈ 48 GiB per month. Both sit well inside BigQuery's monthly free on-demand allowance, *if* nothing
+else in the billing account uses it, and are small at list price beyond it. Check the current EU on-demand price
+and free tier on Google's pricing page; they are not restated as fact here.
 
 Limitations:
 
-- **The per-table minimum may block the 28-day window.** Google bills at least 10 MB per referenced table. If a
-  dry-run lists the 28–29 daily tables individually, each estimate is ≥ 280 MiB and preflight refuses to run. If it
-  lists the wildcard once but billing still counts each table, BigQuery itself rejects the query at the 100 MiB cap
-  (`bytesBilledLimitExceeded`; failed queries are not billed). Either way it fails safely, and the dry-run log shows
-  which case applies. Google's documentation does not say how a wildcard reference is counted. The owner's
-  four-day Console run (model 10: 219.08 KB processed) cannot answer this either.
-- The dry-run estimate is processed bytes, not billed bytes. The real backstop is `maximumBytesBilled`.
-- The daily ceiling is checked against billed bytes only *after* a query. It stops later queries; it cannot undo one.
+- **Not a total-cost cap.** These limits do not cover storage, the GA4 export, other BigQuery users or projects,
+  or any other Google service. They cannot keep the account under 10 EUR on their own.
+- With four models, the 1600 MiB ceiling equals four full per-query caps. Its job is to bound the plan and to stop
+  remaining queries once billed bytes pass it. It is not a tighter limit than the per-query caps combined.
+- The dry-run estimate is processed bytes plus the per-table minimum, not billed bytes. `maximumBytesBilled` is
+  the backstop: a query that would bill more fails, and failed queries are not billed.
+- Billed bytes are checked only *after* a query. That stops later queries; it cannot undo one.
 - A manual rerun on a new `as_of_day` is a new refresh. Only the owner and maintainers can dispatch.
-- These controls do not cover storage, the GA4 export itself, other projects' queries, or other Google services.
 
-### Custom BigQuery quota (recommended, owner)
+### Custom BigQuery quota (additional safeguard, owner)
 
-A custom quota is a hard limit on query bytes per day, enforced by BigQuery for on-demand queries. It applies to
-everyone in the project, including Console use. In Google Cloud Console → IAM & Admin → Quotas & System Limits,
-filter by service **BigQuery API**:
+A custom daily query quota is an **additional safeguard**, not a billing cutoff. Once usage reaches it, BigQuery
+refuses new on-demand queries for the rest of the day, for everyone it covers. It limits only query bytes, though,
+not storage or other services. Usage accounting can lag, and the quota does not turn a budget into a hard limit.
+In Google Cloud Console → IAM & Admin → Quotas & System Limits, filter by service **BigQuery API**:
 
-- **Query usage per day per user**: e.g. 1 GiB. This bounds the service account (and each person) per day.
-- **Query usage per day** (project): e.g. 5 GiB. This bounds the project, Console analysis included.
+- **Query usage per day per user**: at least 2 GiB, so a full refresh (≤ 1600 MiB) fits with room for a dry-run review.
+  This limits the service account and each person.
+- **Query usage per day** (project): e.g. 10 GiB, leaving room for your own Console analysis.
 
-Quotas reset at midnight Pacific time. Pick values that leave room for your own Console work. Also keep a **budget
-alert** on the 10 EUR total budget (e.g. at 50%, 90%, 100%). It is a notification, not a cap.
+Quotas reset at midnight Pacific time. Keep a **budget alert** on the 10 EUR total budget as well (e.g. at 50%, 90%,
+100%). It notifies; it does not stop spending.
 
 ## Encryption
 
@@ -203,8 +229,8 @@ Do these in order. Nothing in this PR performs them.
    ```
 6. **Quota and budget alert**: see [Custom BigQuery quota](#custom-bigquery-quota-recommended-owner).
 7. **Dry-run (free)**: Actions → Intelligence Snapshot → Run workflow → branch `main`, mode `dry-run`. The log shows,
-   per model, processed bytes, referenced tables and the conservative billed estimate, then the preflight verdict.
-   Before 2026-11-19 it also lists the missing daily tables and fails. That is expected.
+   per model, processed bytes, tables listed and tables counted, the conservative billed estimate, and then the preflight
+   verdict. It covers every mature day since 2026-10-19, up to 28. A missing daily table is listed and fails the run.
 8. **Enable** after reviewing the dry-run: a PR that sets `ENABLED = true` in `snapshot.mjs` and updates the test that
    pins it. Then wait for 03:00 Athens or dispatch with mode `refresh`.
 9. **Verify** the first refresh: a `chore(intelligence)` commit touching only `dashboard/data/snapshot.json`, a
@@ -221,10 +247,8 @@ Do these in order. Nothing in this PR performs them.
 ## Remaining blockers before the first live snapshot
 
 1. Owner setup steps 1–6 (none exist yet).
-2. A dry-run review, especially whether the 10 MB per-table minimum puts 28-day estimates above the 100 MiB cap.
-   If it does, the design fails safely and needs an owner decision. The cap is not relaxed here.
-3. Complete export tables for the window: first possible refresh on `as_of_day` 2026-11-19.
-4. The `ENABLED` PR.
+2. A dry-run review of the estimates against the 400 MiB per-query and 1600 MiB daily limits.
+3. The `ENABLED` PR. Once enabled, the first refresh covers every mature day since 2026-10-19; nothing waits for 28 days.
 
 Open items inherited from [bigquery-validation.md](bigquery-validation.md) still apply, such as the unconfirmed
 G-X68J6MQKSM stream mapping and the small LCP/INP samples.
