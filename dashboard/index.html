@@ -97,6 +97,26 @@
             <div class="dash-scroll" data-table="articles"></div>
         </section>
 
+        <section class="dash-panel" aria-labelledby="discovery-title">
+            <h2 id="discovery-title">Εσωτερική ανακάλυψη άρθρων</h2>
+            <p class="dash-copy">Κλικ σε εσωτερικούς συνδέσμους του site (γεγονότα <code>internal_page_click</code>, μόνο με συναίνεση), για την περίοδο <span data-field="discovery-window">—</span>. <span data-field="discovery-freshness"></span></p>
+            <ul class="dash-notes">
+                <li>Ένα κλικ δεν είναι προβολή σελίδας ούτε επίσκεψη, και δεν αποδεικνύει ότι η σελίδα προορισμού φόρτωσε.</li>
+                <li>Δεν καταγράφονται κλικ χωρίς συναίνεση, με Ctrl/Cmd ή μεσαίο πλήκτρο, ούτε πληκτρολογημένες διευθύνσεις. Μηδέν κλικ δεν αποδεικνύει ότι ένα στοιχείο δεν χρησιμοποιήθηκε.</li>
+                <li>Με τόσο λίγους αναγνώστες οι κατατάξεις είναι ενδεικτικές: δεν υπολογίζονται ποσοστά μετατροπής, διαδρομές ή συνεδρίες αναγνωστών.</li>
+            </ul>
+            <h3>Από πού γίνονται τα κλικ προς άρθρα</h3>
+            <div class="dash-scroll" data-table="discovery-surfaces"></div>
+            <h3>Ποια στοιχεία πλοήγησης δέχονται κλικ</h3>
+            <p class="dash-copy">Όλα τα εσωτερικά κλικ, ανά <code>link_section</code> όπως το καταγράφει το analytics.js. Το «article_link» περιλαμβάνει κάρτες, λίστες και τους συνδέσμους προηγούμενου/επόμενου άρθρου, που δεν ξεχωρίζουν.</p>
+            <div class="dash-scroll" data-table="discovery-sections"></div>
+            <h3>Άρθρα με τα περισσότερα εσωτερικά κλικ</h3>
+            <div class="dash-scroll" data-table="discovery-articles"></div>
+            <h3>Κλικ από ενότητα σε ενότητα</h3>
+            <p class="dash-copy">Πλήθος κλικ ανά ζεύγος ενοτήτων. Δεν είναι ανασυνθεμένες διαδρομές ή συνεδρίες αναγνωστών.</p>
+            <div class="dash-scroll" data-table="discovery-transitions"></div>
+        </section>
+
         <section class="dash-panel" aria-labelledby="categories-title">
             <h2 id="categories-title">Προβολές άρθρων ανά κατηγορία</h2>
             <p class="dash-copy">Γεγονότα page_view σε άρθρα, ανά κύρια κατηγορία.</p>
@@ -107,11 +127,13 @@
         <section class="dash-panel" aria-labelledby="cwv-title">
             <h2 id="cwv-title">Core Web Vitals</h2>
             <p class="dash-copy">Παρατηρήσεις πραγματικών χρηστών και p75, ανά κλάση κάλυψης (δεν αθροίζονται μεταξύ τους). Καλό: LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.</p>
+            <p class="dash-warning" data-field="cwv-carried" hidden></p>
             <div class="dash-scroll" data-table="cwv"></div>
         </section>
 
         <section class="dash-panel" aria-labelledby="rum-title">
             <h2 id="rum-title">Κάλυψη RUM και ποιότητα δεδομένων</h2>
+            <p class="dash-warning" data-field="rum-carried" hidden></p>
             <ul class="dash-checks" data-list="rum"></ul>
             <details><summary>Όλοι οι έλεγχοι</summary><div class="dash-scroll" data-table="rum"></div></details>
         </section>

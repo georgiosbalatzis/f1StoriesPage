@@ -6,7 +6,8 @@ const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 
 const TYPES = { p75: 'FLOAT', good_share: 'FLOAT', meets_min_events: 'BOOLEAN', meets_min_observations: 'BOOLEAN',
     core_web_vital: 'BOOLEAN', cohort_truncated: 'BOOLEAN', category: 'STRING', coverage: 'STRING', metric: 'STRING', stage: 'STRING',
     article_id: 'STRING', title: 'STRING', primary_category: 'STRING', author: 'STRING',
-    attribution_scope: 'STRING', channel_class: 'STRING', medium_class: 'STRING', source_family: 'STRING', event_name: 'STRING' };
+    attribution_scope: 'STRING', channel_class: 'STRING', medium_class: 'STRING', source_family: 'STRING', event_name: 'STRING',
+    destination_article_id: 'STRING', source_surface: 'STRING', link_section: 'STRING', source_section: 'STRING', destination_section: 'STRING' };
 const typeOf = name => TYPES[name] || (/_day$|^extraction_through$/.test(name) ? 'DATE' : 'INTEGER');
 
 export function syntheticRows(window) {
@@ -30,6 +31,22 @@ export function syntheticRows(window) {
             { article_id: 'a-slow', title: 'Ειδήσεις <script>alert(1)</script>', published_day: '2026-10-19', primary_category: 'Ιστορία', author: 'Συντακτική ομάδα', page_view_events: 8, via_retired_url_events: 0, days_with_events: 2, unmapped_keys: 0, meets_min_events: false },
             { article_id: '(unmapped)', title: null, published_day: null, primary_category: null, author: null, page_view_events: 2, via_retired_url_events: 0, days_with_events: 1, unmapped_keys: 1, meets_min_events: false }
         ].map(row => ({ ...base, ...row })),
+        // I-06C3: one destination over the minimum only once its rows are summed; a hostile title; an unmapped key.
+        '13-article-discovery': [
+            ['a-fast', 'Ταχύτερος γύρος', 'Ανάλυση', 'home', 'article_link', 34, true],
+            ['a-fast', 'Ταχύτερος γύρος', 'Ανάλυση', 'article', 'article_link', 9, false],
+            ['a-slow', 'Ειδήσεις <img src=x onerror=alert(1)>', 'Ιστορία', 'edition', 'navigation', 5, false],
+            ['a-slow', 'Ειδήσεις <img src=x onerror=alert(1)>', 'Ιστορία', 'entity_hub', 'article_link', 3, false],
+            ['(unmapped)', null, null, 'other', 'page', 2, false],
+            ['a-fast', 'Ταχύτερος γύρος', 'Ανάλυση', 'authors', '(none)', 1, false]
+        ].map(([destination_article_id, title, primary_category, source_surface, link_section, click_events, meets_min_events]) =>
+            ({ ...base, destination_article_id, title, primary_category, source_surface, link_section, click_events, meets_min_events })),
+        '28-internal-navigation': [
+            ['home', 'article', 'article_link', 34], ['article', 'article', 'article_link', 9], ['edition', 'article', 'navigation', 5],
+            ['entity_hub', 'article', 'article_link', 3], ['home', 'standings', 'navigation', 4], ['article', 'edition', 'footer', 2],
+            ['other', 'article', 'page', 2], ['home', 'missing', 'other', 1]
+        ].map(([source_section, destination_section, link_section, click_events]) =>
+            ({ ...base, source_section, destination_section, link_section, click_events, meets_min_events: click_events >= 30 })),
         '11-category-pageviews': [['Ανάλυση', 412, 18, 120, true], ['Ιστορία <b>', 96, 7, 80, true], ['(unmapped)', 4, 0, 0, false]]
             .map(([category, page_view_events, articles_with_events, catalog_articles, meets_min_events]) =>
                 ({ ...base, category, page_view_events, articles_with_events, catalog_articles, meets_min_events })),

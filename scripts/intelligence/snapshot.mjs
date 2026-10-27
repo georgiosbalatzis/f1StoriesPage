@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // snapshot.mjs — I-06B daily encrypted Intelligence snapshot (docs/intelligence/dashboard-snapshots.md).
-// Runs seven existing models, rendered by editorial-model.mjs without redefining SQL, over mature daily exports.
-// days: 28, or every mature day since the export began while there are fewer. Every query is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per
-// day. The aggregate rows exist only in memory and leave this process only as an AES-256-GCM envelope.
+// Runs seven existing models per day, rendered by editorial-model.mjs without redefining SQL, over mature daily exports:
+// 28 days, or every mature day since the export began while there are fewer. Once a week the two discovery models run
+// in place of the two RUM models, which are carried from the previous day's snapshot (see schedule()). Every query
+// is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per day. The aggregate rows exist only in memory and leave this process only as an AES-256-GCM envelope.
 // Rows, keys and tokens are never printed.
 //
 //   node scripts/intelligence/snapshot.mjs plan --mode=dry-run|refresh        (no network; writes GITHUB_OUTPUT)
@@ -42,13 +43,24 @@ export const SNAPSHOT_MODELS = {
     // I-06C1: article-level editorial reporting; title/category are metadata from the public article catalog.
     '10-article-pageviews': { columns: ['article_id', 'title', 'published_day', 'primary_category', 'author', 'page_view_events', 'via_retired_url_events', 'days_with_events', 'unmapped_keys', 'meets_min_events'] },
     '11-category-pageviews': { columns: ['category', 'page_view_events', 'articles_with_events', 'catalog_articles', 'meets_min_events'] },
+    // I-06C3: internal discovery clicks, refreshed weekly over the primary window and carried in between (schedule()).
+    '13-article-discovery': { columns: ['destination_article_id', 'title', 'primary_category', 'source_surface', 'link_section', 'click_events', 'meets_min_events'] },
     '20-daily-activity': { columns: ['event_day', 'page_view_events', 'session_start_events', 'first_visit_events', 'meets_min_events'], rows: 'days' },
-    // I-06C2: two inseparable session-attribution and data-quality models over at most 7 mature days.
+    // I-06C2: 26 and 29 are an inseparable session-attribution and data-quality pair over at most 7 mature days.
     '26-acquisition-session': { columns: ['attribution_scope', 'channel_class', 'medium_class', 'source_family', 'session_start_events', 'page_view_events', 'meets_min_events'] },
+    // I-06C3: section-to-section internal clicks, on the same weekly rotation as 13.
+    '28-internal-navigation': { columns: ['source_section', 'destination_section', 'link_section', 'click_events', 'meets_min_events'] },
     '29-audience-coverage': { columns: ['event_name', 'events_in_tables', 'consented_events', 'primary_host_events', 'site_events', 'session_source_unattributed_or_other', 'session_channel_unattributed_or_other'] },
     '30-cwv-summary': { columns: ['cohort_truncated', 'coverage', 'metric', 'core_web_vital', 'observations', 'p75', 'good', 'needs_improvement', 'poor', 'good_share', 'meets_min_observations'], rows: 15 },
     '33-rum-coverage': { columns: ['cohort_truncated', 'stage', 'category', 'count'] }
 };
+
+// I-06C3 rotation. Normal day: every model except discovery (1560 MiB worst-case floor). Discovery day, at most once
+// every DISCOVERY_EVERY_DAYS: discovery replaces the RUM pair (1540 MiB), and the RUM pair is carried from yesterday.
+export const DISCOVERY_MODELS = ['13-article-discovery', '28-internal-navigation'];
+export const ROTATED_FOR_DISCOVERY = ['30-cwv-summary', '33-rum-coverage'];
+export const DISCOVERY_EVERY_DAYS = 7;
+export const DISCOVERY_MAX_AGE_DAYS = 13; // older carried discovery is dropped; the page shows it as pending
 
 const API = 'https://bigquery.googleapis.com/bigquery/v2';
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -213,6 +225,54 @@ export function assertEnvelope(text) {
     return { header };
 }
 
+// Decrypts a published envelope with the snapshot key. Returns null when it cannot (rotated key, damage): a refresh
+// then carries nothing and runs the normal set.
+export function openSnapshot(text, key) {
+    try {
+        const { header } = assertEnvelope(text);
+        const { header: headerText, iv, data } = JSON.parse(text);
+        const bytes = Buffer.from(data, 'base64');
+        const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(iv, 'base64'));
+        decipher.setAAD(Buffer.from(headerText, 'utf8'));
+        decipher.setAuthTag(bytes.subarray(-16));
+        const payload = JSON.parse(Buffer.concat([decipher.update(bytes.subarray(0, -16)), decipher.final()]).toString('utf8'));
+        return payload?.format === PAYLOAD_FORMAT ? { header, payload } : null;
+    } catch {
+        return null;
+    }
+}
+
+const ageDays = (asOf, today) => (Date.parse(today) - Date.parse(asOf)) / 86400000;
+
+// One model's rows from a previous snapshot, with the window and as_of day they were computed for. Only rows that
+// exactly cover the window the rules give for that as_of day are carried.
+function carriedModel(previous, model, today) {
+    const rows = previous?.payload?.models?.[model];
+    if (!Array.isArray(rows)) return null;
+    const meta = previous.payload.modelWindows?.[model];
+    const asOf = meta?.asOf ?? previous.header.asOf;
+    const scope = { asOf, start: meta?.start ?? previous.header.start, end: meta?.end ?? previous.header.end };
+    const expected = ISO_DAY.test(asOf) ? modelWindow(model, windowFor(asOf)) : null;
+    if (!expected || asOf >= today || scope.start !== expected.start || scope.end !== expected.end) return null;
+    return rows.every(row => row.from_day === scope.start && row.through_day === scope.end) ? { rows, scope } : null;
+}
+
+// Which models run today and which are carried. Discovery runs when it is missing or at least DISCOVERY_EVERY_DAYS
+// old, and only if both RUM models can be carried from exactly yesterday; otherwise the normal set runs and any
+// discovery no older than DISCOVERY_MAX_AGE_DAYS is carried. Either way at most seven models run.
+export function schedule(window, previous) {
+    const all = Object.keys(SNAPSHOT_MODELS);
+    const normal = all.filter(model => !DISCOVERY_MODELS.includes(model));
+    const discovery = DISCOVERY_MODELS.map(model => carriedModel(previous, model, window.asOf));
+    const discoveryAge = discovery.every(Boolean) && discovery[0].scope.asOf === discovery[1].scope.asOf
+        ? ageDays(discovery[0].scope.asOf, window.asOf) : Infinity;
+    const rum = ROTATED_FOR_DISCOVERY.map(model => carriedModel(previous, model, window.asOf));
+    if (discoveryAge >= DISCOVERY_EVERY_DAYS && rum.every(item => item && ageDays(item.scope.asOf, window.asOf) === 1)) {
+        return { run: all.filter(model => !ROTATED_FOR_DISCOVERY.includes(model)), carried: Object.fromEntries(ROTATED_FOR_DISCOVERY.map((model, i) => [model, rum[i]])) };
+    }
+    return { run: normal, carried: discoveryAge <= DISCOVERY_MAX_AGE_DAYS ? Object.fromEntries(DISCOVERY_MODELS.map((model, i) => [model, discovery[i]])) : {} };
+}
+
 const publishedPath = root => path.join(root, SNAPSHOT_PATH);
 
 export function publishedHeader(root = REPO_ROOT) {
@@ -301,7 +361,10 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
         }
     }
 
-    const queries = Object.keys(SNAPSHOT_MODELS).map(model => {
+    const file = publishedPath(root ?? REPO_ROOT);
+    const { run, carried } = schedule(window, fs.existsSync(file) ? openSnapshot(fs.readFileSync(file, 'utf8'), key) : null);
+    log(`running ${run.join(', ')}${Object.keys(carried).length ? `; carrying ${Object.entries(carried).map(([model, item]) => `${model} (as_of ${item.scope.asOf})`).join(', ')}` : ''}`);
+    const queries = run.map(model => {
         const sql = renderModel(model, { project: PROJECT, property: PROPERTY, ...inputs });
         const scope = modelWindow(model, window);
         return { model, sql, scope, parameters: parametersFor(sql, scope) };
@@ -318,7 +381,7 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
     if (missing.length) throw new Error(`${missing.length} daily export table(s) missing (first ${missing[0]}): a refresh would fail closed`);
     if (mode === 'dry-run') return null;
 
-    const models = {};
+    const models = Object.fromEntries(Object.entries(carried).map(([model, item]) => [model, item.rows]));
     let billed = 0;
     for (const { model, sql, scope, parameters } of queries) {
         const digest = crypto.createHash('sha256').update(sql).update(JSON.stringify(parameters)).digest('hex').slice(0, 16);
@@ -332,7 +395,10 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
     const generatedAt = now.toISOString();
     const payload = { format: PAYLOAD_FORMAT, v: 1, generatedAt, window: { ...window, timezone: REPORT_TIMEZONE },
         minEvents: MIN_SAMPLE, minObservations: MIN_SAMPLE,
-        modelWindows: Object.fromEntries(queries.filter(q => q.scope.start !== window.start).map(q => [q.model, { start: q.scope.start, end: q.scope.end }])),
+        modelWindows: Object.fromEntries([
+            ...queries.filter(q => q.scope.start !== window.start).map(q => [q.model, { start: q.scope.start, end: q.scope.end }]),
+            ...Object.entries(carried).map(([model, item]) => [model, item.scope])
+        ]),
         models };
     return sealSnapshot(payload, key, { generatedAt, window });
 }
