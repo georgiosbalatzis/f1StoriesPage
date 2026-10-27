@@ -47,9 +47,11 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run build:public
 
-      - name: Validate article content
+      # Content-only PRs also need dist/ for artifact URL contract tests; build:public
+      # runs the same content builders plus public packaging and validation.
+      - name: Build and validate article-only artifact
         if: ${{ steps.changes.outputs.content_only == 'true' }}
-        run: npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts
+        run: npm run build:public
 
       - name: Run static source guard
         run: npm run quality:static
