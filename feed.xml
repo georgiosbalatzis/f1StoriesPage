@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Fri, 23 Oct 2026 21:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 25 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Petter Solberg: Γεννημένος για τους αγώνες</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261026W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261026W/article.html</guid>
+      <pubDate>Sun, 25 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Από τα παιδικά χρόνια στα συνεργεία της Νορβηγίας μέχρι την κορυφή του WRC, ο Petter Solberg έζησε το ράλι ως τρόπο ζωής.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>BetCast #277 : Με 4 ομάδες στο παιχνίδι ...</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261024J/article.html</link>
@@ -267,15 +276,6 @@
       <description>Η Mercedes πήγε στη Μαλαισία με ένα από τα πιο ουσιαστικά πακέτα αναβαθμίσεων που είχε φέρει φέτος.</description>
       <category>Τεχνικά</category>
       <dc:creator>F1 Stories</dc:creator>
-    </item>
-    <item>
-      <title>Το SC τιμώρησε αυτούς που το ερμήνευσαν σωστά</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261006G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261006G/article.html</guid>
-      <pubDate>Mon, 05 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Η Williams είχε δίκιο , οι βαθμοί όμως πήγαν στη McLaren Στον όγδοο γύρο του Grand Prix του Μπαχρέιν στο Sepang, η Williams είχε κάνει σχεδόν όλα όσα…</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>

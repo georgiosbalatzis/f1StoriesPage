@@ -1,6 +1,40 @@
 {
   "posts": [
     {
+      "id": "20261026W",
+      "title": "Petter Solberg: Γεννημένος για τους αγώνες",
+      "author": "Themis Charvalis",
+      "date": "2026-10-26",
+      "dateISO": "2026-10-26",
+      "displayDate": "26 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261026W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261026W/2.webp",
+      "excerpt": "Από τα παιδικά χρόνια στα συνεργεία της Νορβηγίας μέχρι την κορυφή του WRC, ο Petter Solberg έζησε το ράλι ως τρόπο ζωής.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261026W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "WRC",
+        "Champion",
+        "Legend",
+        "Petter Solberg",
+        "Subaru",
+        "Ford"
+      ],
+      "wordCount": 794,
+      "readingTime": "4 min",
+      "imageWidth": 516,
+      "imageHeight": 387,
+      "backgroundImageWidth": 537,
+      "backgroundImageHeight": 372,
+      "inputDigest": "0ae356f1b361399792cff6da8689f5d58bcc9a65ff0ec98afb6c2621f7dc45a2"
+    },
+    {
       "id": "20261024J",
       "title": "BetCast #277 : Με 4 ομάδες στο παιχνίδι ...",
       "author": "Giannis Poulikidis",
@@ -11156,5 +11190,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-26T10:03:39.141Z"
+  "lastUpdated": "2026-10-27T07:20:56.498Z"
 }
