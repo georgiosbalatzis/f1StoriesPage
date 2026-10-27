@@ -16,7 +16,7 @@ or API is involved: GitHub Pages serves one encrypted file, and the browser decr
   refresh  (contents: read, id-token: write; environment intelligence-snapshots; main only)
     plan      no network: mode, ENABLED, already published today?, configuration present and well-formed?
     auth      GitHub OIDC → Workload Identity Federation → short-lived token for one service account (no key file)
-    refresh   daily tables exist → 5 dry-runs → cost preflight → 5 capped queries → validate → AES-256-GCM
+    refresh   daily tables exist → 7 dry-runs → cost preflight → 7 capped queries → validate → AES-256-GCM
     upload    the encrypted envelope only (1-day retention)
   publish  (contents: write; content-publishing lock)
     install   valid envelope for a NEWER as_of day → dashboard/data/snapshot.json, else unchanged
@@ -30,10 +30,10 @@ browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the k
 
 | | |
 | --- | --- |
-| Models | `10-article-pageviews` (I-06C1), `11-category-pageviews`, `20-daily-activity`, `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
+| Models | `10-article-pageviews` (I-06C1), `11-category-pageviews`, `20-daily-activity`, `26-acquisition-session` (7 days), `29-audience-coverage` (7 days), `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
 | Source | `f1-stories-analytics.analytics_485678890`, location `EU`, daily `events_YYYYMMDD` tables only |
 | `@as_of_day` | today in the property time zone `America/Los_Angeles`, computed when the job runs |
-| Window | `end_day = as_of_day − 4` (the models' maturity rule); `start_day = max(end_day − 27, 2026-10-19)`: the latest 28 mature days, or every mature day since the export began while there are fewer (1–28) |
+| Window | Primary: mature rolling 28 days. Session acquisition + audience coverage: same mature end day but rolling **7 days** (or fewer since 2026-10-19). Both are separately labeled in the encrypted payload. |
 | Samples | `@min_events = @min_observations = 30`; `meets_min_*` flags are kept and shown, never used to drop rows |
 
 The export starts on 2026-10-19, so snapshots are useful as soon as the owner setup is done:
@@ -82,8 +82,8 @@ below apply only to this workflow's BigQuery queries.
 | --- | --- |
 | Owner-approved billable refreshes enabled; emergency disable remains tested | `snapshot.mjs` (`ENABLED = true`); the disabled-mode unit test |
 | Manual runs default to `dry-run` (free) | workflow input |
-| Five allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
-| Mandatory dry-run of all five queries before any execution | `refresh()` |
+| Seven allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
+| Mandatory dry-run of all seven queries before any execution | `refresh()` |
 | Conservative estimate per query: max(processed bytes rounded up to 1 MiB, 10 MiB × tables) | `conservativeBytes()` |
 | Table count: max(tables the dry-run lists, daily tables the model's base scans), so one listed wildcard still counts 28/29 | `scannedTables()` |
 | Per query: estimate ≤ 400 MiB, else nothing runs | `preflight()` |
@@ -94,12 +94,11 @@ below apply only to this workflow's BigQuery queries.
 | No browser query: the page has `connect-src 'self'` and fetches one static file | CSP, tests |
 
 **Why 400 MiB.** On-demand pricing bills at least 10 MiB per referenced table. The editorial and audience models scan
-the window's daily tables (28 at full length), and the RUM models also scan the day before (29). With the I-06C1
-article model, the conservative full-window plan is 280 + 280 + 280 + 290 + 290 = **1420 MiB**, still under the
-unchanged 1600 MiB daily ceiling, and each query is under 400 MiB. A dry-run may list a wildcard scan as a single
-table, so the estimate never uses fewer tables than the base actually scans. A 4-day window plans 40 + 40 + 40 + 50 + 50 = 220 MiB.
+the window's daily tables (28 at full length), and the RUM models also scan the day before (29). With I-06C1 and I-06C2, the full-window plan is 280 + 280 + 280 + 70 + 70 + 290 + 290 = **1560 MiB**, below the
+unchanged 1600 MiB daily ceiling, and each query remains below 400 MiB. A dry-run may list a wildcard scan as a single
+table, so the estimate never uses fewer tables than the base actually scans. A 4-day window plans 40 + 40 + 40 + 40 + 40 + 50 + 50 = 300 MiB.
 
-**Expected volume.** About 1.39 GiB per day at the conservative per-table minimums, ≈ 43 GiB per 31-day month. The caps allow at most
+**Expected volume.** About 1.52 GiB per day at the conservative per-table minimums (full windows), ≈ 47.2 GiB per 31-day month. The caps allow at most
 1600 MiB per day, ≈ 48 GiB per month. Both sit well inside BigQuery's monthly free on-demand allowance, *if* nothing
 else in the billing account uses it, and are small at list price beyond it. Check the current EU on-demand price
 and free tier on Google's pricing page; they are not restated as fact here.
@@ -108,7 +107,7 @@ Limitations:
 
 - **Not a total-cost cap.** These limits do not cover storage, the GA4 export, other BigQuery users or projects,
   or any other Google service. They cannot keep the account under 10 EUR on their own.
-- With five models, the 1600 MiB daily ceiling is stricter than the five per-query caps combined (2000 MiB).
+- With seven models, the 1600 MiB daily ceiling is stricter than the combined per-query caps (2800 MiB).
   It preflights the entire plan and checks billed bytes after each query; it cannot undo a query already run.
 - The dry-run estimate is processed bytes plus the per-table minimum, not billed bytes. `maximumBytesBilled` is
   the backstop: a query that would bill more fails, and failed queries are not billed.
@@ -277,3 +276,31 @@ a guaranteed EUR 10 total Google Cloud billing limit.
 `totalBytesBilled` in the snapshot logs, the produced encrypted-only artifact and the new article ranking.
 If cost preflight refuses the expanded window, leave the previous snapshot published and investigate, without
 raising the limits automatically.
+
+## I-06C2 — Session acquisition with data-quality coverage
+
+Uses the two **existing, unchanged, production-executed** I-04 models:
+`26-acquisition-session` and `29-audience-coverage`. Both share a **7-day rolling mature window**
+(or fewer while the export is young), ending on the same `as_of_day − 4` as the primary 28-day report.
+The authenticated encrypted payload includes `modelWindows` for sub-windows, without modifying the public
+envelope format or re-keying. Old four-/five-model envelopes remain decryptable; the acquisition panel
+shows a pending message until its first successful snapshot.
+
+**Interpretation:** `26` is GA4's own cross-channel session-last-click attribution, not first-user acquisition,
+the event-scope collected UTM classification, Google Search Console clicks, inferred sessions or unique readers.
+`session_start_events` and `page_view_events` are counts of consented GA4 events only. Classifications use
+allowlisted channel, medium and source family, never raw source/campaign/click-id strings. At this readership,
+most breakdowns are below the 30-event threshold and are labeled **small sample**. Unattributed and unknown
+are not Direct. Model `29` reports unknown/unattributed counts and consent/host coverage for the same window;
+both must succeed for any new snapshot to publish.
+
+**Cost:** The primary five queries retain their 28-day mature window; the two I-06C2 queries each scan at most
+7 daily tables. With the 10-MiB-per-table conservative assumption, the 28-day combined plan is **1560 MiB**
+(1420 + 70 + 70), under the unchanged **1600 MiB per-day** preflight ceiling and **400 MiB per-query**
+`maximumBytesBilled`. If actual dry-run bytes increase and preflight exceeds 1600 MiB, the workflow
+fails closed without executing or publishing; never automatically relax limits. First actual totalBytesBilled
+for the seven-model version remains unverified before rollout. The project budget alert of 10 EUR/month is **not**
+an absolute spending cutoff and no custom BigQuery quota was configured.
+
+No additional Cloud IAM, secrets, network endpoints, JavaScript storage, browser BigQuery access, or analytics
+tracking are introduced. The previous encrypted snapshot remains public and valid if the new refresh fails.
