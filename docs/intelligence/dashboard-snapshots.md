@@ -3,8 +3,7 @@
 Project constraint: the owner's **total Google Cloud budget is 10 EUR/month** (all services, not per service).
 Nothing in this workflow can enforce that total; see [Cost controls](#cost-controls).
 
-Status: implemented, **not enabled**. Nothing has run in BigQuery, no IAM resource, secret or variable exists, and
-`scripts/intelligence/snapshot.mjs` ships with `ENABLED = false`.
+Status: **enabled with owner approval (2026-10-27)**. GitHub environment `intelligence-snapshots`, Workload Identity Federation, and dataset-scoped BigQuery permissions were configured. An authenticated, no-charge BigQuery dry-run succeeded on 2026-10-27 (5 mature days, 2026-10-19 through 2026-10-23). No billable refresh or encrypted snapshot publication had succeeded at activation time. `scripts/intelligence/snapshot.mjs` ships with `ENABLED = true`.
 
 This replaces the I-06A plan (a Cloud Run key/session API). That API was never deployed. Its code
 (`services/dashboard-api`), its docs and the page's API wiring are removed. No Firebase, Cloud Run, load balancer
@@ -81,7 +80,7 @@ below apply only to this workflow's BigQuery queries.
 
 | Control | Where |
 | --- | --- |
-| Billable runs disabled until the owner flips `ENABLED` | `snapshot.mjs`; a test pins `false` |
+| Owner-approved billable refreshes enabled; emergency disable remains tested | `snapshot.mjs` (`ENABLED = true`); the disabled-mode unit test |
 | Manual runs default to `dry-run` (free) | workflow input |
 | Four allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
 | Mandatory dry-run of all four queries before any execution | `refresh()` |
@@ -127,8 +126,7 @@ In Google Cloud Console → IAM & Admin → Quotas & System Limits, filter by se
   This limits the service account and each person.
 - **Query usage per day** (project): e.g. 10 GiB, leaving room for your own Console analysis.
 
-Quotas reset at midnight Pacific time. Keep a **budget alert** on the 10 EUR total budget as well (e.g. at 50%, 90%,
-100%). It notifies; it does not stop spending.
+Quotas reset at midnight Pacific time. On 2026-10-27, both BigQuery quotas showed `Adjustable: No` in the owner's Google Cloud Console; the quota overrides above could not be configured. The workflow therefore relies on mandatory preflight, per-query caps, limited models and frequency, **not** a custom project quota. Keep a **budget alert** on the 10 EUR total budget (e.g. at 50%, 90%, 100%). It notifies; it does not stop spending.
 
 ## Encryption
 
@@ -244,11 +242,9 @@ Do these in order. Nothing in this PR performs them.
 - Withdraw the data: commit the deletion of `dashboard/data/snapshot.json` (the page shows its empty state after the
   next deploy) and rotate the key. Earlier envelopes remain in Git history (see key rotation above).
 
-## Remaining blockers before the first live snapshot
+## First production refresh
 
-1. Owner setup steps 1–6 (none exist yet).
-2. A dry-run review of the estimates against the 400 MiB per-query and 1600 MiB daily limits.
-3. The `ENABLED` PR. Once enabled, the first refresh covers every mature day since 2026-10-19; nothing waits for 28 days.
+The initial authenticated dry-run succeeded on 2026-10-27, covering 5 days (2026-10-19 through 2026-10-23), with conservative estimates of 50 + 50 + 60 + 60 = **220 MiB** (versus 1600 MiB daily and 400 MiB per query). The owner approved enabling billable refreshes while accepting that these limits **do not guarantee** the total Google Cloud account stays below 10 EUR/month. Verify the first scheduled or manually dispatched `refresh` in GitHub Actions and confirm the encrypted envelope is deployed before declaring the dashboard live.
 
 Open items inherited from [bigquery-validation.md](bigquery-validation.md) still apply, such as the unconfirmed
 G-X68J6MQKSM stream mapping and the small LCP/INP samples.
