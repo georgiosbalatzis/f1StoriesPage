@@ -90,7 +90,7 @@
             return [((i + 0.5) * slotWidth).toFixed(2), (height - row.page_view_events / max * (height - 9)).toFixed(2)];
         });
         var line = points.map(function (point, i) { return (i ? 'L' : 'M') + point.join(' '); }).join(' ');
-        chart.appendChild(shape('path', { d: 'M ' + points[0][0] + ' ' + height + ' ' + line + ' L ' + points[points.length - 1][0] + ' ' + height + ' Z', class: 'dash-chart-area', 'aria-hidden': 'true' }));
+        chart.appendChild(shape('path', { d: 'M ' + points[0][0] + ' ' + height + ' L ' + points.map(function (p) { return p.join(' '); }).join(' L ') + ' L ' + points[points.length - 1][0] + ' ' + height + ' Z', class: 'dash-chart-area', 'aria-hidden': 'true' }));
         rows.forEach(function (row, i) {
             var barHeight = Math.max(row.page_view_events ? 2 : 0, Math.round(row.page_view_events / max * (height - 9)));
             chart.appendChild(shape('rect', { x: (i * slotWidth + (slotWidth - barWidth) / 2).toFixed(1), y: height - barHeight,
@@ -239,6 +239,9 @@
             targets.forEach(function (target) {
                 target.appendChild(node('p', 'Η ενότητα ανανεώνεται μία φορά την εβδομάδα και θα εμφανιστεί μετά την επόμενη εβδομαδιαία ενημέρωση.', 'dash-copy'));
             });
+            ['discovery-surfaces', 'discovery-sections', 'discovery-articles', 'discovery-transitions'].forEach(function (name) {
+                slot('viz', name).appendChild(node('p', 'Δεν υπάρχουν ακόμη δημοσιευμένα στοιχεία εβδομαδιαίας ανακάλυψης.', 'dash-copy'));
+            });
             return;
         }
         var scope = payload.modelWindows && payload.modelWindows['13-article-discovery'];
@@ -252,18 +255,30 @@
 
         var unmapped = discovery.filter(function (r) { return r.destination_article_id === '(unmapped)'; })
             .reduce(function (sum, r) { return sum + r.click_events; }, 0);
+        rankings(slot('viz', 'discovery-surfaces'), clickTotals(discovery, function (r) { return r.source_surface; }), 7,
+            function (g) { return className(g.row.source_surface); }, function (g) { return g.clicks; },
+            function (g) { return g.clicks >= minimum; }, none);
         clickTable(targets[0], clickTotals(discovery, function (r) { return r.source_surface; }),
             [['Επιφάνεια προέλευσης', function (g) { return className(g.row.source_surface); }]], minimum, none);
         if (unmapped) {
             targets[0].appendChild(node('p', integer.format(unmapped) + ' από αυτά τα κλικ οδηγούν σε μη αντιστοιχισμένα άρθρα (εκτός καταλόγου) και δεν μπαίνουν στην κατάταξη άρθρων.', 'dash-copy'));
         }
+        rankings(slot('viz', 'discovery-sections'), clickTotals(navigation, function (r) { return r.link_section; }), 7,
+            function (g) { return className(g.row.link_section); }, function (g) { return g.clicks; },
+            function (g) { return g.clicks >= minimum; }, none);
         clickTable(targets[1], clickTotals(navigation, function (r) { return r.link_section; }),
             [['Στοιχείο (link_section)', function (g) { return className(g.row.link_section); }]], minimum, none);
+        rankings(slot('viz', 'discovery-articles'), clickTotals(discovery.filter(function (r) { return r.destination_article_id !== '(unmapped)'; }),
+            function (r) { return r.destination_article_id; }), 7, function (g) { return g.row.title || 'Άρθρο χωρίς τίτλο'; },
+            function (g) { return g.clicks; }, function (g) { return g.clicks >= minimum; }, none);
         clickTable(targets[2], clickTotals(discovery.filter(function (r) { return r.destination_article_id !== '(unmapped)'; }),
             function (r) { return r.destination_article_id; }).slice(0, 15), [
             ['Άρθρο', function (g) { return g.row.title || 'Άρθρο χωρίς τίτλο'; }],
             ['Κατηγορία', function (g) { return g.row.primary_category || '—'; }]
         ], minimum, none);
+        rankings(slot('viz', 'discovery-transitions'), clickTotals(navigation, function (r) { return r.source_section + '\u0000' + r.destination_section; }),
+            7, function (g) { return className(g.row.source_section) + ' → ' + className(g.row.destination_section); },
+            function (g) { return g.clicks; }, function (g) { return g.clicks >= minimum; }, none);
         clickTable(targets[3], clickTotals(navigation, function (r) { return r.source_section + '\u0000' + r.destination_section; }), [
             ['Από', function (g) { return className(g.row.source_section); }],
             ['Προς', function (g) { return className(g.row.destination_section); }]
