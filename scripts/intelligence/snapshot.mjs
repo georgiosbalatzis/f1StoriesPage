@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // snapshot.mjs — I-06B daily encrypted Intelligence snapshot (docs/intelligence/dashboard-snapshots.md).
-// Runs five existing models, rendered by editorial-model.mjs and never redefined here, over the latest mature
+// Runs seven existing models, rendered by editorial-model.mjs without redefining SQL, over mature daily exports.
 // days: 28, or every mature day since the export began while there are fewer. Every query is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per
 // day. The aggregate rows exist only in memory and leave this process only as an AES-256-GCM envelope.
 // Rows, keys and tokens are never printed.
@@ -23,7 +23,8 @@ export const PROJECT = 'f1-stories-analytics';
 export const PROPERTY = '485678890';
 export const LOCATION = 'EU';
 export const REPORT_TIMEZONE = 'America/Los_Angeles'; // the property's time zone: GA4 names daily tables in it
-export const WINDOW_DAYS = 28; // at most; fewer while the export is younger than that
+export const WINDOW_DAYS = 28; // primary reporting window
+export const ACQUISITION_WINDOW_DAYS = 7; // bounded session attribution + coverage pair, to preserve 1600 MiB daily cap
 export const EXPORT_START = '2026-10-19'; // the first GA4 daily export table; no earlier day exists
 export const MATURITY_DAYS = 4; // base.sql: days newer than as_of_day - 4 may still change
 export const MIN_SAMPLE = 30; // @min_events and @min_observations, as in the model docs
@@ -42,6 +43,9 @@ export const SNAPSHOT_MODELS = {
     '10-article-pageviews': { columns: ['article_id', 'title', 'published_day', 'primary_category', 'author', 'page_view_events', 'via_retired_url_events', 'days_with_events', 'unmapped_keys', 'meets_min_events'] },
     '11-category-pageviews': { columns: ['category', 'page_view_events', 'articles_with_events', 'catalog_articles', 'meets_min_events'] },
     '20-daily-activity': { columns: ['event_day', 'page_view_events', 'session_start_events', 'first_visit_events', 'meets_min_events'], rows: 'days' },
+    // I-06C2: two inseparable session-attribution and data-quality models over at most 7 mature days.
+    '26-acquisition-session': { columns: ['attribution_scope', 'channel_class', 'medium_class', 'source_family', 'session_start_events', 'page_view_events', 'meets_min_events'] },
+    '29-audience-coverage': { columns: ['event_name', 'events_in_tables', 'consented_events', 'primary_host_events', 'site_events', 'session_source_unattributed_or_other', 'session_channel_unattributed_or_other'] },
     '30-cwv-summary': { columns: ['cohort_truncated', 'coverage', 'metric', 'core_web_vital', 'observations', 'p75', 'good', 'needs_improvement', 'poor', 'good_share', 'meets_min_observations'], rows: 15 },
     '33-rum-coverage': { columns: ['cohort_truncated', 'stage', 'category', 'count'] }
 };
@@ -70,6 +74,14 @@ export function windowFor(asOf) {
 
 export const snapshotWindow = now => windowFor(propertyDay(now));
 export const windowDays = window => (Date.parse(window.end) - Date.parse(window.start)) / 86400000 + 1;
+
+// Acquisition reports only the latest seven mature days, with a separate encrypted window label.
+// The existing 28-day primary window and model SQL remain unchanged.
+export function modelWindow(model, window) {
+    if (!['26-acquisition-session', '29-audience-coverage'].includes(model)) return window;
+    const start = addDays(window.end, -(ACQUISITION_WINDOW_DAYS - 1));
+    return { ...window, start: start > window.start ? start : window.start };
+}
 
 // Daily tables a model's base scans for a window: the RUM base also reads the day before (time-zone margin).
 export function scannedTables(model, window) {
@@ -291,12 +303,13 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
 
     const queries = Object.keys(SNAPSHOT_MODELS).map(model => {
         const sql = renderModel(model, { project: PROJECT, property: PROPERTY, ...inputs });
-        return { model, sql, parameters: parametersFor(sql, window) };
+        const scope = modelWindow(model, window);
+        return { model, sql, scope, parameters: parametersFor(sql, scope) };
     });
     const estimates = [];
     for (const query of queries) {
         const { processed, referenced, tables, estimate } = conservativeBytes(await client.dryRun(query.sql, query.parameters),
-            scannedTables(query.model, window));
+            scannedTables(query.model, query.scope));
         estimates.push({ model: query.model, estimate });
         log(`dry-run ${query.model}: ${mib(processed)} processed, ${referenced} table(s) listed, ${tables} counted, ≤ ${mib(estimate)} billed`);
     }
@@ -307,18 +320,20 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
 
     const models = {};
     let billed = 0;
-    for (const { model, sql, parameters } of queries) {
+    for (const { model, sql, scope, parameters } of queries) {
         const digest = crypto.createHash('sha256').update(sql).update(JSON.stringify(parameters)).digest('hex').slice(0, 16);
         const jobId = `f1s_snapshot_${window.asOf.replaceAll('-', '')}_${model.replaceAll('-', '_')}_${digest}`;
         const run = await client.run(jobId, sql, parameters);
         billed += run.billed;
         if (billed > DAILY_MAX_BYTES) throw new Error(`billed bytes ${mib(billed)} passed the daily ceiling; stopping`);
-        models[model] = resultRows(model, run.result, window);
+        models[model] = resultRows(model, run.result, scope);
         log(`ran ${model}: ${mib(run.billed)} billed, ${models[model].length} aggregate rows`);
     }
     const generatedAt = now.toISOString();
     const payload = { format: PAYLOAD_FORMAT, v: 1, generatedAt, window: { ...window, timezone: REPORT_TIMEZONE },
-        minEvents: MIN_SAMPLE, minObservations: MIN_SAMPLE, models };
+        minEvents: MIN_SAMPLE, minObservations: MIN_SAMPLE,
+        modelWindows: Object.fromEntries(queries.filter(q => q.scope.start !== window.start).map(q => [q.model, { start: q.scope.start, end: q.scope.end }])),
+        models };
     return sealSnapshot(payload, key, { generatedAt, window });
 }
 

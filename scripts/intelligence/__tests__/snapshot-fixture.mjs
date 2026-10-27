@@ -1,16 +1,19 @@
 // Synthetic stand-ins for BigQuery in the snapshot tests: invented aggregate rows in the REST result format.
 // No real analytics, no network.
-import { windowDays } from '../snapshot.mjs';
+import { modelWindow, windowDays } from '../snapshot.mjs';
 
 const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
 const TYPES = { p75: 'FLOAT', good_share: 'FLOAT', meets_min_events: 'BOOLEAN', meets_min_observations: 'BOOLEAN',
     core_web_vital: 'BOOLEAN', cohort_truncated: 'BOOLEAN', category: 'STRING', coverage: 'STRING', metric: 'STRING', stage: 'STRING',
-    article_id: 'STRING', title: 'STRING', primary_category: 'STRING', author: 'STRING' };
+    article_id: 'STRING', title: 'STRING', primary_category: 'STRING', author: 'STRING',
+    attribution_scope: 'STRING', channel_class: 'STRING', medium_class: 'STRING', source_family: 'STRING', event_name: 'STRING' };
 const typeOf = name => TYPES[name] || (/_day$|^extraction_through$/.test(name) ? 'DATE' : 'INTEGER');
 
 export function syntheticRows(window) {
     const base = { from_day: window.start, through_day: window.end };
     const rum = { ...base, requested_through_day: window.end, extraction_through: window.end, cohort_truncated: false, late_revision_days: 0 };
+    const acquisition = modelWindow('26-acquisition-session', window);
+    const acquisitionBase = { from_day: acquisition.start, through_day: acquisition.end };
     const cwv = [];
     for (const coverage of ['delayed_existing', 'delayed_consent', 'bfcache_observed']) {
         for (const [metric, p75, observations] of [['LCP', 2140, 41], ['INP', 96, 12], ['CLS', 0.042, 38], ['FCP', 1510, 44], ['TTFB', 420, 44]]) {
@@ -35,6 +38,21 @@ export function syntheticRows(window) {
             return { ...base, event_day: addDays(window.start, i), page_view_events: views, session_start_events: Math.round(views / 3),
                 first_visit_events: Math.round(views / 5), meets_min_events: views >= 30 };
         }),
+        '26-acquisition-session': [
+            ['organic_search', 'organic', 'google', 33, 62, true],
+            ['direct', 'none', 'direct', 8, 17, false],
+            ['referral', 'referral', 'other_source', 3, 4, false],
+            ['unattributed', 'unknown', 'unattributed', 2, 3, false]
+        ].map(([channel_class, medium_class, source_family, session_start_events, page_view_events, meets_min_events]) =>
+            ({ ...acquisitionBase, attribution_scope: 'session_last_click', channel_class, medium_class, source_family,
+                session_start_events, page_view_events, meets_min_events })),
+        '29-audience-coverage': ['page_view', 'session_start'].map(event_name => ({
+            ...acquisitionBase, event_name, events_in_tables: 105, consented_events: 100,
+            primary_host_events: 100, site_events: 95, device_unknown_or_other: 0,
+            country_unknown: 0, first_user_source_unattributed_or_other: 6, collected_source_unattributed: 12,
+            session_source_unattributed_or_other: 2, session_channel_unattributed_or_other: 2,
+            enum_parameter_other: 0
+        })),
         '30-cwv-summary': cwv,
         '33-rum-coverage': [['scan_version', 'wv6.2.3-rum1', 260], ['scan_consent', 'Yes', 240], ['scan_consent', '(null)', 20],
             ['observations', 'resolved', 171], ['observations', 'final_snapshot_conflicting', 1], ['observation_validity', 'valid', 171],

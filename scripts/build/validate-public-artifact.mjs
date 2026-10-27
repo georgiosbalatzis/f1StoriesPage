@@ -147,7 +147,7 @@ function forbiddenReason(relPath) {
 // OAuth access token, a private key, or a service-account / Workload Identity credentials file.
 const SECRET_PATTERN = /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}|\bya29\.[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|"type"\s*:\s*"(?:service_account|external_account)"/;
 // Decrypted snapshot rows are keyed by model name (scripts/intelligence/snapshot.mjs); public files hold them only encrypted.
-const PLAINTEXT_ANALYTICS_PATTERN = /"(?:10-article-pageviews|11-category-pageviews|20-daily-activity|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/;
+const PLAINTEXT_ANALYTICS_PATTERN = /"(?:10-article-pageviews|11-category-pageviews|20-daily-activity|26-acquisition-session|29-audience-coverage|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/;
 
 function validateSnapshot(errors, relPath, abs) {
     if (relPath === SNAPSHOT_PATH) {

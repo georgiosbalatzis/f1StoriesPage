@@ -31,6 +31,18 @@ const freshDays = windowDays(snapshotWindow(new Date()));
 const legacy = (() => {
     const now = new Date(), window = snapshotWindow(now), models = syntheticRows(window);
     delete models['10-article-pageviews'];
+    delete models['26-acquisition-session'];
+    delete models['29-audience-coverage'];
+    const generatedAt = now.toISOString();
+    return sealSnapshot({ format: 'f1s-dashboard-snapshot-payload', v: 1, generatedAt,
+        window: { ...window, timezone: 'America/Los_Angeles' }, minEvents: 30, minObservations: 30, models },
+    Buffer.from(key, 'base64'), { generatedAt, window });
+})();
+// A five-model I-06C1 snapshot has article rankings but no acquisition yet.
+const editorialOnly = (() => {
+    const now = new Date(), window = snapshotWindow(now), models = syntheticRows(window);
+    delete models['26-acquisition-session'];
+    delete models['29-audience-coverage'];
     const generatedAt = now.toISOString();
     return sealSnapshot({ format: 'f1s-dashboard-snapshot-payload', v: 1, generatedAt,
         window: { ...window, timezone: 'America/Los_Angeles' }, minEvents: 30, minObservations: 30, models },
@@ -132,6 +144,9 @@ try {
         categories: [...document.querySelectorAll('.dash-bars-label')].map(element => element.textContent),
         articles: [...document.querySelectorAll('[data-table="articles"] tbody tr')].map(element => element.cells[0].textContent),
         articleScripts: document.querySelectorAll('[data-table="articles"] script').length,
+        acquisition: [...document.querySelectorAll('[data-table="acquisition"] tbody tr')].map(el => el.cells[0].textContent),
+        acquisitionWindow: document.querySelector('[data-field="acquisition-window"]').textContent,
+        acquisitionWarnings: [...document.querySelectorAll('[data-list="acquisition-quality"] li')].map(el => el.textContent),
         unmapped: document.querySelector('[data-table="articles"] .dash-copy')?.textContent || '',
         injected: document.querySelectorAll('[data-state="report"] b').length,
         cwv: document.querySelectorAll('[data-table="cwv"] tbody tr').length,
@@ -147,6 +162,9 @@ try {
     assert.deepEqual(report.categories, ['Ανάλυση', 'Ιστορία <b>', '(unmapped)']);
     assert.deepEqual(report.articles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
     assert.equal(report.articleScripts, 0, 'article metadata is always rendered as text, never HTML');
+    assert.deepEqual(report.acquisition, ['organic_search', 'direct', 'referral', 'unattributed']);
+    assert.ok(report.acquisitionWarnings.some(item => item.includes('μη αποδοθέν')), 'attribution quality is visible');
+    assert.match(report.acquisitionWindow, /–/);
     assert.match(report.unmapped, /2 προβολές σε μη αντιστοιχισμένα άρθρα/);
     assert.equal(report.injected, 0, 'snapshot text is never parsed as HTML');
     assert.equal(report.cwv, 9, 'LCP, INP and CLS for three coverage classes');
@@ -174,6 +192,12 @@ try {
     assert.ok(await visible(session.page, 'report'), 'the old four-model snapshot must still open');
     assert.match(await session.page.$eval('[data-table="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
     await finish(session, 'legacy snapshot');
+
+    session = await open(editorialOnly);
+    await unlock(session.page, key);
+    assert.ok(await visible(session.page, 'report'), 'five-model snapshot remains valid');
+    assert.match(await session.page.$eval('[data-table="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
+    await finish(session, 'editorial-only legacy');
 
     session = await open(fourDays);
     await unlock(session.page, key);
