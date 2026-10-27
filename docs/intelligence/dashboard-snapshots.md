@@ -16,7 +16,7 @@ or API is involved: GitHub Pages serves one encrypted file, and the browser decr
   refresh  (contents: read, id-token: write; environment intelligence-snapshots; main only)
     plan      no network: mode, ENABLED, already published today?, configuration present and well-formed?
     auth      GitHub OIDC → Workload Identity Federation → short-lived token for one service account (no key file)
-    refresh   daily tables exist → 4 dry-runs → cost preflight → 4 capped queries → validate → AES-256-GCM
+    refresh   daily tables exist → 5 dry-runs → cost preflight → 5 capped queries → validate → AES-256-GCM
     upload    the encrypted envelope only (1-day retention)
   publish  (contents: write; content-publishing lock)
     install   valid envelope for a NEWER as_of day → dashboard/data/snapshot.json, else unchanged
@@ -30,7 +30,7 @@ browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the k
 
 | | |
 | --- | --- |
-| Models | `11-category-pageviews`, `20-daily-activity`, `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
+| Models | `10-article-pageviews` (I-06C1), `11-category-pageviews`, `20-daily-activity`, `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
 | Source | `f1-stories-analytics.analytics_485678890`, location `EU`, daily `events_YYYYMMDD` tables only |
 | `@as_of_day` | today in the property time zone `America/Los_Angeles`, computed when the job runs |
 | Window | `end_day = as_of_day − 4` (the models' maturity rule); `start_day = max(end_day − 27, 2026-10-19)`: the latest 28 mature days, or every mature day since the export began while there are fewer (1–28) |
@@ -82,8 +82,8 @@ below apply only to this workflow's BigQuery queries.
 | --- | --- |
 | Owner-approved billable refreshes enabled; emergency disable remains tested | `snapshot.mjs` (`ENABLED = true`); the disabled-mode unit test |
 | Manual runs default to `dry-run` (free) | workflow input |
-| Four allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
-| Mandatory dry-run of all four queries before any execution | `refresh()` |
+| Five allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
+| Mandatory dry-run of all five queries before any execution | `refresh()` |
 | Conservative estimate per query: max(processed bytes rounded up to 1 MiB, 10 MiB × tables) | `conservativeBytes()` |
 | Table count: max(tables the dry-run lists, daily tables the model's base scans), so one listed wildcard still counts 28/29 | `scannedTables()` |
 | Per query: estimate ≤ 400 MiB, else nothing runs | `preflight()` |
@@ -94,12 +94,12 @@ below apply only to this workflow's BigQuery queries.
 | No browser query: the page has `connect-src 'self'` and fetches one static file | CSP, tests |
 
 **Why 400 MiB.** On-demand pricing bills at least 10 MiB per referenced table. The editorial and audience models scan
-the window's daily tables (28 at full length), and the RUM models also scan the day before (29). At the minimums, a
-full refresh plans 280 + 280 + 290 + 290 = **1140 MiB**. That is under the 1600 MiB ceiling, and every query is under
-400 MiB. The previous 100 MiB cap could never fit a 28-table scan. A dry-run may list a wildcard scan as a single
-table, so the estimate never uses fewer tables than the base actually scans. Short windows plan less (4 days: 40 + 40 + 50 + 50 = 180 MiB).
+the window's daily tables (28 at full length), and the RUM models also scan the day before (29). With the I-06C1
+article model, the conservative full-window plan is 280 + 280 + 280 + 290 + 290 = **1420 MiB**, still under the
+unchanged 1600 MiB daily ceiling, and each query is under 400 MiB. A dry-run may list a wildcard scan as a single
+table, so the estimate never uses fewer tables than the base actually scans. A 4-day window plans 40 + 40 + 40 + 50 + 50 = 220 MiB.
 
-**Expected volume.** About 1.1 GiB per day at the per-table minimums, ≈ 35 GiB per month. The caps allow at most
+**Expected volume.** About 1.39 GiB per day at the conservative per-table minimums, ≈ 43 GiB per 31-day month. The caps allow at most
 1600 MiB per day, ≈ 48 GiB per month. Both sit well inside BigQuery's monthly free on-demand allowance, *if* nothing
 else in the billing account uses it, and are small at list price beyond it. Check the current EU on-demand price
 and free tier on Google's pricing page; they are not restated as fact here.
@@ -108,8 +108,8 @@ Limitations:
 
 - **Not a total-cost cap.** These limits do not cover storage, the GA4 export, other BigQuery users or projects,
   or any other Google service. They cannot keep the account under 10 EUR on their own.
-- With four models, the 1600 MiB ceiling equals four full per-query caps. Its job is to bound the plan and to stop
-  remaining queries once billed bytes pass it. It is not a tighter limit than the per-query caps combined.
+- With five models, the 1600 MiB daily ceiling is stricter than the five per-query caps combined (2000 MiB).
+  It preflights the entire plan and checks billed bytes after each query; it cannot undo a query already run.
 - The dry-run estimate is processed bytes plus the per-table minimum, not billed bytes. `maximumBytesBilled` is
   the backstop: a query that would bill more fails, and failed queries are not billed.
 - Billed bytes are checked only *after* a query. That stops later queries; it cannot undo one.
@@ -248,3 +248,32 @@ The initial authenticated dry-run succeeded on 2026-10-27, covering 5 days (2026
 
 Open items inherited from [bigquery-validation.md](bigquery-validation.md) still apply, such as the unconfirmed
 G-X68J6MQKSM stream mapping and the small LCP/INP samples.
+
+
+## I-06C1 — Article performance expansion
+
+I-06C is shipped in focused stages: **article performance**, then editorial discovery and audience/acquisition,
+and finally full coverage validation. This stage reuses the existing reviewed SQL model
+`10-article-pageviews` without changing its SQL or reporting rules. Its result is encrypted in the same AES-256-GCM
+snapshot as the first four models.
+
+The dashboard displays up to 15 recognized articles sorted by consented `page_view` event count. Titles and
+categories are public article catalog metadata. It excludes the `(unmapped)` aggregate from the ranking and
+reports its pageview count separately (no unmapped URL keys are exposed). All articles below the
+30-event threshold are explicitly labeled as **small sample**, not hidden and not presented as a
+reliable popularity ranking. These are *events*, not unique readers or views from the whole audience.
+
+**Compatibility:** Existing four-model encrypted snapshots remain decryptable and continue to show the original
+dashboard panels. The new ranking panel displays a pending message until the next successful five-model
+snapshot. No new encryption key, service account, IAM grant, API, storage service or infrastructure is required.
+
+**Cost:** This adds only one additional bounded query per daily refresh. The owner-approved 400 MiB maximum per
+query and 1600 MiB total preflight/billed guard are unchanged. Its full 28-day conservative plan is 1420 MiB,
+and the five-day plan is 270 MiB, not an exact billed-byte figure. The prior production four-model run on
+2026-10-27 billed 40 MiB; a live five-model cost is **not validated yet**. Query caps and alerts are not
+a guaranteed EUR 10 total Google Cloud billing limit.
+
+**First live check after merge:** Review the five model dry-run estimates, the actual
+`totalBytesBilled` in the snapshot logs, the produced encrypted-only artifact and the new article ranking.
+If cost preflight refuses the expanded window, leave the previous snapshot published and investigate, without
+raising the limits automatically.

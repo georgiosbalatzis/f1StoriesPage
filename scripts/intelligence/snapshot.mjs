@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // snapshot.mjs — I-06B daily encrypted Intelligence snapshot (docs/intelligence/dashboard-snapshots.md).
-// Runs four existing models, rendered by editorial-model.mjs and never redefined here, over the latest mature
+// Runs five existing models, rendered by editorial-model.mjs and never redefined here, over the latest mature
 // days: 28, or every mature day since the export began while there are fewer. Every query is dry-run and costed first, then runs under a hard maximumBytesBilled, at most once per
 // day. The aggregate rows exist only in memory and leave this process only as an AES-256-GCM envelope.
 // Rows, keys and tokens are never printed.
@@ -17,7 +17,7 @@ import { PARAMETERS, RUM_MODELS, queryParameters, readInputs, renderModel } from
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 // Enabled with owner approval after a successful authenticated BigQuery dry-run (2026-10-27).
-// Keep the four model allowlist, mandatory cost preflight and 400 MiB per-query / 1600 MiB daily caps.
+// Keep the fixed model allowlist, mandatory cost preflight and 400 MiB per-query / 1600 MiB daily caps.
 export const ENABLED = true;
 export const PROJECT = 'f1-stories-analytics';
 export const PROPERTY = '485678890';
@@ -38,6 +38,8 @@ export const KEY_CHECK_LABEL = 'f1s-dashboard-snapshot-key-check-v1\u0000';
 
 // Columns the dashboard reads; a result without them is incomplete. Exact row counts where the model fixes them.
 export const SNAPSHOT_MODELS = {
+    // I-06C1: article-level editorial reporting; title/category are metadata from the public article catalog.
+    '10-article-pageviews': { columns: ['article_id', 'title', 'published_day', 'primary_category', 'author', 'page_view_events', 'via_retired_url_events', 'days_with_events', 'unmapped_keys', 'meets_min_events'] },
     '11-category-pageviews': { columns: ['category', 'page_view_events', 'articles_with_events', 'catalog_articles', 'meets_min_events'] },
     '20-daily-activity': { columns: ['event_day', 'page_view_events', 'session_start_events', 'first_visit_events', 'meets_min_events'], rows: 'days' },
     '30-cwv-summary': { columns: ['cohort_truncated', 'coverage', 'metric', 'core_web_vital', 'observations', 'p75', 'good', 'needs_improvement', 'poor', 'good_share', 'meets_min_observations'], rows: 15 },

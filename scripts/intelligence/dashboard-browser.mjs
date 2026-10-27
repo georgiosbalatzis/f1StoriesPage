@@ -10,8 +10,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { Launcher } from 'chrome-launcher';
-import { refresh, snapshotWindow, windowDays } from './snapshot.mjs';
-import { fakeClient } from './__tests__/snapshot-fixture.mjs';
+import { refresh, sealSnapshot, snapshotWindow, windowDays } from './snapshot.mjs';
+import { fakeClient, syntheticRows } from './__tests__/snapshot-fixture.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const shots = process.argv.find(arg => arg.startsWith('--screenshots='))?.slice('--screenshots='.length);
@@ -27,6 +27,15 @@ async function seal(now) {
 
 const fresh = await seal(new Date());
 const freshDays = windowDays(snapshotWindow(new Date()));
+// The last I-06B encrypted snapshot contains only four models; it must still render after deployment.
+const legacy = (() => {
+    const now = new Date(), window = snapshotWindow(now), models = syntheticRows(window);
+    delete models['10-article-pageviews'];
+    const generatedAt = now.toISOString();
+    return sealSnapshot({ format: 'f1s-dashboard-snapshot-payload', v: 1, generatedAt,
+        window: { ...window, timezone: 'America/Los_Angeles' }, minEvents: 30, minObservations: 30, models },
+    Buffer.from(key, 'base64'), { generatedAt, window });
+})();
 const fourDays = await seal(new Date('2026-10-26T23:00:00Z')); // as_of 26 Oct: 19–22 Oct, all the export has
 const stale = await seal(new Date(Date.now() - 3 * 86400000));
 const tampered = (() => {
@@ -121,6 +130,9 @@ try {
         days: document.querySelectorAll('[data-chart="activity"] rect').length,
         small: document.querySelectorAll('[data-chart="activity"] rect.is-small').length,
         categories: [...document.querySelectorAll('.dash-bars-label')].map(element => element.textContent),
+        articles: [...document.querySelectorAll('[data-table="articles"] tbody tr')].map(element => element.cells[0].textContent),
+        articleScripts: document.querySelectorAll('[data-table="articles"] script').length,
+        unmapped: document.querySelector('[data-table="articles"] .dash-copy')?.textContent || '',
         injected: document.querySelectorAll('[data-state="report"] b').length,
         cwv: document.querySelectorAll('[data-table="cwv"] tbody tr').length,
         warnings: document.querySelectorAll('[data-list="rum"] .is-warning').length,
@@ -133,6 +145,9 @@ try {
     assert.match(report.window, freshDays === 28 ? /^Τελευταίες 28 πλήρεις ημέρες · / : new RegExp(`^${freshDays} πλήρεις? ημέρ.ς, όσες υπάρχουν από την έναρξη της εξαγωγής · `));
     assert.ok(report.small > 0, 'small-sample days are marked');
     assert.deepEqual(report.categories, ['Ανάλυση', 'Ιστορία <b>', '(unmapped)']);
+    assert.deepEqual(report.articles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
+    assert.equal(report.articleScripts, 0, 'article metadata is always rendered as text, never HTML');
+    assert.match(report.unmapped, /2 προβολές σε μη αντιστοιχισμένα άρθρα/);
     assert.equal(report.injected, 0, 'snapshot text is never parsed as HTML');
     assert.equal(report.cwv, 9, 'LCP, INP and CLS for three coverage classes');
     assert.ok(report.warnings >= 1, 'the synthetic conflict is flagged');
@@ -153,6 +168,12 @@ try {
         await session.page.screenshot({ path: path.join(shots, 'dashboard-desktop-light.png'), fullPage: true });
         await finish(session, 'desktop light');
     }
+
+    session = await open(legacy);
+    await unlock(session.page, key);
+    assert.ok(await visible(session.page, 'report'), 'the old four-model snapshot must still open');
+    assert.match(await session.page.$eval('[data-table="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
+    await finish(session, 'legacy snapshot');
 
     session = await open(fourDays);
     await unlock(session.page, key);

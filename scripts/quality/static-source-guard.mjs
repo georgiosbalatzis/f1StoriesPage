@@ -218,7 +218,7 @@ const BANNED_TEXT_PATTERNS = [
     },
     {
         files: /.*/,
-        pattern: /"(?:11-category-pageviews|20-daily-activity|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/,
+        pattern: /"(?:10-article-pageviews|11-category-pageviews|20-daily-activity|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/,
         reason: 'dashboard analytics are committed only as the encrypted snapshot envelope'
     },
     {

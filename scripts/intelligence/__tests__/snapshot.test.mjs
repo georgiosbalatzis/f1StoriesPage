@@ -129,6 +129,8 @@ for (const [asOf, days] of [['2026-10-26', 4], ['2026-10-29', 7], ['2026-11-19',
         assert.equal(payload.models['20-daily-activity'].length, days);
         assert.equal(payload.models['20-daily-activity'][0].event_day, '2026-10-19');
         assert.equal(payload.models['30-cwv-summary'].length, 15);
+    assert.equal(payload.models['10-article-pageviews'].length, 3);
+    assert.deepEqual(Array.from(payload.models['10-article-pageviews'], row => row.meets_min_events), [true, false, false]);
         // A daily result that skips or adds a day is incomplete.
         for (const rows of [days - 1, days + 1]) {
             const bad = fakeClient(window, { mutate: (model, result) => (model === '20-daily-activity'
@@ -167,11 +169,11 @@ test('each model gets exactly its validated parameters, and a malformed one fail
     assert.throws(() => parametersFor('SELECT @unknown_thing', WINDOW), /@unknown_thing/);
 });
 
-test('owner-approved activation preserves cost caps and the four-model allowlist', async () => {
+test('owner-approved activation preserves cost caps and the five-model allowlist', async () => {
     assert.equal(ENABLED, true);
     assert.equal(MAX_BYTES_BILLED, 400 * 1048576);
     assert.equal(DAILY_MAX_BYTES, 1600 * 1048576);
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['11-category-pageviews', '20-daily-activity', '30-cwv-summary', '33-rum-coverage']);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['10-article-pageviews', '11-category-pageviews', '20-daily-activity', '30-cwv-summary', '33-rum-coverage']);
     // The emergency disable path must still fail closed, even when config is otherwise valid.
     const client = fakeClient(WINDOW);
     await assert.rejects(refresh({ mode: 'refresh', enabled: false, root: tempRoot(), env: env(), now: NOW, client, log: quiet }), /billable refreshes are disabled/);
@@ -181,8 +183,8 @@ test('owner-approved activation preserves cost caps and the four-model allowlist
 test('estimates count every scanned daily table, even when a dry-run lists the wildcard as one', () => {
     const job = (processed, tables) => ({ statistics: { query: { totalBytesProcessed: processed, referencedTables: Array(tables).fill({ tableId: 'events_*' }) } } });
     // The editorial and audience bases read the window's days; the RUM base also reads the day before.
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, WINDOW)), [28, 28, 29, 29]);
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, windowFor('2026-10-26'))), [4, 4, 5, 5]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, WINDOW)), [28, 28, 28, 29, 29]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, windowFor('2026-10-26'))), [4, 4, 4, 5, 5]);
     // One listed wildcard table: the 10 MiB per-table minimum still applies to all 28 or 29 tables.
     assert.deepEqual(conservativeBytes(job('1000', 1), 28), { processed: 1000, referenced: 1, tables: 28, estimate: 280 * 1048576 });
     assert.equal(conservativeBytes(job('1000', 1), 29).estimate, 290 * 1048576);
@@ -196,12 +198,12 @@ test('estimates count every scanned daily table, even when a dry-run lists the w
 
 test('preflight enforces the per-query cap and the combined daily ceiling before anything runs', async () => {
     const MiB = 1048576;
-    // A full 28-day refresh at the table minimums: 280 + 280 + 290 + 290 = 1140 MiB, within both limits.
+    // Five queries at the table minimums: 280 + 280 + 280 + 290 + 290 = 1420 MiB, within both limits.
     const client = fakeClient(WINDOW, { processed: '1000', tables: 1 });
     const logs = [];
     await run({ client, log: line => logs.push(line) });
-    assert.equal(client.calls.runs.length, 4);
-    assert.ok(logs.includes('preflight passed: ≤ 1140.00 MiB of the 1600.00 MiB daily ceiling; per-query cap 400.00 MiB'), logs.join('\n'));
+    assert.equal(client.calls.runs.length, 5);
+    assert.ok(logs.includes('preflight passed: ≤ 1420.00 MiB of the 1600.00 MiB daily ceiling; per-query cap 400.00 MiB'), logs.join('\n'));
     assert.ok(logs.includes('dry-run 30-cwv-summary: 0.00 MiB processed, 1 table(s) listed, 29 counted, ≤ 290.00 MiB billed'));
 
     assert.equal(preflight(Array(4).fill({ model: 'm', estimate: 400 * MiB })), 1600 * MiB);
@@ -210,7 +212,7 @@ test('preflight enforces the per-query cap and the combined daily ceiling before
     for (const options of [{ processed: String(400 * MiB + 1) }, { tables: 41 }]) {
         const rejected = fakeClient(WINDOW, options);
         await assert.rejects(run({ client: rejected }), /per-query cap; nothing was run/);
-        assert.equal(rejected.calls.dryRuns.length, 4);
+        assert.equal(rejected.calls.dryRuns.length, 5);
         assert.equal(rejected.calls.runs.length, 0);
     }
     // Billed bytes are checked after each query: a query billing more than planned stops the rest.
@@ -245,7 +247,7 @@ test('a missing daily export table stops the refresh before any query', async ()
     // A dry-run still costs every query (free) so the owner can review estimates, then fails the same way.
     const dry = fakeClient(WINDOW, { missingDay: '2026-11-01' });
     await assert.rejects(run({ client: dry, mode: 'dry-run', enabled: false }), /1 daily export table\(s\) missing \(first 2026-11-01\): a refresh would fail closed/);
-    assert.deepEqual([dry.calls.tables.length, dry.calls.dryRuns.length, dry.calls.runs.length], [WINDOW_DAYS, 4, 0]);
+    assert.deepEqual([dry.calls.tables.length, dry.calls.dryRuns.length, dry.calls.runs.length], [WINDOW_DAYS, 5, 0]);
     // The same in a short window: a gap in the first days is never skipped or filled.
     const early = fakeClient(windowFor('2026-10-29'), { missingDay: '2026-10-21' });
     await assert.rejects(run({ client: early, now: new Date('2026-10-29T23:00:00Z') }), /events_20261021 is missing/);
@@ -264,7 +266,7 @@ test('dry-run mode costs every query and runs none; refresh runs each model once
 
     const client = fakeClient(WINDOW);
     await run({ client });
-    assert.equal(client.calls.runs.length, 4);
+    assert.equal(client.calls.runs.length, 5);
     for (const { jobId } of client.calls.runs) assert.match(jobId, /^f1s_snapshot_20261119_\d\d_[a-z_]+_[0-9a-f]{16}$/);
     const again = fakeClient(WINDOW);
     await run({ client: again });
@@ -475,6 +477,12 @@ test('no other workflow can reach Google credentials or the snapshot key; pull r
         assert.doesNotMatch(text, /google-github-actions|DASHBOARD_SNAPSHOT_KEY|INTELLIGENCE_|intelligence-snapshots|bigquery/i, file);
     }
     assert.doesNotMatch(workflow, /pull_request|push:|workflow_run|repository_dispatch/);
+});
+
+test('the plaintext artifact guards cover the I-06C1 article ranking model', () => {
+    for (const file of ['scripts/build/validate-public-artifact.mjs', 'scripts/quality/static-source-guard.mjs']) {
+        assert.match(read(file), /10-article-pageviews\|11-category-pageviews/, file);
+    }
 });
 
 test('the retired I-06A API leaves no code, dependency or route behind', () => {
