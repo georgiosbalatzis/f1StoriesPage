@@ -1,7 +1,7 @@
 ---
 category: History
-tags: WRC, Champion, Legend, Peter Solberg, Subaru, Ford
-title: Peter Solberg:Γεννημένος για τους αγώνες
+tags: WRC, Champion, Legend, Petter Solberg, Subaru, Ford
+title: Petter Solberg: Γεννημένος για τους αγώνες
 excerpt: Από τα παιδικά χρόνια στα συνεργεία της Νορβηγίας μέχρι την κορυφή του WRC, ο Petter Solberg έζησε το ράλι ως τρόπο ζωής.
 ---
 
