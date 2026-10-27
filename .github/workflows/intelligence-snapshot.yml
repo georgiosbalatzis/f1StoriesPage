@@ -3,8 +3,8 @@ name: Intelligence Snapshot
 # I-06B (docs/intelligence/dashboard-snapshots.md): once a day, run four existing BigQuery models over the
 # latest mature days (up to 28, none before the 2026-10-19 export start), encrypt the aggregates, commit only the
 # encrypted envelope, then dispatch Deploy Pages.
-# Billable refreshes stay off until scripts/intelligence/snapshot.mjs sets ENABLED; until then scheduled runs
-# stop at the plan step. A manual run defaults to a dry-run, which BigQuery does not bill.
+# Owner-approved scheduled refreshes are enabled in scripts/intelligence/snapshot.mjs (2026-10-27).
+# Every real refresh first runs mandatory BigQuery dry-runs and enforces cost caps; manual runs default to a free dry-run.
 
 on:
   schedule:

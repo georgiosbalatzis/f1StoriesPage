@@ -167,14 +167,14 @@ test('each model gets exactly its validated parameters, and a malformed one fail
     assert.throws(() => parametersFor('SELECT @unknown_thing', WINDOW), /@unknown_thing/);
 });
 
-test('cost caps are fixed: 400 MiB per query, 1600 MiB per day, four allowlisted models, billable runs off', async () => {
-    assert.equal(ENABLED, false);
+test('owner-approved activation preserves cost caps and the four-model allowlist', async () => {
+    assert.equal(ENABLED, true);
     assert.equal(MAX_BYTES_BILLED, 400 * 1048576);
     assert.equal(DAILY_MAX_BYTES, 1600 * 1048576);
     assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['11-category-pageviews', '20-daily-activity', '30-cwv-summary', '33-rum-coverage']);
-    // Disabled means a refresh never starts, whatever the configuration.
+    // The emergency disable path must still fail closed, even when config is otherwise valid.
     const client = fakeClient(WINDOW);
-    await assert.rejects(refresh({ mode: 'refresh', root: tempRoot(), env: env(), now: NOW, client, log: quiet }), /billable refreshes are disabled/);
+    await assert.rejects(refresh({ mode: 'refresh', enabled: false, root: tempRoot(), env: env(), now: NOW, client, log: quiet }), /billable refreshes are disabled/);
     assert.deepEqual(client.calls, { tables: [], dryRuns: [], runs: [] });
 });
 
@@ -232,8 +232,8 @@ test('missing or malformed configuration fails closed before any network call', 
         assert.deepEqual(client.calls, { tables: [], dryRuns: [], runs: [] });
         if (!('BIGQUERY_ACCESS_TOKEN' in overrides)) assert.throws(() => plan({ mode: 'dry-run', env: env(overrides), now: NOW, root: tempRoot() }), message);
     }
-    // Billable refreshes are off: a scheduled run plans nothing and never reads its configuration.
-    assert.equal(plan({ mode: 'refresh', env: {}, now: NOW, root: tempRoot() }).due, false);
+    // The emergency disabled mode plans nothing before reading configuration.
+    assert.equal(plan({ mode: 'refresh', enabled: false, env: {}, now: NOW, root: tempRoot() }).due, false);
     assert.throws(() => plan({ mode: 'everything', env: env(), now: NOW }), /unknown mode/);
 });
 

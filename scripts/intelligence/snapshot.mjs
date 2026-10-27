@@ -16,8 +16,9 @@ import { PARAMETERS, RUM_MODELS, queryParameters, readInputs, renderModel } from
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-// Billable refreshes stay off until the owner has reviewed credentials, quotas and dry-run estimates.
-export const ENABLED = false;
+// Enabled with owner approval after a successful authenticated BigQuery dry-run (2026-10-27).
+// Keep the four model allowlist, mandatory cost preflight and 400 MiB per-query / 1600 MiB daily caps.
+export const ENABLED = true;
 export const PROJECT = 'f1-stories-analytics';
 export const PROPERTY = '485678890';
 export const LOCATION = 'EU';
