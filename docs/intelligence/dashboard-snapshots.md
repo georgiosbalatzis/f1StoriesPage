@@ -389,3 +389,47 @@ Google Cloud service, network origin or CSP change.
 planned, about 70 MiB billed if the 10 MiB-per-query pattern holds); that `internal_page_click` rows carry
 `page_location`, `link_path` and `link_section` as `analytics.js` sends them (marked unverified in
 editorial-model.md); and a check that carried Core Web Vitals labels appear on that day.
+
+
+## I-06D — Editorial Intelligence interface and presentation
+
+The I-06D visual redesign is **presentation-only**. It changes `dashboard/index.html`,
+`dashboard/dashboard.css`, `dashboard/dashboard.js` and the synthetic Chrome regression.
+No BigQuery SQL model, scheduler, query budget, snapshot schema, encryption primitive, IAM permission,
+browser network origin or consent behavior changes.
+
+**Visual hierarchy:** a F1 Stories editorial command header, anchored section navigation, four
+data-derived KPI cards, a daily activity area/column chart, ranked horizontal views for content and
+acquisition, visualized discovery totals, and a Core Web Vitals trio for the **delayed_existing**
+coverage class. The full original data tables remain accessible through native `details`
+elements, including the other RUM coverage classes.
+
+**Metric contract:** All KPI values come from the existing `20-daily-activity` events; page views
+and session_start counts are **events**, not visitors or unique sessions. The last-week KPI uses
+up to seven available mature days, not fabricated missing days; active days count only days
+with at least one consented page_view. Ranking bar widths are normalized relative to the
+largest row only and are not conversion rates or estimates of readership. Every row retains
+its absolute count and low-sample annotation. The Core Web Vitals cards never claim a passing
+performance rating based on a cohort below the model's minimum observations; they display
+p75, the threshold, the exact observation count and its sample flag. Old snapshots still
+decrypt, and missing models produce visible pending states.
+
+**Security and lifecycle:** Visuals are constructed using DOM `textContent` and
+`document.createElementNS`; no raw data becomes HTML, inline styles, third-party libraries,
+external fonts, localStorage or transmitted requests. The existing CSP is untouched.
+Locking empties all chart, KPI, ranking, table and list containers; the snapshot remains encrypted
+at rest and decryption remains browser-only.
+
+**Accessibility and design:** Existing F1 Stories `Barlow Condensed` / `IBM Plex Sans`
+typography and dark/light palette are preserved. The page has keyboard-accessible anchor
+navigation, semantic cards/lists, accessible SVG chart label, a text data-table alternative,
+clear focus states and reduced-motion treatment. At 390px mobile width the cards stack
+and wide data tables scroll within their own containers; desktop has a responsive 12-column
+editorial hierarchy rather than a one-column series of boxes.
+
+**Release checklist:** Run the site quality gates and `node scripts/intelligence/dashboard-browser.mjs`,
+including 390px dark and 1280px light with synthetic snapshots and key isolation. Capture
+optional screenshots using the existing browser harness `--screenshots=<dir>` and compare
+against the previous dashboard before merging. Review large/long Greek titles, an empty
+acquisition model, missing discovery and carried RUM warnings in both themes. Do not
+auto-merge on passing CI; the owner should review the visual appearance first.
