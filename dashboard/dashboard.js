@@ -164,6 +164,51 @@
             ['Δείγμα', function (r) { return sample(r.meets_min_events); }]
         ], activity);
 
+        // I-06C2: rolling 7-day session-last-click attribution, paired with 29-audience-coverage.
+        // Older encrypted snapshots (four or five models) remain valid and show a pending state.
+        var acquisitionTarget = slot('table', 'acquisition');
+        var acquisitionQuality = slot('list', 'acquisition-quality');
+        var acquisition = models['26-acquisition-session'];
+        var coverage = models['29-audience-coverage'];
+        if (!Array.isArray(acquisition) || !Array.isArray(coverage) || !payload.modelWindows) {
+            field('acquisition-window').textContent = 'διαθέσιμο στο επόμενο snapshot';
+            acquisitionTarget.appendChild(node('p', 'Τα στοιχεία προέλευσης θα εμφανιστούν με την επόμενη επιτυχημένη ημερήσια ανανέωση.', 'dash-copy'));
+        } else {
+            var scope = payload.modelWindows['26-acquisition-session'];
+            // When fewer than seven mature days exist, this pair shares the primary window.
+            var start = scope ? scope.start : header.start;
+            var end = scope ? scope.end : header.end;
+            field('acquisition-window').textContent = day(start, true) + ' – ' + day(end, true);
+            var rankedChannels = acquisition.slice().sort(function (a, b) {
+                return b.session_start_events - a.session_start_events || String(a.channel_class).localeCompare(String(b.channel_class), 'el');
+            });
+            if (!rankedChannels.length) {
+                acquisitionTarget.appendChild(node('p', 'Δεν υπάρχουν καταγεγραμμένα γεγονότα απόκτησης για την περίοδο.', 'dash-copy'));
+            } else {
+                table(acquisitionTarget, [
+                    ['Κανάλι GA4', function (r) { return r.channel_class; }],
+                    ['Πηγή', function (r) { return r.source_family; }],
+                    ['session_start', function (r) { return integer.format(r.session_start_events); }],
+                    ['page_view', function (r) { return integer.format(r.page_view_events); }],
+                    ['Δείγμα', function (r) { return sample(r.meets_min_events); }]
+                ], rankedChannels);
+            }
+            var starts = coverage.filter(function (r) { return r.event_name === 'session_start'; });
+            var kept = starts.reduce(function (sum, r) { return sum + r.site_events; }, 0);
+            var notAttributed = starts.reduce(function (sum, r) { return sum + r.session_channel_unattributed_or_other; }, 0);
+            var quality = [
+                [kept >= payload.minEvents, integer.format(kept) + ' consented session_start events στον βασικό ιστότοπο' + (kept < payload.minEvents ? ' — μικρό δείγμα.' : '.')],
+                [notAttributed === 0, integer.format(notAttributed) + ' session_start events με μη αποδοθέν ή άλλο κανάλι GA4.']
+            ];
+            if (!starts.length) {
+                acquisitionQuality.appendChild(node('li', 'Προσοχή: λείπει το ποιοτικό δείγμα session_start από το μοντέλο κάλυψης.', 'is-warning'));
+            } else {
+                quality.forEach(function (item) {
+                    acquisitionQuality.appendChild(node('li', (item[0] ? 'OK: ' : 'Προσοχή: ') + item[1], item[0] ? '' : 'is-warning'));
+                });
+            }
+        }
+
         // I-06C1: existing encrypted snapshots (I-06B) may not yet include article rankings.
         // The old four-model payload remains readable while the next daily snapshot is produced.
         var articleTarget = slot('table', 'articles');
