@@ -11,6 +11,7 @@ import hubs from '../../blog-module/build/entities/hubs.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
+import { SNAPSHOT_PATH, assertEnvelope } from '../intelligence/snapshot.mjs';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,7 @@ const REQUIRED_EXACT = [
     'dashboard/index.html',
     'dashboard/dashboard.css',
     'dashboard/dashboard.js',
+    'dashboard/snapshot-crypto.js',
     'generate.html',
     'housekeeping.html',
     'index.html',
@@ -141,8 +143,23 @@ function forbiddenReason(relPath) {
     return '';
 }
 
-// A Dashboard Access Key (services/dashboard-api/keys.mjs) or its verifier must never be published.
-const DASHBOARD_SECRET_PATTERN = /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}/;
+// Credentials that must never be published: a retired I-06A Dashboard Access Key or verifier, a Google
+// OAuth access token, a private key, or a service-account / Workload Identity credentials file.
+const SECRET_PATTERN = /f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}|sha256:[a-f0-9]{64}|\bya29\.[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|"type"\s*:\s*"(?:service_account|external_account)"/;
+// Decrypted snapshot rows are keyed by model name (scripts/intelligence/snapshot.mjs); public files hold them only encrypted.
+const PLAINTEXT_ANALYTICS_PATTERN = /"(?:11-category-pageviews|20-daily-activity|30-cwv-summary|33-rum-coverage)"\s*:|"format"\s*:\s*"f1s-dashboard-snapshot-payload"/;
+
+function validateSnapshot(errors, relPath, abs) {
+    if (relPath === SNAPSHOT_PATH) {
+        try {
+            assertEnvelope(fs.readFileSync(abs, 'utf8'));
+        } catch (error) {
+            errors.push(`${relPath}: not a valid encrypted snapshot envelope (${error.message})`);
+        }
+    } else if (/^dashboard\/data\//.test(relPath)) {
+        errors.push(`${relPath}: only the encrypted snapshot may be published under dashboard/data/`);
+    }
+}
 
 function resolvePublicPath(fromRelPath, ref) {
     const clean = String(ref || '').split('#')[0].split('?')[0].trim();
@@ -1043,9 +1060,12 @@ function main() {
             errors.push(`${relPath}: ${fmtBytes(size)} exceeds max ${fmtBytes(MAX_FILE_BYTES)}`);
         }
 
-        if (/\.(?:html|js|json|css|txt|xml)$/i.test(relPath) && DASHBOARD_SECRET_PATTERN.test(fs.readFileSync(abs, 'utf8'))) {
-            errors.push(`${relPath}: contains a Dashboard Access Key or key verifier`);
+        if (/\.(?:html|js|mjs|json|css|txt|xml|map)$/i.test(relPath)) {
+            const text = fs.readFileSync(abs, 'utf8');
+            if (SECRET_PATTERN.test(text)) errors.push(`${relPath}: contains a credential or key verifier`);
+            if (PLAINTEXT_ANALYTICS_PATTERN.test(text)) errors.push(`${relPath}: contains plaintext dashboard analytics`);
         }
+        validateSnapshot(errors, relPath, abs);
 
         if (/\.html$/i.test(relPath) && retiredPages.has(relPath)) {
             validateRetiredPage(errors, fs.readFileSync(abs, 'utf8'), relPath, retiredPages.get(relPath), sitemapUrls, indexedArticleUrls);
