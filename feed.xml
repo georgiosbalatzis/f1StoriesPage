@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sun, 25 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>H.H Frentzen: Αθόρυβος αλλά πρωταγωνιστής</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261027W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261027W/article.html</guid>
+      <pubDate>Mon, 26 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Heinz-Harald Frentzen: ο αθόρυβος πρωταγωνιστής της Formula 1, με ταχύτητα, αξιοπρέπεια και δύο νίκες το 1999 διεκδίκησε μια θέση ανάμεσα στους κορυφαίους.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Petter Solberg: Γεννημένος για τους αγώνες</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261026W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Από την 18η θέση στην τρίτη, σε έναν αγώνα όπου ο Verstappen είχε τον πρώτο λόγο Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις.</description>
       <category>Ανάλυση</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261006F/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261006F/article.html</guid>
-      <pubDate>Mon, 05 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Η Mercedes πήγε στη Μαλαισία με ένα από τα πιο ουσιαστικά πακέτα αναβαθμίσεων που είχε φέρει φέτος.</description>
-      <category>Τεχνικά</category>
-      <dc:creator>F1 Stories</dc:creator>
     </item>
   </channel>
 </rss>

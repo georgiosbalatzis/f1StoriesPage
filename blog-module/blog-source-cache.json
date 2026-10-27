@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261027W",
+      "title": "H.H Frentzen: Αθόρυβος αλλά πρωταγωνιστής",
+      "author": "Themis Charvalis",
+      "date": "2026-10-27",
+      "dateISO": "2026-10-27",
+      "displayDate": "27 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261027W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261027W/2.webp",
+      "excerpt": "Heinz-Harald Frentzen: ο αθόρυβος πρωταγωνιστής της Formula 1, με ταχύτητα, αξιοπρέπεια και δύο νίκες το 1999 διεκδίκησε μια θέση ανάμεσα στους κορυφαίους.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261027W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "H.H Frentzen",
+        "Legend",
+        "Williams",
+        "Jordan"
+      ],
+      "wordCount": 368,
+      "readingTime": "2 min",
+      "imageWidth": 1024,
+      "imageHeight": 682,
+      "backgroundImageWidth": 548,
+      "backgroundImageHeight": 364,
+      "inputDigest": "0bcf4aa7257ed51d4a1bd5f4edd17728427be099bda40c909c6d62c2d41f2777"
+    },
+    {
       "id": "20261026W",
       "title": "Petter Solberg: Γεννημένος για τους αγώνες",
       "author": "Themis Charvalis",
@@ -11190,5 +11222,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-27T07:20:56.498Z"
+  "lastUpdated": "2026-10-27T21:52:28.284Z"
 }
