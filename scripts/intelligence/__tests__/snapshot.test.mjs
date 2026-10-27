@@ -130,7 +130,7 @@ for (const [asOf, days] of [['2026-10-26', 4], ['2026-10-29', 7], ['2026-11-19',
         assert.equal(payload.models['20-daily-activity'][0].event_day, '2026-10-19');
         assert.equal(payload.models['30-cwv-summary'].length, 15);
     assert.equal(payload.models['10-article-pageviews'].length, 3);
-    assert.deepEqual(payload.models['10-article-pageviews'].map(row => row.meets_min_events), [true, false, false]);
+    assert.deepEqual(Array.from(payload.models['10-article-pageviews'], row => row.meets_min_events), [true, false, false]);
         // A daily result that skips or adds a day is incomplete.
         for (const rows of [days - 1, days + 1]) {
             const bad = fakeClient(window, { mutate: (model, result) => (model === '20-daily-activity'
