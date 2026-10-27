@@ -49,7 +49,7 @@ jobs:
 
       # Content-only PRs also need dist/ for artifact URL contract tests; build:public
       # runs the same content builders plus public packaging and validation.
-      - name: Build and validate article-only artifact
+      - name: Validate article content
         if: ${{ steps.changes.outputs.content_only == 'true' }}
         run: npm run build:public
 
