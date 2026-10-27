@@ -131,6 +131,10 @@ for (const [asOf, days] of [['2026-10-26', 4], ['2026-10-29', 7], ['2026-11-19',
         assert.equal(payload.models['30-cwv-summary'].length, 15);
         assert.equal(payload.models['26-acquisition-session'].length, 4);
         assert.equal(payload.models['29-audience-coverage'].length, 2);
+        assert.deepEqual(JSON.parse(JSON.stringify(payload.modelWindows || {})), days > 7
+            ? { '26-acquisition-session': { start: new Date(Date.parse(window.end) - 6 * 86400000).toISOString().slice(0, 10), end: window.end },
+                '29-audience-coverage': { start: new Date(Date.parse(window.end) - 6 * 86400000).toISOString().slice(0, 10), end: window.end } }
+            : {});
     assert.equal(payload.models['10-article-pageviews'].length, 3);
     assert.deepEqual(Array.from(payload.models['10-article-pageviews'], row => row.meets_min_events), [true, false, false]);
         // A daily result that skips or adds a day is incomplete.
@@ -507,7 +511,7 @@ test('no other workflow can reach Google credentials or the snapshot key; pull r
 
 test('the plaintext artifact guards cover the I-06C1 article ranking model', () => {
     for (const file of ['scripts/build/validate-public-artifact.mjs', 'scripts/quality/static-source-guard.mjs']) {
-        assert.match(read(file), /10-article-pageviews\|11-category-pageviews/, file);
+        assert.match(read(file), /10-article-pageviews\|11-category-pageviews\|20-daily-activity\|26-acquisition-session\|29-audience-coverage/, file);
     }
 });
 
