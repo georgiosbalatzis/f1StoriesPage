@@ -45,7 +45,7 @@ test('a slug is identical in a URL, on disk and in the sitemap', () => {
 
 test('reserved first path segments cannot become slugs', () => {
     for (const name of ['telemetry', 'f1telemetry', 'ghostcar', 'tyres', 'betcast', 'authors', 'standings',
-        'privacy', 'blog-module', 'stories', 'sitemap', 'feed']) {
+        'privacy', 'blog-module', 'stories', 'sitemap', 'feed', 'dashboard']) {
         assert.ok(P.slugIssues(name).includes('reserved'), name);
     }
 });

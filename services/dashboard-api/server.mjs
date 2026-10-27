@@ -84,7 +84,7 @@ export function createDashboardServer(options, { now = Date.now } = {}) {
     const ipLimit = fixedWindow(LOGIN_LIMIT_PER_IP);
     const globalLimit = fixedWindow(LOGIN_LIMIT_GLOBAL);
 
-    // The session's key is re-checked on every request, so revoking a key ends its sessions at once.
+    // The session's key is re-checked on every request, so revoking or rotating a key ends its sessions at once.
     function currentSession(req) {
         const token = readCookie(req);
         if (!TOKEN_PATTERN.test(token)) return null;
@@ -92,19 +92,20 @@ export function createDashboardServer(options, { now = Date.now } = {}) {
         const session = sessions.get(id);
         if (!session) return null;
         const record = readKeyStore(keysFile).get(session.keyId);
-        if (session.expiresAt <= now() || !record || record.revoked) {
+        if (session.expiresAt <= now() || !record || record.revoked || record.verifier !== session.verifier) {
             sessions.delete(id);
             return null;
         }
         return { id, ...session, label: record.label };
     }
 
-    function createSession(keyId) {
+    function createSession(record) {
         const time = now();
         for (const [id, session] of sessions) if (session.expiresAt <= time) sessions.delete(id);
         if (sessions.size >= MAX_SESSIONS) return null;
         const token = randomBytes(32).toString('base64url');
-        const session = { keyId, expiresAt: time + SESSION_TTL_MS };
+        // Bound to the verifier at login: a new secret under the same id invalidates older sessions.
+        const session = { keyId: record.id, verifier: record.verifier, expiresAt: time + SESSION_TTL_MS };
         sessions.set(hash(token), session);
         return { token, ...session };
     }
@@ -169,7 +170,7 @@ export function createDashboardServer(options, { now = Date.now } = {}) {
         if (status) return send(status, { error: 'invalid_request' });
         const record = verifyKey(readKeyStore(keysFile), body && body.key);
         if (!record) return send(401, { error: 'invalid_key' });
-        const session = createSession(record.id);
+        const session = createSession(record);
         if (!session) return send(503, { error: 'too_many_sessions' });
         return send(200, { expiresAt: new Date(session.expiresAt).toISOString(), label: record.label }, {
             'Set-Cookie': `${COOKIE}=${session.token}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=${SESSION_TTL_MS / 1000}`

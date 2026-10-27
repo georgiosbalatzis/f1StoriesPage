@@ -15,6 +15,8 @@ const keysFile = path.join(dir, 'keys.json');
 let server, base, clock, owner, other, ipCounter = 0;
 
 const writeStore = records => fs.writeFileSync(keysFile, JSON.stringify({ keys: records }));
+// 'f1sdk_' + 8-character id + '_' is 15 characters; the base64url secret may itself contain '_'.
+const secretOf = key => key.slice(15);
 
 // Each call gets its own client IP unless one is given, so the per-IP limit stays out of unrelated tests.
 function request(pathname, { method = 'GET', origin = ORIGIN, cookie, body, ip, headers = {} } = {}) {
@@ -66,7 +68,7 @@ test('configuration fails closed', () => {
 test('keys: only a verifier is stored, and it matches only its own secret', () => {
     const { key, record } = owner;
     assert.match(key, /^f1sdk_[a-z0-9]{8}_[A-Za-z0-9_-]{43}$/);
-    assert.ok(!JSON.stringify(record).includes(key.split('_')[2]), 'the record must not contain the secret');
+    assert.ok(!JSON.stringify(record).includes(secretOf(key)), 'the record must not contain the secret');
     const keys = parseKeyStore(JSON.stringify({ keys: [record] }));
     assert.equal(verifyKey(keys, key).id, record.id);
     const flipped = key.slice(0, -1) + (key.endsWith('A') ? 'B' : 'A');
@@ -174,6 +176,24 @@ test('revoking one key ends its sessions and blocks its logins; other keys keep 
     assert.equal((await request('/api/session', { cookie: theirs.cookie })).status, 200);
     writeStore([other.record]);
     assert.equal((await login(owner.key)).res.status, 401, 'a deleted record is revoked too');
+});
+
+test('rotating a key under the same id ends sessions opened with the old secret', async () => {
+    const old = await login(owner.key);
+    const theirs = await login(other.key);
+    const fresh = newKey('owner');
+    const rotated = { key: `f1sdk_${owner.record.id}_${secretOf(fresh.key)}`, record: { ...fresh.record, id: owner.record.id } };
+    writeStore([rotated.record, other.record]);
+    assert.equal((await request('/api/session', { cookie: old.cookie })).status, 401);
+    assert.equal((await request('/api/v1/reports/x', { cookie: old.cookie })).status, 401);
+    assert.equal((await login(owner.key)).res.status, 401, 'the old secret no longer logs in');
+    assert.equal((await request('/api/session', { cookie: theirs.cookie })).status, 200, 'other keys are unaffected');
+    const renewed = await login(rotated.key);
+    assert.equal(renewed.res.status, 200);
+    assert.equal((await request('/api/session', { cookie: renewed.cookie })).status, 200);
+    writeStore([owner.record, other.record]);
+    assert.equal((await request('/api/session', { cookie: old.cookie })).status, 401, 'rolling back does not resurrect a deleted session');
+    assert.equal((await request('/api/session', { cookie: renewed.cookie })).status, 401, 'a session bound to the rotated secret ends on rollback');
 });
 
 test('an unreadable or malformed key store denies everyone', async () => {

@@ -51,6 +51,9 @@ block by default. The page script and the security-policy test both refuse any A
   of any session opened with that key gets 401, because each request re-checks the session's key. Cloud Run
   reads a volume-mounted secret pinned to `latest` from Secret Manager when the file is read. Confirm during the
   smoke test that revocation takes effect without a redeploy. If it does not, redeploy.
+- **Rotation:** to replace a key's secret but keep its id, give the record a new verifier. Each session is bound to
+  the verifier that was active at login and rechecked on every request. Sessions opened with the old secret
+  therefore get 401 on their next request, and the old secret can no longer log in.
 
 ### Sessions
 
@@ -116,14 +119,32 @@ GET /api/v1/reports/{reportId}?start=YYYY-MM-DD&end=YYYY-MM-DD[&period=day|week]
 
 It uses no user credentials, no JSON key file and no GitHub credential.
 
+## Serving the API on an f1-stories.gr subdomain
+
+Either option keeps the same-site requirement: the API must answer on `https://<label>.f1-stories.gr`. The
+`*.run.app` URL must never be configured as `DASHBOARD_API_ORIGIN`. Neither option is provisioned by this PR.
+Google's page [Mapping custom domains](https://docs.cloud.google.com/run/docs/mapping-custom-domains), read
+2026-10-27, is the source for both.
+
+| | Direct Cloud Run domain mapping | Global external Application Load Balancer |
+| --- | --- | --- |
+| Launch stage | **Preview.** Google: "not production-ready", not covered at GA, and "not recommended for production services" because of latency issues. | GA. The option Google recommends. |
+| Setup | One domain mapping plus the DNS records Google shows. Lowest effort. | Serverless NEG, backend service, URL map, HTTPS proxy, certificate, a reserved global IP and an `A`/`AAAA` record. More infrastructure to own and review. |
+| Cost | No extra Google Cloud resource. | Forwarding-rule and data-processing charges, separate from Cloud Run. Check current pricing before approving. |
+| Regions | Only some regions. In the EU: `europe-north1`, `europe-west1`, `europe-west4`. | Any Cloud Run region. |
+| TLS | Google-managed certificate only. Provisioning takes about 15 minutes, up to 24 hours. TLS 1.0/1.1 cannot be disabled. No own or wildcard certificates. | Google-managed or own certificate; an SSL policy can set the minimum TLS version. |
+| Extra controls | None. | Cloud Armor (WAF and rate limiting at the edge) and logging. Set Cloud Run ingress to *internal and Cloud Load Balancing*, so the `run.app` URL cannot bypass the balancer. |
+| `X-Forwarded-For` | The rightmost hop is the client, which matches `clientIp()` in `server.mjs`. | The balancer appends `<client>, <balancer>`, so the rightmost hop is the balancer. Change `clientIp()` to the second hop from the right **before** relying on the per-IP limit. Until then it acts as a second global limit. |
+
+**Recommendation:** the load balancer for anything beyond a trial. Direct mapping is acceptable only for an owner-only
+trial that accepts Preview latency and TLS limits, and it should be replaced before more readers get keys.
+
 ## Deployment prerequisites (owner; nothing here was run)
 
-1. **Approve** the Cloud Run service, the service account, the secret and the DNS record in
-   `f1-stories-analytics`. These may incur cost.
-2. **Region:** an EU region that supports Cloud Run domain mappings (for example `europe-west1`; check the
-   current list), or a global external Application Load Balancer with a serverless NEG. Behind a load balancer the
-   rightmost `X-Forwarded-For` hop is the balancer, so the per-IP limit acts as a second global limit (see
-   *Limitations*).
+1. **Approve** the Cloud Run service, the service account, the secret, the chosen domain option (with its cost) and
+   the DNS records in `f1-stories-analytics`. These may incur cost.
+2. **Region:** an EU Cloud Run region. With direct domain mapping it must be `europe-north1`, `europe-west1` or
+   `europe-west4`. With a load balancer, any EU region. See *Serving the API on an f1-stories.gr subdomain*.
 3. **Keys:** `node services/dashboard-api/keys.mjs new "owner"`. Keep the printed key in a password manager. Put
    `{"keys":[<record>, …]}` into a new secret, for example `dashboard-access-keys`. Never commit either.
 4. **Deploy** from `services/dashboard-api` (the Dockerfile copies only `keys.mjs` and `server.mjs`) with:
@@ -133,7 +154,9 @@ It uses no user credentials, no JSON key file and no GitHub credential.
    - `--set-secrets /secrets/keys.json=dashboard-access-keys:latest`.
 
    The server refuses to start without both variables, or with any other origin.
-5. **Domain:** map `dashboard-api.f1-stories.gr` (or another single label) to the service. Confirm HTTPS.
+5. **Domain:** serve `dashboard-api.f1-stories.gr` (or another single label) through the chosen option above.
+   With the load balancer, also restrict Cloud Run ingress and fix `clientIp()`. Confirm HTTPS and that the
+   certificate has been issued.
 6. **Smoke test** against the deployed API. Cover each of the following:
    - `/healthz` returns 200;
    - a missing or wrong `Origin` gets 403;
@@ -144,6 +167,7 @@ It uses no user credentials, no JSON key file and no GitHub credential.
    - `/api/v1/x` with a session returns 503;
    - logout, then 401;
    - revoke the key in a new secret version, then 401 with the old session;
+   - rotate a key's verifier under the same id, then 401 with the old session and with the old secret;
    - wait past 30 minutes (or check `expiresAt`), then 401.
 7. **Enable the page in one PR:** set `DASHBOARD_API_ORIGIN` in `security-policy.mjs`, the same value in
    `dashboard/index.html` `f1s-dashboard-api`, and add the origin to `APPROVED_CSP_EXTERNAL_SOURCES` in
@@ -156,9 +180,11 @@ It uses no user credentials, no JSON key file and no GitHub credential.
 - **Single instance.** Sessions and rate limits are in memory, so `max-instances=1` is required. A restart signs
   everyone out, and the limits reset. Moving to several instances needs a shared store (Firestore or Memorystore),
   which is a later change.
-- **Client IP.** The per-IP limit trusts the rightmost `X-Forwarded-For` hop. That is the client when Cloud Run is
-  reached directly, but not behind a load balancer. The global limit and the 256-bit keys are the real brute-force
-  defence.
+- **Client IP.** The per-IP limit trusts the rightmost `X-Forwarded-For` hop. That is the client with direct domain
+  mapping, but the balancer behind an Application Load Balancer, which needs the one-line change described above.
+  The global limit and the 256-bit keys are the real brute-force defence.
+- **Direct domain mapping is Preview.** Choosing it accepts Google's latency and TLS limitations (see the table
+  above).
 - **No clickjacking header on the page.** GitHub Pages cannot send `frame-ancestors`, and a meta CSP cannot carry
   it. The page refuses to run inside a frame instead. The API itself sends `frame-ancestors 'none'`.
 - **Page integrity.** Anyone who can merge to `main` can change the shell's script. Branch protection and review
