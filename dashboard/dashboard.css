@@ -170,6 +170,8 @@ body {
     text-transform: uppercase;
 }
 
+.dash-report h3 { margin: 1.5rem 0 0.4rem; font-size: 1rem; font-weight: 700; line-height: 1.3; }
+
 .dash-warning {
     margin: 0 0 1rem;
     padding: 0.6rem 0.75rem;
@@ -207,6 +209,9 @@ body {
 .dash-report table { width: 100%; margin-top: 0.5rem; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 .dash-report th, .dash-report td { padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
 .dash-report th { color: var(--text-secondary); font-weight: 600; }
+/* Discovery tables: every column but the click count wraps, so all four stay in view at phone width. */
+.dash-report [data-table^="discovery-"] :is(th, td) { padding-inline: 0.3rem; }
+.dash-report [data-table^="discovery-"] td:not(:nth-last-child(2)) { white-space: normal; overflow-wrap: break-word; }
 
 .dash-checks { margin: 0; padding: 0; list-style: none; }
 .dash-checks li { padding: 0.35rem 0; border-bottom: 1px solid var(--border); color: var(--text-secondary); }

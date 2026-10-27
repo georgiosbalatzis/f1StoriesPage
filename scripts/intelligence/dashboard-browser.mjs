@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { Launcher } from 'chrome-launcher';
-import { refresh, sealSnapshot, snapshotWindow, windowDays } from './snapshot.mjs';
+import { install, refresh, sealSnapshot, snapshotWindow, windowDays } from './snapshot.mjs';
 import { fakeClient, syntheticRows } from './__tests__/snapshot-fixture.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -18,18 +18,31 @@ const shots = process.argv.find(arg => arg.startsWith('--screenshots='))?.slice(
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2' };
 const key = crypto.randomBytes(32).toString('base64');
 
-async function seal(now) {
+// Daily refreshes ending at `now`, each reading the one before, as on main. One day: no discovery yet (the I-06C2
+// seven-model shape). Two days: a weekly discovery day (RUM carried). Three days: discovery carried, one day old.
+async function seal(now, days = 1) {
     const env = { DASHBOARD_SNAPSHOT_KEY: key, BIGQUERY_ACCESS_TOKEN: 'synthetic',
         WIF_PROVIDER: 'projects/1/locations/global/workloadIdentityPools/p/providers/p', WIF_SERVICE_ACCOUNT: 'snapshot@f1-stories-analytics.iam.gserviceaccount.com' };
     const scratch = fs.mkdtempSync(path.join(fs.realpathSync(process.env.TMPDIR || '/tmp'), 'f1s-dash-'));
-    return refresh({ mode: 'refresh', enabled: true, root: scratch, env, now, client: fakeClient(snapshotWindow(now)), log: () => {} });
+    let text;
+    for (let i = days - 1; i >= 0; i--) {
+        const at = new Date(now.getTime() - i * 86400000);
+        text = await refresh({ mode: 'refresh', enabled: true, root: scratch, env, now: at, client: fakeClient(snapshotWindow(at)), log: () => {} });
+        install(text, scratch);
+    }
+    return text;
 }
+const withoutDiscovery = models => {
+    delete models['13-article-discovery'];
+    delete models['28-internal-navigation'];
+    return models;
+};
 
 const fresh = await seal(new Date());
 const freshDays = windowDays(snapshotWindow(new Date()));
 // The last I-06B encrypted snapshot contains only four models; it must still render after deployment.
 const legacy = (() => {
-    const now = new Date(), window = snapshotWindow(now), models = syntheticRows(window);
+    const now = new Date(), window = snapshotWindow(now), models = withoutDiscovery(syntheticRows(window));
     delete models['10-article-pageviews'];
     delete models['26-acquisition-session'];
     delete models['29-audience-coverage'];
@@ -40,7 +53,7 @@ const legacy = (() => {
 })();
 // A five-model I-06C1 snapshot has article rankings but no acquisition yet.
 const editorialOnly = (() => {
-    const now = new Date(), window = snapshotWindow(now), models = syntheticRows(window);
+    const now = new Date(), window = snapshotWindow(now), models = withoutDiscovery(syntheticRows(window));
     delete models['26-acquisition-session'];
     delete models['29-audience-coverage'];
     const generatedAt = now.toISOString();
@@ -48,6 +61,8 @@ const editorialOnly = (() => {
         window: { ...window, timezone: 'America/Los_Angeles' }, minEvents: 30, minObservations: 30, models },
     Buffer.from(key, 'base64'), { generatedAt, window });
 })();
+const discoveryDay = await seal(new Date(), 2);
+const discoveryCarried = await seal(new Date(), 3);
 const fourDays = await seal(new Date('2026-10-26T23:00:00Z')); // as_of 26 Oct: 19–22 Oct, all the export has
 const stale = await seal(new Date(Date.now() - 3 * 86400000));
 const tampered = (() => {
@@ -151,7 +166,10 @@ try {
         injected: document.querySelectorAll('[data-state="report"] b').length,
         cwv: document.querySelectorAll('[data-table="cwv"] tbody tr').length,
         warnings: document.querySelectorAll('[data-list="rum"] .is-warning').length,
-        notes: document.querySelector('.dash-notes').textContent
+        notes: document.querySelector('.dash-notes').textContent,
+        discoveryWindow: document.querySelector('[data-field="discovery-window"]').textContent,
+        discoveryPending: document.querySelector('[data-table="discovery-surfaces"]').textContent,
+        cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden
     }));
     assert.match(report.title, /^Στοιχεία έως \d{1,2} [^\s]+ \d{4}$/);
     assert.match(report.updated, /Τελευταία επιτυχής ενημέρωση/);
@@ -170,6 +188,10 @@ try {
     assert.equal(report.cwv, 9, 'LCP, INP and CLS for three coverage classes');
     assert.ok(report.warnings >= 1, 'the synthetic conflict is flagged');
     assert.match(report.notes, /συναίνεση[\s\S]*γεγονότα[\s\S]*30/);
+    // A seven-model snapshot without discovery (the first day, or any pre-I-06C3 snapshot): pending, nothing else breaks.
+    assert.equal(report.discoveryWindow, 'σε αναμονή');
+    assert.match(report.discoveryPending, /μία φορά την εβδομάδα/);
+    assert.equal(report.cwvCarried, true, 'RUM ran today: no carried label');
     if (shots) {
         fs.mkdirSync(shots, { recursive: true });
         await page.screenshot({ path: path.join(shots, 'dashboard-mobile-dark.png'), fullPage: true });
@@ -198,6 +220,65 @@ try {
     assert.ok(await visible(session.page, 'report'), 'five-model snapshot remains valid');
     assert.match(await session.page.$eval('[data-table="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
     await finish(session, 'editorial-only legacy');
+
+    // I-06C3 discovery day: discovery ran today over the primary window; the RUM pair is labelled as carried.
+    for (const [width, scheme] of [[390, 'dark'], [1280, 'light']]) {
+        session = await open(discoveryDay, { width, scheme });
+        await unlock(session.page, key);
+        const discovery = await session.page.evaluate(() => {
+            const rows = name => [...document.querySelectorAll(`[data-table="${name}"] tbody tr`)].map(tr => [...tr.cells].map(td => td.textContent));
+            return {
+                heading: document.getElementById('discovery-title').textContent,
+                window: document.querySelector('[data-field="discovery-window"]').textContent,
+                freshness: document.querySelector('[data-field="discovery-freshness"]').textContent,
+                surfaces: rows('discovery-surfaces'), sections: rows('discovery-sections'),
+                articles: rows('discovery-articles'), transitions: rows('discovery-transitions'),
+                unmapped: document.querySelector('[data-table="discovery-surfaces"] .dash-copy')?.textContent || '',
+                injected: document.querySelectorAll('[data-state="report"] img, [data-state="report"] script').length,
+                notes: document.querySelectorAll('[aria-labelledby="discovery-title"] .dash-notes li').length,
+                overflowing: [...document.querySelectorAll('[data-table^="discovery-"]')].filter(el => el.scrollWidth > el.clientWidth).map(el => el.dataset.table),
+                cwv: document.querySelector('[data-field="cwv-carried"]'), rum: document.querySelector('[data-field="rum-carried"]')
+            };
+        });
+        const carried = await session.page.evaluate(() => ['cwv-carried', 'rum-carried'].map(name => {
+            const element = document.querySelector(`[data-field="${name}"]`);
+            return [element.hidden, element.textContent];
+        }));
+        assert.equal(discovery.heading, 'Εσωτερική ανακάλυψη άρθρων');
+        assert.match(discovery.window, /^\d{1,2} [^\s]+ \d{4} – \d{1,2} [^\s]+ \d{4}$/);
+        assert.equal(discovery.freshness, 'Εβδομαδιαία ενότητα: ανανεώθηκε σε αυτό το στιγμιότυπο.');
+        assert.deepEqual(discovery.surfaces, [['Αρχική · home', '34', 'επαρκές'], ['Άρθρο · article', '9', 'μικρό δείγμα'],
+            ['Έκδοση / αρχείο · edition', '5', 'μικρό δείγμα'], ['Σελίδα οντότητας · entity_hub', '3', 'μικρό δείγμα'],
+            ['Άλλο / μη αναγνωρισμένο · other', '2', 'μικρό δείγμα'], ['Συντάκτες · authors', '1', 'μικρό δείγμα']]);
+        assert.match(discovery.unmapped, /^2 από αυτά τα κλικ οδηγούν σε μη αντιστοιχισμένα άρθρα/);
+        assert.deepEqual(discovery.sections, [['Κάρτες και σύνδεσμοι άρθρων · article_link', '46', 'επαρκές'], ['Μενού πλοήγησης · navigation', '9', 'μικρό δείγμα'],
+            ['Υποσέλιδο · footer', '2', 'μικρό δείγμα'], ['Άλλος σύνδεσμος σελίδας · page', '2', 'μικρό δείγμα'], ['Άλλο / μη αναγνωρισμένο · other', '1', 'μικρό δείγμα']]);
+        // Destinations are summed over every surface and section: 34 + 9 + 1 reaches the minimum only as a total.
+        assert.deepEqual(discovery.articles, [['Ταχύτερος γύρος', 'Ανάλυση', '44', 'επαρκές'],
+            ['Ειδήσεις <img src=x onerror=alert(1)>', 'Ιστορία', '8', 'μικρό δείγμα']]);
+        assert.equal(discovery.injected, 0, 'titles are text, never markup');
+        assert.deepEqual(discovery.transitions[0], ['Αρχική · home', 'Άρθρο · article', '34', 'επαρκές']);
+        assert.deepEqual(discovery.transitions.at(-1), ['Αρχική · home', 'Χωρίς διαδρομή · missing', '1', 'μικρό δείγμα']);
+        assert.equal(discovery.transitions.length, 8);
+        assert.equal(discovery.notes, 3, 'the click, consent and small-sample limits are stated');
+        assert.deepEqual(discovery.overflowing, [], `every discovery column stays in view at ${width}px, without sideways scrolling`);
+        for (const [hidden, note] of carried) {
+            assert.equal(hidden, false);
+            assert.match(note, /^Στοιχεία της προηγούμενης ημερήσιας ενημέρωσης \(.+\): σήμερα έτρεξε στη θέση τους η εβδομαδιαία ενότητα ανακάλυψης\.$/);
+        }
+        if (shots) await (await session.page.$('[aria-labelledby="discovery-title"]')).screenshot({ path: path.join(shots, `dashboard-discovery-${width}.png`) });
+        await session.page.click('[data-lock]');
+        assert.equal(await session.page.evaluate(() => document.querySelectorAll('[data-table^="discovery-"] *').length), 0, 'locking clears discovery');
+        await finish(session, `discovery day ${width}`);
+    }
+
+    // The following days carry discovery, labelled with its age; RUM runs again.
+    session = await open(discoveryCarried);
+    await unlock(session.page, key);
+    assert.deepEqual(await session.page.evaluate(() => [document.querySelector('[data-field="discovery-freshness"]').textContent,
+        document.querySelector('[data-field="cwv-carried"]').hidden, document.querySelectorAll('[data-table="discovery-articles"] tbody tr').length]),
+    ['Εβδομαδιαία ενότητα: στοιχεία της ενημέρωσης πριν από 1 ημέρα. Ανανεώνεται κάθε 7 ημέρες.', true, 2]);
+    await finish(session, 'discovery carried');
 
     session = await open(fourDays);
     await unlock(session.page, key);

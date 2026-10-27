@@ -1,6 +1,7 @@
 name: Intelligence Snapshot
 
-# I-06B/I-06C1 (docs/intelligence/dashboard-snapshots.md): once a day, run seven bounded existing BigQuery models over the
+# I-06B/I-06C (docs/intelligence/dashboard-snapshots.md): once a day, run seven bounded existing BigQuery models (weekly,
+# the two discovery models replace the two RUM models, which are carried from the day before) over the
 # latest mature days (up to 28, none before the 2026-10-19 export start), encrypt the aggregates, commit only the
 # encrypted envelope, then dispatch Deploy Pages.
 # Owner-approved scheduled refreshes are enabled in scripts/intelligence/snapshot.mjs (2026-10-27).

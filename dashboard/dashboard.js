@@ -107,6 +107,96 @@
         target.appendChild(list);
     }
 
+    // Greek names for the models' own classes (13 source_surface, 28 classify_path, link_section_class). The raw
+    // class always stays visible, and an unlisted value is shown as is, never renamed or dropped.
+    var CLASS_NAMES = {
+        home: 'Αρχική', article: 'Άρθρο', edition: 'Έκδοση / αρχείο', entity_hub: 'Σελίδα οντότητας', authors: 'Συντάκτες',
+        standings: 'Βαθμολογίες', legal: 'Νομικά', author_tool: 'Εργαλείο συντακτών', missing: 'Χωρίς διαδρομή',
+        other: 'Άλλο / μη αναγνωρισμένο', article_link: 'Κάρτες και σύνδεσμοι άρθρων', navigation: 'Μενού πλοήγησης',
+        footer: 'Υποσέλιδο', page: 'Άλλος σύνδεσμος σελίδας', cta: 'Κουμπί δράσης', article_share: 'Κοινοποίηση',
+        sponsor: 'Χορηγός', social: 'Κοινωνικά δίκτυα', '(none)': 'Χωρίς τιμή'
+    };
+
+    function className(value) {
+        var text = value === null || value === undefined ? '(none)' : String(value);
+        return Object.prototype.hasOwnProperty.call(CLASS_NAMES, text) ? CLASS_NAMES[text] + ' · ' + text : text;
+    }
+
+    // Sums click_events per key. Every input row is one disjoint group of events, so sums never double count.
+    function clickTotals(rows, keyOf) {
+        var groups = new Map();
+        rows.forEach(function (row) {
+            var key = keyOf(row);
+            if (!groups.has(key)) groups.set(key, { row: row, clicks: 0 });
+            groups.get(key).clicks += row.click_events;
+        });
+        return Array.from(groups.values()).sort(function (a, b) {
+            return b.clicks - a.clicks || String(keyOf(a.row)).localeCompare(String(keyOf(b.row)), 'el');
+        });
+    }
+
+    function clickTable(target, rows, columns, minimum, empty) {
+        if (!rows.length) return target.appendChild(node('p', empty, 'dash-copy'));
+        table(target, columns.concat([
+            ['Κλικ', function (g) { return integer.format(g.clicks); }],
+            ['Δείγμα', function (g) { return sample(g.clicks >= minimum); }]
+        ]), rows);
+    }
+
+    // I-06C3: 13-article-discovery and 28-internal-navigation run weekly and are carried in between, so their own as_of
+    // day is shown. Snapshots from before I-06C3 have neither and show a pending state.
+    function renderDiscovery(header, payload) {
+        var models = payload.models, minimum = payload.minEvents;
+        var discovery = models['13-article-discovery'], navigation = models['28-internal-navigation'];
+        var none = 'Δεν καταγράφηκαν κλικ στην περίοδο. Αυτό δεν αποδεικνύει ότι δεν έγιναν (συναίνεση, καταγραφή).';
+        var targets = ['discovery-surfaces', 'discovery-sections', 'discovery-articles', 'discovery-transitions'].map(function (name) {
+            return slot('table', name);
+        });
+        if (!Array.isArray(discovery) || !Array.isArray(navigation)) {
+            field('discovery-window').textContent = 'σε αναμονή';
+            field('discovery-freshness').textContent = '';
+            targets.forEach(function (target) {
+                target.appendChild(node('p', 'Η ενότητα ανανεώνεται μία φορά την εβδομάδα και θα εμφανιστεί μετά την επόμενη εβδομαδιαία ενημέρωση.', 'dash-copy'));
+            });
+            return;
+        }
+        var scope = payload.modelWindows && payload.modelWindows['13-article-discovery'];
+        var asOf = scope && scope.asOf ? scope.asOf : header.asOf;
+        var start = scope ? scope.start : header.start, end = scope ? scope.end : header.end;
+        var age = Math.round((Date.parse(header.asOf) - Date.parse(asOf)) / 86400000);
+        field('discovery-window').textContent = day(start, true) + ' – ' + day(end, true);
+        field('discovery-freshness').textContent = 'Εβδομαδιαία ενότητα: ' + (age === 0
+            ? 'ανανεώθηκε σε αυτό το στιγμιότυπο.'
+            : 'στοιχεία της ενημέρωσης πριν από ' + age + (age === 1 ? ' ημέρα' : ' ημέρες') + '. Ανανεώνεται κάθε 7 ημέρες.');
+
+        var unmapped = discovery.filter(function (r) { return r.destination_article_id === '(unmapped)'; })
+            .reduce(function (sum, r) { return sum + r.click_events; }, 0);
+        clickTable(targets[0], clickTotals(discovery, function (r) { return r.source_surface; }),
+            [['Επιφάνεια προέλευσης', function (g) { return className(g.row.source_surface); }]], minimum, none);
+        if (unmapped) {
+            targets[0].appendChild(node('p', integer.format(unmapped) + ' από αυτά τα κλικ οδηγούν σε μη αντιστοιχισμένα άρθρα (εκτός καταλόγου) και δεν μπαίνουν στην κατάταξη άρθρων.', 'dash-copy'));
+        }
+        clickTable(targets[1], clickTotals(navigation, function (r) { return r.link_section; }),
+            [['Στοιχείο (link_section)', function (g) { return className(g.row.link_section); }]], minimum, none);
+        clickTable(targets[2], clickTotals(discovery.filter(function (r) { return r.destination_article_id !== '(unmapped)'; }),
+            function (r) { return r.destination_article_id; }).slice(0, 15), [
+            ['Άρθρο', function (g) { return g.row.title || 'Άρθρο χωρίς τίτλο'; }],
+            ['Κατηγορία', function (g) { return g.row.primary_category || '—'; }]
+        ], minimum, none);
+        clickTable(targets[3], clickTotals(navigation, function (r) { return r.source_section + '\u0000' + r.destination_section; }), [
+            ['Από', function (g) { return className(g.row.source_section); }],
+            ['Προς', function (g) { return className(g.row.destination_section); }]
+        ], minimum, none);
+    }
+
+    // On a discovery day the RUM pair is carried from the previous snapshot; its own as_of day and window are shown.
+    function carriedNote(name, scope) {
+        var target = field(name);
+        target.hidden = !(scope && scope.asOf);
+        target.textContent = target.hidden ? '' : 'Στοιχεία της προηγούμενης ημερήσιας ενημέρωσης (' + day(scope.start, true) + ' – '
+            + day(scope.end, true) + '): σήμερα έτρεξε στη θέση τους η εβδομαδιαία ενότητα ανακάλυψης.';
+    }
+
     function p75(row) {
         if (row.p75 === null) return '—';
         return row.metric === 'CLS' ? row.p75.toFixed(3).replace('.', ',') : integer.format(Math.round(row.p75)) + ' ms';
@@ -237,6 +327,10 @@
                     + ' προβολές σε μη αντιστοιχισμένα άρθρα δεν περιλαμβάνονται στην κατάταξη.', 'dash-copy'));
             }
         }
+
+        renderDiscovery(header, payload);
+        carriedNote('cwv-carried', payload.modelWindows && payload.modelWindows['30-cwv-summary']);
+        carriedNote('rum-carried', payload.modelWindows && payload.modelWindows['33-rum-coverage']);
 
         var categories = models['11-category-pageviews'];
         categoryBars(slot('chart', 'categories'), categories);

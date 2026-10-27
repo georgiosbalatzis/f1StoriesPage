@@ -30,7 +30,7 @@ browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the k
 
 | | |
 | --- | --- |
-| Models | `10-article-pageviews` (I-06C1), `11-category-pageviews`, `20-daily-activity`, `26-acquisition-session` (7 days), `29-audience-coverage` (7 days), `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed) |
+| Models | `10-article-pageviews` (I-06C1), `11-category-pageviews`, `13-article-discovery` (I-06C3, weekly), `20-daily-activity`, `26-acquisition-session` (7 days), `28-internal-navigation` (I-06C3, weekly), `29-audience-coverage` (7 days), `30-cwv-summary`, `33-rum-coverage`, rendered by `editorial-model.mjs` (SQL not copied or changed). Seven run per refresh; see [I-06C3](#i-06c3--editorial-discovery-weekly-rotation) |
 | Source | `f1-stories-analytics.analytics_485678890`, location `EU`, daily `events_YYYYMMDD` tables only |
 | `@as_of_day` | today in the property time zone `America/Los_Angeles`, computed when the job runs |
 | Window | Primary: mature rolling 28 days. Session acquisition + audience coverage: same mature end day but rolling **7 days** (or fewer since 2026-10-19). Both are separately labeled in the encrypted payload. |
@@ -82,8 +82,8 @@ below apply only to this workflow's BigQuery queries.
 | --- | --- |
 | Owner-approved billable refreshes enabled; emergency disable remains tested | `snapshot.mjs` (`ENABLED = true`); the disabled-mode unit test |
 | Manual runs default to `dry-run` (free) | workflow input |
-| Seven allowlisted models only; no client-supplied SQL | `SNAPSHOT_MODELS` |
-| Mandatory dry-run of all seven queries before any execution | `refresh()` |
+| Nine allowlisted models, at most seven run per refresh; no client-supplied SQL | `SNAPSHOT_MODELS`, `schedule()` |
+| Mandatory dry-run of every query of the day before any execution | `refresh()` |
 | Conservative estimate per query: max(processed bytes rounded up to 1 MiB, 10 MiB × tables) | `conservativeBytes()` |
 | Table count: max(tables the dry-run lists, daily tables the model's base scans), so one listed wildcard still counts 28/29 | `scannedTables()` |
 | Per query: estimate ≤ 400 MiB, else nothing runs | `preflight()` |
@@ -107,7 +107,7 @@ Limitations:
 
 - **Not a total-cost cap.** These limits do not cover storage, the GA4 export, other BigQuery users or projects,
   or any other Google service. They cannot keep the account under 10 EUR on their own.
-- With seven models, the 1600 MiB daily ceiling is stricter than the combined per-query caps (2800 MiB).
+- With seven queries per refresh, the 1600 MiB daily ceiling is stricter than the combined per-query caps (2800 MiB).
   It preflights the entire plan and checks billed bytes after each query; it cannot undo a query already run.
 - The dry-run estimate is processed bytes plus the per-table minimum, not billed bytes. `maximumBytesBilled` is
   the backstop: a query that would bill more fails, and failed queries are not billed.
@@ -304,3 +304,88 @@ an absolute spending cutoff and no custom BigQuery quota was configured.
 
 No additional Cloud IAM, secrets, network endpoints, JavaScript storage, browser BigQuery access, or analytics
 tracking are introduced. The previous encrypted snapshot remains public and valid if the new refresh fails.
+
+## I-06C3 — Editorial discovery (weekly rotation)
+
+Reuses two **existing, unchanged** models: `13-article-discovery` (I-03) and `28-internal-navigation` (I-04). No
+SQL, source/section classifier, GA4 tracking or consent code changes.
+
+**The cost conflict.** With d mature days (at most 28) and a acquisition days (at most 7), the seven daily models plan
+10 · (5d + 2) + 20a MiB at the 10 MiB-per-table floor: **1560 MiB** at full length. That leaves 40 MiB under the
+unchanged 1600 MiB ceiling. Each discovery model scans d tables (d · 10 MiB). Options considered:
+
+| Design | Worst day (floor) | Discovery coverage | Verdict |
+| --- | --- | --- | --- |
+| Add 13 + 28 daily at 28 days | 2120 MiB | 28 days | exceeds 1600 |
+| Add 13 + 28 daily within the 40 MiB headroom | 1600 MiB | **2 days** | misleading, rejected |
+| Weekly: 13 + 28 over 7 days in place of the acquisition pair | 1560 MiB | 7 days | almost every row a small sample; acquisition stale weekly |
+| Weekly: 13 + 28 over 28 days in place of 10 + 11 | 1560 MiB | 28 days | article rankings stale weekly |
+| **Weekly: 13 + 28 over the primary window in place of the RUM pair (30 + 33)** | **1540 MiB** (normal days 1560) | **28 days** | **chosen** |
+| Relax the per-table floor using observed billing | — | — | rejected: weakens the conservative estimate |
+
+**Chosen design (`schedule()` in `snapshot.mjs`).**
+
+- *Normal day:* 10, 11, 20, 26, 29, 30 and 33 run, as before. The most recent discovery results are carried from the
+  previous snapshot and labelled with their own `as_of` day. Carried discovery older than 13 days is dropped, and
+  the panel shows "pending".
+- *Discovery day:* discovery is due when it is missing or at least 7 days old, **and** the previous snapshot is exactly
+  yesterday's and contains both RUM models. That day, 10, 11, 13, 20, 26, 28 and 29 run. 30 and 33 are carried from
+  yesterday and labelled in the Core Web Vitals and RUM panels.
+- If RUM cannot be carried (a missed schedule, a rotated key, a damaged or legacy-shaped snapshot), discovery waits.
+  It never runs at the cost of an unlabelled gap.
+- Every day: seven queries, one refresh, every query dry-run and preflighted, `maximumBytesBilled` 400 MiB, and the
+  1600 MiB ceiling. Nothing about the limits changed.
+- Carried rows come from the previously published envelope. They are decrypted with the same key, authenticated by
+  AES-GCM, and accepted only when every row covers exactly the window the rules give for its `as_of` day.
+
+**Reporting windows.**
+
+| Models | Window | Refresh |
+| --- | --- | --- |
+| 10, 11, 20 | primary: latest 28 mature days (fewer since 2026-10-19) | daily |
+| 26, 29 | latest 7 mature days within the primary window | daily |
+| 30, 33 | primary | daily, except discovery days (carried from the day before, labelled) |
+| **13, 28** | **primary, as of their discovery day** | **weekly**, carried in between (labelled with their age) |
+
+**Worst-case conservative cost** (10 MiB × scanned tables; RUM scans one extra day):
+
+| Day type | Full window (d = 28) | 4-day window |
+| --- | --- | --- |
+| Normal | 280 + 280 + 280 + 70 + 70 + 290 + 290 = **1560 MiB** | 300 MiB |
+| Discovery | 280 + 280 + 280 + 280 + 70 + 280 + 70 = **1540 MiB** | 280 MiB |
+
+The maximum planned daily bytes stay at **1560 MiB** for every supported window (a test checks every window from 1 to
+28 days and both day types). The only live evidence so far is one 4-model refresh on 2026-10-27. It billed **10.00 MiB per
+query** against 50–60 MiB planned, so the wildcard appears to be billed as one table. That is a single observation;
+the conservative floor is kept.
+
+**What the panel shows** (`/dashboard/`, *Εσωτερική ανακάλυψη άρθρων*):
+
+- **A. Where article clicks originate:** model 13 summed by `source_surface` (`home`, `article`, `edition`,
+  `entity_hub`, `authors`, `standings`, `other`). Clicks to unmapped destinations are counted here and stated
+  separately.
+- **B. Which elements attract clicks:** model 28 summed by `link_section`, the I-04 allowlist of `analytics.js`
+  `classifyLink()` values. `article_link` covers cards, grids **and** previous/next links. The tracking does not
+  separate them, so the panel does not invent a "next up" class.
+- **C. Most-clicked articles:** model 13 summed by canonical `destination_article_id`. The models map retired aliases
+  to their live article, so nothing is double-counted. `(unmapped)` is excluded from the ranking, and the top 15 are
+  shown.
+- **D. Section to section:** model 28 summed by (`source_section`, `destination_section`), the I-01 `classify_path`
+  classes. These are click pairs, not reconstructed journeys or sessions.
+- Each class shows a Greek label next to its raw value. Unknown values are shown as is. Every row shows its count and
+  a small-sample flag (sum < 30). There are no rates, conversions or session inferences. The Greek notes state that a
+  click is not a page view or visit and does not prove the destination loaded, that clicks without consent,
+  modifier/middle clicks and typed URLs are never recorded, and that zero does not prove non-use.
+
+**Compatibility.** The envelope format and header are unchanged. Snapshots without discovery (4-, 5- and 7-model)
+open as before and show the discovery panel as pending. Discovery appears on the first discovery day after merge:
+the day after any snapshot with yesterday's RUM, normally the next scheduled run.
+
+**Guards.** Both new model names are in the plaintext guards of `validate-public-artifact.mjs` and
+`static-source-guard.mjs`; a test derives the required list from `SNAPSHOT_MODELS`. No new secret, IAM permission,
+Google Cloud service, network origin or CSP change.
+
+**Production validation still required:** the first discovery-day dry-run and its `totalBytesBilled` (expected ≤ 1540 MiB
+planned, about 70 MiB billed if the 10 MiB-per-query pattern holds); that `internal_page_click` rows carry
+`page_location`, `link_path` and `link_section` as `analytics.js` sends them (marked unverified in
+editorial-model.md); and a check that carried Core Web Vitals labels appear on that day.

@@ -13,7 +13,8 @@ import { readInputs, renderModel } from '../editorial-model.mjs';
 import {
     ACQUISITION_WINDOW_DAYS, DAILY_MAX_BYTES, ENABLED, EXPORT_START, MATURITY_DAYS, MAX_BYTES_BILLED, PROJECT, PROPERTY, REPORT_TIMEZONE, SNAPSHOT_MODELS,
     SNAPSHOT_PATH, WINDOW_DAYS, assertEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh,
-    resultRows, scannedTables, sealSnapshot, snapshotWindow, modelWindow, windowDays, windowFor
+    resultRows, scannedTables, sealSnapshot, snapshotWindow, modelWindow, windowDays, windowFor,
+    DISCOVERY_EVERY_DAYS, DISCOVERY_MAX_AGE_DAYS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY, openSnapshot, schedule
 } from '../snapshot.mjs';
 import { fakeClient, queryResult, syntheticRows } from './snapshot-fixture.mjs';
 
@@ -177,11 +178,12 @@ test('each model gets exactly its validated parameters, and a malformed one fail
     assert.throws(() => parametersFor('SELECT @unknown_thing', WINDOW), /@unknown_thing/);
 });
 
-test('owner-approved activation preserves cost caps and the seven-model allowlist', async () => {
+test('owner-approved activation preserves cost caps and the nine-model allowlist, seven per day', async () => {
     assert.equal(ENABLED, true);
     assert.equal(MAX_BYTES_BILLED, 400 * 1048576);
     assert.equal(DAILY_MAX_BYTES, 1600 * 1048576);
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['10-article-pageviews', '11-category-pageviews', '20-daily-activity', '26-acquisition-session', '29-audience-coverage', '30-cwv-summary', '33-rum-coverage']);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS), ['10-article-pageviews', '11-category-pageviews', '13-article-discovery', '20-daily-activity',
+        '26-acquisition-session', '28-internal-navigation', '29-audience-coverage', '30-cwv-summary', '33-rum-coverage']);
     // The emergency disable path must still fail closed, even when config is otherwise valid.
     const client = fakeClient(WINDOW);
     await assert.rejects(refresh({ mode: 'refresh', enabled: false, root: tempRoot(), env: env(), now: NOW, client, log: quiet }), /billable refreshes are disabled/);
@@ -213,8 +215,8 @@ test('acquisition and coverage have the same bounded seven-day mature window', a
 test('estimates count every scanned daily table, even when a dry-run lists the wildcard as one', () => {
     const job = (processed, tables) => ({ statistics: { query: { totalBytesProcessed: processed, referencedTables: Array(tables).fill({ tableId: 'events_*' }) } } });
     // The editorial and audience bases read the window's days; the RUM base also reads the day before.
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, WINDOW))), [28, 28, 28, 7, 7, 29, 29]);
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, windowFor('2026-10-26')))), [4, 4, 4, 4, 4, 5, 5]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, WINDOW))), [28, 28, 28, 28, 7, 28, 7, 29, 29]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, windowFor('2026-10-26')))), [4, 4, 4, 4, 4, 4, 4, 5, 5]);
     // One listed wildcard table: the 10 MiB per-table minimum still applies to all 28 or 29 tables.
     assert.deepEqual(conservativeBytes(job('1000', 1), 28), { processed: 1000, referenced: 1, tables: 28, estimate: 280 * 1048576 });
     assert.equal(conservativeBytes(job('1000', 1), 29).estimate, 290 * 1048576);
@@ -382,7 +384,9 @@ test('encrypt/decrypt round trip through the browser code, with a fresh nonce ev
 
     const browser = browserSnapshot();
     const { payload } = await browser.open(browser.parseEnvelope(text), keyText);
-    assert.deepEqual(JSON.parse(JSON.stringify(payload.models)), syntheticRows(WINDOW));
+    // No earlier snapshot: the normal seven models run, and discovery is pending.
+    const normal = Object.fromEntries(Object.entries(syntheticRows(WINDOW)).filter(([model]) => !DISCOVERY_MODELS.includes(model)));
+    assert.deepEqual(JSON.parse(JSON.stringify(payload.models)), normal);
     assert.deepEqual({ ...payload.window }, { ...WINDOW, timezone: 'America/Los_Angeles' });
     assert.equal(payload.minEvents, 30);
 
@@ -509,10 +513,196 @@ test('no other workflow can reach Google credentials or the snapshot key; pull r
     assert.doesNotMatch(workflow, /pull_request|push:|workflow_run|repository_dispatch/);
 });
 
-test('the plaintext artifact guards cover the I-06C1 article ranking model', () => {
+test('the plaintext artifact guards cover every snapshot model, including discovery', () => {
     for (const file of ['scripts/build/validate-public-artifact.mjs', 'scripts/quality/static-source-guard.mjs']) {
-        assert.match(read(file), /10-article-pageviews\|11-category-pageviews\|20-daily-activity\|26-acquisition-session\|29-audience-coverage/, file);
+        const names = read(file).match(/"\(\?:((?:\d\d-[a-z-]+\|?)+)\)"\\s\*:/)[1].split('|');
+        assert.deepEqual(Object.keys(SNAPSHOT_MODELS).filter(model => !names.includes(model)), [], file);
     }
+});
+
+// I-06C3 -------------------------------------------------------------------------------------------------------------
+const MiB = 1048576;
+const floor = (models, window) => models.reduce((sum, model) => sum + scannedTables(model, modelWindow(model, window)) * 10 * MiB, 0);
+// A chain of daily refreshes sharing one root and key, as on main: each day reads the snapshot the day before published.
+async function chain(days, { from = '2026-11-19', keyText = newKey(), root = tempRoot(), skip = [], client = window => fakeClient(window) } = {}) {
+    const results = [];
+    for (let i = 0; i < days; i++) {
+        const asOf = new Date(Date.parse(`${from}T00:00:00Z`) + i * 86400000).toISOString().slice(0, 10);
+        if (skip.includes(asOf)) continue;
+        const now = new Date(`${asOf}T23:00:00Z`);
+        const calls = client(snapshotWindow(now));
+        const text = await run({ client: calls, now, root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) });
+        install(text, root);
+        results.push({ asOf, ran: calls.calls.runs.map(r => r.jobId.match(/_(\d\d_[a-z_]+)_[0-9a-f]{16}$/)[1].replaceAll('_', '-')),
+            snapshot: openSnapshot(text, Buffer.from(keyText, 'base64')) });
+    }
+    return results;
+}
+
+test('every supported window, normal or discovery day, plans at most 1560 MiB at the per-table floor; limits unchanged', () => {
+    assert.equal(MAX_BYTES_BILLED, 400 * MiB);
+    assert.equal(DAILY_MAX_BYTES, 1600 * MiB);
+    const all = Object.keys(SNAPSHOT_MODELS);
+    const normal = all.filter(model => !DISCOVERY_MODELS.includes(model));
+    const discoveryDay = all.filter(model => !ROTATED_FOR_DISCOVERY.includes(model));
+    // Running all nine daily would need 2120 MiB: the rotation exists because that does not fit.
+    assert.equal(floor(all, WINDOW), 2120 * MiB);
+    let worst = 0;
+    for (let asOf = '2026-10-23'; asOf <= '2026-11-25'; asOf = new Date(Date.parse(`${asOf}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)) {
+        const window = windowFor(asOf);
+        assert.ok(windowDays(window) >= 1 && windowDays(window) <= 28);
+        for (const models of [normal, discoveryDay]) {
+            assert.equal(models.length, 7);
+            for (const model of models) assert.ok(scannedTables(model, modelWindow(model, window)) * 10 * MiB <= MAX_BYTES_BILLED, `${asOf} ${model}`);
+            assert.ok(floor(models, window) <= DAILY_MAX_BYTES, asOf);
+            worst = Math.max(worst, floor(models, window));
+        }
+    }
+    assert.equal(worst, 1560 * MiB);
+    assert.equal(floor(discoveryDay, WINDOW), 1540 * MiB);
+    // Discovery uses the primary window: the full 28 days (or every mature day), never a shortened one.
+    for (const model of DISCOVERY_MODELS) {
+        assert.deepEqual(modelWindow(model, WINDOW), WINDOW);
+        assert.deepEqual(modelWindow(model, windowFor('2026-10-26')), windowFor('2026-10-26'));
+    }
+});
+
+test('discovery models get their validated parameters over the primary window', () => {
+    const inputs = readInputs();
+    for (const window of [WINDOW, windowFor('2026-10-26'), windowFor('2026-10-29')]) {
+        for (const model of DISCOVERY_MODELS) {
+            const parameters = parametersFor(renderModel(model, { project: PROJECT, property: PROPERTY, ...inputs }), modelWindow(model, window));
+            assert.deepEqual(parameters.map(p => [p.name, p.parameterValue.value]),
+                [['as_of_day', window.asOf], ['end_day', window.end], ['min_events', '30'], ['start_day', window.start]], model);
+        }
+    }
+});
+
+test('the weekly rotation runs discovery in place of RUM, carries the rest, and never runs more than seven queries', async () => {
+    const days = await chain(16);
+    const discoveryRuns = days.filter(day => day.ran.includes('13-article-discovery')).map(day => day.asOf);
+    // Day 1 has no snapshot to carry RUM from, so discovery starts on day 2, then every seven days.
+    assert.deepEqual(discoveryRuns, ['2026-11-20', '2026-11-27', '2026-12-04']);
+    for (const day of days) {
+        assert.equal(day.ran.length, 7, day.asOf);
+        const discovery = discoveryRuns.includes(day.asOf);
+        assert.equal(day.ran.includes('30-cwv-summary'), !discovery, day.asOf);
+        const { payload, header } = day.snapshot;
+        // Every published snapshot after day 1 has all nine models; carried ones are labelled with their own as_of.
+        assert.deepEqual(Object.keys(payload.models).sort(), day.asOf === '2026-11-19'
+            ? Object.keys(SNAPSHOT_MODELS).filter(model => !DISCOVERY_MODELS.includes(model)).sort() : Object.keys(SNAPSHOT_MODELS).sort(), day.asOf);
+        if (discovery) {
+            const yesterday = new Date(Date.parse(`${day.asOf}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+            for (const model of ROTATED_FOR_DISCOVERY) assert.deepEqual(payload.modelWindows[model], { asOf: yesterday, ...(({ start, end }) => ({ start, end }))(windowFor(yesterday)) });
+            for (const model of DISCOVERY_MODELS) assert.equal(payload.modelWindows[model], undefined, 'discovery ran today, over the primary window');
+        } else if (day.asOf !== '2026-11-19') {
+            const ran = discoveryRuns.filter(asOf => asOf < day.asOf).at(-1);
+            for (const model of DISCOVERY_MODELS) assert.deepEqual(payload.modelWindows[model], { asOf: ran, start: windowFor(ran).start, end: windowFor(ran).end }, day.asOf);
+            for (const row of payload.models['13-article-discovery']) assert.deepEqual([row.from_day, row.through_day], [windowFor(ran).start, windowFor(ran).end]);
+        }
+        assert.equal(header.asOf, day.asOf);
+    }
+});
+
+test('discovery is skipped, never forced, when RUM cannot be carried from exactly yesterday', async () => {
+    // A missed schedule: no snapshot for 20 Nov, so 21 Nov cannot carry one-day-old RUM and runs the normal set.
+    const days = await chain(4, { skip: ['2026-11-20'] });
+    assert.deepEqual(days.map(day => [day.asOf, day.ran.includes('13-article-discovery')]),
+        [['2026-11-19', false], ['2026-11-21', false], ['2026-11-22', true]]);
+    // A legacy seven-model snapshot (no discovery) qualifies as soon as it is yesterday's.
+    const legacy = schedule(windowFor('2026-11-20'), { header: { asOf: '2026-11-19', ...windowFor('2026-11-19') },
+        payload: { models: Object.fromEntries(Object.entries(syntheticRows(windowFor('2026-11-19'))).filter(([model]) => !DISCOVERY_MODELS.includes(model))), modelWindows: {} } });
+    assert.deepEqual(legacy.run.includes('13-article-discovery'), true);
+    // An unreadable previous snapshot (rotated key, damage) carries nothing and runs the normal set.
+    assert.deepEqual(schedule(windowFor('2026-11-20'), null).run, Object.keys(SNAPSHOT_MODELS).filter(model => !DISCOVERY_MODELS.includes(model)));
+    const other = tempRoot();
+    await chain(1, { root: other });
+    const rotated = fakeClient(windowFor('2026-11-20'));
+    await run({ client: rotated, now: new Date('2026-11-20T23:00:00Z'), root: other });
+    assert.equal(rotated.calls.runs.some(r => r.jobId.includes('13_article_discovery')), false, 'a new key cannot open the old snapshot');
+});
+
+test('carried data must exactly match its own window; stale discovery is dropped, not shown as current', () => {
+    const today = windowFor('2026-12-10');
+    const snapshotFor = (asOf, mutate = rows => rows) => {
+        const window = windowFor(asOf);
+        const rows = syntheticRows(window);
+        return { header: { asOf, ...window }, payload: { models: { ...rows, '13-article-discovery': mutate(rows['13-article-discovery']) },
+            modelWindows: Object.fromEntries(DISCOVERY_MODELS.map(model => [model, { asOf, start: window.start, end: window.end }])) } };
+    };
+    // 13 days old: carried. 14 days old: dropped (pending), and RUM is not yesterday's either, so the normal set runs.
+    assert.deepEqual(Object.keys(schedule(today, snapshotFor('2026-11-27')).carried), DISCOVERY_MODELS);
+    assert.equal(DISCOVERY_MAX_AGE_DAYS, 13);
+    assert.deepEqual(schedule(today, snapshotFor('2026-11-26')).carried, {});
+    // Rows whose dates disagree with their label, or a label for a different window, are not carried.
+    assert.deepEqual(schedule(today, snapshotFor('2026-12-05', rows => rows.map(row => ({ ...row, through_day: '2026-12-02' })))).carried, {});
+    const relabelled = snapshotFor('2026-12-05');
+    relabelled.payload.modelWindows['13-article-discovery'].start = '2026-11-08';
+    assert.deepEqual(schedule(today, relabelled).carried, {});
+    // A label from the future is never carried.
+    assert.deepEqual(schedule(windowFor('2026-12-04'), snapshotFor('2026-12-05')).carried, {});
+    assert.equal(DISCOVERY_EVERY_DAYS, 7);
+});
+
+test('discovery results fail closed like every model: pagination, missing columns, out-of-window rows', async () => {
+    const rows = syntheticRows(WINDOW);
+    for (const model of DISCOVERY_MODELS) {
+        const result = queryResult(rows[model]);
+        assert.equal(resultRows(model, result, WINDOW).length, rows[model].length);
+        assert.equal(resultRows(model, { ...result, rows: [], totalRows: '0' }, WINDOW).length, 0, 'no clicks is a valid, empty result');
+        assert.throws(() => resultRows(model, { ...result, pageToken: 'next' }, WINDOW), /incomplete result/);
+        assert.throws(() => resultRows(model, { ...result, totalRows: String(rows[model].length + 1) }, WINDOW), /incomplete result/);
+        assert.throws(() => resultRows(model, { ...result, schema: { fields: result.schema.fields.filter(f => f.name !== 'click_events') } }, WINDOW), /no click_events column/);
+        assert.throws(() => resultRows(model, result, { ...WINDOW, start: '2026-10-20' }), /does not cover/);
+    }
+    // On a discovery day a bad discovery result fails the whole refresh: nothing is published.
+    const root = tempRoot();
+    const keyText = newKey();
+    await chain(1, { root, keyText });
+    const before = fs.readFileSync(path.join(root, SNAPSHOT_PATH), 'utf8');
+    const bad = fakeClient(windowFor('2026-11-20'), { mutate: (model, result) => (model === '28-internal-navigation' ? { ...result, pageToken: 'next' } : result) });
+    await assert.rejects(run({ client: bad, now: new Date('2026-11-20T23:00:00Z'), root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) }), /28-internal-navigation: incomplete result/);
+    assert.equal(fs.readFileSync(path.join(root, SNAPSHOT_PATH), 'utf8'), before);
+    // A missing export table stops a discovery day before any query, as on every day.
+    const missing = fakeClient(windowFor('2026-11-20'), { missingDay: '2026-11-01' });
+    await assert.rejects(run({ client: missing, now: new Date('2026-11-20T23:00:00Z'), root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) }), /events_20261101 is missing/);
+    assert.deepEqual([missing.calls.dryRuns.length, missing.calls.runs.length], [0, 0]);
+});
+
+test('a discovery day still passes the unchanged preflight and stops on over-billing', async () => {
+    const root = tempRoot();
+    const keyText = newKey();
+    await chain(1, { root, keyText });
+    const logs = [];
+    const client = fakeClient(windowFor('2026-11-20'), { processed: '1000' });
+    await run({ client, now: new Date('2026-11-20T23:00:00Z'), root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }), log: line => logs.push(line) });
+    assert.ok(logs.includes('preflight passed: ≤ 1540.00 MiB of the 1600.00 MiB daily ceiling; per-query cap 400.00 MiB'), logs.join('\n'));
+    assert.ok(logs.some(line => line.startsWith('running 10-article-pageviews, 11-category-pageviews, 13-article-discovery, 20-daily-activity, 26-acquisition-session, 28-internal-navigation, 29-audience-coverage; carrying 30-cwv-summary (as_of 2026-11-19), 33-rum-coverage (as_of 2026-11-19)')), logs.join('\n'));
+    // Same preflight rules: an oversized discovery estimate stops everything before any query runs.
+    const oversized = fakeClient(windowFor('2026-11-20'), { processed: String(400 * MiB + 1) });
+    await assert.rejects(run({ client: oversized, now: new Date('2026-11-20T23:00:00Z'), root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) }), /per-query cap; nothing was run/);
+    assert.equal(oversized.calls.runs.length, 0);
+    const overbilled = fakeClient(windowFor('2026-11-20'), { billed: 900 * MiB });
+    await assert.rejects(run({ client: overbilled, now: new Date('2026-11-20T23:00:00Z'), root, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) }), /passed the daily ceiling; stopping/);
+    assert.equal(overbilled.calls.runs.length, 2);
+});
+
+test('carried snapshots stay encrypted: no discovery value appears in the public envelope', async () => {
+    const keyText = newKey();
+    const days = await chain(3, { keyText });
+    const root = tempRoot();
+    await chain(2, { root, keyText });
+    const text = fs.readFileSync(path.join(root, SNAPSHOT_PATH), 'utf8');
+    for (const secret of ['Ταχύτερος γύρος', 'onerror', 'article_link', 'entity_hub', '13-article-discovery', '28-internal-navigation', keyText]) {
+        assert.equal(text.includes(secret), false, secret);
+    }
+    assert.ok(days[1].snapshot.payload.models['13-article-discovery'].length);
+    // A snapshot sealed under one key is unreadable under another, and tampering is rejected, not carried.
+    assert.equal(openSnapshot(text, crypto.randomBytes(32)), null);
+    const envelope = JSON.parse(text);
+    const data = Buffer.from(envelope.data, 'base64');
+    data[5] ^= 1;
+    assert.equal(openSnapshot(JSON.stringify({ ...envelope, data: data.toString('base64') }), Buffer.from(keyText, 'base64')), null);
 });
 
 test('the retired I-06A API leaves no code, dependency or route behind', () => {
