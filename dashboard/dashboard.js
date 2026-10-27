@@ -164,6 +164,35 @@
             ['Δείγμα', function (r) { return sample(r.meets_min_events); }]
         ], activity);
 
+        // I-06C1: existing encrypted snapshots (I-06B) may not yet include article rankings.
+        // The old four-model payload remains readable while the next daily snapshot is produced.
+        var articleTarget = slot('table', 'articles');
+        var articles = models['10-article-pageviews'];
+        if (!Array.isArray(articles)) {
+            articleTarget.appendChild(node('p', 'Η κατάταξη άρθρων θα εμφανιστεί με το επόμενο ημερήσιο στιγμιότυπο.', 'dash-copy'));
+        } else {
+            var unmapped = articles.filter(function (r) { return r.article_id === '(unmapped)'; });
+            var ranked = articles.filter(function (r) { return r.article_id !== '(unmapped)'; })
+                .sort(function (a, b) { return b.page_view_events - a.page_view_events || String(a.title || '').localeCompare(String(b.title || ''), 'el'); })
+                .slice(0, 15);
+            if (!ranked.length) {
+                articleTarget.appendChild(node('p', 'Δεν υπάρχουν ακόμη προβολές σε αναγνωρισμένα άρθρα για την περίοδο.', 'dash-copy'));
+            } else {
+                table(articleTarget, [
+                    ['Άρθρο', function (r) { return r.title || 'Άρθρο χωρίς τίτλο'; }],
+                    ['Κατηγορία', function (r) { return r.primary_category || '—'; }],
+                    ['page_view', function (r) { return integer.format(r.page_view_events); }],
+                    ['Ημέρες', function (r) { return integer.format(r.days_with_events); }],
+                    ['Δείγμα', function (r) { return sample(r.meets_min_events); }]
+                ], ranked);
+            }
+            var unmappedViews = unmapped.reduce(function (sum, r) { return sum + r.page_view_events; }, 0);
+            if (unmappedViews) {
+                articleTarget.appendChild(node('p', integer.format(unmappedViews)
+                    + ' προβολές σε μη αντιστοιχισμένα άρθρα δεν περιλαμβάνονται στην κατάταξη.', 'dash-copy'));
+            }
+        }
+
         var categories = models['11-category-pageviews'];
         categoryBars(slot('chart', 'categories'), categories);
         table(slot('table', 'categories'), [
