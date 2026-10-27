@@ -4,7 +4,8 @@ import { windowDays } from '../snapshot.mjs';
 
 const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
 const TYPES = { p75: 'FLOAT', good_share: 'FLOAT', meets_min_events: 'BOOLEAN', meets_min_observations: 'BOOLEAN',
-    core_web_vital: 'BOOLEAN', cohort_truncated: 'BOOLEAN', category: 'STRING', coverage: 'STRING', metric: 'STRING', stage: 'STRING' };
+    core_web_vital: 'BOOLEAN', cohort_truncated: 'BOOLEAN', category: 'STRING', coverage: 'STRING', metric: 'STRING', stage: 'STRING',
+    article_id: 'STRING', title: 'STRING', primary_category: 'STRING', author: 'STRING' };
 const typeOf = name => TYPES[name] || (/_day$|^extraction_through$/.test(name) ? 'DATE' : 'INTEGER');
 
 export function syntheticRows(window) {
@@ -21,6 +22,11 @@ export function syntheticRows(window) {
         }
     }
     return {
+        '10-article-pageviews': [
+            { article_id: 'a-fast', title: 'Ταχύτερος γύρος', published_day: '2026-10-21', primary_category: 'Ανάλυση', author: 'Συντακτική ομάδα', page_view_events: 42, via_retired_url_events: 1, days_with_events: 4, unmapped_keys: 0, meets_min_events: true },
+            { article_id: 'a-slow', title: 'Ειδήσεις <script>alert(1)</script>', published_day: '2026-10-19', primary_category: 'Ιστορία', author: 'Συντακτική ομάδα', page_view_events: 8, via_retired_url_events: 0, days_with_events: 2, unmapped_keys: 0, meets_min_events: false },
+            { article_id: '(unmapped)', title: null, published_day: null, primary_category: null, author: null, page_view_events: 2, via_retired_url_events: 0, days_with_events: 1, unmapped_keys: 1, meets_min_events: false }
+        ].map(row => ({ ...base, ...row })),
         '11-category-pageviews': [['Ανάλυση', 412, 18, 120, true], ['Ιστορία <b>', 96, 7, 80, true], ['(unmapped)', 4, 0, 0, false]]
             .map(([category, page_view_events, articles_with_events, catalog_articles, meets_min_events]) =>
                 ({ ...base, category, page_view_events, articles_with_events, catalog_articles, meets_min_events })),
