@@ -22,7 +22,7 @@
         <img src="/images/logo-nav.webp" alt="" width="40" height="40">
         <span class="dash-wordmark">F1 STORIES<span class="dash-dot">.</span></span>
     </a>
-    <span class="dash-eyebrow">Intelligence</span>
+    <span class="dash-eyebrow"><span class="dash-live-indicator" aria-hidden="true"></span> Editorial intelligence <span class="dash-eyebrow-private">/ Private workspace</span></span>
 </header>
 
 <main class="dash-main" id="main">
@@ -61,14 +61,30 @@
         <p class="dash-copy">Το κλειδί είναι σωστό, αλλά το αρχείο έχει αλλοιωθεί ή καταστραφεί. Δεν εμφανίζεται κανένα στοιχείο του.</p>
     </section>
 
-    <section class="dash-report" data-state="report" aria-labelledby="report-title" hidden>
+    <section class="dash-report" data-state="report" aria-labelledby="report-title" hidden id="overview">
         <div class="dash-panel dash-status">
-            <p class="dash-kicker" data-field="window"></p>
+            <div class="dash-hero-topline"><p class="dash-kicker">THE PADDOCK / EDITORIAL CONTROL ROOM</p><span class="dash-hero-mark">F1S · DATA</span></div>
+            <p class="dash-hero-overline">Από τις μετρήσεις στις αποφάσεις</p>
             <h1 id="report-title">Στοιχεία έως <span data-field="end"></span></h1>
-            <p class="dash-copy" data-field="updated"></p>
+            <p class="dash-hero-subtitle" data-field="window"></p>
+            <div class="dash-hero-footer">
+                <p class="dash-copy" data-field="updated"></p>
+                <button type="button" class="dash-secondary" data-lock>Κλείδωμα</button>
+            </div>
             <p class="dash-warning" role="status" data-stale hidden></p>
-            <button type="button" class="dash-secondary" data-lock>Κλείδωμα</button>
         </div>
+
+        <nav class="dash-jump-nav" aria-label="Πλοήγηση ενοτήτων Intelligence">
+            <a href="#activity-title">Επισκόπηση</a>
+            <a href="#acquisition-title">Πηγές</a>
+            <a href="#articles-title">Άρθρα</a>
+            <a href="#discovery-title">Discovery</a>
+            <a href="#cwv-title">Απόδοση</a>
+        </nav>
+
+        <section class="dash-metrics" aria-label="Συνοπτικές μετρήσεις">
+            <div data-metrics class="dash-metrics-grid"></div>
+        </section>
 
         <ul class="dash-notes">
             <li>Μόνο επισκέψεις με συναίνεση στα cookies ανάλυσης: δεν είναι όλοι οι αναγνώστες.</li>
@@ -77,6 +93,7 @@
         </ul>
 
         <section class="dash-panel" aria-labelledby="activity-title">
+            <div class="dash-section-label">01 / Audience pulse</div>
             <h2 id="activity-title">Ημερήσιες προβολές σελίδας</h2>
             <p class="dash-copy">Γεγονότα page_view ανά ημέρα (ζώνη ώρας ιδιοκτησίας: <span data-field="timezone"></span>). Αχνές στήλες: μικρό δείγμα.</p>
             <div class="dash-chart" data-chart="activity"></div>
@@ -84,20 +101,25 @@
         </section>
 
         <section class="dash-panel" aria-labelledby="acquisition-title">
+            <div class="dash-section-label">02 / Acquisition</div>
             <h2 id="acquisition-title">Από πού έρχονται οι αναγνώστες</h2>
             <p class="dash-copy">Απόδοση καναλιού τελευταίου κλικ της GA4 (session scope). Μόνο consented γεγονότα και το τελευταίο διάστημα έως 7 πλήρων ημερών: <span data-field="acquisition-window">—</span>. Μετράμε <code>session_start</code> και <code>page_view</code> events, όχι μοναδικούς επισκέπτες ή ακριβείς συνεδρίες.</p>
-            <div class="dash-scroll" data-table="acquisition"></div>
+            <div data-viz="acquisition" class="dash-ranking" aria-label="Κατανομή καναλιών GA4"></div>
+            <details class="dash-data-details"><summary>Αναλυτικός πίνακας πηγών</summary><div class="dash-scroll" data-table="acquisition"></div></details>
             <ul class="dash-checks" data-list="acquisition-quality"></ul>
             <p class="dash-copy">Το «unattributed» σημαίνει ότι η GA4 δεν προσδιόρισε έγκυρη πηγή· δεν είναι Direct. Οι ταξινομήσεις έχουν μικρό δείγμα και δεν ταυτίζονται με το Google Search Console.</p>
         </section>
 
         <section class="dash-panel" aria-labelledby="articles-title">
+            <div class="dash-section-label">03 / Editorial performance</div>
             <h2 id="articles-title">Άρθρα με τις περισσότερες προβολές</h2>
             <p class="dash-copy">Έως 15 άρθρα, βάσει των συναινετικών γεγονότων page_view. Δεν πρόκειται για μοναδικούς αναγνώστες ή κατάταξη δημοφιλίας χωρίς στατιστική αβεβαιότητα. Κάθε άρθρο με λιγότερα από 30 γεγονότα επισημαίνεται ως «μικρό δείγμα».</p>
-            <div class="dash-scroll" data-table="articles"></div>
+            <div data-viz="articles" class="dash-ranking" aria-label="Προβολές κορυφαίων άρθρων"></div>
+            <details class="dash-data-details"><summary>Αναλυτικός πίνακας άρθρων</summary><div class="dash-scroll" data-table="articles"></div></details>
         </section>
 
         <section class="dash-panel" aria-labelledby="discovery-title">
+            <div class="dash-section-label">04 / Internal discovery · Weekly</div>
             <h2 id="discovery-title">Εσωτερική ανακάλυψη άρθρων</h2>
             <p class="dash-copy">Κλικ σε εσωτερικούς συνδέσμους του site (γεγονότα <code>internal_page_click</code>, μόνο με συναίνεση), για την περίοδο <span data-field="discovery-window">—</span>. <span data-field="discovery-freshness"></span></p>
             <ul class="dash-notes">
@@ -118,6 +140,7 @@
         </section>
 
         <section class="dash-panel" aria-labelledby="categories-title">
+            <div class="dash-section-label">05 / Content mix</div>
             <h2 id="categories-title">Προβολές άρθρων ανά κατηγορία</h2>
             <p class="dash-copy">Γεγονότα page_view σε άρθρα, ανά κύρια κατηγορία.</p>
             <div data-chart="categories"></div>
@@ -125,13 +148,16 @@
         </section>
 
         <section class="dash-panel" aria-labelledby="cwv-title">
+            <div class="dash-section-label">06 / Real-user performance</div>
             <h2 id="cwv-title">Core Web Vitals</h2>
             <p class="dash-copy">Παρατηρήσεις πραγματικών χρηστών και p75, ανά κλάση κάλυψης (δεν αθροίζονται μεταξύ τους). Καλό: LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.</p>
             <p class="dash-warning" data-field="cwv-carried" hidden></p>
-            <div class="dash-scroll" data-table="cwv"></div>
+            <div data-viz="vitals" class="dash-vitals" aria-label="Σύνοψη Core Web Vitals"></div>
+            <details class="dash-data-details"><summary>Όλες οι κλάσεις κάλυψης</summary><div class="dash-scroll" data-table="cwv"></div></details>
         </section>
 
         <section class="dash-panel" aria-labelledby="rum-title">
+            <div class="dash-section-label">07 / Data quality</div>
             <h2 id="rum-title">Κάλυψη RUM και ποιότητα δεδομένων</h2>
             <p class="dash-warning" data-field="rum-carried" hidden></p>
             <ul class="dash-checks" data-list="rum"></ul>
