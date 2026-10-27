@@ -479,6 +479,12 @@ test('no other workflow can reach Google credentials or the snapshot key; pull r
     assert.doesNotMatch(workflow, /pull_request|push:|workflow_run|repository_dispatch/);
 });
 
+test('the plaintext artifact guards cover the I-06C1 article ranking model', () => {
+    for (const file of ['scripts/build/validate-public-artifact.mjs', 'scripts/quality/static-source-guard.mjs']) {
+        assert.match(read(file), /10-article-pageviews\|11-category-pageviews/, file);
+    }
+});
+
 test('the retired I-06A API leaves no code, dependency or route behind', () => {
     assert.equal(fs.existsSync(path.join(REPO_ROOT, 'services')), false);
     const tracked = execFileSync('git', ['ls-files'], { cwd: REPO_ROOT, encoding: 'utf8' }).split('\n')
