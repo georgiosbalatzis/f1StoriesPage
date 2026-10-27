@@ -360,6 +360,7 @@
         if (!Array.isArray(acquisition) || !Array.isArray(coverage) || !payload.modelWindows) {
             field('acquisition-window').textContent = 'διαθέσιμο στο επόμενο snapshot';
             acquisitionTarget.appendChild(node('p', 'Τα στοιχεία προέλευσης θα εμφανιστούν με την επόμενη επιτυχημένη ημερήσια ανανέωση.', 'dash-copy'));
+            slot('viz', 'acquisition').appendChild(node('p', 'Τα στοιχεία προέλευσης θα εμφανιστούν με την επόμενη επιτυχημένη ημερήσια ανανέωση.', 'dash-copy'));
         } else {
             var scope = payload.modelWindows['26-acquisition-session'];
             // When fewer than seven mature days exist, this pair shares the primary window.
@@ -371,6 +372,7 @@
             });
             if (!rankedChannels.length) {
                 acquisitionTarget.appendChild(node('p', 'Δεν υπάρχουν καταγεγραμμένα γεγονότα απόκτησης για την περίοδο.', 'dash-copy'));
+                slot('viz', 'acquisition').appendChild(node('p', 'Δεν υπάρχουν καταγεγραμμένα γεγονότα απόκτησης για την περίοδο.', 'dash-copy'));
             } else {
                 rankings(slot('viz', 'acquisition'), rankedChannels, 6, function (r) { return r.channel_class + ' · ' + r.source_family; },
                     function (r) { return r.session_start_events; }, function (r) { return r.meets_min_events; });
@@ -404,6 +406,7 @@
         var articles = models['10-article-pageviews'];
         if (!Array.isArray(articles)) {
             articleTarget.appendChild(node('p', 'Η κατάταξη άρθρων θα εμφανιστεί με το επόμενο ημερήσιο στιγμιότυπο.', 'dash-copy'));
+            slot('viz', 'articles').appendChild(node('p', 'Η κατάταξη άρθρων θα εμφανιστεί με το επόμενο ημερήσιο στιγμιότυπο.', 'dash-copy'));
         } else {
             var unmapped = articles.filter(function (r) { return r.article_id === '(unmapped)'; });
             var ranked = articles.filter(function (r) { return r.article_id !== '(unmapped)'; })
@@ -411,6 +414,7 @@
                 .slice(0, 15);
             if (!ranked.length) {
                 articleTarget.appendChild(node('p', 'Δεν υπάρχουν ακόμη προβολές σε αναγνωρισμένα άρθρα για την περίοδο.', 'dash-copy'));
+                slot('viz', 'articles').appendChild(node('p', 'Δεν υπάρχουν ακόμη προβολές σε αναγνωρισμένα άρθρα για την περίοδο.', 'dash-copy'));
             } else {
                 rankings(slot('viz', 'articles'), ranked, 6, function (r) { return r.title || 'Άρθρο χωρίς τίτλο'; },
                     function (r) { return r.page_view_events; }, function (r) { return r.meets_min_events; });
