@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261028W",
+      "title": "Ο Verstappen 2 φορές πρωταθλητής(κατασκευαστών)",
+      "author": "Themis Charvalis",
+      "date": "2026-10-28",
+      "dateISO": "2026-10-28",
+      "displayDate": "28 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261028W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261028W/2.webp",
+      "excerpt": "Ο Max Verstappen συγκέντρωσε περισσότερους βαθμούς από ολόκληρη τη Ferrari το 2022 και το 2023, αποτυπώνοντας το μέγεθος της κυριαρχίας του στη Formula 1.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261028W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Max Verstappen",
+        "Red bull",
+        "Ferrari"
+      ],
+      "wordCount": 351,
+      "readingTime": "2 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 547,
+      "backgroundImageHeight": 365,
+      "inputDigest": "d50355cfaa1b93bdc84335b6c79ce501e1afb1815f5736c6df8c48bb7e26c7a1"
+    },
+    {
       "id": "20261027W",
       "title": "H.H Frentzen: Αθόρυβος αλλά πρωταγωνιστής",
       "author": "Themis Charvalis",
@@ -11222,5 +11253,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-27T21:52:28.284Z"
+  "lastUpdated": "2026-10-28T18:54:53.142Z"
 }
