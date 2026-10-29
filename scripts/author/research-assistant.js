@@ -94,7 +94,7 @@
         if (end === chars.length) start = Math.max(0, end - 238);
         return (start ? '…' : '') + chars.slice(start, end).join('') + (end < chars.length ? '…' : '');
     }
-    function search(posts, query, content) {
+    function* searchSteps(posts, query, content) {
         var raw = String(query || '').trim(), original = raw.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
         var tokens = [], shown = {};
         original.forEach(function (word) {
@@ -103,10 +103,11 @@
         });
         if (!tokens.length) return [];
         var phrase = tokens.length > 1 ? tokens.join(' ') : '';
-        return posts.map(function (post) {
+        var results = [];
+        for (var post of posts) {
             var f = postFields(post), terms = {}, score = 0;
             var exactReason = normal(raw) === normal(post.id) ? 'Ακριβές ID' : words(raw).join(' ') === f.titleText ? 'Ακριβής τίτλος' : '';
-            if (exactReason && !content) return { post: post, matched: tokens.length + 1, score: 1000, terms: {}, reason: exactReason };
+            if (exactReason && !content) { results.push({ post: post, matched: tokens.length + 1, score: 1000, terms: {}, reason: exactReason }); yield; continue; }
             var matched = 0, metadataTokens = new Set();
             tokens.forEach(function (token) {
                 var best = 0, where = '';
@@ -120,31 +121,51 @@
             else if (phrase && (' ' + f.excerptText + ' ').includes(' ' + phrase + ' ')) score += 4;
             var selected = null, article = content && content.get(post.id);
             var literals = raw.match(/\d+(?:[.,:]\d+)+/g) || [];
-            if (article) article.passages.forEach(function (passage) {
+            if (article) for (var passage of article.passages) {
                 var list = passageWords(passage), bodyTerms = [], bodyScore = 0, covered = new Set(metadataTokens);
+                var guardedTokens = new Set();
+                literals.forEach(function (literal) { if (!hasLiteral(passage.text, literal)) words(literal).forEach(function (token) { guardedTokens.add(token); }); });
+                var exactTokens = new Set(tokens.filter(function (token) { return list.includes(token) && !guardedTokens.has(token); }));
                 tokens.forEach(function (token) {
-                    var guarded = literals.some(function (literal) { return words(literal).includes(token) && !hasLiteral(passage.text, literal); });
-                    var exactOther = tokens.some(function (other) { return other !== token && list.includes(other) && !literals.some(function (literal) { return words(literal).includes(other) && !hasLiteral(passage.text, literal); }); });
+                    var guarded = guardedTokens.has(token);
+                    var exactOther = exactTokens.size > (exactTokens.has(token) ? 1 : 0);
                     var value = guarded ? 0 : bodyMatch(list, token, exactOther);
-                    if (value) { covered.add(token); bodyScore += value; bodyTerms.push(shown[token] + (value === 0.5 ? ' (πρόθεμα)' : '')); }
+                    if (value) { covered.add(token); if (!metadataTokens.has(token)) bodyScore += value; bodyTerms.push(shown[token] + (value === 0.5 ? ' (πρόθεμα)' : '')); }
                 });
-                if (!bodyTerms.length) return;
+                if (!bodyTerms.length) { yield; continue; }
                 if (phrase && (' ' + list.join(' ') + ' ').includes(' ' + phrase + ' ') && literals.every(function (literal) { return hasLiteral(passage.text, literal); })) bodyScore++;
                 bodyScore = Math.min(4, bodyScore);
                 var candidate = { passage: passage, matched: covered.size, score: bodyScore, terms: bodyTerms };
                 if (!selected || candidate.matched > selected.matched || (candidate.matched === selected.matched && (candidate.score > selected.score
                     || (candidate.score === selected.score && passage.ordinal < selected.passage.ordinal)))) selected = candidate;
-            });
+                yield;
+            }
             if (selected) { matched = selected.matched; score += selected.score; terms['Σώμα'] = selected.terms; }
             if (exactReason) { matched = tokens.length + 1; score = 1000; }
             var reason = FIELDS.map(function (field) { return field[1]; }).concat('Σώμα')
                 .filter(function (label) { return terms[label]; }).map(function (label) { return label + ': ' + terms[label].join(', '); }).join(' · ');
             var hit = { post: post, matched: matched, score: score, terms: terms, reason: exactReason ? exactReason + (selected ? ' · Σώμα: ' + selected.terms.join(', ') : '') : reason };
             if (selected) { hit.passage = selected.passage; hit.heading = article.headings[selected.passage.heading]; hit.snippet = passageSnippet(selected.passage.text, tokens); }
-            return hit;
-        }).filter(function (hit) { return hit.score > 0; }).sort(function (a, b) {
+            results.push(hit);
+            yield;
+        }
+        return results.filter(function (hit) { return hit.score > 0; }).sort(function (a, b) {
             return b.matched - a.matched || b.score - a.score || String(b.post.date).localeCompare(String(a.post.date)) || String(a.post.id).localeCompare(String(b.post.id));
         }).slice(0, 24);
+    }
+    function search(posts, query, content) {
+        var steps = searchSteps(posts, query, content), step;
+        do { step = steps.next(); } while (!step.done);
+        return step.value;
+    }
+    async function searchSliced(posts, query, content, current) {
+        var steps = searchSteps(posts, query, content), step;
+        while (current()) {
+            var deadline = performance.now() + 8;
+            do { step = steps.next(); if (step.done) return step.value; } while (performance.now() < deadline);
+            await new Promise(function (resolve) { setTimeout(resolve, 0); });
+        }
+        return null;
     }
     var CONTENT_ROOT = '/scripts/author/research-content/';
     function validateContentManifest(data) {
@@ -455,7 +476,7 @@
                 var content = new Map(), failed = 0, completed = 0, manifest;
                 try {
                     manifest = validateContentManifest(await load(CONTENT_ROOT + 'manifest.json'));
-                    if (await hashes.get(index) !== manifest.metadataSha256) throw new Error('Οι εκδόσεις καταλόγου και κειμένου διαφέρουν.');
+                    if (await hashes.get(index) !== manifest.metadataSha256) { cache.delete('/blog-module/blog-index-data.json'); throw new Error('Οι εκδόσεις καταλόγου και κειμένου διαφέρουν.'); }
                     contentManifest = manifest;
                     var cursor = 0;
                     async function worker() {
@@ -463,7 +484,7 @@
                             var descriptor = manifest.shards[cursor++], path = CONTENT_ROOT + descriptor.file;
                             try {
                                 var shard = await load(path);
-                                if (await hashes.get(shard) !== descriptor.sha256) throw new Error('Το αρχείο δεν συμφωνεί με τον κατάλογο.');
+                                if (await hashes.get(shard) !== descriptor.sha256) { cache.delete(CONTENT_ROOT + 'manifest.json'); throw new Error('Το αρχείο δεν συμφωνεί με τον κατάλογο.'); }
                                 validateContentShard(shard, descriptor);
                                 shard.articles.forEach(function (article) { if (allowed.has(article.id)) content.set(article.id, article); });
                                 completed++;
@@ -474,7 +495,9 @@
                     await Promise.all(Array.from({ length: Math.min(4, manifest.shards.length) }, worker));
                 } catch (_) { cache.delete(CONTENT_ROOT + 'manifest.json'); contentManifest = null; failed++; }
                 if (revision !== searchRevision) return;
-                hits = search(posts, query, content); renderHits();
+                var found = await searchSliced(posts, query, content, function () { return revision === searchRevision; });
+                if (revision !== searchRevision) return;
+                hits = found; renderHits();
                 var coverage = manifest ? ' Κάλυψη κειμένου: ' + completed + '/' + manifest.shards.length + ' αρχεία. Στον κατάλογο: ' + manifest.coverage.searchableProse + '/' + manifest.coverage.eligible + ' άρθρα με πρόζα τουλάχιστον 40 χαρακτήρων.' : ' Το πλήρες κείμενο δεν φορτώθηκε.';
                 if (failed) coverage += ' Μερική κάλυψη: πάτησε ξανά «Εύρεση αναφορών» για επανάληψη.';
                 message((hits.length ? hits.length + ' άρθρα προς έλεγχο: διάβασέ τα πριν τα συνδέσεις. Δεν αποτελούν ανεξάρτητη επαλήθευση.' : 'Δεν βρέθηκαν άρθρα. Δοκίμασε όνομα ή λιγότερες λέξεις.') + coverage);

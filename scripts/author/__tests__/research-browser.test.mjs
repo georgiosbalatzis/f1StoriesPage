@@ -517,7 +517,7 @@ test('full text loads only after explicit search, reports a failed shard and ret
     await page.unroute('**/research-content/2026-10.json');
     await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
-    assert.match(await page.locator('.gb-research-results').textContent(), /minisectors/);
+    await page.waitForSelector('.gb-research-results li'); assert.match(await page.locator('.gb-research-results').textContent(), /minisectors/);
     assert.ok(await page.locator('.gb-research-results .gb-research-passage').count() > 0);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     const first = page.locator('.gb-research-results li').first();
@@ -536,5 +536,55 @@ test('late full-text responses cannot restore a stale search', async t => {
     await page.waitForRequest('**/research-content/2026-10.json');
     await page.locator('#research-question').fill('');
     await page.waitForResponse('**/research-content/2026-10.json');
+    assert.equal(await page.locator('.gb-research-results li').count(), 0);
+});
+
+test('retry refreshes metadata after a manifest arrives from a newer deployment', async t => {
+    const { page, requests } = await pageFor(t); await open(page);
+    const index = fs.readFileSync(path.join(root, 'blog-module/blog-index-data.json'), 'utf8');
+    await page.route('**/blog-index-data.json', route => route.fulfill({ status: 200, contentType: 'application/json', body: index + ' ' }));
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
+    await page.unroute('**/blog-index-data.json');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForSelector('.gb-research-results .gb-research-passage');
+    assert.equal(requests.filter(url => url.endsWith('/blog-index-data.json')).length, 2);
+});
+
+test('retry refreshes a stale manifest after a shard arrives from a newer deployment', async t => {
+    const { page, requests } = await pageFor(t); await open(page);
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, 'scripts/author/research-content/manifest.json'), 'utf8'));
+    manifest.shards.find(shard => shard.file === '2026-10.json').sha256 = '0'.repeat(64);
+    await page.route('**/research-content/manifest.json', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(manifest) }));
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
+    await page.unroute('**/research-content/manifest.json');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForSelector('.gb-research-results .gb-research-passage');
+    assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 2);
+});
+
+test('full-text scoring yields and an edited query cancels the in-progress scan', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.evaluate(() => {
+        const realNow = performance.now.bind(performance), realTimeout = window.setTimeout;
+        let ticks = 0;
+        performance.now = () => realNow() + ++ticks * 9;
+        window.setTimeout = (fn, delay, ...args) => {
+            if (delay === 0) window.__researchYields = (window.__researchYields || 0) + 1;
+            return realTimeout(fn, delay, ...args);
+        };
+    });
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => window.__researchYields > 0);
+    await page.locator('#research-question').fill('');
+    await page.waitForTimeout(100);
     assert.equal(await page.locator('.gb-research-results li').count(), 0);
 });

@@ -14,6 +14,8 @@ test('extracts legacy prose, headings and nested list items with source locators
         ['list-item', 2, 0, 'Parent ending'], ['list-item', 3, 0, 'Child']
     ]);
     assert.equal(decode('&amp;copy; &copy; &#169;'), '&copy; © ©');
+    assert.equal(decode('S&eacute;bastien&nbsp;&Agrave; &uuml; &lsquo;x&rsquo; &ldquo;y&rdquo; &ndash; &hellip; &euro; &unknown;'), 'Sébastien À ü ‘x’ “y” – … € &unknown;');
+    assert.equal(extract(wrap('<p>S&eacute;bastien&nbsp;Buemi</p>')).passages[0].text, 'Sébastien Buemi');
     assert.equal(decode('&amp; &copy; &quot; &gt; &lt; &mdash; &#65; &#x3b1; &#0; &#xD800; &#1114112; &unknown;'), '& © " > < — A α � � � &unknown;');
 });
 test('excludes script, styles, hidden, table, gallery, related, author and tool chrome, retaining ordinals', () => {

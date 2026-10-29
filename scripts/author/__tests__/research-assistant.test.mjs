@@ -367,9 +367,11 @@ test('body matching guards prefixes, numbers and passage coherence', () => {
 
 test('content manifests and shards reject unsafe paths and malformed records', () => {
     const manifest = read('scripts/author/research-content/manifest.json');
-    assert.throws(() => api.validateContentManifest({ ...manifest, shards: [{ ...manifest.shards[0], file: '../manifest.json' }] }));
+    assert.doesNotThrow(() => api.validateContentManifest(manifest));
+    assert.throws(() => api.validateContentManifest({ ...manifest, shards: manifest.shards.map((shard, i) => i ? shard : { ...shard, file: '../manifest.json' }) }));
     const descriptor = manifest.shards[0], shard = read('scripts/author/research-content/' + descriptor.file);
-    assert.throws(() => api.validateContentShard({ ...shard, articles: [{ ...shard.articles[0], id: '../bad' }] }, { ...descriptor, articles: 1 }));
+    assert.doesNotThrow(() => api.validateContentShard(shard, descriptor));
+    assert.throws(() => api.validateContentShard({ ...shard, articles: shard.articles.map((article, i) => i ? article : { ...article, id: '../bad' }) }, descriptor));
 });
 
 test('body scoring counts distinct words, caps repetition and selects the coherent earliest passage', () => {
@@ -385,4 +387,11 @@ test('body scoring counts distinct words, caps repetition and selects the cohere
     assert.equal(hits[1].matched, 2);
     const widget = read('scripts/author/research-content/2026-05.json').articles.find(article => article.id === '20260502J');
     assert.deepEqual(widget.passages, []);
+});
+
+test('body repetitions of a credited title token preserve the date tie-break', () => {
+    const posts = [{ ...base, id: 'older', title: 'Alpha news', date: '2026-01-01' }, { ...base, id: 'newer', title: 'Alpha news', date: '2026-02-01' }];
+    const content = new Map([['older', { headings: [], passages: [{ kind: 'paragraph', ordinal: 0, heading: -1, text: 'Alpha Alpha' }] }]]);
+    const hits = api.search(posts, 'Alpha', content);
+    assert.deepEqual(Array.from(hits, hit => [hit.post.id, hit.score]), [['newer', 6], ['older', 6]]);
 });
