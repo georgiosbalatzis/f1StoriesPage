@@ -194,6 +194,10 @@ function privatePath(value) {
     if ([ROOT, fs.realpathSync(ROOT)].some(root => inside(requested, root) || inside(destination, root))) {
         throw new Error('repository path refused');
     }
+    for (let directory = path.dirname(destination); ; directory = path.dirname(directory)) {
+        if (fs.lstatSync(path.join(directory, '.git'), { throwIfNoEntry: false })) throw new Error('Git repository path refused');
+        if (path.dirname(directory) === directory) break;
+    }
     if (fs.existsSync(destination) || fs.lstatSync(destination, { throwIfNoEntry: false })) {
         const stat = fs.lstatSync(destination);
         if (!stat.isFile() || stat.nlink !== 1) throw new Error('linked or non-file destination refused');

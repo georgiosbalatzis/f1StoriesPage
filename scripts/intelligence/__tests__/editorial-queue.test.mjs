@@ -250,6 +250,33 @@ test('CLI refuses CI before reading files, even synthetic fixtures', t => {
     assert.deepEqual(fs.readdirSync(directory), []);
 });
 
+test('CLI refuses other Git checkouts and worktrees through real and symlinked parents', t => {
+    const directory = temporary(t), input = path.join(directory, 'insights.json');
+    // All measurements remain invented; only the marker changes to exercise non-synthetic output.
+    fs.writeFileSync(input, JSON.stringify({ ...fixture('insights'), synthetic: false }));
+    for (const kind of ['file', 'directory']) {
+        const checkout = path.join(directory, kind), nested = path.join(checkout, 'private', 'nested');
+        fs.mkdirSync(nested, { recursive: true });
+        const marker = path.join(checkout, '.git');
+        if (kind === 'file') fs.writeFileSync(marker, 'gitdir: SYNTHETIC-worktree');
+        else fs.mkdirSync(marker);
+        const linked = path.join(directory, `${kind}-linked`);
+        fs.symlinkSync(nested, linked);
+        for (const parent of [checkout, nested, linked]) {
+            for (const args of [['render', input, `--out=${path.join(parent, 'queue.md')}`],
+                ['decide', path.join(parent, 'review.json'), 'SYNTHETIC', 'pending']]) {
+                const result = run(args);
+                assert.equal(result.status, 1, 'Git ancestors must refuse private output');
+                assert.match(result.stderr, /FAIL/);
+                assert.equal(result.stdout, '');
+            }
+        }
+        assert.deepEqual(fs.readdirSync(checkout).sort(), ['.git', 'private']);
+        assert.deepEqual(fs.readdirSync(path.dirname(nested)), ['nested']);
+        assert.deepEqual(fs.readdirSync(nested), []);
+    }
+});
+
 test('CLI failures preserve owner files and never echo paths, notes or parser input', t => {
     const directory = temporary(t), state = path.join(directory, 'private-state.json');
     const good = `${JSON.stringify(fixture('state'))}\n`;
