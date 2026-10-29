@@ -36,8 +36,9 @@ test('complete synthetic fixture produces all six exact signal shapes without mu
     assert.equal(validateEditorialInputs(input).ok, true);
     const result = evaluate(input);
     assert.deepEqual(input, before);
-    assert.deepEqual(Object.keys(result), ['version', 'asOf', 'signals', 'abstentions']);
+    assert.deepEqual(Object.keys(result), ['version', 'asOf', 'synthetic', 'signals', 'abstentions']);
     assert.equal(result.version, 1);
+    assert.equal(result.synthetic, true);
     assert.deepEqual([...new Set(result.signals.map(row => row.type))], types);
     assert.deepEqual(result.signals.filter(row => row.type === 'weak_internal_linking').map(row => row.subject), input.catalogue.rows.map(row => row.url).sort());
     assert.deepEqual(result.abstentions, []);
@@ -64,11 +65,13 @@ test('complete synthetic fixture produces all six exact signal shapes without mu
 });
 
 test('invalid input always yields one data_quality abstention, never partial signals or input values', () => {
-    const invalid = [null, [], {}, { ...fixture(), version: 2 }];
+    const invalid = [null, [], {}, { ...fixture(), version: 2 },
+        { ...fixture(), synthetic: 'true' }, { ...fixture(), synthetic: null }];
     const malformed = fixture(); malformed.site.articles[0].visitor_id = 'SYNTHETIC PRIVATE VALUE'; invalid.push(malformed);
     const oldDomain = fixture(); oldDomain.gsc.rows[0].page = 'https://f1stories.gr/SYNTHETIC-PRIVATE'; invalid.push(oldDomain);
     for (const input of invalid) {
         const result = evaluate(input);
+        assert.equal(result.synthetic, false);
         assert.deepEqual(result.signals, []);
         assert.equal(result.abstentions.length, 1);
         assert.equal(result.abstentions[0].type, 'data_quality');
@@ -77,8 +80,23 @@ test('invalid input always yields one data_quality abstention, never partial sig
     }
     for (const asOf of [undefined, null, '2026-02-30', 'bad', 42]) {
         const result = evaluateEditorialInsights(fixture(), { asOf });
+        assert.equal(result.synthetic, false);
         assert.equal(result.abstentions.length, 1);
         assert.equal(result.signals.length, 0);
+    }
+});
+
+test('synthetic provenance is always a deterministic boolean and preserves either valid input flag', () => {
+    for (const synthetic of [true, false]) {
+        const input = { ...fixture(), synthetic }, before = structuredClone(input);
+        const result = evaluate(input);
+        assert.equal(result.synthetic, synthetic);
+        assert.equal(typeof result.synthetic, 'boolean');
+        assert.deepEqual(evaluate(input), result);
+        assert.deepEqual(input, before);
+        const minimal = evaluate({ version: 1, synthetic });
+        assert.equal(minimal.synthetic, synthetic);
+        assert.equal(minimal.signals.length, 0);
     }
 });
 
@@ -124,7 +142,7 @@ test('below-floor samples abstain and never acquire medium confidence', () => {
 });
 
 test('position-bucket baseline uses counts, respects the 100-impression boundary and never averages rounded CTR', () => {
-    for (const [position, numerator] of [[1, 20], [2, 10], [3, 10], [4, 3], [10, 3], [11, 1]]) {
+    for (const [position, numerator] of [[1, 20], [2, 10], [2.999, 10], [3, 10], [3.001, 3], [4, 3], [9.999, 3], [10, 3], [10.001, 1], [11, 1]]) {
         const input = fixture();
         input.gsc.rows = [{ ...input.gsc.rows[0], date: null, impressions: 100, clicks: 0, ctr: 1, position }];
         const gap = find(evaluate(input), 'search_ctr_gap');
@@ -133,6 +151,59 @@ test('position-bucket baseline uses counts, respects the 100-impression boundary
         assert.equal(find(evaluate(input), 'search_ctr_gap'), undefined);
         Object.assign(input.gsc.rows[0], { impressions: 100, clicks: numerator, ctr: 0 });
         assert.equal(find(evaluate(input), 'search_ctr_gap'), undefined);
+    }
+});
+
+test('mixed position buckets abstain from CTR and metadata review without suppressing independent rules', () => {
+    const input = fixture();
+    input.gsc.rows.forEach((row, i) => Object.assign(row, i < 7
+        ? { impressions: 100, clicks: 3, ctr: 0.03, position: 9 }
+        : { impressions: 900, clicks: 9, ctr: 0.01, position: 10.1 }));
+    assert.equal(validateEditorialInputs(input).ok, true);
+    const result = evaluate(input);
+    for (const type of ['search_ctr_gap', 'metadata_review']) {
+        assert.equal(find(result, type), undefined);
+        const abstention = result.abstentions.find(row => row.type === type);
+        assert.equal(abstention.subject, subject);
+        assert.equal(abstention.status, 'NOT VERIFIED');
+        assert.match(abstention.reason, /διαφορετικές ζώνες θέσης/);
+    }
+    assert.ok(find(result, 'evergreen_refresh'));
+    assert.deepEqual(result.signals.filter(row => !searchTypes.includes(row.type)), evaluate(fixture()).signals.filter(row => !searchTypes.includes(row.type)));
+    input.gsc.rows.reverse();
+    assert.deepEqual(evaluate(input), result);
+});
+
+test('CTR gaps respect both sides of bucket boundaries and still fire for differing positions in the same bucket', () => {
+    for (const [position, clicks, gap] of [[2.999, 5, true], [3.001, 5, false], [9.999, 2, true], [10.001, 2, false]]) {
+        const input = fixture();
+        input.gsc.rows = [{ ...input.gsc.rows[0], date: null, impressions: 100, clicks, ctr: clicks / 100, position }];
+        const result = evaluate(input);
+        for (const type of ['search_ctr_gap', 'metadata_review']) assert.equal(Boolean(find(result, type)), gap, `${type}: ${position}`);
+    }
+    const input = fixture();
+    input.gsc.rows.forEach((row, i) => Object.assign(row, { impressions: 100, clicks: 1, ctr: 0.01, position: i < 7 ? 4 : 9.99 }));
+    // Zero-impression days contribute no position evidence or counts.
+    Object.assign(input.gsc.rows[0], { impressions: 0, clicks: 0, ctr: 0, position: null });
+    assert.equal(validateEditorialInputs(input).ok, true);
+    for (const type of ['search_ctr_gap', 'metadata_review']) {
+        const signal = find(evaluate(input), type);
+        assert.equal(signal.observations.baseline_ctr_numerator, 3);
+        assert.equal(signal.observations.clicks, 13);
+        assert.equal(signal.observations.impressions, 1300);
+        assert.equal(signal.confidence, 'low');
+        assert.ok(signal.limitations.some(value => value.includes('μη βαθμονομημένο')));
+    }
+});
+
+test('a period-total row without assignable position evidence explicitly abstains from CTR and metadata review', () => {
+    const input = fixture();
+    input.gsc.rows = [{ ...input.gsc.rows[0], date: null, impressions: 0, clicks: 0, ctr: 0, position: null }];
+    assert.equal(validateEditorialInputs(input).ok, true);
+    const result = evaluate(input);
+    for (const type of ['search_ctr_gap', 'metadata_review']) {
+        assert.equal(find(result, type), undefined);
+        assert.match(result.abstentions.find(row => row.type === type).reason, /μονοσήμαντα/);
     }
 });
 
@@ -385,4 +456,31 @@ test('output refuses repo paths, symlink bypasses, existing reports and real dat
     const failure = run(malformed, path.join(directory, 'bad.json'));
     assert.equal(failure.status, 1);
     assert.doesNotMatch(failure.stderr, /SYNTHETIC PRIVATE|malformed\.json/);
+});
+
+test('non-synthetic output refuses any Git ancestor, including worktree files and symlinked destinations', t => {
+    const directory = temporary(t), input = path.join(directory, 'input.json');
+    // All measurements remain invented; false exercises the private-owner output path.
+    fs.writeFileSync(input, JSON.stringify({ ...fixture(), synthetic: false }));
+    const env = { CI: '', GITHUB_ACTIONS: '' };
+    const privateOutput = path.join(directory, 'private.json');
+    assert.equal(run(input, privateOutput, env).status, 0);
+    assert.equal(JSON.parse(fs.readFileSync(privateOutput, 'utf8')).synthetic, false);
+    for (const kind of ['file', 'directory']) {
+        const checkout = path.join(directory, `SYNTHETIC-checkout-${kind}`);
+        const nested = path.join(checkout, 'nested', 'reports');
+        fs.mkdirSync(nested, { recursive: true });
+        if (kind === 'file') fs.writeFileSync(path.join(checkout, '.git'), 'gitdir: SYNTHETIC-worktree-metadata\n');
+        else fs.mkdirSync(path.join(checkout, '.git'));
+        const linked = path.join(directory, `linked-${kind}`);
+        fs.symlinkSync(checkout, linked);
+        for (const parent of [checkout, nested, linked, path.join(linked, 'nested', 'reports')]) {
+            const output = path.join(parent, 'refused.json');
+            const failure = run(input, output, env);
+            assert.equal(failure.status, 1);
+            assert.doesNotMatch(failure.stdout + failure.stderr, /SYNTHETIC-checkout|worktree-metadata/);
+            assert.equal(fs.existsSync(output), false);
+            assert.equal(fs.existsSync(path.join(parent, 'refused.md')), false);
+        }
+    }
 });

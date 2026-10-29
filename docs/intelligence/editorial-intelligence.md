@@ -329,10 +329,12 @@ guards remain 400 MiB/query and 1600 MiB/day; there is no SQL, workflow, depende
 ### Evaluation and evidence
 
 `evaluateEditorialInsights(inputs, { asOf: 'YYYY-MM-DD' })` first calls `validateEditorialInputs`.
-It returns exactly `{ version: 1, asOf, signals, abstentions }`, without mutation, logging, network,
+It returns exactly `{ version: 1, asOf, synthetic, signals, abstentions }`, without mutation, logging, network,
 wall-clock reads or writes. Invalid contract input or an invalid/missing evaluation day produces **one**
 `data_quality` abstention with `status: FAIL`, no partial signals and no echoed input values. An invalid
-evaluation day is represented by `asOf: null`.
+evaluation day is represented by `asOf: null`. `synthetic` is always a boolean: it preserves the input's
+flag only when the input contract and evaluation day are valid, and is otherwise `false`. This provenance
+flag is included in JSON output for downstream consumers; it does not anonymise or verify measurements.
 
 GSC is optional. Missing, empty, unavailable, preliminary or immature GSC produces explicit abstentions
 only for `search_ctr_gap`, `metadata_review` and `evergreen_refresh`. Discovery, linking and explainer
@@ -385,7 +387,7 @@ not that analytics, production or editorial conclusions passed validation.
 
 | Type / group | Required evidence and deterministic screening rule | Human review and limits |
 | --- | --- | --- |
-| `search_ctr_gap` / `technical_seo` | Mapped GSC page, at least **100 impressions**, observed `clicks / impressions` below the position-bucket reference below | Review result presentation and search intent; anonymised queries, export limits, position, intent and device mix constrain interpretation |
+| `search_ctr_gap` / `technical_seo` | Mapped GSC page, at least **100 impressions**, all contributing rows in the **same position bucket**, observed `clicks / impressions` below that bucket's reference below | Review result presentation and search intent; anonymised queries, export limits, position, intent and device mix constrain interpretation |
 | `metadata_review` / `article_improvement` | The same CTR-gap criterion plus available mapped catalogue metadata | Review public title and description manually; the contract has no description or proven metadata defect; no generated rewrite |
 | `discovery_dropoff` / `internal_discovery` | At least **30 internal click events**, an **explicit** destination article row with **0–4 page_view events**, and I-07A `joinable` for identical mature discovery/site periods and timezone | Always a **hypothesis**, never failed navigation; no event ratio, loss count, matched journey or inferred missing-row zero |
 | `weak_internal_linking` / `internal_discovery` | Every mapped catalogue article is evaluated when catalogue and graph share observation period, timezone and extraction day; **0–1 distinct observed inbound source pages**, with **no discovery-click prerequisite or analytics sample floor** | Review relevant links, including entity hubs; deduplicate source pages, exclude self-links; mature discovery clicks are optional context, and graph coverage/history and link effectiveness are not established |
@@ -393,20 +395,31 @@ not that analytics, production or editorial conclusions passed validation.
 | `data_explainer_opportunity` / `content_opportunity` | Mapped catalogue article in an explicit supported primary category and at least **30 consented article page_view events** | Consider an explainer after checking existing coverage; catalogue supply alone does not establish demand, and article events do not prove tool usage |
 
 The CTR reference is **position-bucket expected CTR**, expressed as an uncalibrated editorial heuristic,
-not a measured property baseline or an empirical CTR curve. Use the impression-weighted average position
-of a page over its exact search period:
+not a measured property baseline or an empirical CTR curve. Assign each contributing row's reported
+average position to the following mutually exclusive buckets **before** aggregating counts:
 
-| Average position | Baseline numerator / denominator |
+| Reported row average position | Baseline numerator / denominator |
 | --- | --- |
 | 1 | 20 / 100 |
 | >1 through 3 | 10 / 100 |
 | >3 through 10 | 3 / 100 |
 | >10 | 1 / 100 |
 
+Evaluate CTR only when **every row with positive impressions falls in the same bucket**. Mixed buckets
+produce explicit `NOT VERIFIED` abstentions for both `search_ctr_gap` and `metadata_review`; an averaged
+position must never select a bucket for mixed-position evidence. For example, seven days at position 9
+with 100 impressions/3 clicks each and seven at position 10.1 with 900 impressions/9 clicks each abstain,
+even though the combined average position is below 10. Evergreen and non-search rules remain independent.
+Zero-impression rows contribute no counts or position evidence. A whole-period row uses its own reported
+position only when assignable to one bucket; without position evidence (including a zero-impression total
+with null position), both CTR-related rules explicitly abstain. Invalid positions still fail I-07A validation.
+
 No property-level CTR is inferred by adding page rows. The baseline does not establish what CTR a page
 should achieve. It deliberately allows only low-confidence review suggestions. Observed CTR uses raw
-click/impression counts rather than rounded exported CTR. Position is weighted by impressions, never
-an unweighted mean of row averages. Each result includes baseline numerator/denominator and the sample floor.
+click/impression counts rather than rounded exported CTR. The impression-weighted position retained in
+signal observations is descriptive only and never selects the baseline. Each result includes baseline
+numerator/denominator and the sample floor. Reported positions are already averages; the contract cannot
+establish the distribution of individual positions hidden within one daily or whole-period row.
 
 Search rules accept only page rows without query/country/device breakdowns (dimensions null or query
 omitted). Property-level/Queries exports and dimension slices cannot become page totals. Daily rows may
@@ -441,7 +454,7 @@ as evergreen impressions. These observations temper a suggestion; they do not es
 ### Private CLI and Greek owner report
 
 Run with an I-07A contract file, never a decrypted dashboard payload. Example paths/dates are placeholders;
-use an existing private parent directory outside the working tree:
+use an existing private parent directory outside every Git checkout or worktree:
 
 ```sh
 node scripts/intelligence/editorial-insights.mjs \
@@ -456,8 +469,10 @@ are no valid declared days, evaluation fails closed to the single data-quality a
 
 Both outputs are new files created exclusively with mode `0600`. Parent directories must exist. Existing
 files or symlinks are refused; both output names are reserved before writing, and a failed pair is cleaned
-up without overwriting existing content. Parent symlinks are resolved before the worktree check. Output
-inside this working tree is refused, with one test-only exception: `synthetic: true`, Node's test-runner
+up without overwriting existing content. Parent symlinks are resolved before checking the real parent
+and every ancestor for a `.git` entry (file or directory). Any such entry refuses output, covering sibling
+checkouts and other Git worktrees as well as this repository. This check reads no Git entry contents.
+The existing test-only exception remains: `synthetic: true`, Node's test-runner
 context, and a `tmp-*` directory beneath `scripts/intelligence/__tests__/`. This flag is an attestation,
 never anonymisation. Non-synthetic inputs are refused in CI. No counts, query text, local paths or parser
 exceptions are printed to terminal logs. Keep all real inputs and generated reports private.
@@ -470,7 +485,9 @@ uses real public article identities with wholly invented measurements/labels, an
 Checks: `node --test scripts/intelligence/__tests__/editorial-insights.test.mjs` and the existing
 `npm run test:intelligence` (no package/CI change). They cover independent non-search rules with absent,
 empty or immature GSC; graph-based linking with zero/below-floor/missing discovery and same-date graph
-requirements; invalid inputs, sample floors, baseline boundaries, incompatible instruments, unmapped/retired/old-domain identities, ambiguous
+requirements; invalid inputs, sample floors, mixed-position abstentions, same-bucket gaps, baseline
+boundaries at positions 3 and 10, incompatible instruments, unmapped/retired/old-domain identities, ambiguous
 grains, incomplete/immature periods, carried data, contradictory evidence, deterministic IDs/order,
-topic restrictions and private/exclusive/symlink-guarded CLI output including the synthetic disclaimer.
+topic restrictions, deterministic boolean synthetic provenance, and private/exclusive/symlink-guarded
+CLI output including Git ancestor rejection and the synthetic disclaimer.
 No real analytics, credentials, production reconciliation or live editorial conclusion was accessed or verified.

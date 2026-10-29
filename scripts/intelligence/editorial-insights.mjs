@@ -38,7 +38,8 @@ const EVENT_LIMITS = [
 
 export function evaluateEditorialInsights(inputs, { asOf } = {}) {
     const validation = validateEditorialInputs(inputs);
-    const result = { version: 1, asOf: day(asOf) ? asOf : null, signals: [], abstentions: [] };
+    const result = { version: 1, asOf: day(asOf) ? asOf : null,
+        synthetic: validation.ok && day(asOf) && inputs.synthetic === true, signals: [], abstentions: [] };
     const abstain = (type, subject, reason, status = 'NOT VERIFIED') => result.abstentions.push({ type, subject, status, reason });
     if (!validation.ok || !day(asOf)) {
         abstain('data_quality', 'input', 'FAIL: μη έγκυρο συμβόλαιο εισόδου ή ημερομηνία αξιολόγησης· δεν εξάγονται συμπεράσματα.', 'FAIL');
@@ -91,26 +92,34 @@ export function evaluateEditorialInsights(inputs, { asOf } = {}) {
             for (const type of SEARCH_TYPES) abstain(type, subject, 'Ελλιπείς ημέρες, επικαλυπτόμενες ταυτότητες ή μη ασφαλές άθροισμα· δεν συμπληρώνονται μηδενικά.');
             continue;
         }
-        const position = impressions ? rows.reduce((total, row) => total + (row.position ?? 0) * (row.impressions / impressions), 0) : null;
-        const baseline = position <= 1 ? 20 : position <= 3 ? 10 : position <= 10 ? 3 : 1;
-        const gap = impressions >= MIN_IMPRESSIONS && clicks / impressions < baseline / 100;
-        const observations = { clicks, impressions, impression_weighted_position: position,
-            baseline_ctr_numerator: baseline, baseline_ctr_denominator: 100, minimum_impressions: MIN_IMPRESSIONS };
-        const units = { clicks: 'Google search clicks', impressions: 'Google search impressions',
-            impression_weighted_position: 'average position', baseline_ctr: 'ratio of numerator / denominator', minimum_impressions: 'impressions' };
-        const counter = clicks > 0 ? ['Υπάρχουν καταγεγραμμένα κλικ αναζήτησης· το άρθρο ήδη προσελκύει κάποια κλικ.'] : [];
-        if (gap) signal('search_ctr_gap', 'technical_seo', subject, [['gsc', gsc]], observations, units,
-            'Το CTR βρίσκεται κάτω από το δηλωμένο φίλτρο της ζώνης θέσης, με επαρκείς εμφανίσεις για έλεγχο.',
-            'Ελέγξτε χειροκίνητα την εμφάνιση στα αποτελέσματα και τη συνάφεια με την πρόθεση αναζήτησης.', SEARCH_LIMITS, counter);
-        else abstain('search_ctr_gap', subject, impressions < MIN_IMPRESSIONS
-            ? 'Μικρό δείγμα — λιγότερες από 100 εμφανίσεις· δεν προκύπτει ασφαλές συμπέρασμα.'
-            : 'Το παρατηρούμενο CTR δεν είναι χαμηλότερο από το δηλωμένο φίλτρο.', 'WARNING');
-        if (gap && articles.has(subject)) signal('metadata_review', 'article_improvement', subject,
-            [['gsc', gsc], ['catalogue', catalogue]], observations, units,
-            'Η ορατή στην αναζήτηση σελίδα προσφέρεται για ανθρώπινο έλεγχο τίτλου και περιγραφής.',
-            'Ελέγξτε τον δημόσιο τίτλο και την περιγραφή ως προς σαφήνεια και ακρίβεια· δεν προτείνεται αυτόματη επανεγγραφή.',
-            [...SEARCH_LIMITS, 'Το συμβόλαιο δεν περιέχει περιγραφή ή διάγνωση ελαττώματος μεταδεδομένων.'], counter);
-        else abstain('metadata_review', subject, 'Δεν συνυπάρχουν επαρκής ένδειξη CTR και επαληθεύσιμο μεταδεδομένο καταλόγου.');
+        const baselines = new Set(rows.filter(row => row.impressions > 0).map(row =>
+            row.position <= 1 ? 20 : row.position <= 3 ? 10 : row.position <= 10 ? 3 : 1));
+        const baseline = baselines.size === 1 ? [...baselines][0] : null;
+        if (baseline === null) {
+            for (const type of ['search_ctr_gap', 'metadata_review']) abstain(type, subject, baselines.size > 1
+                ? 'Οι γραμμές με εμφανίσεις ανήκουν σε διαφορετικές ζώνες θέσης· δεν επιλέγεται όριο CTR από τη μέση θέση.'
+                : 'Δεν υπάρχει θέση με εμφανίσεις που να αντιστοιχίζεται μονοσήμαντα σε ζώνη CTR.');
+        } else {
+            const position = rows.reduce((total, row) => total + (row.position ?? 0) * (row.impressions / impressions), 0);
+            const gap = impressions >= MIN_IMPRESSIONS && clicks / impressions < baseline / 100;
+            const observations = { clicks, impressions, impression_weighted_position: position,
+                baseline_ctr_numerator: baseline, baseline_ctr_denominator: 100, minimum_impressions: MIN_IMPRESSIONS };
+            const units = { clicks: 'Google search clicks', impressions: 'Google search impressions',
+                impression_weighted_position: 'average position', baseline_ctr: 'ratio of numerator / denominator', minimum_impressions: 'impressions' };
+            const counter = clicks > 0 ? ['Υπάρχουν καταγεγραμμένα κλικ αναζήτησης· το άρθρο ήδη προσελκύει κάποια κλικ.'] : [];
+            if (gap) signal('search_ctr_gap', 'technical_seo', subject, [['gsc', gsc]], observations, units,
+                'Το CTR βρίσκεται κάτω από το δηλωμένο φίλτρο της ζώνης θέσης, με επαρκείς εμφανίσεις για έλεγχο.',
+                'Ελέγξτε χειροκίνητα την εμφάνιση στα αποτελέσματα και τη συνάφεια με την πρόθεση αναζήτησης.', SEARCH_LIMITS, counter);
+            else abstain('search_ctr_gap', subject, impressions < MIN_IMPRESSIONS
+                ? 'Μικρό δείγμα — λιγότερες από 100 εμφανίσεις· δεν προκύπτει ασφαλές συμπέρασμα.'
+                : 'Το παρατηρούμενο CTR δεν είναι χαμηλότερο από το δηλωμένο φίλτρο.', 'WARNING');
+            if (gap && articles.has(subject)) signal('metadata_review', 'article_improvement', subject,
+                [['gsc', gsc], ['catalogue', catalogue]], observations, units,
+                'Η ορατή στην αναζήτηση σελίδα προσφέρεται για ανθρώπινο έλεγχο τίτλου και περιγραφής.',
+                'Ελέγξτε τον δημόσιο τίτλο και την περιγραφή ως προς σαφήνεια και ακρίβεια· δεν προτείνεται αυτόματη επανεγγραφή.',
+                [...SEARCH_LIMITS, 'Το συμβόλαιο δεν περιέχει περιγραφή ή διάγνωση ελαττώματος μεταδεδομένων.'], counter);
+            else abstain('metadata_review', subject, 'Δεν συνυπάρχουν επαρκής ένδειξη CTR και επαληθεύσιμο μεταδεδομένο καταλόγου.');
+        }
 
         const article = articles.get(subject), length = daysIn(gsc.period), half = length / 2;
         if (!article || article.published > shift(gsc.period.start, -OLD_DAYS) || rows[0].date === null || length < 14 || length % 2) {
@@ -245,16 +254,21 @@ export function main(argv) {
     const report = output.slice(0, -5) + '.md';
     const testRelative = path.relative(fs.realpathSync(TESTS), parent);
     const inTestTmp = inside(parent, fs.realpathSync(TESTS)) && testRelative.split(path.sep).some(part => /^tmp-/.test(part));
+    const allowRepoTestTmp = inputs?.synthetic === true && process.env.NODE_TEST_CONTEXT && inTestTmp;
     for (const destination of [requested, output]) {
         if ((inside(destination, ROOT) || inside(destination, fs.realpathSync(ROOT)))
-            && !(inputs?.synthetic === true && process.env.NODE_TEST_CONTEXT && inTestTmp)) throw new Error('repository output refused');
+            && !allowRepoTestTmp) throw new Error('repository output refused');
+    }
+    if (!allowRepoTestTmp) for (let directory = parent; ; directory = path.dirname(directory)) {
+        if (fs.lstatSync(path.join(directory, '.git'), { throwIfNoEntry: false })) throw new Error('repository output refused');
+        if (directory === path.dirname(directory)) break;
     }
     const opened = [];
     try {
         // Reserve both files before writing: existing files/symlinks are never overwritten.
         for (const destination of [output, report]) opened.push({ destination, fd: fs.openSync(destination, 'wx', 0o600) });
         fs.writeFileSync(opened[0].fd, `${JSON.stringify(result, null, 2)}\n`);
-        fs.writeFileSync(opened[1].fd, renderEditorialReport(result, { synthetic: inputs?.synthetic === true }));
+        fs.writeFileSync(opened[1].fd, renderEditorialReport(result, { synthetic: result.synthetic }));
     } catch (error) {
         for (const file of opened) { fs.closeSync(file.fd); fs.unlinkSync(file.destination); }
         throw error;
