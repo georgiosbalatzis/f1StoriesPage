@@ -318,3 +318,159 @@ discovery and a RUM assessment left NOT VERIFIED.
   "comparisons": [ { "left": "gsc.clicks", "right": "site.page_view_events", "operation": "side-by-side" } ]
 }
 ```
+
+## I-07B — Offline deterministic editorial insights
+
+Status: **synthetic checks only; production conclusions and I-06C4 reconciliation NOT VERIFIED**.
+`scripts/intelligence/editorial-insights.mjs` builds on the unchanged I-07A contract. It does not load
+dashboard data, decrypt anything, contact a service, change metadata, or write to the dashboard. Cost
+guards remain 400 MiB/query and 1600 MiB/day; there is no SQL, workflow, dependency or schedule change.
+
+### Evaluation and evidence
+
+`evaluateEditorialInsights(inputs, { asOf: 'YYYY-MM-DD' })` first calls `validateEditorialInputs`.
+It returns exactly `{ version: 1, asOf, signals, abstentions }`, without mutation, logging, network,
+wall-clock reads or writes. Invalid contract input or an invalid/missing evaluation day produces **one**
+`data_quality` abstention with `status: FAIL`, no partial signals and no echoed input values. An invalid
+evaluation day is represented by `asOf: null`.
+
+GSC is optional. Missing, empty, unavailable, preliminary or immature GSC produces explicit abstentions
+only for `search_ctr_gap`, `metadata_review` and `evergreen_refresh`. Discovery, linking and explainer
+rules evaluate their own evidence independently, including when no GSC connection exists. Each section
+used must be `present/final`, have `asOf <=` the evaluation day, and satisfy its own maturity lag. GSC
+ends no later than its own `asOf − 3`; site/discovery use their own `asOf − 4` and I-07A snapshot windows.
+Final labels remain owner assertions. Evaluation on a later date does not relabel old measurements as
+today's data. Invalid contract input still stops every rule with a single data-quality abstention.
+
+Only mapped article identities participate in metric associations. The existing canonical helper is
+the only retirement/alias authority. No query text, catalogue title, unknown URL or input validation
+diagnostic is copied into results. Off-host/old-domain input fails I-07A and cannot appear in output.
+GSC/GA4 `compare` or `reconcile` declarations produce a `data_quality` **WARNING** abstention; no such
+operation is executed. Other independently supported rules may still run. GSC clicks are never divided
+by, subtracted from, reconciled with or otherwise compared to GA4 page_view events.
+
+All suggestions have **low confidence**, including samples above the floors. These are conservative
+editorial screening rules, with no calibrated uncertainty model or statistical ranking. Signals always
+have `minimum_sample_status: MET`; below-floor evidence required by a rule produces an abstention.
+Weak linking instead rests on repository graph observations and needs no analytics sample floor;
+optional below-floor discovery context is labelled in limitations without suppressing that signal.
+No signal has medium/high confidence, a causal claim, impact forecast, uplift percentage or visitor data.
+
+Every signal has exactly:
+
+```text
+signal_id, type, group, subject, scope, observations, data_source, exact_period,
+metric_units, minimum_sample_status, confidence, limitations, why_it_matters,
+recommended_human_review, counterevidence, evidence_links
+```
+
+`subject` is a canonical public article URL. `signal_id` is the first 24 hexadecimal characters of
+SHA-256 over JSON `[type, subject, exact_period]`. `scope` states the article grain/host, with `hypothesis`
+or a controlled topic where applicable. `data_source` records each source's population, unit, extraction
+day and original freshness/cadence/carried flags; GSC also retains exact property, aggregation and search
+type. `exact_period` labels each source independently with inclusive dates and timezone; evergreen has
+separate `earlier`/`later` search dates. Static catalogue/graph observation dates remain distinct from
+analytics periods. `observations` includes raw event/impression/click counts and applicable denominators,
+thresholds and period lengths. `metric_units` labels the measurements. Percentages alone are never evidence.
+Links contain only canonical public article URLs and this repository documentation path.
+
+Signals sort by type, subject and ID using code-point order; abstentions sort by type and subject.
+Input row order does not affect results. Abstentions contain `{ type, subject, status, reason }` with
+Greek reasons: **FAIL** for invalid input, **WARNING** for an unmet screening/sample criterion or refused
+cross-instrument operation, **NOT VERIFIED** when evidence, maturity or compatible scope is unavailable.
+No abstention establishes an editorial defect. CLI **PASS** means the local report files were written,
+not that analytics, production or editorial conclusions passed validation.
+
+### Rules, floors and limitations
+
+| Type / group | Required evidence and deterministic screening rule | Human review and limits |
+| --- | --- | --- |
+| `search_ctr_gap` / `technical_seo` | Mapped GSC page, at least **100 impressions**, observed `clicks / impressions` below the position-bucket reference below | Review result presentation and search intent; anonymised queries, export limits, position, intent and device mix constrain interpretation |
+| `metadata_review` / `article_improvement` | The same CTR-gap criterion plus available mapped catalogue metadata | Review public title and description manually; the contract has no description or proven metadata defect; no generated rewrite |
+| `discovery_dropoff` / `internal_discovery` | At least **30 internal click events**, an **explicit** destination article row with **0–4 page_view events**, and I-07A `joinable` for identical mature discovery/site periods and timezone | Always a **hypothesis**, never failed navigation; no event ratio, loss count, matched journey or inferred missing-row zero |
+| `weak_internal_linking` / `internal_discovery` | Every mapped catalogue article is evaluated when catalogue and graph share observation period, timezone and extraction day; **0–1 distinct observed inbound source pages**, with **no discovery-click prerequisite or analytics sample floor** | Review relevant links, including entity hubs; deduplicate source pages, exclude self-links; mature discovery clicks are optional context, and graph coverage/history and link effectiveness are not established |
+| `evergreen_refresh` / `article_improvement` | Article published at least **90 days before the search period starts**; complete daily GSC split into consecutive equal, non-overlapping halves of **at least 7 days each**; **100 impressions per half** and absolute impression change of at least **100** | Review relevance, preserving original publication date/byline; observational change in search visibility, not proven change in readers, intent or effect of an edit |
+| `data_explainer_opportunity` / `content_opportunity` | Mapped catalogue article in an explicit supported primary category and at least **30 consented article page_view events** | Consider an explainer after checking existing coverage; catalogue supply alone does not establish demand, and article events do not prove tool usage |
+
+The CTR reference is **position-bucket expected CTR**, expressed as an uncalibrated editorial heuristic,
+not a measured property baseline or an empirical CTR curve. Use the impression-weighted average position
+of a page over its exact search period:
+
+| Average position | Baseline numerator / denominator |
+| --- | --- |
+| 1 | 20 / 100 |
+| >1 through 3 | 10 / 100 |
+| >3 through 10 | 3 / 100 |
+| >10 | 1 / 100 |
+
+No property-level CTR is inferred by adding page rows. The baseline does not establish what CTR a page
+should achieve. It deliberately allows only low-confidence review suggestions. Observed CTR uses raw
+click/impression counts rather than rounded exported CTR. Position is weighted by impressions, never
+an unweighted mean of row averages. Each result includes baseline numerator/denominator and the sample floor.
+
+Search rules accept only page rows without query/country/device breakdowns (dimensions null or query
+omitted). Property-level/Queries exports and dimension slices cannot become page totals. Daily rows may
+be added only across disjoint dates with **every calendar day explicitly present for that page**; missing
+days are not zero. Canonical alias overlap on a date or period, unsafe integer totals and incomplete
+coverage cause abstention. Whole-period page rows can support CTR/metadata review, but cannot support
+evergreen comparison. A period with an odd number of days is never silently truncated to equal halves.
+
+Discovery is added only over the existing destination × surface × link-section grain. A missing
+destination page_view row is unavailable, not zero. Weekly/carried discovery retains its own period and
+cannot support a dropoff hypothesis against a different site's current window. Weak linking is evaluated
+for every mapped catalogue article from the observed graph, including articles with zero discovery clicks
+or no discovery evidence. Mature mapped discovery click events, including an explicit zero, are attached
+only as optional context with their own period, cadence, extraction day and units. Context below **30**
+click events is explicitly limited and makes no demand claim. Missing, immature, unmapped or numerically
+unsafe context is omitted, with a limitation stating its absence; missing rows never become zero clicks.
+Neither case causes linking abstention. Only missing/incompatible catalogue or graph evidence, or inbound
+sources above the ceiling, causes linking abstention. The graph and optional discovery retain their own
+dates, with no historical graph or present-day demand claim. Clicks and page views remain separate event
+observations, never a conversion funnel or a reconciliation.
+
+Topic recognition uses exact primary-category labels after trimming/lowercasing: `standings`,
+`βαθμολογίες`, `telemetry`, `τηλεμετρία`, `tyres`, `ελαστικά`, `ghost-car`, `ghostcar`. There is no title/query
+guessing, free-text inference or LLM classification. An unrecognised category produces no topic finding.
+This intentionally abstains when the current catalogue taxonomy does not encode a supported topic.
+The existing article is counterevidence against creating redundant coverage.
+
+Counterevidence is retained when available: existing search clicks, positive destination page views,
+an existing inbound source, existing topic coverage, or clicks that do not move in the same direction
+as evergreen impressions. These observations temper a suggestion; they do not establish causation.
+
+### Private CLI and Greek owner report
+
+Run with an I-07A contract file, never a decrypted dashboard payload. Example paths/dates are placeholders;
+use an existing private parent directory outside the working tree:
+
+```sh
+node scripts/intelligence/editorial-insights.mjs \
+  "$HOME/private-intelligence/editorial-inputs.json" \
+  --out="$HOME/private-intelligence/editorial-insights.json"
+```
+
+The CLI writes JSON at `--out` and a Greek Markdown sibling with `.md` in place of `.json`; default output
+is `$HOME/f1stories-editorial-insights.json` and its `.md` sibling. The CLI uses the latest valid extraction
+day declared in the supplied sections as evaluation `asOf`; it does not substitute today's date. If there
+are no valid declared days, evaluation fails closed to the single data-quality abstention.
+
+Both outputs are new files created exclusively with mode `0600`. Parent directories must exist. Existing
+files or symlinks are refused; both output names are reserved before writing, and a failed pair is cleaned
+up without overwriting existing content. Parent symlinks are resolved before the worktree check. Output
+inside this working tree is refused, with one test-only exception: `synthetic: true`, Node's test-runner
+context, and a `tmp-*` directory beneath `scripts/intelligence/__tests__/`. This flag is an attestation,
+never anonymisation. Non-synthetic inputs are refused in CI. No counts, query text, local paths or parser
+exceptions are printed to terminal logs. Keep all real inputs and generated reports private.
+
+The Greek report states **«συνθετικά δεδομένα»** for synthetic runs, shows source dates, raw observations,
+units, limitations, counterevidence and abstention reasons, and leaves production correctness **NOT VERIFIED**.
+The synthetic fixture at `scripts/intelligence/__tests__/fixtures/editorial-insights/synthetic.json`
+uses real public article identities with wholly invented measurements/labels, and exercises all six rules.
+
+Checks: `node --test scripts/intelligence/__tests__/editorial-insights.test.mjs` and the existing
+`npm run test:intelligence` (no package/CI change). They cover independent non-search rules with absent,
+empty or immature GSC; graph-based linking with zero/below-floor/missing discovery and same-date graph
+requirements; invalid inputs, sample floors, baseline boundaries, incompatible instruments, unmapped/retired/old-domain identities, ambiguous
+grains, incomplete/immature periods, carried data, contradictory evidence, deterministic IDs/order,
+topic restrictions and private/exclusive/symlink-guarded CLI output including the synthetic disclaimer.
+No real analytics, credentials, production reconciliation or live editorial conclusion was accessed or verified.
