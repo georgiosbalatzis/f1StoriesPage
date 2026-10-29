@@ -204,6 +204,38 @@ test('RUNNING conflicts include boundary days and cross-period overlaps, regardl
     assert.equal(validate(malformed).ok, false);
 });
 
+test('RUNNING conflicts resolve known retired and encoded article identities but preserve unmapped URLs', () => {
+    const base = 'https://f1-stories.gr/blog-module/blog-entries/';
+    for (const [left, right, conflict] of [
+        ['20260222T/article.html', '20260227%CE%A4/article.html', true],
+        ['20260227%CE%A4/article.html', '20260227%ce%a4/article.html', true],
+        ['20260227%CE%A4/article.html', '20260227%cE%A4/article.html', true],
+        ['20260222T/article.html', '20260222%54/article.html', true],
+        ['20260222T/', '20260227%CE%A4/article.html', true],
+        ['synthetic-unmapped-a/article.html', 'synthetic-unmapped-b/article.html', false],
+        ['synthetic-unmapped-a/article.html', '%73ynthetic-unmapped-a/article.html', false],
+        ['synthetic-unmapped-%CE%A4/article.html', 'synthetic-unmapped-%ce%a4/article.html', false],
+        ['synthetic-unmapped-%ZZ/article.html', 'synthetic-unmapped-%YY/article.html', false]
+    ]) {
+        const doc = registry(), first = doc.experiments[0];
+        first.urls = [base + left];
+        doc.experiments.push({ ...structuredClone(first), id: 'EG-2000-002', urls: [base + right] });
+        const before = structuredClone(doc), report = validate(doc);
+        assert.equal(report.ok, !conflict, `${left}, ${right}: ${JSON.stringify(report)}`);
+        if (conflict) assert.match(report.errors.join('\n'), /RUNNING experiments overlap/);
+        assert.deepEqual(doc, before, 'stored URLs must remain unchanged');
+    }
+});
+
+test('duplicate URLs within an experiment include known retired aliases and encoding variants', () => {
+    const base = 'https://f1-stories.gr/blog-module/blog-entries/';
+    reject(exp => { exp.urls = [base + '20260222T/article.html', base + '20260227%CE%A4/article.html']; }, /duplicate URL or article identity/);
+    reject(exp => { exp.urls = [base + '20260227%CE%A4/article.html', base + '20260227%ce%a4/article.html']; }, /duplicate URL or article identity/);
+    const doc = registry();
+    doc.experiments[0].urls = [base + 'synthetic-unmapped-a/article.html', base + '%73ynthetic-unmapped-a/article.html'];
+    assert.equal(validate(doc).ok, true);
+});
+
 test('CLI checks default and explicit files, handles invalid input and writes nothing', () => {
     const run = args => spawnSync(process.execPath, [cli, ...args], { cwd: os.tmpdir(), encoding: 'utf8' });
     assert.equal(run(['check']).status, 0);
@@ -226,5 +258,36 @@ test('CLI checks default and explicit files, handles invalid input and writes no
         assert.equal(run(['check', filename]).status, 1);
         assert.equal(fs.readFileSync(filename, 'utf8'), before);
         assert.deepEqual(fs.readdirSync(dir), ['synthetic.json']);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('unknown keys never leak into validator diagnostics or CLI output at any object level', () => {
+    const sentinel = 'SYNTHETIC_PRIVATE_QUERY_KEY_SENTINEL';
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'experiment-registry-private-key-'));
+    try {
+        const filename = path.join(dir, 'synthetic.json');
+        for (const [at, select] of [
+            ['registry', doc => doc],
+            ['experiments[0]', doc => doc.experiments[0]],
+            ['experiments[0].primaryOutcome', doc => doc.experiments[0].primaryOutcome],
+            ['experiments[0].guardrails[0]', doc => doc.experiments[0].guardrails[0]],
+            ['experiments[0].baselinePeriod', doc => doc.experiments[0].baselinePeriod],
+            ['experiments[0].comparisonPeriod', doc => doc.experiments[0].comparisonPeriod],
+            ['experiments[0].history[0]', doc => doc.experiments[0].history[0]]
+        ]) {
+            const doc = registry();
+            select(doc)[sentinel] = true;
+            const report = validate(doc);
+            assert.equal(report.ok, false, at);
+            assert.ok(report.errors.includes(`${at}: unknown field (schema version 1)`), at);
+            assert.equal(JSON.stringify(report).includes(sentinel), false, at);
+            fs.writeFileSync(filename, JSON.stringify(doc));
+            const result = spawnSync(process.execPath, [cli, 'check', filename], { cwd: os.tmpdir(), encoding: 'utf8' });
+            assert.equal(result.status, 1, at);
+            assert.match(result.stdout, /FAIL: registry schema or governance checks/, at);
+            assert.ok(result.stderr.includes(`${at}: unknown field (schema version 1)`), at);
+            assert.equal(result.stdout.includes(sentinel), false, at);
+            assert.equal(result.stderr.includes(sentinel), false, at);
+        }
     } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

@@ -106,7 +106,7 @@ Tests may inject `{ today: 'YYYY-MM-DD' }` as the second argument for determinis
 | --- | --- |
 | `id` | Required unique string matching `^EG-\d{4}-\d{3}$`; immutable identity, never reused |
 | `hypothesis`, `topic`, `owner`, `changeType`, `targetBehaviour`, `mechanism` | Required nonblank strings, without surrounding whitespace; owner copy in Greek; changeType is a descriptive identifier |
-| `urls` | Nonempty, duplicate-free array of serialized absolute URLs at exactly `https://f1-stories.gr/`; no credentials, explicit port, query, fragment or URL normalization differences. Old `f1stories.gr` is rejected. Redirects, aliases and HTML canonical tags are NOT VERIFIED offline; owners must choose the actual canonical spelling |
+| `urls` | Nonempty array of serialized absolute URLs at exactly `https://f1-stories.gr/`; no credentials, explicit port, query, fragment or URL normalization differences. Old `f1stories.gr` is rejected. Known article aliases and percent-encoding variants resolve through the repository article mapping for duplicate-URL and RUNNING-conflict checks; two URLs resolving to the same article are duplicates. Stored URLs remain unchanged. Unknown/unmapped URLs compare exactly as written. Live redirects and HTML canonical tags are NOT VERIFIED offline |
 | `primaryOutcome` | Exactly `{ metric, unit, source, population }`; metric is a stable lowercase snake_case identifier (`^[a-z][a-z0-9_]*$`), never a display label; unit and population are nonblank strings; source is `gsc`, `ga4`, `rum` or `repo` |
 | `guardrails` | Nonempty array of `{ metric, threshold, source }`; metric and threshold are nonblank strings. Threshold states an actionable limit, unit and review method. Same source enum as primaryOutcome. Threshold text is reviewed by the owner, not numerically evaluated here |
 | `baselinePeriod`, `comparisonPeriod` | Exactly `{ start, end }` with real ISO dates, inclusive, ordered, equal duration and non-overlapping for every status. Maturity is required only for COMPLETED, using the strictest primary/guardrail source lag; all other statuses allow future/immature periods |
@@ -119,7 +119,11 @@ Tests may inject `{ today: 'YYYY-MM-DD' }` as the second argument for determinis
 | `history` | Nonempty array of `{ status, date, actor, note, pr?, commit? }`; nonblank actor/note; real ISO date, chronological (same-day entries use array order), never future; first PROPOSED, subsequent transitions from exported `ALLOWED_TRANSITIONS` |
 | `pr`, `commit` | Both keys required on the record; nullable. PR: `https://github.com/georgiosbalatzis/f1StoriesPage/pull/<positive integer>`. Commit: same repository `/commit/<40 lowercase hex>`. At least one valid link once any approval exists, or current status is RUNNING/ROLLED_BACK. Each APPROVED/RUNNING/ROLLED_BACK history entry independently requires one link; optional links elsewhere must also have valid format |
 
-Comparisons of URLs and metric identifiers for RUNNING conflicts are exact. All four pairings of the two records'
+URL identities for duplicate and RUNNING-conflict checks use `buildMapping(readInputs()).aliases` from
+`scripts/intelligence/editorial-model.mjs` and `articleUrl` from `blog-module/build/retired.js`.
+Known article URLs (including directory forms) resolve to the surviving article URL after decoding the article key;
+known retired aliases and percent-encoding variants therefore collide. Unknown/unmapped URLs retain exact-string
+comparison, even when their encodings differ. Metric identifiers compare exactly. All four pairings of the two records'
 baseline/comparison periods are checked, including shared boundary days; disjoint gaps are not treated as observed days.
 History is structurally validated, but append-only integrity across file versions requires Git diff review.
 An entirely new hypothesis after a terminal status uses a new ID. A later evaluator must preserve source, unit,

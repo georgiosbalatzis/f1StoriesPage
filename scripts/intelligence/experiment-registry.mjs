@@ -3,6 +3,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildMapping, readInputs } from './editorial-model.mjs';
+import retired from '../../blog-module/build/retired.js';
 
 export const EXPERIMENT_STATUSES = Object.freeze(['PROPOSED', 'APPROVED', 'RUNNING', 'PAUSED', 'COMPLETED', 'INCONCLUSIVE', 'ROLLED_BACK']);
 export const ALLOWED_TRANSITIONS = Object.freeze({
@@ -19,6 +21,7 @@ export const DEFAULT_EVIDENCE_FLOOR = 30;
 const DAY = 86400000;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const REPO = 'https://github.com/georgiosbalatzis/f1StoriesPage/';
+const ARTICLE_IDENTITIES = new Map(buildMapping(readInputs()).aliases.map(row => [decodeURIComponent(row.article_key), row.article_id]));
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const text = value => typeof value === 'string' && value.trim().length > 0 && value === value.trim();
 const source = value => typeof value === 'string' && Object.hasOwn(MATURITY_LAG_DAYS, value);
@@ -37,6 +40,15 @@ function canonicalURL(value) {
     } catch { return false; }
 }
 
+function urlIdentity(value) {
+    if (!canonicalURL(value)) return value;
+    try {
+        const key = new URL(value).pathname.match(/^\/blog-module\/blog-entries\/([^/]+)\/(?:article\.html)?$/)?.[1];
+        const id = key && ARTICLE_IDENTITIES.get(decodeURIComponent(key));
+        return id ? retired.articleUrl(id) : value;
+    } catch { return value; }
+}
+
 // `today` is an injectable ISO calendar day for reproducible offline checks, never a field in the registry.
 export function validateRegistry(doc, { today = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'
@@ -47,7 +59,7 @@ export function validateRegistry(doc, { today = new Intl.DateTimeFormat('en-CA',
     const fields = (value, required, optional, at) => {
         if (!object(value)) { errors.push(`${at}: expected an object`); return false; }
         for (const key of required) if (!Object.hasOwn(value, key)) errors.push(`${at}.${key}: required`);
-        for (const key of Object.keys(value)) if (![...required, ...optional].includes(key)) errors.push(`${at}.${key}: unknown field (schema version 1)`);
+        for (const key of Object.keys(value)) if (![...required, ...optional].includes(key)) errors.push(`${at}: unknown field (schema version 1)`);
         return true;
     };
     const strings = (values, at, nonempty = false) => {
@@ -76,7 +88,8 @@ export function validateRegistry(doc, { today = new Intl.DateTimeFormat('en-CA',
         strings(exp.confounders, `${at}.confounders`);
         strings(exp.failureModes, `${at}.failureModes`, true);
         if (!Array.isArray(exp.urls) || !exp.urls.length || !exp.urls.every(canonicalURL)) errors.push(`${at}.urls: expected canonical https://f1-stories.gr/ URLs without query or fragment`);
-        if (Array.isArray(exp.urls) && new Set(exp.urls).size !== exp.urls.length) errors.push(`${at}.urls: duplicate URL`);
+        const urlIdentities = Array.isArray(exp.urls) ? exp.urls.map(urlIdentity) : [];
+        if (new Set(urlIdentities).size !== urlIdentities.length) errors.push(`${at}.urls: duplicate URL or article identity`);
         if (fields(exp.primaryOutcome, ['metric', 'unit', 'source', 'population'], [], `${at}.primaryOutcome`)) {
             for (const key of ['unit', 'population']) if (!text(exp.primaryOutcome[key])) errors.push(`${at}.primaryOutcome.${key}: expected a nonblank string`);
             if (typeof exp.primaryOutcome.metric !== 'string' || !/^[a-z][a-z0-9_]*$/.test(exp.primaryOutcome.metric)) errors.push(`${at}.primaryOutcome.metric: expected a stable lowercase snake_case identifier`);
@@ -134,12 +147,12 @@ export function validateRegistry(doc, { today = new Intl.DateTimeFormat('en-CA',
         }
         if (previous !== exp.status) errors.push(`${at}.status: must equal the last history status`);
         links(exp, at, approved || ['RUNNING', 'ROLLED_BACK'].includes(exp.status));
-        if (exp.status === 'RUNNING' && periods.length === 2 && Array.isArray(exp.urls)) running.push({ exp, periods, at });
+        if (exp.status === 'RUNNING' && periods.length === 2 && Array.isArray(exp.urls)) running.push({ exp, periods, at, urlIdentities });
         warnings.push(`${at}: before/after evidence is observational; counts and outcome are NOT VERIFIED by registry validation`);
     }
     for (let i = 0; i < running.length; i++) for (let j = i + 1; j < running.length; j++) {
         const a = running[i], b = running[j];
-        if (a.exp.primaryOutcome?.metric === b.exp.primaryOutcome?.metric && a.exp.urls.some(url => b.exp.urls.includes(url))
+        if (a.exp.primaryOutcome?.metric === b.exp.primaryOutcome?.metric && a.urlIdentities.some(url => b.urlIdentities.includes(url))
             && a.periods.some(p => b.periods.some(q => p.start <= q.end && q.start <= p.end))) {
             errors.push(`${a.at}, ${b.at}: RUNNING experiments overlap on the same URL and primary metric`);
         }
