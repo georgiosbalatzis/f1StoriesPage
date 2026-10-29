@@ -13,6 +13,8 @@
         var newButton = document.getElementById('gen-new-draft');
         var id = null;
         var busy = false;
+        // Bumped by detach: a save that finishes after a ZIP import replaced the editor must not rebind the old draft.
+        var generation = 0;
         var blobs = new WeakMap();
         var blobNumber = 0;
         function fingerprint(state) {
@@ -46,10 +48,12 @@
             if (busy || editor.locked()) return;
             setBusy(true);
             status.textContent = 'Αποθήκευση στον browser…';
-            var state = editor.capture();
-            var checkpoint = fingerprint(state);
             try {
+                var state = editor.capture();
+                var checkpoint = fingerprint(state);
+                var owner = generation;
                 var result = await db.save(state, id);
+                if (owner !== generation) { status.textContent = 'Το προηγούμενο πρόχειρο αποθηκεύτηκε τοπικά. Το άρθρο που εισήχθη δεν έχει αποθηκευτεί.'; return; }
                 id = result.id;
                 saved = checkpoint;
                 status.textContent = 'Αποθηκεύτηκε τοπικά · ' + new Date(result.updatedAt).toLocaleString('el-GR') + '. Δεν δημοσιεύτηκε.';
@@ -84,7 +88,7 @@
                     var title = document.createElement('h2');
                     title.textContent = value.title || 'Χωρίς τίτλο';
                     var info = document.createElement('p');
-                    info.textContent = value.corrupt ? 'Τα δεδομένα δεν μπορούν να διαβαστούν.' : [global.F1S_TAXONOMY.authorLabel(value.author), global.F1S_TAXONOMY.categoryLabel(value.category), new Date(value.updatedAt).toLocaleString('el-GR')].filter(Boolean).join(' · ');
+                    info.textContent = value.corrupt ? 'Μη αναγνώσιμα δεδομένα (CORRUPT). Διατήρησε τα δεδομένα του browser και κράτησε ιδιωτικό αντίγραφο για ανάκτηση. Εξήγαγε πρώτα κάθε αναγνώσιμο σημειωματάριο.' : [global.F1S_TAXONOMY.authorLabel(value.author), global.F1S_TAXONOMY.categoryLabel(value.category), new Date(value.updatedAt).toLocaleString('el-GR')].filter(Boolean).join(' · ');
                     if (!value.corrupt) info.prepend(global.F1S_AUTHOR_DOM_TOOLS.createSvgIcon('fa-calendar-alt'), ' ');
                     var open = document.createElement('button');
                     open.type = 'button'; open.className = 'gb-btn'; open.textContent = 'Άνοιγμα'; open.disabled = Boolean(value.corrupt);
@@ -126,7 +130,7 @@
         newButton.addEventListener('click', newDraft);
         document.getElementById('gen-return-editor').addEventListener('click', showEditor);
         return { dirty: dirty, busy: function () { return busy; }, newDraft: newDraft,
-            detach: function () { id = null; saved = ''; },
+            detach: function () { id = null; saved = ''; generation++; },
             changed: function () { if (!busy && dirty()) status.textContent = 'Μη αποθηκευμένες αλλαγές · Αποθήκευση ως πρόχειρο στο βήμα 5.'; } };
     }
     global.F1S_DRAFT_MANAGER = { attach: attach };

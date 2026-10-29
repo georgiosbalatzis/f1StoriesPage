@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -176,4 +177,29 @@ test('module has no editor writes, persistence, publishing, arbitrary fetch or e
     assert.doesNotMatch(source, /body\.value\s*=|setRangeText|execCommand|dispatchEvent|setSelectionRange|\.select\(\)(?!;\s*message\('Δεν επιτράπηκε)/);
     assert.doesNotMatch(source, /gen-title|gen-category|gen-tag|gen-author|gen-publish|F1S_LOCAL_DRAFTS|F1S_DRAFT_MANAGER|GITHUB|SESSION_TOKEN|api\.github|indexedDB|localStorage|sessionStorage|innerHTML|insertAdjacentHTML|eval\(/);
     assert.match(source, /credentials: 'omit'/); assert.match(source, /redirect: 'error'/);
+});
+
+test('workspace validation preserves Unicode and unfinished inputs, rejects malformed or oversized data', () => {
+    const form = note({ text: '', url: 'https://unfinished', sourceDate: '2026-', type: 'statistic' });
+    const workspace = { version: 1, question: 'Ερώτηση α\u0301', anchor: 'φράση', season: '2026', round: '17',
+        notes: [note({ text: 'Συνθετικό canary α\u0301', url: 'https://example.com/evidence' })], form };
+    const result = api.validateWorkspace(workspace);
+    assert.equal(result.question, workspace.question); assert.equal(result.form.sourceDate, '2026-');
+    assert.equal(result.notes[0].url, workspace.notes[0].url); assert.notEqual(result.notes, workspace.notes);
+    for (const bad of [{ ...workspace, version: 2 }, { ...workspace, extra: 'secret' }, { ...workspace, round: '01' },
+        { ...workspace, season: '', round: '1' }, { ...workspace, notes: Array(501).fill(workspace.notes[0]) },
+        { ...workspace, form: { ...form, url: 'x'.repeat(2001) } }, { ...workspace, notes: [note({ url: 'javascript:bad' })] },
+        { ...workspace, notes: Array(200).fill(note({ text: 'α'.repeat(6000) })) }, { ...workspace, notes: Array(1) }]) assert.throws(() => api.validateWorkspace(bad));
+    const empty = { version: 1, question: '', anchor: '', season: '', round: '', notes: [], form: note({ text: '' }) };
+    assert.equal(api.validateWorkspace(empty), null);
+    assert.ok(api.validateWorkspace({ ...empty, question: ' ' }));
+    assert.ok(api.validateWorkspace({ ...empty, form: { ...empty.form, verification: 'checked' } }));
+});
+
+test('brief output remains byte-identical for a validated workspace', () => {
+    const item = note({ text: 'Ακριβές α\u0301', sourceTitle: 'Πηγή', url: 'https://example.com' });
+    const workspace = { version: 1, question: 'Ερώτημα α\u0301', anchor: '', season: '2026', round: '17', notes: [item], form: note({ text: '' }) };
+    const validated = api.validateWorkspace(workspace);
+    assert.equal(createHash('sha256').update(api.brief(validated.question, '2026 / γύρος 17', validated.notes)).digest('hex'),
+        '41ff11644c8d62cb32dd9655ee20c7138992993828dd8deec8e6899e4f6eb029');
 });

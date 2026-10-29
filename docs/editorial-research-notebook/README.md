@@ -2,7 +2,7 @@
 
 Baseline: `d2bfbc01d257cb680247a2dae89e196018497e30` (latest main, fetched again before PR preparation).
 
-Step 2 offers **Βρες σχετικά άρθρα** and **Έρευνα — προαιρετικά**. Both open the same notebook, and focus returns to the button that opened it. The notebook sits beside the writing area at wide desktop widths and above it on smaller screens. It uses the existing author controls and editorial tokens. Closing hides it without clearing notes. The five steps, editor, article drafts, preview and publishing code are unchanged.
+Step 2 offers **Βρες σχετικά άρθρα** and **Έρευνα — προαιρετικά**. Both open the same notebook, and focus returns to the button that opened it. The notebook sits beside the writing area at wide desktop widths and above it on smaller screens. It uses the existing author controls and editorial tokens. Closing hides it without clearing notes. The five-step editor saves research only with an explicit local draft save.
 
 ## Author workflow
 
@@ -48,16 +48,16 @@ THE GRID, Telemetry, Ghost Car and TYRES links come from the existing approved t
 
 ## Isolation and security evidence
 
-The notebook owns only its toggle, panel, form and in-memory state. It exposes no editing callback and never reads or writes the article fields. There is no access to the GitHub client/token helper, publication/deployment controls, article draft manager, IndexedDB or browser storage. Existing author source files remain byte-identical.
+The notebook owns its panel and research state. Generate captures its validated snapshot alongside article drafts; the notebook itself does not access IndexedDB, credentials or publishing controls. The article body selection is read only to suggest link text.
 
 `research-browser.test.mjs` saves a real local test draft, loads a dummy page-scoped GitHub token and then searches, reads a round, adds a note, copies, closes/reopens and reloads the notebook. Before/after comparisons prove:
 
 - Exact equality of editor field values, author/category selections and image-input filenames.
 - Exact equality of saved draft records, stable IDs and timestamps.
-- Unchanged draft status and preview `srcdoc`.
+- Research edits mark the draft dirty; preview input excludes research.
 - Unchanged local/session storage during research.
 - Zero external requests, including zero `api.github.com` requests.
-- Notebook notes disappear on reload while the saved article draft survives.
+- Unsaved notebook edits disappear on reload; explicitly saved research returns when its draft is reopened.
 
 Other focused tests cover unsafe URL schemes/credentials, hostile HTML in manual notes and index records, unsafe article IDs, malformed/wrong-round data, missing/offline resources, clipboard denial, UTF-8 downloads, clear cancellation/confirmation, cache reuse, and late search/round responses. External data is rendered through text nodes. Requests use approved same-origin paths, omit credentials, reject redirects and have timeouts; there is no arbitrary URL fetcher, AI service or analytics event.
 
@@ -140,10 +140,14 @@ docs/editorial-research-notebook/screenshots/archive-390-dark.webp
 docs/editorial-research-notebook/screenshots/archive-390-light.webp
 ```
 
-Minified JavaScript remains generated/ignored under the existing repository policy; CI rebuilds it. No article, draft-system, preview-renderer or publishing implementation was changed.
+Minified JavaScript remains generated/ignored under the existing repository policy; CI rebuilds it. The original notebook PR changed no article, draft-system, preview-renderer or publishing implementation; E-01 (below) later connected the notebook to local drafts.
 
 ## Limits
 
-Notes exist only in this page's memory. Refresh, closing the tab or navigating away loses them unless copied/downloaded. Draft restoration does not restore research. There is no research import, sync or automatic draft association.
+Unsaved notes live only in this page's memory: refresh, closing the tab or navigating away loses anything not saved with **Αποθήκευση ως πρόχειρο** or exported. There is no sync between browsers or devices.
 
 Metadata matching cannot answer arbitrary research questions or assess the truth of an article. Historical snapshot coverage is limited to files actually present. No latest-snapshot substitution, live data, FIA-document retrieval, source crawling, external tool ingestion, paid odds feed, AI API or backend is included. Manual verification remains the author's responsibility. No article was published and no live GitHub publication flow was exercised; publishing tests use mocks. The implementation PR must be reviewed and merged separately.
+
+## E-01: local research workspaces
+
+Research is held in memory until **Αποθήκευση ως πρόχειρο** saves it with the article. There is no autosave. Reopening that draft restores the notebook; reload alone does not save it. Drafts are specific to the browser and origin (protocol, host and port), and do not sync between devices. JSON import/export is an explicit notebook action; it does not publish or package research with an article. Clear, new draft and ZIP replacement change memory until the next save. Retain browser data and a private backup if a draft is unreadable; export readable notebooks before attempting recovery. Browser storage is not encrypted or protected from same-origin scripts.

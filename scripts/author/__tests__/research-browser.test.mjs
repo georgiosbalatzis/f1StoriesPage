@@ -35,9 +35,10 @@ async function pageFor(t, width = 1440) {
     return { page, context, external, requests };
 }
 async function open(page) {
+    await page.waitForFunction(() => !document.getElementById('gen-app').hidden);
     if (await page.locator('.gb-step[data-step="1"]').isVisible()) await page.locator('.gb-step[data-step="1"]').click();
     else await page.locator('#gen-next').click();
-    await page.locator('#research-toggle').click();
+    if (!(await page.locator('#research-notebook').isVisible())) await page.locator('#research-toggle').click();
     await page.waitForFunction(() => document.querySelector('#research-season').options.length > 1);
 }
 async function savedState(page) {
@@ -112,8 +113,10 @@ test('pinned standings require available season/round and preserve values/proven
     await page.unroute('**/standings/rounds/2026-16.json');
     await page.getByRole('button', { name: 'Επανάληψη στιγμιοτύπου', exact: true }).click(); await page.waitForSelector('#research-standing-entry');
     assert.match(await page.locator('#research-notebook .gb-research-text').textContent(), /Γύρος: 16/);
+    await page.evaluate(() => { document.getElementById('research-status').textContent = ''; });
     await page.getByRole('button', { name: 'Επανάληψη καταλόγου', exact: true }).click();
-    await page.waitForFunction(() => document.querySelector('#research-round').disabled);
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('φορτώθηκαν'));
+    assert.equal(await page.locator('#research-round').inputValue(), '16');
     assert.equal(await page.locator('#research-standing-entry').count(), 0);
 });
 
@@ -193,7 +196,7 @@ test('copy finding, copy reference, clipboard fallback, UTF-8 download and expli
     assert.equal(await page.locator('#research-question').inputValue(), ''); assert.equal(await page.locator('.gb-research-result').count(), 0);
 });
 
-test('research with dummy token causes zero editor/draft/storage/preview mutations and zero GitHub requests; reload discards notebook only', async t => {
+test('research is saved only explicitly and restores after reload without GitHub requests', async t => {
     const { page, external } = await pageFor(t);
     await page.evaluate(() => {
         for (const [id, value] of [['gen-title', 'Άρθρο δοκιμής'], ['gen-content', 'Αμετάβλητο κείμενο α\u0301'], ['gen-tag', 'Hamilton']]) {
@@ -210,12 +213,26 @@ test('research with dummy token causes zero editor/draft/storage/preview mutatio
     await page.locator('#research-season').selectOption('2026'); await page.locator('#research-round').selectOption('17'); await page.waitForSelector('#research-standing-entry');
     await page.getByRole('button', { name: 'Αντιγραφή brief', exact: true }).click();
     await page.locator('#research-toggle').click(); await page.locator('#research-toggle').click();
-    assert.deepEqual(await savedState(page), before);
+    const unsaved = await savedState(page);
+    assert.deepEqual(unsaved.drafts, before.drafts);
+    assert.deepEqual(unsaved.fields, before.fields); assert.equal(unsaved.preview, before.preview);
+    assert.equal(unsaved.local, before.local); assert.equal(unsaved.session, before.session);
     assert.deepEqual(external.filter(url => /api.github.com/.test(url)), []);
     assert.equal(external.length, 0);
     await page.reload(); await open(page);
     assert.equal(await page.locator('#research-question').inputValue(), ''); assert.equal(await page.locator('.gb-research-result').count(), 0);
     const drafts = await page.evaluate(() => window.F1S_LOCAL_DRAFTS.list()); assert.deepEqual(drafts, before.drafts);
+    await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list button').filter({ hasText: 'Άνοιγμα' }).click();
+    await open(page); await page.locator('#research-question').fill('Αποθηκευμένη έρευνα α\u0301'); await addNote(page);
+    await page.locator('#research-toggle').click(); await page.locator('.gb-step[data-step="4"]').click();
+    await page.locator('#gen-save-draft').click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε τοπικά'));
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list button').filter({ hasText: 'Άνοιγμα' }).click();
+    await open(page); assert.equal(await page.locator('#research-question').inputValue(), 'Αποθηκευμένη έρευνα α\u0301');
+    assert.match(await page.locator('.gb-research-result').textContent(), /Δοκιμαστική σημείωση/);
+    assert.deepEqual(external.filter(url => /api.github.com/.test(url)), []);
 });
 
 test('late responses after clear/selection changes cannot restore obsolete search or round results', async t => {
@@ -236,7 +253,7 @@ test('late responses after clear/selection changes cannot restore obsolete searc
 });
 
 test('archive discovery: find related articles, copy the canonical URL or a Markdown link, never touch the draft', async t => {
-    const { page, requests } = await pageFor(t);
+    const { page, requests, external } = await pageFor(t);
     const body = 'Η McLaren πήγε στο Baku με μεγάλο πακέτο.\n\nΔεύτερη παράγραφος ά.';
     await page.evaluate(text => { const node = document.getElementById('gen-content'); node.value = text; node.dispatchEvent(new Event('input', { bubbles: true })); }, body);
     await page.locator('.gb-step[data-step="4"]').click(); await page.locator('#gen-save-draft').click();
@@ -290,8 +307,11 @@ test('archive discovery: find related articles, copy the canonical URL or a Mark
     assert.equal(await page.locator('#research-notebook').isVisible(), false);
     assert.equal(await archive.evaluate(node => node === document.activeElement), true);
     assert.equal(await page.locator('#research-toggle').getAttribute('aria-expanded'), 'false');
-    assert.deepEqual(await savedState(page), before);
-    assert.equal(await page.locator('#gen-draft-status').textContent(), before.status);
+    const after = await savedState(page);
+    assert.deepEqual(after.drafts, before.drafts); assert.deepEqual(after.fields, before.fields); assert.equal(after.preview, before.preview);
+    assert.equal(after.local, before.local); assert.equal(after.session, before.session);
+    assert.match(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες αλλαγές/);
+    assert.deepEqual(external.filter(url => /api.github.com/.test(url)), []);
 
     // The author pastes the link; the preview renders it as an internal article link.
     await page.locator('#gen-content').fill('Η McLaren πήγε στο Baku με [μεγάλο πακέτο](/blog-module/blog-entries/20260928G/article.html).');
@@ -355,6 +375,16 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
             const contrast = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
             assert.ok(contrast(luminance(colors.foreground), luminance(colors.background)) >= 4.5, JSON.stringify(colors));
             assert.ok(contrast(luminance(colors.secondary), luminance(colors.background)) >= 4.5, JSON.stringify(colors));
+            // After the geometry checks: focusing the bottom controls scrolls the page.
+            await page.keyboard.press('Tab');
+            for (const selector of ['#research-notebook button:has-text("Εισαγωγή έρευνας JSON")', '#research-notebook button:has-text("Εξαγωγή έρευνας JSON")']) {
+                const control = page.locator(selector); await control.focus();
+                assert.equal(await control.evaluate(node => node === document.activeElement && node.matches(':focus-visible')), true, selector);
+                assert.equal(await control.isVisible(), true, selector);
+                assert.notEqual(await control.evaluate(node => getComputedStyle(node).outlineStyle), 'none', selector);
+            }
+            await page.keyboard.press('Tab');
+            assert.equal(await page.getByRole('button', { name: 'Εισαγωγή έρευνας JSON', exact: true }).evaluate(node => node === document.activeElement), true);
             if (output) {
                 await page.evaluate(() => scrollTo(0, 0)); await page.locator('#research-notebook').evaluate(node => { node.scrollTop = 0; });
                 fs.mkdirSync(output, { recursive: true }); await page.screenshot({ path: path.join(output, `${width}-${theme}.png`) });
@@ -366,4 +396,110 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
         await page.locator('#research-question').focus(); await page.keyboard.press('Tab');
         assert.equal(await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).evaluate(node => node === document.activeElement), true);
     }
+});
+
+test('research JSON rejects invalid envelopes, confirms replacement and persists valid import', async t => {
+    const { page } = await pageFor(t); await open(page);
+    const exporter = page.getByRole('button', { name: 'Εξαγωγή έρευνας JSON' });
+    assert.equal(await exporter.isDisabled(), true);
+    const input = page.locator('#research-import');
+    const send = async contents => input.setInputFiles({ name: 'research.json', mimeType: 'application/json', buffer: Buffer.from(contents) });
+    const blank = { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' };
+    const workspace = { version: 1, question: 'Εισαγωγή α\u0301', anchor: '', season: '', round: '', notes: [], form: { ...blank, url: 'https://unfinished', sourceDate: '2026-' } };
+    for (const value of ['{', JSON.stringify({ format: 'wrong', version: 1, research: workspace }),
+        JSON.stringify({ format: 'f1stories-research', version: 2, research: workspace }),
+        JSON.stringify({ format: 'f1stories-research', version: 1, research: workspace, extra: 1 }), 'x'.repeat(2 * 1024 * 1024 + 1)]) {
+        await page.evaluate(() => { document.getElementById('research-status').textContent = ''; });
+        await send(value); await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('δεν είναι έγκυρο'));
+        assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    }
+    await page.locator('#research-question').fill('Αρχική έρευνα'); assert.equal(await exporter.isDisabled(), false);
+    const valid = JSON.stringify({ format: 'f1stories-research', version: 1, research: workspace });
+    await send(valid); await page.getByRole('dialog').getByRole('button', { name: 'Ακύρωση', exact: true }).click();
+    assert.equal(await page.locator('#research-question').inputValue(), 'Αρχική έρευνα');
+    await send(valid); await page.getByRole('dialog').getByRole('button', { name: 'Αντικατάσταση', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-question').value === 'Εισαγωγή α\u0301');
+    assert.match(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+    await page.locator('#research-toggle').click(); await page.locator('.gb-step[data-step="4"]').click();
+    await page.locator('#gen-save-draft').click(); await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε'));
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό')); await open(page);
+    assert.equal(await page.locator('#research-question').inputValue(), workspace.question);
+    assert.equal(await page.locator('#research-note-url').inputValue(), 'https://unfinished');
+});
+
+test('switch cancellation retains A and opening B without a notebook cannot inherit A', async t => {
+    const { page } = await pageFor(t);
+    await page.evaluate(async () => {
+        await window.F1S_LOCAL_DRAFTS.save({ title: 'A', text: 'Άρθρο A', editor: { step: 1 } });
+        await window.F1S_LOCAL_DRAFTS.save({ title: 'B', text: 'Άρθρο B', editor: { step: 1 } });
+    });
+    await page.locator('#gen-show-drafts').click();
+    await page.locator('#gen-draft-list li').filter({ has: page.getByRole('heading', { name: 'A', exact: true }) }).getByRole('button', { name: 'Άνοιγμα' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.includes('Ανοιχτό')); await open(page);
+    await page.locator('#research-question').fill('Μη αποθηκευμένο A');
+    await page.locator('#gen-show-drafts').click();
+    const b = page.locator('#gen-draft-list li').filter({ has: page.getByRole('heading', { name: 'B', exact: true }) }).getByRole('button', { name: 'Άνοιγμα' });
+    await b.click(); await page.getByRole('dialog').getByRole('button', { name: 'Ακύρωση', exact: true }).click();
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().question), 'Μη αποθηκευμένο A');
+    await b.click(); await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'B' && !document.getElementById('gen-app').hidden);
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    assert.equal(await page.locator('#gen-content').inputValue(), 'Άρθρο B');
+});
+
+test('delayed catalog, archive and JSON import cannot repopulate a switched notebook', async t => {
+    const { page } = await pageFor(t);
+    await page.evaluate(async () => { await window.F1S_LOCAL_DRAFTS.save({ title: 'B', text: 'B', editor: { step: 1 } }); });
+    let releaseCatalog, releaseArchive;
+    const catalogStarted = new Promise(resolve => page.route('**/research-catalog.json', async route => { resolve(); await new Promise(done => { releaseCatalog = done; }); await route.continue(); }));
+    const archiveStarted = new Promise(resolve => page.route('**/blog-index-data.json', async route => { resolve(); await new Promise(done => { releaseArchive = done; }); await route.continue(); }));
+    await page.locator('.gb-step[data-step="1"]').click(); await page.locator('#research-toggle').click(); await catalogStarted;
+    await page.locator('#research-question').fill('Hamilton'); await page.getByRole('button', { name: 'Εύρεση αναφορών' }).click(); await archiveStarted;
+    await page.evaluate(() => {
+        const read = File.prototype.text;
+        File.prototype.text = function () { return new Promise(resolve => { window.__releaseResearchImport = async () => resolve(await read.call(this)); }); };
+    });
+    const form = { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' };
+    const json = JSON.stringify({ format: 'f1stories-research', version: 1, research: { version: 1, question: 'A import', anchor: '', season: '', round: '', notes: [], form } });
+    await page.locator('#research-import').setInputFiles({ name: 'research.json', mimeType: 'application/json', buffer: Buffer.from(json) });
+    await page.waitForFunction(() => Boolean(window.__releaseResearchImport));
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'B');
+    const archived = page.waitForResponse('**/blog-index-data.json');
+    releaseCatalog(); releaseArchive(); await page.evaluate(() => window.__releaseResearchImport());
+    await archived;
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    assert.equal(await page.locator('.gb-research-results li').count(), 0);
+    assert.equal(await page.locator('#research-question').inputValue(), '');
+});
+
+test('a delayed standings response from A cannot paint in B', async t => {
+    const { page } = await pageFor(t); await page.evaluate(async () => window.F1S_LOCAL_DRAFTS.save({ title: 'B standings', editor: { step: 1 } }));
+    await open(page); await page.locator('details').filter({ has: page.locator('#research-season') }).evaluate(node => { node.open = true; });
+    await page.locator('#research-season').selectOption('2026');
+    let release;
+    const started = new Promise(resolve => page.route('**/standings/rounds/2026-17.json', async route => { resolve(); await new Promise(done => { release = done; }); await route.continue(); }));
+    await page.locator('#research-round').selectOption('17'); await started;
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'B standings');
+    const response = page.waitForResponse('**/standings/rounds/2026-17.json'); release(); await response;
+    assert.equal(await page.locator('#research-standing-entry').count(), 0);
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+});
+
+test('a delayed clipboard failure cannot expose A text after opening B', async t => {
+    const { page } = await pageFor(t); await page.evaluate(async () => window.F1S_LOCAL_DRAFTS.save({ title: 'Clipboard B', editor: { step: 1 } }));
+    await open(page); await page.locator('#research-question').fill('Συνθετικό κείμενο A');
+    await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => new Promise((resolve, reject) => { window.__rejectClipboard = reject; }) } }));
+    await page.getByRole('button', { name: 'Αντιγραφή brief', exact: true }).click();
+    await page.waitForFunction(() => Boolean(window.__rejectClipboard));
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση' }).click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'Clipboard B');
+    await page.evaluate(async () => { window.__rejectClipboard(new Error('Denied')); await Promise.resolve(); });
+    assert.equal(await page.locator('#research-copy-fallback').isHidden(), true);
+    assert.equal(await page.locator('#research-copy-fallback').inputValue(), '');
 });
