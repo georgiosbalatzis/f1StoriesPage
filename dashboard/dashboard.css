@@ -194,7 +194,7 @@ a { color: inherit; }
 
 .dash-order a {
     display: grid;
-    grid-template-columns: 2.75rem 9rem minmax(0, 1fr) 10rem;
+    grid-template-columns: 2.75rem 9rem minmax(0, 1fr) 12rem;
     align-items: baseline;
     gap: 1rem;
     padding: 0.7rem 0.25rem;
@@ -206,7 +206,9 @@ a { color: inherit; }
 .dash-order-name { font-weight: 600; }
 .dash-order-fact { overflow-wrap: anywhere; }
 .dash-order-period { justify-self: end; color: var(--text-secondary); font-size: 0.8125rem; text-align: right; }
-.is-alert .dash-order-period, .dash-rail-status.is-alert, .dash-checks .is-warning .dash-ledger-mark {
+.dash-order-carried { margin-right: 0.5rem; }
+.dash-order-carried, .dash-order-chip { white-space: nowrap; }
+.dash-order-chip, .dash-rail-status.is-alert, .dash-checks .is-warning .dash-ledger-mark {
     justify-self: start;
     align-self: start;
     padding: 0.05rem 0.4rem;
@@ -214,7 +216,6 @@ a { color: inherit; }
     color: var(--accent-contrast);
     font-weight: 600;
 }
-.is-alert .dash-order-period { justify-self: end; }
 
 .dash-overview .dash-notes {
     display: grid;

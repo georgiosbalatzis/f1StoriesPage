@@ -248,13 +248,15 @@
             label(chart, Math.min(Math.max((peakIndex + 0.5) * slotWidth, 12), width - 12), y(peak.page_view_events) - 6,
                 integer.format(peak.page_view_events), 'dash-tick dash-tick-strong', 'middle');
         }
-        var step = rows.length <= 8 ? 1 : narrow ? 14 : 7;
+        // Up to 8 days every label sits under its own column (kept inside the chart); longer windows pin the ends.
+        var few = rows.length <= 8;
+        var step = few ? (slotWidth >= 56 ? 1 : 2) : narrow ? 14 : 7;
         rows.forEach(function (row, i) {
             var last = i === rows.length - 1;
             if (i % step && !last) return;
             if (!last && i && rows.length - 1 - i < step / 2) return; // keep the last label clear of the one before
-            var anchor = rows.length === 1 ? 'middle' : i === 0 ? 'start' : last ? 'end' : 'middle';
-            var x = anchor === 'start' ? 0 : anchor === 'end' ? width : (i + 0.5) * slotWidth;
+            var anchor = few ? 'middle' : i === 0 ? 'start' : last ? 'end' : 'middle';
+            var x = anchor === 'start' ? 0 : anchor === 'end' ? width : Math.min(Math.max((i + 0.5) * slotWidth, 24), width - 24);
             label(chart, x, base + 20, day(row.event_day), 'dash-tick', anchor);
         });
         chart.appendChild(thresholdLine); // over the columns, so it reads through the tall ones
@@ -548,7 +550,9 @@
             link.appendChild(node('span', String(i + 1).padStart(2, '0'), 'dash-order-no'));
             link.appendChild(node('span', item.name, 'dash-order-name'));
             link.appendChild(node('span', item.fact, 'dash-order-fact'));
-            link.appendChild(node('span', item.status || item.period, 'dash-order-period'));
+            var period = link.appendChild(node('span', undefined, 'dash-order-period'));
+            if (item.carried) period.appendChild(node('span', item.carried, 'dash-order-carried'));
+            period.appendChild(node('span', item.status || item.period, item.alert ? 'dash-order-chip' : ''));
             var status = slot('status', item.id);
             status.textContent = item.status || '';
             status.classList.toggle('is-alert', Boolean(item.alert));
@@ -755,7 +759,8 @@
             ['Πλήθος', function (r) { return integer.format(r.count); }]
         ], models['33-rum-coverage']);
         var rumCarried = carriedNote('rum-carried', payload.modelWindows && payload.modelWindows['33-rum-coverage']);
-        items.push({ id: 'quality', name: 'Ποιότητα', period: period, alert: warnings > 0,
+        // A carried row that also has a warning keeps its period beside the chip.
+        items.push({ id: 'quality', name: 'Ποιότητα', period: period, alert: warnings > 0, carried: warnings && rumCarried ? 'Από χθες' : '',
             fact: warnings ? plural(warnings, 'έλεγχος θέλει', 'έλεγχοι θέλουν') + ' προσοχή.' : 'Όλοι οι έλεγχοι είναι εντάξει.',
             status: warnings ? plural(warnings, 'προειδοποίηση', 'προειδοποιήσεις') : rumCarried ? 'Από χθες' : '' });
 
