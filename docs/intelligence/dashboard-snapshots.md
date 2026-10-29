@@ -393,43 +393,47 @@ editorial-model.md); and a check that carried Core Web Vitals labels appear on t
 
 ## I-06D — Editorial Intelligence interface and presentation
 
-The I-06D visual redesign is **presentation-only**. It changes `dashboard/index.html`,
-`dashboard/dashboard.css`, `dashboard/dashboard.js` and the synthetic Chrome regression.
-No BigQuery SQL model, scheduler, query budget, snapshot schema, encryption primitive, IAM permission,
-browser network origin or consent behavior changes.
+The I-06D redesign is **presentation-only**. It changes `dashboard/index.html`, `dashboard/dashboard.css`,
+`dashboard/dashboard.js` and the synthetic Chrome regression. No BigQuery SQL model, scheduler, query budget, snapshot
+schema, encryption primitive, IAM permission, browser network origin, CSP or consent behaviour changes.
 
-**Visual hierarchy:** a F1 Stories editorial command header, anchored section navigation, four
-data-derived KPI cards, a daily activity area/column chart, ranked horizontal views for content and
-acquisition, visualized discovery totals, and a Core Web Vitals trio for the **delayed_existing**
-coverage class. The full original data tables remain accessible through native `details`
-elements, including the other RUM coverage classes.
+**Form: the running order.** The page uses the F1 Stories article grammar rather than a control-room template:
 
-**Metric contract:** All KPI values come from the existing `20-daily-activity` events; page views
-and session_start counts are **events**, not visitors or unique sessions. The last-week KPI uses
-up to seven available mature days, not fabricated missing days; active days count only days
-with at least one consented page_view. Ranking bar widths are normalized relative to the
-largest row only and are not conversion rates or estimates of readership. Every row retains
-its absolute count and low-sample annotation. The Core Web Vitals cards never claim a passing
-performance rating based on a cohort below the model's minimum observations; they display
-p75, the threshold, the exact observation count and its sample flag. Old snapshots still
-decrypt, and missing models produce visible pending states.
+- **Document band:** the site's black slab, `#0f100e`, in both themes. It holds the period, the last successful update
+  and the stale warning.
+- **"Με μια ματιά":** one factual line per section, with its period, linking to the section. This replaces KPI tiles.
+- **Running-order rail:** a sticky rail at ≥ 1100 px, showing each section's status.
+- **Sections:** each has a reading column and a margin where its caveats sit, next to the figure they qualify.
 
-**Security and lifecycle:** Visuals are constructed using DOM `textContent` and
-`document.createElementNS`; no raw data becomes HTML, inline styles, third-party libraries,
-external fonts, localStorage or transmitted requests. The existing CSP is untouched.
-Locking empties all chart, KPI, ranking, table and list containers; the snapshot remains encrypted
-at rest and decryption remains browser-only.
+The visual system is IBM Plex Sans for all Greek text (sentence case, as on the site), Barlow Condensed for numerals
+only, square edges, hairline rules and no gradients, shadows or cards.
 
-**Accessibility and design:** Existing F1 Stories `Barlow Condensed` / `IBM Plex Sans`
-typography and dark/light palette are preserved. The page has keyboard-accessible anchor
-navigation, semantic cards/lists, accessible SVG chart label, a text data-table alternative,
-clear focus states and reduced-motion treatment. At 390px mobile width the cards stack
-and wide data tables scroll within their own containers; desktop has a responsive 12-column
-editorial hierarchy rather than a one-column series of boxes.
+**Chart grammar.**
 
-**Release checklist:** Run the site quality gates and `node scripts/intelligence/dashboard-browser.mjs`,
-including 390px dark and 1280px light with synthetic snapshots and key isolation. Capture
-optional screenshots using the existing browser harness `--screenshots=<dir>` and compare
-against the previous dashboard before merging. Review large/long Greek titles, an empty
-acquisition model, missing discovery and carried RUM warnings in both themes. Do not
-auto-merge on passing CI; the owner should review the visual appearance first.
+- **Daily activity:** one ink column per export day, on a scale that always reaches the 30-event sample threshold,
+  which is drawn as a labelled dashed line. A day with zero views is an open circle. No line or area is drawn between
+  days, and the chart is drawn at its real pixel width, so labels stay 12 px at every size.
+- **Rankings** (articles, categories, channels, discovery surfaces, link sections, destination articles): classification
+  tables. Each row has a position, the name with one meta line (raw class or category), and the count. Its ink bar sits
+  on the same threshold scale, and a tick marks 30. Below the threshold is stated once in the notes, and per row only
+  for assistive technology. No per-row "μικρό δείγμα" repetition.
+- **Section to section:** a source × destination matrix of click counts, with a total column. Shading only helps find
+  the larger cells, and empty pairs are dots.
+- **Core Web Vitals:** bullet rows for every metric × coverage class (never pooled), p75 against the good,
+  needs-improvement and poor zones. The marker is filled at 30 or more observations and hollow below.
+- **RUM checks:** an OK / Προσοχή ledger.
+
+The exact tables remain behind native `details` for every section.
+
+**Colour discipline.** Data marks are ink. The alert colour is used only for a stale snapshot, data-quality warnings and
+an overdue weekly refresh. Carried and weekly states are information: prominent, but not red.
+
+**Unchanged contracts.** Values are `textContent` or SVG attributes only. Locking empties every chart, table, list,
+summary line and rail status. Snapshots with 4, 5, 7 or 9 models still render, with pending states for what is
+missing. The weekly discovery age, the carried Core Web Vitals note and every unit, consent and small-sample note
+remain.
+
+**Release checklist.** Run the site quality gates and `npm run test:dashboard:browser`, which covers 390 px dark and
+1280 px light with synthetic snapshots and key isolation. Visually review long Greek titles, a single-day window, a
+missing acquisition model, pending discovery and the carried CWV note in both themes. Do not auto-merge; the owner
+reviews the appearance first.
