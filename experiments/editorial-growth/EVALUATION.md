@@ -37,12 +37,25 @@ period. Missing periods are absent evidence, never zero. Each observation contai
 | `urls?` / `url?` | Observation-level provenance extension. `urls` must exactly cover the experiment's URL set, without duplicates; `url` is shorthand for a single-URL experiment. Wrong, extra or missing members fail measurement. If neither is supplied, identity is NOT VERIFIED and the decision is INCONCLUSIVE. URL aliases/canonical tags are not resolved offline. |
 | `role?` | Only `secondary` is supported, for additional metrics absent from the registry. An undeclared unknown metric is a measurement failure, preventing substituted primary metrics from silently becoming secondary evidence. |
 
-Unknown observation fields are rejected. NaN, infinity, negative counts, fractional
-counts, zero/invalid denominators, numerators above denominators and duplicate
+Unknown observation fields are rejected. Non-numeric/non-finite numerators,
+zero/invalid denominators, proportion numerators above denominators and duplicate
 metric/period rows fail measurement. No visitor-level data is accepted or needed.
-The proportion interpretation must be appropriate for the declared metric; unrelated
-counts or a sample size attached to a primary p75 are not a supported outcome representation.
-Primary p75/sample-size semantics need a registry schema extension before evaluation.
+
+Primary outcomes require declared count or proportion semantics, independently of
+whether a denominator happens to be supplied. Count units contain a count token
+(`count(s)`, `event(s)`, `click(s)`, `page_view(s)`, `συμβάντα`, `κλικ`, `πλήθος`);
+proportion units are explicitly `proportion`, `ratio`, `share` or `fraction`.
+Scalar declarations in either metric or unit (e.g. `ms`, `unitless`, `p75`,
+`average`/`avg`/`mean`, median/percentile, duration/latency, min/max or variance)
+take precedence and are unsupported, as are unrecognized semantics. Finite primary
+numerators that are not nonnegative safe integers also abstain. These cases return
+INCONCLUSIVE with `UNSUPPORTED_OUTCOME`, a null difference and evidence NOT VERIFIED;
+they never use a scalar value or its sample size as event evidence. A count with
+denominators does not become a proportion; it likewise abstains. A declared
+proportion needs a denominator in both periods. Mismatched representations between
+periods remain measurement failures. Secondary comparisons apply the same semantic
+checks using their declared observation metadata. Scalar p75 outcomes need a richer
+registry contract before evaluation; numeric scalar guardrails remain supported.
 
 To supply dated confounders, use an envelope instead of an array:
 
@@ -65,12 +78,22 @@ authoritative. Without envelope asOf, the CLI uses the latest valid extraction d
 never the machine date. Empty input therefore needs an envelope asOf for the CLI.
 Confounders may also be strings. Registry strings are always retained, with unknown
 dates and severity; they conservatively cap the decision at INCONCLUSIVE. Supplied
-objects have a description and optional period/boolean major. Unknown dates or
-severity are treated conservatively, not as proof of an unaffected window. An
-explicitly major confounder overlapping either inclusive period caps the decision;
-an event wholly in the gap or outside both periods does not. Explicitly minor events
-are recorded without that cap. All supplied events remain visible. Event completeness
-and the owner's classification remain NOT VERIFIED; there is no automatic event lookup.
+objects have a description, optional period, boolean `major` and boolean `permanent`.
+For confounders, `period.start` is the occurrence/effect onset; optional `period.end`
+is the last day affected for a transient event, not merely the date of an enduring
+change. Both endpoints are inclusive. An absent end means the effect may persist;
+`permanent: true` explicitly preserves that effect after the recorded occurrence
+end (e.g. a canonical URL change dated on one day). The result retains `permanent`.
+Unknown dates or severity are treated conservatively, not as proof of an unaffected
+window. Major or unknown-severity effects overlapping baseline or comparison cap
+the decision, including an open-ended or permanent change that begins in the gap
+before comparison ends. A transient wholly in the gap is exempt only if an explicit
+end precedes comparison start and it is not marked permanent. A transient affecting
+baseline still caps the comparison; a confounder beginning after comparison ends
+does not. `overlaps` describes effect overlap, not just the occurrence dates.
+Explicitly minor events are recorded without that cap. All supplied events remain
+visible. Event completeness and the owner's classification remain NOT VERIFIED;
+there is no automatic event lookup.
 
 ### Decisions and precedence
 
@@ -78,16 +101,23 @@ and the owner's classification remain NOT VERIFIED; there is no automatic event 
 | --- | --- |
 | `STOP_MEASUREMENT_FAILED` | Invalid registry/observations, substituted metric, source/unit/population mismatch, denominator representation mismatch, duplicate aggregates or wrong URL coverage. Takes precedence over recommendations from untrustworthy measurements. |
 | `ROLLBACK_RECOMMENDED` | A usable comparison guardrail observation breaches an executable absolute threshold. Overrides primary sample insufficiency and confounders, without asserting a cause. Even a sparse observed breach is reported conservatively. A missing guardrail baseline does not hide an absolute comparison breach. No rollback executes. |
-| `INCONCLUSIVE` | Insufficient evidence in either period, immature extraction/evaluation, unequal/overlapping/reversed periods, actual period mismatch, carried/weekly input, unknown URL coverage, incomplete or unsupported guardrail, confounding or unregistered secondary evidence. |
+| `INCONCLUSIVE` | Unsupported outcome semantics/finite non-integer primary values, insufficient evidence in either period, immature extraction/evaluation, unequal/overlapping/reversed periods, actual period mismatch, carried/weekly input, unknown URL coverage, incomplete or unsupported guardrail, confounding or unregistered secondary evidence. |
 | `CONTINUE_OBSERVING` | Only a PROPOSED/APPROVED plan before baseline starts, with no observations and no other blocking condition. Does not override an immature observed window or a missing period after the plan starts. |
 | `NO_DETECTABLE_CHANGE` | Exactly equal descriptive primary values in otherwise usable aggregates. Does not establish equivalence, adequate sensitivity or absence of a change. |
 | `DESCRIPTIVE_CHANGE_OBSERVED` | Different descriptive primary values in otherwise usable aggregates. Direction alone is no success claim; there is no automatic keep/completion decision. |
 
-The primary evidence floor is `experiment.evidenceFloor`, default 30, independently
-in **each** period: numerator for counts, denominator for proportions. Samples are
-never added together to reach the floor. A custom lower floor remains visible and
-does not establish adequate sensitivity. Guardrail within-limit PASS also requires
+The effective evidence floor is `max(30, experiment.evidenceFloor ?? 30)`, independently
+in **each** period: numerator for declared counts, denominator for declared proportions.
+JSON exposes the original value as `declaredEvidenceFloor` and the effective value
+as `evidenceFloor`; the Greek report shows both. A lower declared value produces
+`LOW_DECLARED_EVIDENCE_FLOOR` as a warning reason only: adequate samples may still
+be evaluated, but tiny samples cannot become sufficient by lowering the declaration.
+A declared floor above 30 remains enforced. Samples are never added together to
+reach the floor. Primary and secondary differences are null below the effective
+floor; raw aggregates remain available. Guardrail within-limit PASS also requires
 sample counts meeting that floor; a millisecond value is never a sample count.
+Observed LCP/CLS breaches still recommend rollback despite sparse or unsupported
+primary evidence; guardrail threshold comparison and precedence are unchanged.
 
 All source lags come from the registry: GA4 4 days, GSC 3, RUM 4, repo 0. Exact
 boundary days are accepted. The strictest source applies to registered windows;
@@ -115,13 +145,17 @@ displayed for review, not interpreted as executable code.
 JSON preserves every accepted aggregate's numerator, optional denominator, actual
 period, extraction day and provenance. The primary/secondary difference is
 comparison count minus baseline count, or comparison proportion minus baseline
-proportion when both denominators are supplied. Scalar guardrails report the
+proportion for an explicitly declared proportion with both denominators supplied.
+Both periods must meet the effective floor before either difference is computed,
+including secondary differences. Scalar guardrails report the
 difference in their original units. There is no relative-change percentage.
 
-With a zero baseline numerator, only raw counts and the count difference are
-reported, even when denominators exist; no proportion or relative comparison is
-computed. A malformed or non-comparable pair has a null difference. Small samples
-may retain a descriptive difference but never override the INCONCLUSIVE decision.
+With a zero baseline numerator, no proportion or relative comparison is computed.
+Raw counts remain visible; a count difference is available only when the underlying
+sample counts meet the effective floor (possible for a declared proportion with
+denominators). Otherwise the difference is null, including for 1/2 versus 2/2.
+Malformed, unsupported or non-comparable pairs also have null differences. No
+below-floor primary or secondary difference is computed before abstention.
 
 **No interval method is applied in schema v1** (`interval: null` throughout,
 including below the floor). Aggregate consented events do not establish independent
@@ -135,6 +169,11 @@ floor alone does not justify an interval or resolve confounding.
 
 Only run real aggregate evaluation through the owner's private local process.
 This public repository's CI, logs and artifacts must contain synthetic inputs only.
+The CLI refuses execution when either `CI` or `GITHUB_ACTIONS` is nonempty, before
+reading registry or observation inputs, even with `--out`. It exits 1 with the same
+generic FAIL message as other input/output errors and emits no aggregate values or
+result files. The pure evaluator remains usable for synthetic unit tests in CI;
+CLI subprocess tests explicitly remove both flags before selectively testing refusal.
 The commands below use the committed **synthetic** fixtures:
 
 ```sh
@@ -168,6 +207,9 @@ rollback steps. Raw observation numbers and differences stay in JSON. Declared
 registry metadata (including numeric thresholds) is still copied to Markdown:
 owners must keep free-text metadata free of private measurements. Production
 reconciliation, actual actions, review actor and new status stay NOT VERIFIED.
+Rendered free text inserts U+200D after each `@`, neutralizing user/team mention
+syntax when Markdown is pasted into GitHub. JSON retains the original text; this
+protection applies to the Markdown report, not to raw JSON copied elsewhere.
 PASS refers to a particular offline check; WARNING denotes a limitation, FAIL a
 contract violation, and NOT VERIFIED an absent check or external evidence.
 

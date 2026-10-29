@@ -14,7 +14,14 @@ const days = value => Date.parse(value) / DAY;
 const period = value => object(value) && Object.keys(value).length === 2 && day(value.start) && day(value.end) && value.start <= value.end;
 const samePeriod = (a, b) => a.start === b.start && a.end === b.end;
 const count = value => Number.isSafeInteger(value) && value >= 0;
-const escape = value => String(value ?? 'NOT VERIFIED').replace(/[\r\n|]/g, ' ').replace(/[\\`*_<>\[\]]/g, '\\$&');
+function outcomeKind({ metric, unit = '' }) {
+    const scalar = /(?:^|[^\p{L}\p{N}])(?:ms|milliseconds?|s|seconds?|unitless|p\d{1,3}|average|avg|mean|median|percentile|quantile|min|max|minimum|maximum|stddev|variance|duration|latency)(?:$|[^\p{L}\p{N}])/iu;
+    if (scalar.test(`${metric} ${unit}`)) return null;
+    if (/^(proportion|ratio|share|fraction)$/i.test(unit)) return 'proportion';
+    if (/(?:^|[^\p{L}\p{N}])(?:counts?|events?|clicks?|page_views?|συμβάντα|κλικ|πλήθος)(?:$|[^\p{L}\p{N}])/iu.test(unit)) return 'count';
+    return null;
+}
+const escape = value => String(value ?? 'NOT VERIFIED').replace(/[\r\n|]/g, ' ').replace(/[\\`*_<>\[\]]/g, '\\$&').replace(/@/g, '@\u200d');
 
 function resultReport(experiment, result) {
     const e = escape;
@@ -37,7 +44,7 @@ function resultReport(experiment, result) {
 - **Ώριμο τέλος:** ${result.checks.maturity} — ελέγχεται και η ημέρα εξαγωγής κάθε παρατήρησης.
 - **primaryOutcome metric / unit / source / population:** ${e(experiment?.primaryOutcome?.metric)} / ${e(experiment?.primaryOutcome?.unit)} / ${e(experiment?.primaryOutcome?.source)} / ${e(experiment?.primaryOutcome?.population)}
 - **Ίδια φίλτρα και κάλυψη στις δύο περιόδους:** ${result.checks.identity} — έλεγχος δηλώσεων, όχι εξωτερική επιβεβαίωση.
-- **evidenceFloor ανά περίοδο:** ${e(result.evidenceFloor)}
+- **evidenceFloor ανά περίοδο:** ${e(result.evidenceFloor)} (δηλωμένο: ${e(result.declaredEvidenceFloor)})
 - **Επάρκεια σε καθεμία περίοδο:** ${result.checks.evidence} — τα πλήθη διατηρούνται μόνο στο ιδιωτικό JSON.
 - **Εβδομαδιαία ή μεταφερόμενα δεδομένα:** ${result.checks.freshness} — διατηρούνται οι πραγματικές περίοδοι και asOf στο JSON.
 - **Παραγωγική συμφωνία δεδομένων:** NOT VERIFIED.
@@ -73,7 +80,7 @@ ${result.reasons.map(r => `  - ${r.code}: ${e(r.message)}${r.metric ? ` (${e(r.m
 export function evaluateExperiment(experiment, observations, { asOf } = {}) {
     const result = {
         experimentId: text(experiment?.id) ? experiment.id : null, asOf: day(asOf) ? asOf : null,
-        decision: 'INCONCLUSIVE', evidenceFloor: experiment?.evidenceFloor ?? DEFAULT_EVIDENCE_FLOOR,
+        decision: 'INCONCLUSIVE', declaredEvidenceFloor: experiment?.evidenceFloor ?? DEFAULT_EVIDENCE_FLOOR, evidenceFloor: DEFAULT_EVIDENCE_FLOOR,
         reasons: [], checks: { periods: 'NOT VERIFIED', maturity: 'NOT VERIFIED', identity: 'NOT VERIFIED', evidence: 'NOT VERIFIED', freshness: 'NOT VERIFIED', production: 'NOT VERIFIED' },
         observations: [], primary: null, guardrails: [], secondary: [], confounders: [],
         limitations: [
@@ -104,6 +111,9 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
         reason(windowError ? 'INVALID_WINDOW' : 'INVALID_REGISTRY', `Έλεγχος μητρώου: ${error}`, null, !windowError);
     }
     if (failed) return finish();
+    result.evidenceFloor = Math.max(DEFAULT_EVIDENCE_FLOOR, result.declaredEvidenceFloor);
+    if (result.declaredEvidenceFloor < DEFAULT_EVIDENCE_FLOOR) result.reasons.push({ code: 'LOW_DECLARED_EVIDENCE_FLOOR',
+        message: 'WARNING: το δηλωμένο ελάχιστο είναι χαμηλότερο από το όριο ασφαλείας· εφαρμόζεται τουλάχιστον 30 ανά περίοδο.' });
     result.checks.periods = validation.errors.some(e => /equal|non-overlapping/.test(e)) ? 'FAIL' : 'PASS';
     const envelope = Array.isArray(observations) ? { observations, confounders: [] } : observations;
     if (!object(envelope) || !Array.isArray(envelope.observations)
@@ -114,14 +124,19 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
     }
     for (const item of [...experiment.confounders.map(description => ({ description, origin: 'registry' })),
         ...(envelope.confounders || []).map(value => typeof value === 'string' ? { description: value, origin: 'observations' } : { ...value, origin: 'observations' })]) {
-        if (Object.keys(item).some(key => !['description', 'period', 'major', 'origin'].includes(key))
-            || !text(item.description) || (item.period !== undefined && !period(item.period))
-            || (item.major !== undefined && typeof item.major !== 'boolean')) {
+        if (Object.keys(item).some(key => !['description', 'period', 'major', 'permanent', 'origin'].includes(key))
+            || !text(item.description) || (item.period !== undefined && (!object(item.period)
+                || Object.keys(item.period).some(key => !['start', 'end'].includes(key)) || !day(item.period.start)
+                || (item.period.end !== undefined && (!day(item.period.end) || item.period.start > item.period.end))))
+            || (item.major !== undefined && typeof item.major !== 'boolean')
+            || (item.permanent !== undefined && typeof item.permanent !== 'boolean')) {
             reason('INVALID_CONFOUNDER', 'Μη έγκυρη περιγραφή, περίοδος ή βαρύτητα confounder.', null, true);
             continue;
         }
-        const overlaps = item.period ? [experiment.baselinePeriod, experiment.comparisonPeriod].some(p => item.period.start <= p.end && p.start <= item.period.end) : null;
-        result.confounders.push({ description: item.description, origin: item.origin, period: item.period ? { ...item.period } : null, major: item.major ?? null, overlaps });
+        const overlaps = item.period ? [experiment.baselinePeriod, experiment.comparisonPeriod].some(p => item.period.start <= p.end
+            && (item.permanent === true || item.period.end === undefined || p.start <= item.period.end)) : null;
+        result.confounders.push({ description: item.description, origin: item.origin, period: item.period ? { ...item.period } : null,
+            major: item.major ?? null, permanent: item.permanent ?? null, overlaps });
         if (overlaps !== false && item.major !== false) reason('CONFOUNDED_WINDOW', 'Δηλωμένος σημαντικός παράγοντας ή άγνωστη βαρύτητα/χρονοθέτηση μέσα στις περιόδους· αποχή από συμπέρασμα.');
     }
     if (!envelope.observations.length && asOf < experiment.baselinePeriod.start && ['PROPOSED', 'APPROVED'].includes(experiment.status)) {
@@ -143,7 +158,7 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
     for (const row of envelope.observations) {
         if (!object(row) || Object.keys(row).some(key => !allowed.includes(key)) || !['metric', 'unit', 'source', 'population'].every(key => text(row[key]))
             || !Object.hasOwn(MATURITY_LAG_DAYS, row.source) || !period(row.period) || !day(row.asOf)
-            || !Number.isFinite(row.numerator) || row.numerator < 0
+            || !Number.isFinite(row.numerator) || (row.numerator < 0 && row.metric !== experiment.primaryOutcome.metric)
             || (row.denominator !== undefined && (!count(row.denominator) || row.denominator === 0))
             || (row.carried !== undefined && typeof row.carried !== 'boolean')
             || (row.cadence !== undefined && !['daily', 'weekly'].includes(row.cadence))
@@ -189,6 +204,9 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
 
     function compare(spec, guardrail = false) {
         const rows = result.observations.filter(row => row.metric === spec.metric);
+        const kind = guardrail ? 'scalar' : outcomeKind({ metric: spec.metric, unit: spec.unit ?? rows[0]?.unit });
+        let supported = kind !== null;
+        if (!supported) reason('UNSUPPORTED_OUTCOME', 'Η μονάδα/μετρική δεν δηλώνει υποστηριζόμενο πλήθος ή αναλογία· scalar αποτελέσματα δεν αξιολογούνται.', spec.metric);
         const pair = {};
         let comparable = true;
         for (const [name, window] of [['baseline', experiment.baselinePeriod], ['comparison', experiment.comparisonPeriod]]) {
@@ -207,9 +225,15 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
                 reason('REGISTRY_IDENTITY_MISMATCH', 'Metric/source/unit/population δεν συμφωνεί με το μητρώο.', spec.metric, true);
                 comparable = false;
             }
-            if (!guardrail && (!count(row.numerator) || (row.denominator !== undefined && row.numerator > row.denominator))) {
-                reason('INVALID_COUNTS', 'Το numerator πρέπει να είναι πλήθος και, με denominator, υποσύνολό του.', spec.metric, true);
-                comparable = false;
+            if (!guardrail) {
+                if (!count(row.numerator) || (kind === 'count' && row.denominator !== undefined)
+                    || (kind === 'proportion' && row.denominator === undefined)) {
+                    reason('UNSUPPORTED_OUTCOME', 'Απαιτούνται ακέραια μη αρνητικά πλήθη και denominator μόνο για ρητά δηλωμένη αναλογία.', spec.metric);
+                    supported = false;
+                } else if (kind === 'proportion' && row.numerator > row.denominator) {
+                    reason('INVALID_COUNTS', 'Το numerator αναλογίας πρέπει να είναι υποσύνολο του denominator.', spec.metric, true);
+                    comparable = false;
+                }
             }
         }
         const { baseline, comparison } = pair;
@@ -221,20 +245,24 @@ export function evaluateExperiment(experiment, observations, { asOf } = {}) {
                 comparable = false;
             }
         } else comparable = false;
+        const sufficient = guardrail || (supported && [baseline, comparison].every(row => row
+            && (kind === 'proportion' ? row.denominator : row.numerator) >= result.evidenceFloor));
+        if (!guardrail && supported && !sufficient) reason('BELOW_EVIDENCE_FLOOR', 'Κάθε περίοδος χρειάζεται χωριστά το εφαρμοζόμενο ελάχιστο πλήθος· δεν αθροίζονται οι περίοδοι.', spec.metric);
+        const countsOnly = !guardrail && baseline?.numerator === 0;
+        if (comparable && supported && countsOnly) result.reasons.push({ code: 'ZERO_BASELINE', message: 'Μηδενικό baseline: μόνο περιγραφικά πλήθη, χωρίς λόγο ή ποσοστό.', metric: spec.metric });
         let difference = null;
-        if (comparable && result.checks.periods === 'PASS') {
-            const countsOnly = !guardrail && baseline.numerator === 0;
-            const ratio = !guardrail && baseline.denominator !== undefined && !countsOnly;
+        if (comparable && supported && sufficient && result.checks.periods === 'PASS') {
+            const ratio = kind === 'proportion' && !countsOnly;
             difference = { kind: ratio ? 'proportion' : guardrail ? 'scalar' : 'count',
                 absolute: ratio ? comparison.numerator / comparison.denominator - baseline.numerator / baseline.denominator : comparison.numerator - baseline.numerator };
-            if (countsOnly) result.reasons.push({ code: 'ZERO_BASELINE', message: 'Μηδενικό baseline: μόνο περιγραφικά πλήθη, χωρίς λόγο ή ποσοστό.', metric: spec.metric });
         }
-        return { metric: spec.metric, ...pair, difference, interval: null };
+        return { metric: spec.metric, outcomeKind: supported ? kind : null, ...pair, difference, interval: null };
     }
     result.primary = compare(experiment.primaryOutcome);
-    const primaryCounts = [result.primary.baseline, result.primary.comparison].map(row => row ? row.denominator ?? row.numerator : null);
-    result.checks.evidence = primaryCounts.every(n => n !== null && n >= result.evidenceFloor) ? 'PASS' : 'WARNING';
-    if (result.checks.evidence !== 'PASS') reason('BELOW_EVIDENCE_FLOOR', 'Κάθε περίοδος χρειάζεται χωριστά το δηλωμένο ελάχιστο πλήθος· δεν αθροίζονται οι περίοδοι.', experiment.primaryOutcome.metric);
+    const primaryCounts = [result.primary.baseline, result.primary.comparison].map(row => row
+        ? result.primary.outcomeKind === 'proportion' ? row.denominator : row.numerator : null);
+    result.checks.evidence = result.primary.outcomeKind === null ? 'NOT VERIFIED'
+        : primaryCounts.every(n => n !== null && n >= result.evidenceFloor) ? 'PASS' : 'WARNING';
 
     for (const spec of experiment.guardrails) {
         const comparison = compare(spec, true);
@@ -294,6 +322,7 @@ function outsideRepository(filename) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
     try {
+        if (process.env.CI || process.env.GITHUB_ACTIONS) throw new Error('CI');
         const [registryFile, id, observationsFile, output, ...extra] = process.argv.slice(2);
         if (!registryFile || !id || !observationsFile || extra.length || (output !== undefined && (!output.startsWith('--out=') || output.length === 6))) throw new Error('usage');
         const registry = JSON.parse(fs.readFileSync(registryFile, 'utf8'));

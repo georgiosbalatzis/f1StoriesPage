@@ -17,7 +17,10 @@ const options = { asOf: '2000-01-18' };
 const evaluate = ({ experiment, observations }, opts = options) => evaluateExperiment(experiment, observations, opts);
 const hasReason = (result, code) => assert.ok(result.reasons.some(r => r.code === code), JSON.stringify(result.reasons));
 const primary = data => data.observations.filter(row => row.metric === data.experiment.primaryOutcome.metric);
-const run = args => spawnSync(process.execPath, [cli, ...args], { cwd: os.tmpdir(), encoding: 'utf8' });
+const cliEnv = { ...process.env };
+delete cliEnv.CI;
+delete cliEnv.GITHUB_ACTIONS;
+const run = (args, env = {}) => spawnSync(process.execPath, [cli, ...args], { cwd: os.tmpdir(), encoding: 'utf8', env: { ...cliEnv, ...env } });
 const args = [path.join(fixtures, 'registry.json'), 'EG-2000-001', path.join(fixtures, 'observations.json')];
 
 test('synthetic fixtures validate; descriptive result preserves raw values without changing inputs', () => {
@@ -38,6 +41,116 @@ test('synthetic fixtures validate; descriptive result preserves raw values witho
     assert.deepEqual(data, before);
 });
 
+test('scalar and non-integer primary outcomes abstain without treating values or sample sizes as evidence', () => {
+    for (const denominators of [null, [4000, 8000]]) {
+        const data = input(), rows = primary(data);
+        Object.assign(data.experiment.primaryOutcome, { metric: 'lcp_p75', unit: 'ms', source: 'rum' });
+        rows.forEach((row, i) => {
+            Object.assign(row, data.experiment.primaryOutcome, { numerator: i === 0 ? 2000 : 2100 });
+            if (denominators) row.denominator = denominators[i];
+        });
+        const result = evaluate(data);
+        assert.equal(result.decision, 'INCONCLUSIVE');
+        assert.notEqual(result.checks.evidence, 'PASS');
+        assert.equal(result.primary.difference, null);
+        assert.equal(result.primary.baseline.numerator, 2000);
+        assert.equal(result.primary.comparison.numerator, 2100);
+        if (denominators) assert.equal(result.primary.comparison.denominator, 8000);
+        hasReason(result, 'UNSUPPORTED_OUTCOME');
+    }
+    for (const [metric, unit] of [['scalar_value', 'unitless'], ['average_events', 'events'], ['events_p75', 'events'], ['mean_events', 'events']]) {
+        const data = input(), rows = primary(data);
+        Object.assign(data.experiment.primaryOutcome, { metric, unit });
+        rows.forEach(row => { Object.assign(row, data.experiment.primaryOutcome); });
+        assert.equal(evaluate(data).decision, 'INCONCLUSIVE', `${metric}/${unit}`);
+    }
+    for (const numerator of [-1, 40.5]) {
+        const data = input();
+        primary(data)[0].numerator = numerator;
+        const result = evaluate(data);
+        assert.equal(result.decision, 'INCONCLUSIVE');
+        assert.equal(result.primary.difference, null);
+        assert.notEqual(result.checks.evidence, 'PASS');
+        hasReason(result, 'UNSUPPORTED_OUTCOME');
+    }
+    const data = input();
+    primary(data).forEach(row => { row.denominator = 100; });
+    const result = evaluate(data);
+    assert.equal(result.decision, 'INCONCLUSIVE', 'denominators do not declare a proportion');
+    assert.equal(result.primary.difference, null);
+    assert.notEqual(result.checks.evidence, 'PASS');
+});
+
+test('effective floor cannot fall below 30; lower declared floors warn without blocking adequate evidence', () => {
+    for (const floor of [1, 10]) {
+        const data = input();
+        data.experiment.evidenceFloor = floor;
+        primary(data).forEach((row, i) => { row.numerator = i === 0 ? floor : floor + 1; });
+        let result = evaluate(data);
+        assert.equal(result.decision, 'INCONCLUSIVE');
+        assert.equal(result.declaredEvidenceFloor, floor);
+        assert.equal(result.evidenceFloor, 30);
+        assert.equal(result.primary.difference, null);
+        hasReason(result, 'LOW_DECLARED_EVIDENCE_FLOOR');
+        hasReason(result, 'BELOW_EVIDENCE_FLOOR');
+        primary(data).forEach((row, i) => { row.numerator = 30 + i; });
+        result = evaluate(data);
+        assert.equal(result.decision, 'DESCRIPTIVE_CHANGE_OBSERVED', 'the lower declaration is a warning only');
+        hasReason(result, 'LOW_DECLARED_EVIDENCE_FLOOR');
+    }
+    const data = input();
+    data.experiment.evidenceFloor = 50;
+    assert.equal(evaluate(data).evidenceFloor, 50);
+    assert.equal(evaluate(data).decision, 'INCONCLUSIVE');
+});
+
+test('permanent and open-ended confounders in a gap affect comparison; explicitly expired transients do not', () => {
+    const data = input();
+    data.experiment.comparisonPeriod = { start: '2000-01-15', end: '2000-01-21' };
+    data.observations.forEach(row => {
+        if (row.period.start === '2000-01-08') row.period = { ...data.experiment.comparisonPeriod };
+        row.asOf = '2000-01-25';
+    });
+    const confounder = { description: 'SYNTHETIC canonical URL change', major: true, permanent: true,
+        period: { start: '2000-01-14', end: '2000-01-14' } };
+    data.observations = { observations: data.observations, confounders: [confounder] };
+    let result = evaluate(data, { asOf: '2000-01-25' });
+    assert.equal(result.decision, 'INCONCLUSIVE');
+    assert.equal(result.confounders[0].overlaps, true);
+    assert.equal(result.confounders[0].permanent, true);
+    hasReason(result, 'CONFOUNDED_WINDOW');
+    confounder.permanent = false;
+    result = evaluate(data, { asOf: '2000-01-25' });
+    assert.equal(result.decision, 'DESCRIPTIVE_CHANGE_OBSERVED');
+    assert.equal(result.confounders[0].overlaps, false);
+    delete confounder.period.end;
+    result = evaluate(data, { asOf: '2000-01-25' });
+    assert.equal(result.decision, 'INCONCLUSIVE', 'without an explicit end the effect may persist');
+    assert.equal(result.confounders[0].overlaps, true);
+});
+
+test('below-floor primary and secondary comparisons retain raw counts but suppress all differences', () => {
+    const data = input();
+    data.experiment.primaryOutcome.unit = 'proportion';
+    primary(data).forEach((row, i) => { row.unit = 'proportion'; row.numerator = i + 1; row.denominator = 2; });
+    data.observations.push(...primary(data).map(row => ({ ...structuredClone(row), metric: 'synthetic_secondary_events', role: 'secondary' })));
+    let result = evaluate(data);
+    assert.equal(result.decision, 'INCONCLUSIVE');
+    assert.equal(result.primary.difference, null);
+    assert.equal(result.secondary[0].difference, null);
+    assert.equal(result.primary.baseline.numerator, 1);
+    assert.equal(result.primary.comparison.numerator, 2);
+    assert.equal(result.primary.baseline.denominator, 2);
+    assert.equal(result.secondary[0].comparison.denominator, 2);
+    assert.equal(result.primary.interval, null);
+    assert.equal(result.secondary[0].interval, null);
+    data.experiment.primaryOutcome.unit = 'events';
+    data.observations.filter(row => row.unit === 'proportion').forEach(row => { row.unit = 'events'; delete row.denominator; });
+    result = evaluate(data);
+    assert.equal(result.primary.difference, null);
+    assert.equal(result.secondary[0].difference, null);
+});
+
 test('Greek report follows the template, labels observational evidence and omits aggregate values', () => {
     const data = input();
     primary(data)[1].numerator = 123456789;
@@ -49,6 +162,22 @@ test('Greek report follows the template, labels observational evidence and omits
     assert.match(result.markdown, /δεν αποδεικνύουν φόρτωση προορισμού/);
     assert.doesNotMatch(result.markdown, /123456789/);
     assert.doesNotMatch(JSON.stringify(result), /p-value|\blift\b|\bsignificant\b/i);
+});
+
+test('Markdown neutralizes user and team mentions in free text while preserving raw JSON', () => {
+    const data = input();
+    data.experiment.owner = 'SYNTHETIC @user';
+    data.experiment.hypothesis = 'SYNTHETIC @org/team';
+    data.experiment.decisionPolicy = 'SYNTHETIC `@policy-user`';
+    data.experiment.rollback = 'SYNTHETIC **@rollback-team/reviewers**';
+    data.observations = { observations: data.observations, confounders: ['SYNTHETIC @confounder-user and @confounder-org/team'] };
+    const result = evaluate(data);
+    assert.doesNotMatch(result.markdown, /@[A-Za-z0-9]/);
+    for (const mention of ['user', 'org/team', 'policy-user', 'rollback-team/reviewers', 'confounder-user', 'confounder-org/team']) {
+        assert.ok(result.markdown.includes(`@\u200d${mention}`), mention);
+    }
+    assert.equal(result.confounders[0].description, 'SYNTHETIC @confounder-user and @confounder-org/team');
+    assert.equal(JSON.stringify(evaluate(data)), JSON.stringify(result));
 });
 
 test('nested period payloads and non-string URL fields are rejected without echoing extra data', () => {
@@ -71,7 +200,9 @@ test('zero count baseline gives counts only, no relative difference and no inter
     assert.equal(result.decision, 'INCONCLUSIVE');
     hasReason(result, 'ZERO_BASELINE');
     hasReason(result, 'BELOW_EVIDENCE_FLOOR');
-    assert.deepEqual(result.primary.difference, { kind: 'count', absolute: 60 });
+    assert.equal(result.primary.difference, null);
+    assert.equal(result.primary.baseline.numerator, 0);
+    assert.equal(result.primary.comparison.numerator, 60);
     assert.equal(result.primary.interval, null);
     assert.ok(!('ratio' in result.primary) && !('percentage' in result.primary));
 });
@@ -94,7 +225,8 @@ test('evidence floor applies separately to each period, supports the registry va
     data.experiment.evidenceFloor = 31;
     assert.equal(evaluate(data).decision, 'INCONCLUSIVE');
     data.experiment.evidenceFloor = 10;
-    assert.equal(evaluate(data).evidenceFloor, 10);
+    assert.equal(evaluate(data).evidenceFloor, 30);
+    assert.equal(evaluate(data).declaredEvidenceFloor, 10);
 });
 
 test('proportions retain numerators and denominators; floor is the underlying count; zero baseline stays counts only', () => {
@@ -294,7 +426,14 @@ test('missing, malformed and duplicate data fail safely; missing periods never b
         { denominator: 2 }, { carried: 'false' }, { asOf: '2000-02-30' }, { asOf: '2000-01-19' }, { cadence: 'monthly' }, { source: 'constructor' }]) {
         const data = input();
         Object.assign(primary(data)[0], update);
-        assert.equal(evaluate(data).decision, 'STOP_MEASUREMENT_FAILED', JSON.stringify(update));
+        const unsupportedNumerator = update.numerator === -1 || update.numerator === 1.5;
+        const result = evaluate(data);
+        assert.equal(result.decision, unsupportedNumerator ? 'INCONCLUSIVE' : 'STOP_MEASUREMENT_FAILED', JSON.stringify(update));
+        if (unsupportedNumerator) {
+            assert.equal(result.primary.difference, null);
+            assert.notEqual(result.checks.evidence, 'PASS');
+            hasReason(result, 'UNSUPPORTED_OUTCOME');
+        }
     }
     const missing = input();
     missing.observations = missing.observations.slice(0, 3);
@@ -324,6 +463,32 @@ test('continue observing is limited to a not-yet-started plan without observatio
     data.observations = [];
     assert.equal(evaluate(data, { asOf: '1999-12-31' }).decision, 'CONTINUE_OBSERVING');
     assert.equal(evaluate(data).decision, 'INCONCLUSIVE');
+});
+
+test('CLI refuses each CI flag with only the generic error and no aggregate or file output', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'experiment-evaluate-ci-'));
+    try {
+        const sentinel = 'SYNTHETIC_CI_PRIVATE_SENTINEL';
+        const registry = read('registry.json'), observations = read('observations.json');
+        registry.experiments[0].owner = sentinel;
+        registry.experiments[0].primaryOutcome.population = sentinel;
+        observations.filter(row => row.metric === registry.experiments[0].primaryOutcome.metric).forEach(row => { row.population = sentinel; });
+        const registryFile = path.join(dir, 'registry.json'), observationsFile = path.join(dir, 'observations.json');
+        fs.writeFileSync(registryFile, JSON.stringify(registry));
+        fs.writeFileSync(observationsFile, JSON.stringify(observations));
+        const genericError = run([]).stderr;
+        for (const flag of ['CI', 'GITHUB_ACTIONS']) {
+            for (const outputArgs of [[], [`--out=${path.join(dir, 'result.json')}`]]) {
+                const result = run([registryFile, args[1], observationsFile, ...outputArgs], { [flag]: 'true' });
+                assert.equal(result.status, 1, flag);
+                assert.equal(result.stdout, '', flag);
+                assert.equal(result.stderr, genericError, flag);
+                assert.doesNotMatch(result.stdout + result.stderr, new RegExp(sentinel));
+                assert.equal(fs.existsSync(path.join(dir, 'result.json')), false);
+                assert.equal(fs.existsSync(path.join(dir, 'result.md')), false);
+            }
+        }
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
 test('CLI emits byte-identical JSON and Greek Markdown, returns failure on invalid measurement', () => {
