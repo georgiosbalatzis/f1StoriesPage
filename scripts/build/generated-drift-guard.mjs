@@ -4,6 +4,7 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,7 @@ const GENERATED_EXACT = new Set([
     'blog-module/blog/index.html',
     'blog-module/search-destinations.json',
     'scripts/author/research-catalog.json',
+    'scripts/author/research-content/manifest.json',
     'blog-module/blog/template.html',
     'f1telemetry/index.html',
     'generate.html',
@@ -50,6 +52,7 @@ function loadManifestFiles() {
 
 function isGeneratedPath(relPath) {
     if (GENERATED_EXACT.has(relPath)) return true;
+    if (/^scripts\/author\/research-content\/\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(relPath)) return true;
     if (/^blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return true;
     if (/^blog-module\/blog\/(?:section|archive|entities)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     return /\.min\.(?:css|js)$/i.test(relPath);
@@ -75,6 +78,22 @@ function parseStatus(output) {
 
 function main() {
     loadManifestFiles();
+    const directory = path.join(REPO_ROOT, 'scripts/author/research-content');
+    const manifestFile = path.join(directory, 'manifest.json');
+    if (fs.existsSync(manifestFile)) {
+        const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+        const hash = data => createHash('sha256').update(data).digest('hex');
+        if (manifest.version !== 1 || !Array.isArray(manifest.shards) || manifest.metadataSha256 !== hash(fs.readFileSync(path.join(REPO_ROOT, 'blog-module/blog-index-data.json')))) throw new Error('Invalid or stale research manifest');
+        const names = new Set();
+        for (const shard of manifest.shards) {
+            if (!/^\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(shard.file) || names.has(shard.file)) throw new Error('Invalid research shard name');
+            names.add(shard.file);
+            if (hash(fs.readFileSync(path.join(directory, shard.file))) !== shard.sha256) throw new Error('Research shard hash mismatch: ' + shard.file);
+        }
+        for (const name of fs.readdirSync(directory)) {
+            if (/^\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(name) && !names.has(name)) throw new Error('Unreferenced research shard: ' + name);
+        }
+    }
     const output = execFileSync('git', ['status', '--porcelain=v1', '-z', '--untracked-files=all'], {
         cwd: REPO_ROOT,
         encoding: 'utf8'

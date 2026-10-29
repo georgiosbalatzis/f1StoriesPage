@@ -151,3 +151,11 @@ Metadata matching cannot answer arbitrary research questions or assess the truth
 ## E-01: local research workspaces
 
 Research is held in memory until **Αποθήκευση ως πρόχειρο** saves it with the article. There is no autosave. Reopening that draft restores the notebook; reload alone does not save it. Drafts are specific to the browser and origin (protocol, host and port), and do not sync between devices. JSON import/export is an explicit notebook action; it does not publish or package research with an article. Clear, new draft and ZIP replacement change memory until the next save. Retain browser data and a private backup if a draft is unreadable; export readable notebooks before attempting recovery. Browser storage is not encrypted or protected from same-origin scripts.
+
+## E-04: full-text archive discovery
+
+A search loads the public month shards only after the editor explicitly submits a nonempty query. The current index covers **416 eligible articles**: **413** contain a prose passage of at least 40 characters; two contain only shorter labels and one contains no indexed prose. Short labels remain searchable. Search reports partial coverage and offers a retry when a shard is unavailable.
+
+The 17 shards total **4,733,653 bytes raw / 1,174,565 bytes gzip**; the manifest adds **2,569 / 1,090 bytes**. The largest shard, `2025-05.json`, is **540,086 bytes raw / 135,134 bytes gzip**. These are Node default-gzip measurements of the current build.
+
+Search covers rendered paragraphs, list items and headings. Authored tables, text in images and embedded tool contents are not covered. Matches and their passages are candidates for reading, not evidence, independent verification or proof of a relationship. Search results are not saved in the research workspace.

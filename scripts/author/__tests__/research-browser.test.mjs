@@ -67,7 +67,8 @@ test('open/close and keyboard focus preserve notes; startup and open never prelo
     assert.equal(await page.locator('#research-toggle').evaluate(node => node === document.activeElement), true);
     await page.keyboard.press('Enter'); assert.equal(await page.locator('#research-question').inputValue(), 'Hamilton');
     assert.equal(await page.locator('.gb-step').count(), 5);
-    assert.match(await page.locator('#research-notebook').textContent(), /Δεν γίνεται αναζήτηση στο σώμα άρθρων/);
+    assert.match(await page.locator('#research-notebook').textContent(), /κείμενο δημοσιευμένων άρθρων/);
+    assert.equal(requests.filter(url => url.includes('/research-content/')).length, 0);
 });
 
 test('public article search displays real metadata and safe internal references, caches requests and recovers from a missing index', async t => {
@@ -348,6 +349,7 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
     for (const width of [1440, 390]) {
         const { page } = await pageFor(t, width); await open(page);
         await page.locator('#research-question').fill('Hamilton'); await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click(); await page.waitForSelector('.gb-research-results li');
+        await page.waitForFunction(() => /προς έλεγχο|Δεν βρέθηκαν/.test(document.getElementById('research-status').textContent));
         await page.locator('details').filter({ has: page.locator('#research-season') }).evaluate(node => { node.open = true; });
         await page.locator('#research-season').selectOption('2026'); await page.locator('#research-round').selectOption('17'); await page.waitForSelector('#research-standing-entry');
         // Keep the notebook compact while retaining the selected round for the second capture.
@@ -364,6 +366,8 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
                     return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05) >= 4.5;
                 });
             });
+            // Measure layout, not scroll: earlier steps can scroll the page.
+            await page.evaluate(() => scrollTo({ top: 0, left: 0, behavior: 'instant' }));
             const box = await page.locator('#research-notebook').boundingBox(), writer = await page.locator('#gen-content').boundingBox();
             const dimensions = await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth }));
             assert.ok(dimensions.width <= dimensions.viewport, JSON.stringify(dimensions));
@@ -502,4 +506,92 @@ test('a delayed clipboard failure cannot expose A text after opening B', async t
     await page.evaluate(async () => { window.__rejectClipboard(new Error('Denied')); await Promise.resolve(); });
     assert.equal(await page.locator('#research-copy-fallback').isHidden(), true);
     assert.equal(await page.locator('#research-copy-fallback').inputValue(), '');
+});
+
+test('full text loads only after explicit search, reports a failed shard and retries it', async t => {
+    const { page, requests } = await pageFor(t, 390); await open(page);
+    assert.equal(requests.filter(url => url.includes('/research-content/')).length, 0);
+    await page.route('**/research-content/2026-10.json', route => route.fulfill({ status: 503 }));
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
+    assert.match(await page.locator('#research-status').textContent(), /16\/17/);
+    assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 1);
+    await page.unroute('**/research-content/2026-10.json');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForSelector('.gb-research-results li'); assert.match(await page.locator('.gb-research-results').textContent(), /minisectors/);
+    assert.ok(await page.locator('.gb-research-results .gb-research-passage').count() > 0);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    const first = page.locator('.gb-research-results li').first();
+    await first.getByRole('link', { name: 'Άνοιγμα άρθρου' }).focus();
+    assert.equal(await first.getByRole('link', { name: 'Άνοιγμα άρθρου' }).evaluate(node => node === document.activeElement), true);
+    assert.equal(await page.evaluate(() => 'hits' in (window.F1S_RESEARCH_NOTEBOOK.snapshot() || {})), false);
+});
+
+test('late full-text responses cannot restore a stale search', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.route('**/research-content/2026-10.json', async route => {
+        await new Promise(resolve => setTimeout(resolve, 500)); await route.continue();
+    });
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForRequest('**/research-content/2026-10.json');
+    await page.locator('#research-question').fill('');
+    await page.waitForResponse('**/research-content/2026-10.json');
+    assert.equal(await page.locator('.gb-research-results li').count(), 0);
+});
+
+test('retry refreshes metadata after a manifest arrives from a newer deployment', async t => {
+    const { page, requests } = await pageFor(t); await open(page);
+    const index = fs.readFileSync(path.join(root, 'blog-module/blog-index-data.json'), 'utf8');
+    await page.route('**/blog-index-data.json', route => route.fulfill({ status: 200, contentType: 'application/json', body: index + ' ' }));
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
+    await page.unroute('**/blog-index-data.json');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForSelector('.gb-research-results .gb-research-passage');
+    assert.equal(requests.filter(url => url.endsWith('/blog-index-data.json')).length, 2);
+});
+
+test('retry refreshes a stale manifest after a shard arrives from a newer deployment', async t => {
+    const { page, requests } = await pageFor(t); await open(page);
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, 'scripts/author/research-content/manifest.json'), 'utf8'));
+    manifest.shards.find(shard => shard.file === '2026-10.json').sha256 = '0'.repeat(64);
+    await page.route('**/research-content/manifest.json', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(manifest) }));
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
+    await page.unroute('**/research-content/manifest.json');
+    await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForSelector('.gb-research-results .gb-research-passage');
+    assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 2);
+});
+
+test('full-text scoring yields and an edited query cancels the in-progress scan', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.locator('#research-question').fill('minisectors ακορντεόν');
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.evaluate(() => {
+        const realNow = performance.now.bind(performance), realTimeout = window.setTimeout;
+        let ticks = 0;
+        performance.now = () => realNow() + ++ticks * 9;
+        window.setTimeout = (fn, delay, ...args) => {
+            if (delay === 0) window.__researchYields = (window.__researchYields || 0) + 1;
+            return realTimeout(fn, delay, ...args);
+        };
+    });
+    await page.locator('#research-question').press('Enter');
+    await page.waitForFunction(() => window.__researchYields > 0);
+    await page.locator('#research-question').fill('');
+    // Wait until no scan is still yielding, so a scan that ignored the edit would have rendered by now.
+    await page.evaluate(async () => {
+        let last = -1;
+        while (window.__researchYields !== last) { last = window.__researchYields; await new Promise(resolve => setTimeout(resolve, 200)); }
+    });
+    assert.equal(await page.locator('.gb-research-results li').count(), 0);
 });

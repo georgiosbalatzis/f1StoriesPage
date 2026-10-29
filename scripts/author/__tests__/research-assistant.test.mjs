@@ -203,3 +203,195 @@ test('brief output remains byte-identical for a validated workspace', () => {
     assert.equal(createHash('sha256').update(api.brief(validated.question, '2026 / γύρος 17', validated.notes)).digest('hex'),
         '41ff11644c8d62cb32dd9655ee20c7138992993828dd8deec8e6899e4f6eb029');
 });
+
+
+test('full text ranks the 25 reviewed archive passages within the first eight', () => {
+    const manifest = api.validateContentManifest(read('scripts/author/research-content/manifest.json'));
+    const content = new Map();
+    for (const descriptor of manifest.shards) {
+        const shard = api.validateContentShard(read('scripts/author/research-content/' + descriptor.file), descriptor);
+        for (const article of shard.articles) content.set(article.id, article);
+    }
+    const posts = api.eligible(api.decodeIndex(read('blog-module/blog-index-data.json')), '2026-10-29');
+    const cases = [
+        [
+                "minisectors ακορντεόν",
+                "20261007F",
+                "Καθώς το πεδίο κινούνταν αργά πίσω από το Saf"
+        ],
+        [
+                "Paul Ricard 120",
+                "20261007F",
+                "Ούτε μπορούμε να πούμε ότι η βροχή ήταν εντελ"
+        ],
+        [
+                "FW48 brake ducts",
+                "20260930G",
+                "Με αυτό το μάτι, η Williams ήταν από τις πιο "
+        ],
+        [
+                "30 55 drag",
+                "20260930G",
+                "Οι νέοι κανονισμοί στήθηκαν πάνω σε αυτή τη λ"
+        ],
+        [
+                "Maracana Ιντερλαγκος",
+                "20260401W",
+                "Στην πίστα του Ιντερλάγκος, η ατμόσφαιρα ήταν"
+        ],
+        [
+                "454 575 1.029",
+                "20261028W",
+                "Το 2022 ο Verstappen κατέκτησε το δεύτερο παγ"
+        ],
+        [
+                "Russell 9ος Hamilton 5ος",
+                "20261022J",
+                "Antonelli: να κερδίσει τον αγώνα. George Russ"
+        ],
+        [
+                "TR010 HYBRID Hirakawa",
+                "20261019W",
+                "Η Toyota TR010 HYBRID των Sébastien Buemi, Br"
+        ],
+        [
+                "μηχανικη προσφυση στροφη 11",
+                "20261022J",
+                "2) Μηχανική πρόσφυση: Σημαντική στις αργές στ"
+        ],
+        [
+                "158 Alfetta",
+                "20260403W",
+                "Πρωτάθλημα του 1950 το πρώτο στην ιστορία και"
+        ],
+        [
+                "12 χιλιοστα ΟΥΓΓΑΡΙΑ",
+                "20261015G",
+                "Στην Ουγγαρία, ο Norris πήρε την pole με την "
+        ],
+        [
+                "1:31.276 573",
+                "20261013G",
+                "Η κατάσταση έγινε χειρότερη το βράδυ της Παρα"
+        ],
+        [
+                "758 24 ωρες",
+                "20261013G",
+                "Από τα 573 χιλιοστά πίσω την Παρασκευή, ο Ant"
+        ],
+        [
+                "usable downforce",
+                "20261006F",
+                "Γι' αυτό έχει σημασία να ξεχωρίζουμε το downf"
+        ],
+        [
+                "120 προσπερασεις Αυστραλια",
+                "20260408J",
+                "Και για να μιλάμε και με στοιχεία, στο πρώτο "
+        ],
+        [
+                "Jordan 1999",
+                "20261027W",
+                "Αργότερα, στη Jordan, ήρθε η πιο όμορφη περίο"
+        ],
+        [
+                "Williams 1997",
+                "20261027W",
+                "Ο Frentzen δεν χρειάστηκε ποτέ να αποδείξει ό"
+        ],
+        [
+                "Tamiya 1987 13",
+                "20261026W",
+                "Το 1987, σε ηλικία μόλις 13 ετών, πήρε μέρος "
+        ],
+        [
+                "Phil Mills Impreza",
+                "20261026W",
+                "Το 2003 όμως ήταν η χρονιά που όλα άλλαξαν. Μ"
+        ],
+        [
+                "JS43 Mugen 14ος",
+                "20261021W",
+                "Μονακό, 1996. Σε έναν από τους πιο χαοτικούς "
+        ],
+        [
+                "Hamilton setup",
+                "20261024J",
+                "Τα πρώτα δύο ελεύθερα δοκιμαστικά έφεραν τη F"
+        ],
+        [
+                "Pole Man balance",
+                "20261024J",
+                "Το Circuit είναι ενδιαφέρον, καθώς η ιστορία "
+        ],
+        [
+                "ασφαλτοτάπητας Sprint",
+                "20261010J",
+                "Με το δεξί έγινε η αρχή για το GP της Σιγκαπο"
+        ],
+        [
+                "0,250 FP2",
+                "20261002J",
+                "Αν και θα τολμήσω να πω ότι το φαβορί είναι η"
+        ],
+        [
+                "0,0 0,1 2,8 Antonelli",
+                "20260327J",
+                "Pole Position : Andrea Kimi Antonelli -3.8 Δι"
+        ]
+];
+    for (const [query, id, citation] of cases) {
+        const hits = api.search(posts, query, content), rank = hits.findIndex(hit => hit.post.id === id);
+        assert.ok(rank >= 0 && rank < 8, query + ' rank: ' + (rank + 1));
+        assert.ok(hits[rank].passage.text.includes(citation), query + ': selected passage');
+        assert.ok(Array.from(hits[rank].snippet).length <= 240, query + ': snippet length');
+    }
+});
+
+test('body matching guards prefixes, numbers and passage coherence', () => {
+    const post = { ...base, id: 'article', title: 'Other' };
+    const body = text => new Map([['article', { headings: [], passages: [{ kind: 'paragraph', ordinal: 0, heading: -1, text }] }]]);
+    assert.equal(api.search([post], '388', body('388mm')).length, 0);
+    assert.equal(api.search([post], 'μετα', body('μεταφορά')).length, 0);
+    assert.equal(api.search([post], 'Hungary', body('Ουγγαρία')).length, 0);
+    assert.equal(api.search([post], 'ασφαλτοτάπητας', body('ασφαλτοτάπητα')).length, 0);
+    assert.ok(api.search([post], 'ασφαλτοτάπητας Sprint', body('ασφαλτοτάπητα Sprint'))[0].reason.includes('πρόθεμα'));
+    assert.equal(api.search([post], '0,250', body('10,250')).length, 0);
+    assert.equal(api.search([post], '1.029', body('1 and 029')).length, 0);
+    assert.equal(api.search([post], '0,250', body('0.250')).length, 0);
+    assert.ok(api.search([post], '0,250', body('χρόνος 0,250 δευτερόλεπτα')).length);
+    const foreign = new Map([['other', { headings: [], passages: [{ kind: 'paragraph', ordinal: 0, heading: -1, text: 'secret tool chrome' }] }]]);
+    assert.equal(api.search([post], 'secret', foreign).length, 0);
+    assert.equal(api.eligible([{ ...post, date: '2099-01-01', url: '/blog-module/blog-entries/article/article.html' }, { ...post, url: '/generate.html' }], '2026-10-29').length, 0);
+});
+
+test('content manifests and shards reject unsafe paths and malformed records', () => {
+    const manifest = read('scripts/author/research-content/manifest.json');
+    assert.doesNotThrow(() => api.validateContentManifest(manifest));
+    assert.throws(() => api.validateContentManifest({ ...manifest, shards: manifest.shards.map((shard, i) => i ? shard : { ...shard, file: '../manifest.json' }) }));
+    const descriptor = manifest.shards[0], shard = read('scripts/author/research-content/' + descriptor.file);
+    assert.doesNotThrow(() => api.validateContentShard(shard, descriptor));
+    assert.throws(() => api.validateContentShard({ ...shard, articles: shard.articles.map((article, i) => i ? article : { ...article, id: '../bad' }) }, descriptor));
+});
+
+test('body scoring counts distinct words, caps repetition and selects the coherent earliest passage', () => {
+    const posts = [{ ...base, id: 'x', title: 'Gamma' }, { ...base, id: 'y', title: 'Other' }];
+    const paragraph = (ordinal, text) => ({ kind: 'paragraph', ordinal, heading: -1, text });
+    const content = new Map([
+        ['x', { headings: [], passages: [paragraph(2, 'alpha beta gamma delta epsilon'), paragraph(3, 'alpha beta gamma delta epsilon')] }],
+        ['y', { headings: [], passages: [paragraph(0, 'alpha alpha alpha'), paragraph(1, 'beta gamma')] }]
+    ]);
+    const hits = api.search(posts, 'alpha beta gamma delta epsilon', content);
+    assert.equal(hits[0].post.id, 'x'); assert.equal(hits[0].passage.ordinal, 2);
+    assert.equal(hits[0].matched, 5); assert.equal(hits[0].score, 10);
+    assert.equal(hits[1].matched, 2);
+    const widget = read('scripts/author/research-content/2026-05.json').articles.find(article => article.id === '20260502J');
+    assert.deepEqual(widget.passages, []);
+});
+
+test('body repetitions of a credited title token preserve the date tie-break', () => {
+    const posts = [{ ...base, id: 'older', title: 'Alpha news', date: '2026-01-01' }, { ...base, id: 'newer', title: 'Alpha news', date: '2026-02-01' }];
+    const content = new Map([['older', { headings: [], passages: [{ kind: 'paragraph', ordinal: 0, heading: -1, text: 'Alpha Alpha' }] }]]);
+    const hits = api.search(posts, 'Alpha', content);
+    assert.deepEqual(Array.from(hits, hit => [hit.post.id, hit.score]), [['newer', 6], ['older', 6]]);
+});

@@ -175,7 +175,7 @@ body.author-page .background { display: none; }
 .gb-research-results { list-style: none; margin: 0; padding: 0; }
 .gb-research-result { padding-block: 14px; border-top: 1px solid var(--border); }
 .gb-research-result .gb-btn { margin: 4px 6px 0 0; }
-.gb-research-text { white-space: pre-wrap; font-size: .88rem; line-height: 1.65; margin-block: 12px; }
+.gb-research-text, .gb-research-passage { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .88rem; line-height: 1.65; margin-block: 12px; }
 @media (min-width: 1380px) {
     .gb-stage:has(.gb-research:not([hidden])) { max-width: none; padding-inline: 24px; }
     .gb-writing-layout:has(.gb-research:not([hidden])) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
