@@ -105,6 +105,21 @@ jobs:
       - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
         run: npm run test:dashboard && npm run test:dashboard:browser
 
+      # Only this visual-review PR publishes screenshot evidence, using synthetic rows and generated keys.
+      # Never upload screenshots or unlocked dashboard content from actual production data.
+      - name: Capture I-06D visual review (synthetic only)
+        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'I-06D') }}
+        run: node scripts/intelligence/dashboard-browser.mjs --screenshots="$RUNNER_TEMP/intelligence-visual-review"
+
+      - name: Upload I-06D synthetic visual review
+        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'I-06D') }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dashboard-i06d-visual-review
+          path: ${{ runner.temp }}/intelligence-visual-review/
+          retention-days: 7
+          if-no-files-found: error
+
       - name: Run aggregate deployment gate tests
         run: npm run test:deployment
 

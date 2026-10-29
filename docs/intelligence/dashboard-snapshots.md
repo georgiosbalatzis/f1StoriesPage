@@ -389,3 +389,59 @@ Google Cloud service, network origin or CSP change.
 planned, about 70 MiB billed if the 10 MiB-per-query pattern holds); that `internal_page_click` rows carry
 `page_location`, `link_path` and `link_section` as `analytics.js` sends them (marked unverified in
 editorial-model.md); and a check that carried Core Web Vitals labels appear on that day.
+
+
+## I-06D — Editorial Intelligence interface and presentation
+
+The I-06D redesign is **presentation-only**. It changes `dashboard/index.html`, `dashboard/dashboard.css`,
+`dashboard/dashboard.js` and the synthetic Chrome regression. No BigQuery SQL model, scheduler, query budget, snapshot
+schema, encryption primitive, IAM permission, browser network origin, CSP or consent behaviour changes.
+
+**Form: the running order.** The page uses the F1 Stories article grammar rather than a control-room template:
+
+- **Document band:** the site's black slab, `#0f100e`, in both themes. It holds the period, the last successful update
+  and the stale warning.
+- **"Με μια ματιά":** one factual line per section, with its period, linking to the section. This replaces KPI tiles.
+- **Running-order rail:** a sticky rail at ≥ 1100 px, showing each section's status.
+- **Sections:** each has a reading column and a margin where its caveats sit, next to the figure they qualify.
+
+The visual system is IBM Plex Sans for all Greek text (sentence case, as on the site), Barlow Condensed only for the
+band and section numerals (counts in tables are Plex with tabular figures), square edges, hairline rules and no gradients, shadows or cards.
+
+**Chart grammar.**
+
+- **Daily activity:** one accent column per export day, on a scale that always reaches the 30-event sample threshold,
+  which is drawn as a labelled dashed line over the columns. A column under 30 is tinted and outlined, the same
+  small-sample mark as the ranking bars; a day with zero views is a grey baseline tick. Square columns. Weekends (race
+  weekends) are banded. The only line is the 7-day mean, drawn as a step per day from the seventh day on: nothing is
+  interpolated between raw daily values. Pointer hover (or a tap) shows the day, its views and its 7-day mean. The
+  columns sweep in once (not under reduced motion; a height-only resize does not replay it). The chart is drawn at its
+  real pixel width, so labels stay 12 px at every size.
+- **Rankings** (articles, channels, destination articles): classification tables. Each row has a position, the name
+  with one meta line (raw class or category), and the count. Its accent bar sits on the same threshold scale, and a
+  tick marks 30. A bar below the threshold is tinted and outlined, so the same series stays visible. Below the threshold
+  is stated once in the notes, and per row only for assistive technology. No per-row "μικρό δείγμα" repetition.
+- **Count ledgers** (categories, discovery surfaces, link sections): one dot per event in rows of 30 over an empty first
+  row, so how far a count is from the threshold is visible. Above 90 the ledger falls back to the threshold scale.
+- **Section to section:** a source × destination matrix of click counts, with a total column. Accent shading only helps
+  find the larger cells, and empty pairs are dots.
+- **Core Web Vitals:** bullet rows for every metric × coverage class (never pooled), p75 against the good,
+  needs-improvement and poor zones in green, yellow and magenta-red (kept off the accent hue), always named in a key. The
+  pointer marker is filled at 30 or more observations and hollow below.
+- **RUM checks:** an OK / Προσοχή ledger.
+
+The exact tables remain behind native `details` for every section.
+
+**Colour discipline.** The accent (#366's, `--accent`) is the data colour and marks the running-order numbers.
+Anything that needs action (a stale snapshot, data-quality warnings, an overdue weekly refresh) is a filled accent chip,
+so an alert never reads as data. Carried and weekly states are information: prominent, but not a chip.
+
+**Unchanged contracts.** Values are `textContent` or SVG attributes only. Locking empties every chart, table, list,
+summary line and rail status. Snapshots with 4, 5, 7 or 9 models still render, with pending states for what is
+missing. The weekly discovery age, the carried Core Web Vitals note and every unit, consent and small-sample note
+remain.
+
+**Release checklist.** Run the site quality gates and `npm run test:dashboard:browser`, which covers 390 px dark and
+1280 px light with synthetic snapshots and key isolation. Visually review long Greek titles, a single-day window, a
+missing acquisition model, pending discovery and the carried CWV note in both themes. Do not auto-merge; the owner
+reviews the appearance first.

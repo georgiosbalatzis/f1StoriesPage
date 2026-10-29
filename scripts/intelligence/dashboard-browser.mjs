@@ -154,9 +154,9 @@ try {
         window: document.querySelector('[data-field="window"]').textContent,
         updated: document.querySelector('[data-field="updated"]').textContent,
         stale: document.querySelector('[data-stale]').hidden,
-        days: document.querySelectorAll('[data-chart="activity"] rect').length,
-        small: document.querySelectorAll('[data-chart="activity"] rect.is-small').length,
-        categories: [...document.querySelectorAll('.dash-bars-label')].map(element => element.textContent),
+        days: document.querySelectorAll('[data-chart="activity"] .dash-bar').length,
+        small: document.querySelectorAll('[data-chart="activity"] .dash-bar.is-small').length,
+        categories: [...document.querySelectorAll('[data-viz="categories"] .dash-class-name')].map(element => element.textContent),
         articles: [...document.querySelectorAll('[data-table="articles"] tbody tr')].map(element => element.cells[0].textContent),
         articleScripts: document.querySelectorAll('[data-table="articles"] script').length,
         acquisition: [...document.querySelectorAll('[data-table="acquisition"] tbody tr')].map(el => el.cells[0].textContent),
@@ -169,7 +169,20 @@ try {
         notes: document.querySelector('.dash-notes').textContent,
         discoveryWindow: document.querySelector('[data-field="discovery-window"]').textContent,
         discoveryPending: document.querySelector('[data-table="discovery-surfaces"]').textContent,
-        cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden
+        cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden,
+        overview: [...document.querySelectorAll('[data-list="overview"] li')].map(li => [li.querySelector('.dash-order-name').textContent, li.querySelector('a').getAttribute('href')]),
+        overviewFacts: [...document.querySelectorAll('[data-list="overview"] .dash-order-fact')].map(el => el.textContent),
+        chartPaths: [...document.querySelectorAll('[data-chart="activity"] path')].map(el => el.getAttribute('class')),
+        trendStart: Number(document.querySelector('[data-chart="activity"] path.dash-trend')?.getAttribute('d').match(/^M([\d.]+)/)[1]),
+        slot: document.querySelector('[data-chart="activity"] svg').viewBox.baseVal.width / document.querySelectorAll('[data-chart="activity"] .dash-bar').length,
+        threshold: document.querySelectorAll('[data-chart="activity"] .dash-chart-threshold').length,
+        chartLabelSize: Math.round(document.querySelector('[data-chart="activity"] .dash-tick').getBoundingClientRect().height),
+        rankedArticles: [...document.querySelectorAll('[data-viz="articles"] .dash-class-name')].map(el => el.textContent),
+        rankedChannels: [...document.querySelectorAll('[data-viz="acquisition"] .dash-class-name')].map(el => el.textContent),
+        smallRows: [...document.querySelectorAll('[data-viz="articles"] tbody tr')].map(tr => tr.classList.contains('is-small')),
+        vitals: [...document.querySelectorAll('[data-viz="vitals"] svg')].map(el => el.getAttribute('aria-label').split(' ')[0]),
+        vitalMarkers: document.querySelectorAll('[data-viz="vitals"] .dash-marker').length,
+        railHrefs: [...document.querySelectorAll('.dash-rail a')].map(el => el.getAttribute('href'))
     }));
     assert.match(report.title, /^Στοιχεία έως \d{1,2} [^\s]+ \d{4}$/);
     assert.match(report.updated, /Τελευταία επιτυχής ενημέρωση/);
@@ -177,7 +190,7 @@ try {
     assert.equal(report.days, freshDays);
     assert.match(report.window, freshDays === 28 ? /^Τελευταίες 28 πλήρεις ημέρες · / : new RegExp(`^${freshDays} πλήρεις? ημέρ.ς, όσες υπάρχουν από την έναρξη της εξαγωγής · `));
     assert.ok(report.small > 0, 'small-sample days are marked');
-    assert.deepEqual(report.categories, ['Ανάλυση', 'Ιστορία <b>', '(unmapped)']);
+    assert.deepEqual(report.categories, ['Ανάλυση', 'Ιστορία <b>', 'Μη αντιστοιχισμένα'], 'the unmapped category is named in Greek; its raw class stays in the meta line');
     assert.deepEqual(report.articles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
     assert.equal(report.articleScripts, 0, 'article metadata is always rendered as text, never HTML');
     assert.deepEqual(report.acquisition, ['organic_search', 'direct', 'referral', 'unattributed']);
@@ -192,13 +205,33 @@ try {
     assert.equal(report.discoveryWindow, 'σε αναμονή');
     assert.match(report.discoveryPending, /μία φορά την εβδομάδα/);
     assert.equal(report.cwvCarried, true, 'RUM ran today: no carried label');
+    // The running order: every section once, in reading order, each linking to its own section.
+    const sections = ['#activity', '#articles', '#categories', '#acquisition', '#discovery', '#navigation', '#vitals', '#quality'];
+    assert.deepEqual(report.overview.map(row => row[1]), sections);
+    assert.deepEqual(report.railHrefs, sections);
+    assert.match(report.overviewFacts[0], /^[\d.]+ προβολές · μέγιστο [\d.]+ \(.+\)/);
+    assert.match(report.overviewFacts[4], /σε αναμονή/i, 'discovery is pending before its first weekly run');
+    // One column per day and nothing interpolated between raw daily values: the only line is the 7-day mean, which
+    // starts at the seventh day. Labels are drawn at their real size.
+    assert.deepEqual(report.chartPaths, freshDays >= 7 ? ['dash-trend'] : [], 'no line or area through daily values');
+    if (freshDays >= 7) assert.ok(Math.abs(report.trendStart - 6 * report.slot) < 0.2, 'the 7-day mean starts at the seventh day');
+    assert.equal(report.threshold, 1, 'the sample threshold is drawn on the scale');
+    assert.ok(report.chartLabelSize >= 11, `chart labels stay legible (${report.chartLabelSize}px)`);
+    assert.deepEqual(report.rankedArticles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
+    assert.deepEqual(report.smallRows, [false, true], 'rows below the threshold are marked for assistive tech, not hidden');
+    assert.equal(report.rankedChannels.length, 4);
+    assert.deepEqual(report.vitals, ['LCP', 'INP', 'CLS']);
+    assert.ok(report.vitalMarkers >= 3, 'every coverage class with observations gets its own p75 marker');
+    assert.equal(await page.evaluate(() => document.querySelectorAll('[data-state="report"] script, [data-state="report"] img').length), 0,
+        'metadata rendered in charts and rankings must never be executable markup');
     if (shots) {
         fs.mkdirSync(shots, { recursive: true });
         await page.screenshot({ path: path.join(shots, 'dashboard-mobile-dark.png'), fullPage: true });
     }
     await page.click('[data-lock]');
     assert.ok(await visible(page, 'locked'), 'lock returns to the key form');
-    assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-chart], [data-table], [data-list]')].every(element => !element.children.length)), true,
+    assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-chart], [data-table], [data-list], [data-viz], [data-metrics]')].every(element => !element.children.length)
+        && [...document.querySelectorAll('[data-lede], [data-status]')].every(element => !element.textContent)), true,
         'locking removes every decrypted value');
     await finish(session, 'fresh');
 
@@ -213,12 +246,14 @@ try {
     await unlock(session.page, key);
     assert.ok(await visible(session.page, 'report'), 'the old four-model snapshot must still open');
     assert.match(await session.page.$eval('[data-table="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
+    assert.match(await session.page.$eval('[data-viz="articles"]', el => el.textContent), /με το επόμενο ημερήσιο στιγμιότυπο/);
     await finish(session, 'legacy snapshot');
 
     session = await open(editorialOnly);
     await unlock(session.page, key);
     assert.ok(await visible(session.page, 'report'), 'five-model snapshot remains valid');
     assert.match(await session.page.$eval('[data-table="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
+    assert.match(await session.page.$eval('[data-viz="acquisition"]', el => el.textContent), /με την επόμενη επιτυχημένη ημερήσια ανανέωση/);
     await finish(session, 'editorial-only legacy');
 
     // I-06C3 discovery day: discovery ran today over the primary window; the RUM pair is labelled as carried.
@@ -237,6 +272,9 @@ try {
                 injected: document.querySelectorAll('[data-state="report"] img, [data-state="report"] script').length,
                 notes: document.querySelectorAll('[aria-labelledby="discovery-title"] .dash-notes li').length,
                 overflowing: [...document.querySelectorAll('[data-table^="discovery-"]')].filter(el => el.scrollWidth > el.clientWidth).map(el => el.dataset.table),
+                rankedSurfaces: [...document.querySelectorAll('[data-viz="discovery-surfaces"] .dash-class-name')].map(el => el.textContent),
+                matrixFirstRow: [...document.querySelectorAll('[data-viz="discovery-transitions"] tbody tr:first-child > *')].map(el => el.textContent),
+                matrixLabel: document.querySelector('[data-viz="discovery-transitions"] tbody th').getAttribute('aria-label'),
                 cwv: document.querySelector('[data-field="cwv-carried"]'), rum: document.querySelector('[data-field="rum-carried"]')
             };
         });
@@ -260,6 +298,10 @@ try {
         assert.deepEqual(discovery.transitions[0], ['Αρχική · home', 'Άρθρο · article', '34', 'επαρκές']);
         assert.deepEqual(discovery.transitions.at(-1), ['Αρχική · home', 'Χωρίς διαδρομή · missing', '1', 'μικρό δείγμα']);
         assert.equal(discovery.transitions.length, 8);
+        assert.equal(discovery.rankedSurfaces[0], 'Αρχική', 'visual source ranking uses real aggregated data');
+        // Columns by total (article, standings, edition, missing): home → article 34, standings 4, edition none (a dot), missing 1.
+        assert.deepEqual(discovery.matrixFirstRow, ['Αρχική', '34', '4', '·', '1', '39']);
+        assert.equal(discovery.matrixLabel, 'Αρχική · home', 'every matrix heading carries its raw class');
         assert.equal(discovery.notes, 3, 'the click, consent and small-sample limits are stated');
         assert.deepEqual(discovery.overflowing, [], `every discovery column stays in view at ${width}px, without sideways scrolling`);
         for (const [hidden, note] of carried) {
@@ -268,7 +310,7 @@ try {
         }
         if (shots) await (await session.page.$('[aria-labelledby="discovery-title"]')).screenshot({ path: path.join(shots, `dashboard-discovery-${width}.png`) });
         await session.page.click('[data-lock]');
-        assert.equal(await session.page.evaluate(() => document.querySelectorAll('[data-table^="discovery-"] *').length), 0, 'locking clears discovery');
+        assert.equal(await session.page.evaluate(() => document.querySelectorAll('[data-table^="discovery-"] *, [data-viz^="discovery-"] *').length), 0, 'locking clears discovery');
         await finish(session, `discovery day ${width}`);
     }
 
@@ -283,7 +325,7 @@ try {
     session = await open(fourDays);
     await unlock(session.page, key);
     assert.deepEqual(await session.page.evaluate(() => [document.querySelector('[data-field="window"]').textContent,
-        document.getElementById('report-title').textContent, document.querySelectorAll('[data-chart="activity"] rect').length]),
+        document.getElementById('report-title').textContent, document.querySelectorAll('[data-chart="activity"] .dash-bar').length]),
     ['4 πλήρεις ημέρες, όσες υπάρχουν από την έναρξη της εξαγωγής · 19 Οκτ 2026 – 22 Οκτ 2026', 'Στοιχεία έως 22 Οκτ 2026', 4]);
     if (shots) await session.page.screenshot({ path: path.join(shots, 'dashboard-4-days.png'), fullPage: true });
     await finish(session, 'four days');

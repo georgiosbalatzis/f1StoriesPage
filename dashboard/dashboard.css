@@ -1,4 +1,7 @@
-/* dashboard.css — /dashboard/ shell. Colors and type follow docs/design-tokens.json (editorial system). */
+/* dashboard.css — /dashboard/. The F1 Stories "Paddock Edition" world (docs/design-tokens.json): cream or graphite
+   sheet under a near-black document band, IBM Plex Sans (Greek) for all text, Barlow Condensed for numerals only,
+   square edges and hairline rules. Data marks and running-order numbers wear the accent; anything that needs
+   attention is a filled accent chip, so an alert never reads as data. */
 
 :root {
     --bg-base: #1b1a19;
@@ -10,10 +13,22 @@
     --accent-hover: #ff947f;
     --accent-contrast: #20251f;
     --signal: #ed4c32;
+    --band: #0f100e; /* the site's black slab (sampled from f1-stories.gr), in both themes */
+    --band-text: #eee8db;
+    --band-secondary: #c0bfb2; /* --text-inverse-secondary */
+    --band-rule: rgba(233, 227, 214, 0.18); /* --border-inverse */
+    --band-control: rgba(233, 227, 214, 0.5); /* control boundary on the band: 4.4:1 */
+    --band-alert: #ff775f;
+    /* Core Web Vitals zones, in timing-screen sector colours; always named in the key beside them. */
+    --zone-good: #3ccf7e;
+    --zone-mid: #f0c03a;
+    --zone-poor: #e0508f; /* magenta-leaning, so "poor" never reads as the accent */
+    --zone-strength: 46%;
     --font-body: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
-    --font-brand: 'Barlow Condensed', sans-serif;
+    --font-brand: 'Barlow Condensed', 'IBM Plex Sans', sans-serif;
     --radius-control: 2px;
     --control-height-md: 44px;
+    --gutter: clamp(1rem, 4vw, 2.5rem);
     color-scheme: dark;
 }
 
@@ -26,6 +41,10 @@
     --accent: #a82e1c;
     --accent-hover: #8e281a;
     --accent-contrast: #f2eee4;
+    --zone-good: #23854f;
+    --zone-mid: #c8960f;
+    --zone-poor: #a51d5f;
+    --zone-strength: 44%;
     color-scheme: light;
 }
 
@@ -39,187 +58,473 @@ body {
     font-family: var(--font-body);
     font-size: 1rem;
     line-height: 1.55;
+    font-variant-numeric: tabular-nums;
 }
+
+::selection { background: var(--accent); color: var(--accent-contrast); }
+
+code { font-family: inherit; font-size: 0.95em; font-weight: 600; }
+
+h1, h2, h3 { font-family: var(--font-body); font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+
+a { color: inherit; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.dash-sr {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---- Site header: the same slim bar as f1-stories.gr ---- */
 
 .dash-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.75rem 1rem;
+    min-height: 64px;
+    padding: 0.75rem var(--gutter);
     border-bottom: 1px solid var(--border);
 }
 
-.dash-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: inherit;
-    text-decoration: none;
-}
-
+.dash-brand { display: flex; align-items: center; gap: 0.6rem; color: inherit; text-decoration: none; }
 .dash-brand img { display: block; width: 40px; height: 40px; object-fit: contain; }
-
-.dash-wordmark {
-    font-family: var(--font-brand);
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-}
-
+.dash-wordmark { font-family: var(--font-brand); font-size: 1.5rem; font-weight: 700; line-height: 1; letter-spacing: 0.02em; white-space: nowrap; }
 .dash-dot { color: var(--signal); }
 
 .dash-eyebrow {
     margin-left: auto;
     color: var(--text-secondary);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
-.dash-main {
-    width: 100%;
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: clamp(40px, 8vw, 96px) 1rem;
-}
+/* ---- Before the report: one quiet sheet per state ---- */
 
-.dash-main > .dash-panel { max-width: 34rem; margin: 0 auto; }
+.dash-main { width: 100%; }
 
-.dash-panel {
-    padding: 1.75rem 1.5rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--signal);
-}
-
-.dash-kicker {
-    margin: 0 0 0.4rem;
-    color: var(--text-secondary);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+.dash-main > .dash-panel {
+    max-width: 34rem;
+    margin: clamp(3rem, 12vh, 8rem) auto;
+    padding: 0 var(--gutter);
 }
 
 .dash-panel h1 {
     margin: 0 0 0.75rem;
-    font-family: var(--font-brand);
-    font-size: clamp(2rem, 7vw, 2.75rem);
-    font-weight: 700;
-    line-height: 1;
-    text-transform: uppercase;
+    padding-top: 1.25rem;
+    border-top: 2px solid var(--text-primary);
+    font-size: 1.875rem;
+    line-height: 1.15;
 }
 
 .dash-copy { margin: 0 0 1rem; color: var(--text-secondary); }
 
-.dash-form { display: grid; gap: 0.6rem; margin-top: 1.25rem; }
-
-.dash-form label { font-weight: 600; }
+.dash-form { display: grid; gap: 0.5rem; margin-top: 1.5rem; }
+.dash-form label { font-weight: 600; font-size: 0.875rem; }
 
 .dash-form input {
     width: 100%;
     min-height: var(--control-height-md);
     padding: 0 0.75rem;
-    background: var(--bg-base);
+    background: var(--bg-surface);
     color: var(--text-primary);
     border: 1px solid var(--border);
     border-radius: var(--radius-control);
     font: inherit;
+    letter-spacing: 0.04em;
 }
 
 .dash-error { margin: 0; color: var(--accent); font-weight: 600; }
 
-.dash-panel button {
+.dash-form button, .dash-band-lock {
+    justify-self: start;
     min-height: var(--control-height-md);
     padding: 0 1.25rem;
-    background: var(--accent);
-    color: var(--accent-contrast);
-    border: 1px solid var(--accent);
     border-radius: var(--radius-control);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
-    justify-self: start;
 }
 
-.dash-panel button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-.dash-panel button:disabled { opacity: 0.6; cursor: progress; }
+.dash-form button { background: var(--text-primary); color: var(--bg-base); border: 1px solid var(--text-primary); }
+.dash-form button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+.dash-form button:disabled { opacity: 0.6; cursor: progress; }
 
-.dash-panel .dash-secondary { background: transparent; color: var(--text-primary); border-color: var(--border); }
-.dash-panel .dash-secondary:hover { background: var(--bg-base); border-color: var(--text-secondary); }
+/* ---- The document band: what this is, which days, how fresh ---- */
 
-.dash-brand:focus-visible,
-.dash-form input:focus-visible,
-.dash-panel button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+.dash-band { background: var(--band); color: var(--band-text); border-bottom: 1px solid var(--band-rule); }
+.dash-band ::selection { background: var(--band-alert); color: var(--band); }
+
+.dash-band-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: clamp(1.75rem, 4vw, 3rem) var(--gutter) clamp(1.5rem, 3vw, 2.25rem);
 }
 
-/* Decrypted report. Single-series marks use the accent; small samples are faded and labelled in text. */
-/* minmax(0, …): wide tables scroll inside .dash-scroll instead of widening the page. */
-.dash-report { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-.dash-report[hidden] { display: none; }
+.dash-band-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+.dash-band h1 { margin: 0; font-size: clamp(1.875rem, 4.2vw, 2.75rem); line-height: 1.08; }
 
-.dash-report h2 {
-    margin: 0 0 0.4rem;
-    font-family: var(--font-brand);
-    font-size: 1.6rem;
-    font-weight: 700;
-    line-height: 1.1;
+.dash-band-lock { flex-shrink: 0; background: transparent; color: var(--band-text); border: 1px solid var(--band-control); }
+.dash-band-lock:hover { border-color: var(--band-text); }
+
+.dash-band-window {
+    margin: 1rem 0 0;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--band-rule);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
-.dash-report h3 { margin: 1.5rem 0 0.4rem; font-size: 1rem; font-weight: 700; line-height: 1.3; }
+.dash-band-meta { margin: 0.25rem 0 0; color: var(--band-secondary); font-size: 0.875rem; }
+.dash-band .dash-warning { margin: 0.75rem 0 0; color: var(--band-alert); }
 
-.dash-warning {
-    margin: 0 0 1rem;
-    padding: 0.6rem 0.75rem;
-    border-left: 3px solid var(--accent);
-    color: var(--text-primary);
+/* ---- Overview: the running order of the day ---- */
+
+.dash-sheet { max-width: 80rem; margin: 0 auto; padding: 0 var(--gutter) 6rem; }
+
+.dash-overview { padding-top: clamp(2rem, 4vw, 3rem); }
+.dash-overview h2 { margin: 0 0 0.75rem; font-size: 1.625rem; line-height: 1.15; }
+
+.dash-order { margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--text-primary); }
+.dash-order li { border-bottom: 1px solid var(--border); }
+
+.dash-order a {
+    display: grid;
+    grid-template-columns: 2.75rem 9rem minmax(0, 1fr) 12rem;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 0.25rem;
+    text-decoration: none;
+}
+
+.dash-order a:hover { background: var(--bg-surface); }
+.dash-order-no, .dash-rail-no { font-family: var(--font-brand); font-weight: 700; font-size: 1.25rem; line-height: 1; color: var(--accent); }
+.dash-order-name { font-weight: 600; }
+.dash-order-fact { overflow-wrap: anywhere; }
+.dash-order-period { justify-self: end; color: var(--text-secondary); font-size: 0.8125rem; text-align: right; }
+.dash-order-carried { margin-right: 0.5rem; }
+.dash-order-carried, .dash-order-chip { white-space: nowrap; }
+.dash-order-chip, .dash-rail-status.is-alert, .dash-checks .is-warning .dash-ledger-mark {
+    justify-self: start;
+    align-self: start;
+    padding: 0.05rem 0.4rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
     font-weight: 600;
 }
 
-.dash-notes { margin: 0; padding: 0 0 0 1.1rem; color: var(--text-secondary); font-size: 0.9rem; }
-
-.dash-chart svg { display: block; width: 100%; height: auto; }
-.dash-bar { fill: var(--accent); }
-.is-small .dash-bar, .dash-bar.is-small { fill-opacity: 0.45; }
-.dash-axis { stroke: var(--border); stroke-width: 1; }
-.dash-tick { fill: var(--text-secondary); font-family: var(--font-body); font-size: 12px; }
-
-.dash-bars { display: grid; gap: 0.5rem; margin: 0 0 1rem; padding: 0; list-style: none; }
-
-.dash-bars li {
+.dash-overview .dash-notes {
     display: grid;
-    grid-template-columns: minmax(6rem, 11rem) 1fr auto;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
 }
 
-.dash-bars svg { display: block; width: 100%; height: 0.75rem; }
-.dash-bars-label { overflow-wrap: anywhere; }
-.dash-bars-value { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+/* ---- Body: rail | reading column (each section: content | margin notes) ---- */
+
+.dash-columns {
+    display: grid;
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    gap: 3rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.dash-rail { align-self: start; position: sticky; top: 1.5rem; transition: opacity 200ms ease-out, visibility 200ms; }
+.dash-rail.is-waiting { opacity: 0; visibility: hidden; }
+
+.dash-rail-title {
+    margin: 0 0 0.4rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.dash-rail ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--text-primary);
+}
+
+.dash-rail li { border-bottom: 1px solid var(--border); }
+.dash-rail li.dash-rail-group { margin-top: 1.25rem; border-top: 2px solid var(--text-primary); }
+
+.dash-rail a {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    column-gap: 0.25rem;
+    padding: 0.55rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dash-rail a:hover .dash-rail-name { text-decoration: underline; text-underline-offset: 3px; }
+.dash-rail-no { font-size: 1rem; }
+.dash-rail-status { grid-column: 2; color: var(--text-secondary); font-size: 0.75rem; font-weight: 400; }
+.dash-rail-status:empty { display: none; }
+
+.dash-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 14rem;
+    gap: 2.5rem;
+    padding: 2.5rem 0 3rem;
+    border-top: 1px solid var(--border);
+    scroll-margin-top: 1rem;
+}
+
+.dash-flow > .dash-section:first-child { padding-top: 0; border-top: 0; }
+
+/* Each heading carries its running-order number, so the overview, the rail and the section cross-reference. */
+.dash-flow { counter-reset: section; }
+.dash-section h2 { margin: 0 0 0.5rem; font-size: 1.625rem; line-height: 1.15; }
+.dash-section h2::before {
+    counter-increment: section;
+    content: counter(section, decimal-leading-zero);
+    margin-right: 0.6rem;
+    color: var(--accent);
+    font-family: var(--font-brand);
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+/* The weekly group gets the site's black slab, so cadence is visible before its sections begin. */
+.dash-slab {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1.25rem;
+    margin: 0.5rem 0 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--band);
+    color: var(--band-text);
+}
+.dash-slab p { max-width: 60ch; margin: 0; color: var(--band-secondary); font-size: 0.9375rem; }
+.dash-slab-no { font-family: var(--font-brand); font-size: 2.75rem; font-weight: 700; line-height: 1; letter-spacing: 0.01em; color: var(--band-alert); }
+.dash-slab + .dash-section { border-top: 0; }
+.dash-section h3 { margin: 2rem 0 0.5rem; font-size: 0.9375rem; }
+.dash-pair h3 { margin-top: 1.5rem; }
+
+.dash-lede { max-width: 62ch; margin: 0 0 1.5rem; font-size: 1.0625rem; line-height: 1.5; }
+.dash-lede:empty { display: none; }
+
+.dash-margin { padding-top: 0.5rem; color: var(--text-secondary); font-size: 0.8125rem; line-height: 1.5; }
+.dash-margin p { margin: 0 0 0.875rem; }
+.dash-margin > :first-child { padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.dash-margin-window { color: var(--text-primary); font-weight: 600; }
+.dash-margin .dash-notes { margin: 0 0 0.875rem; padding: 0; list-style: none; }
+.dash-margin > .dash-notes:first-child { padding-top: 0.75rem; }
+.dash-margin .dash-notes li { margin-bottom: 0.625rem; }
+
+.dash-warning { color: var(--accent); font-weight: 600; }
+/* Carried data is expected weekly behaviour: prominent, but not the alert colour. */
+.dash-margin .dash-warning { color: var(--text-primary); }
+
+.dash-aside { margin: 0.75rem 0 0; color: var(--text-secondary); font-size: 0.8125rem; }
+
+.dash-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+
+/* ---- Classification tables: rank, name, bar against the sample threshold, count ---- */
+
+.dash-class { container-type: inline-size; }
+
+.dash-class-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+
+.dash-class-table th {
+    padding: 0 0.5rem 0.4rem;
+    border-bottom: 1px solid var(--text-primary);
+    color: var(--text-secondary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.dash-class-table td { padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.dash-class-table th:first-child, .dash-class-table td:first-child { padding-left: 0; }
+.dash-class-table th:last-child, .dash-class-table td:last-child { padding-right: 0; }
+
+.dash-class-pos { width: 2rem; }
+td.dash-class-pos { font-weight: 600; line-height: 1.35; color: var(--text-secondary); }
+.dash-class-name { display: block; font-weight: 600; line-height: 1.35; overflow-wrap: break-word; }
+.dash-class-meta { display: block; margin-top: 0.15rem; color: var(--text-secondary); font-size: 0.75rem; overflow-wrap: break-word; }
+.dash-class-extra-inline { display: none; }
+.dash-class-bar { width: 32%; }
+.dash-class-table td.dash-class-bar { padding-top: 0.85rem; }
+.dash-class-value, .dash-class-extra { width: 1%; text-align: right; white-space: nowrap; }
+td.dash-class-value { font-weight: 600; }
+td.dash-class-extra { color: var(--text-secondary); }
+
+.dash-scale { display: block; width: 100%; height: 10px; overflow: visible; }
+.dash-scale-inline { display: none; margin-top: 0.4rem; }
+.dash-mark { fill: var(--accent); }
+/* Under the threshold: an outlined, tinted bar, still clearly the same series. */
+.dash-mark.is-small, .dash-bar.is-small { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dash-scale-base { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.dash-scale-threshold { stroke: var(--text-secondary); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+
+@container (max-width: 34rem) {
+    .dash-class-bar, .dash-class-extra { display: none; }
+    .dash-scale-inline, .dash-class-extra-inline { display: block; }
+}
+
+/* ---- Count ledger: short lists of small counts, set as type ---- */
+
+.dash-ledger-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+.dash-ledger-table th {
+    padding: 0 0 0.4rem;
+    border-bottom: 1px solid var(--text-primary);
+    color: var(--text-secondary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+}
+.dash-ledger-table td { padding: 0.5rem 0; border-bottom: 1px solid var(--border); vertical-align: baseline; }
+.dash-ledger-table .dash-ledger-value { width: 1%; padding-left: 1rem; text-align: right; white-space: nowrap; }
+.dash-ledger-table td.dash-ledger-value { font-weight: 600; color: var(--text-secondary); }
+.dash-ledger-table .is-adequate td.dash-ledger-value:not(.dash-ledger-extra) { color: var(--text-primary); }
+.dash-ledger-table td.dash-ledger-extra { font-family: var(--font-body); font-size: 0.875rem; }
+.dash-units, .dash-ledger-scale { display: block; max-width: 100%; height: auto; margin-top: 0.45rem; }
+.dash-ledger-scale { width: 16rem; height: 10px; overflow: visible; }
+.dash-unit { fill: var(--accent); }
+.dash-unit.is-empty { fill: none; stroke: var(--border); stroke-width: 1; }
+
+/* ---- Daily chart (drawn at real size, so text is never scaled) ---- */
+
+.dash-chart { margin: 0 0 0.5rem; }
+.dash-chart svg, .dash-bullets svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.dash-chart svg { touch-action: pan-y; cursor: crosshair; }
+.dash-bar { fill: var(--accent); }
+.dash-bar.is-active { fill: var(--text-primary); }
+.dash-zero { stroke: var(--text-secondary); stroke-width: 2; }
+.dash-weekend { fill: color-mix(in srgb, var(--text-primary) 6%, transparent); }
+.dash-trend { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-linejoin: round; }
+.dash-axis { stroke: var(--text-primary); stroke-width: 1; }
+.dash-chart-threshold { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 4 4; }
+.dash-tick { fill: var(--text-secondary); font-family: var(--font-body); font-size: 12px; }
+.dash-tick-strong { fill: var(--text-primary); font-weight: 600; }
+.dash-cross { stroke: var(--text-secondary); stroke-width: 1; }
+.dash-tip { fill: var(--bg-surface); stroke: var(--border); }
+
+/* The columns sweep in left to right once, like a lap trace being drawn. */
+@keyframes dash-reveal {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+}
+
+/* ---- Core Web Vitals bullets ---- */
+
+.dash-bullets { display: grid; gap: 1.25rem; margin-bottom: 0.5rem; }
+.dash-zone-good { fill: color-mix(in srgb, var(--zone-good) var(--zone-strength), transparent); }
+.dash-zone-mid { fill: color-mix(in srgb, var(--zone-mid) var(--zone-strength), transparent); }
+.dash-zone-poor { fill: color-mix(in srgb, var(--zone-poor) var(--zone-strength), transparent); }
+.dash-marker, .dash-marker-tip { fill: var(--text-primary); }
+.dash-marker.is-small { fill: var(--bg-base); stroke: var(--text-primary); stroke-width: 1.5; }
+
+.dash-zone-key { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin: 0; color: var(--text-secondary); font-size: 0.75rem; }
+.dash-zone-key span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.dash-zone-key span::before { content: ""; width: 0.75rem; height: 0.75rem; }
+.dash-zone-key-good::before { background: color-mix(in srgb, var(--zone-good) var(--zone-strength), transparent); }
+.dash-zone-key-mid::before { background: color-mix(in srgb, var(--zone-mid) var(--zone-strength), transparent); }
+.dash-zone-key-poor::before { background: color-mix(in srgb, var(--zone-poor) var(--zone-strength), transparent); }
+.dash-zone-key-small::before { width: 0.375rem; border: 1.5px solid var(--text-primary); }
+
+/* ---- Section-to-section matrix ---- */
+
+.dash-matrix-wrap { overflow-x: auto; }
+.dash-matrix { border-collapse: collapse; font-size: 0.875rem; }
+.dash-matrix th { padding: 0.4rem 0.5rem; color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; text-align: center; }
+.dash-matrix thead th { border-bottom: 1px solid var(--text-primary); vertical-align: bottom; }
+.dash-matrix tbody th { padding-left: 0; text-align: left; white-space: nowrap; }
+.dash-matrix .dash-matrix-corner { padding-left: 0; text-align: left; font-weight: 400; }
+.dash-matrix td { min-width: 3.25rem; padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border); text-align: center; }
+.dash-matrix .dash-matrix-total { border-left: 1px solid var(--border); font-weight: 600; color: var(--text-primary); }
+.dash-q0 { color: var(--text-secondary); }
+.dash-q1 { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.dash-q2 { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.dash-q3 { background: color-mix(in srgb, var(--accent) 34%, transparent); font-weight: 600; }
+.dash-q4 { background: color-mix(in srgb, var(--accent) 46%, transparent); font-weight: 600; }
+
+/* ---- Checks: a ledger of OK / attention lines ---- */
+
+.dash-checks { margin: 0 0 0.875rem; padding: 0; list-style: none; }
+.dash-checks li { display: grid; grid-template-columns: 4.75rem minmax(0, 1fr); gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
+.dash-ledger li { padding: 0.6rem 0; font-size: 0.9375rem; }
+.dash-ledger-mark { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; line-height: 2; color: var(--text-secondary); }
+.dash-checks .is-warning { color: var(--text-primary); font-weight: 600; }
+
+/* ---- Exact tables, one click away ---- */
 
 .dash-report details { margin-top: 0.75rem; }
-.dash-report summary { cursor: pointer; font-weight: 600; }
+.dash-report summary { width: fit-content; color: var(--text-secondary); font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+.dash-report summary::marker { color: var(--text-primary); }
+.dash-scroll, .dash-matrix-wrap { scrollbar-color: var(--border) transparent; scrollbar-width: thin; }
+.dash-report summary:hover { color: var(--text-primary); }
 .dash-scroll { overflow-x: auto; }
 
-.dash-report table { width: 100%; margin-top: 0.5rem; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
-.dash-report th, .dash-report td { padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
-.dash-report th { color: var(--text-secondary); font-weight: 600; }
-/* Discovery tables: every column but the click count wraps, so all four stay in view at phone width. */
+.dash-scroll table { width: 100%; margin-top: 0.5rem; border-collapse: collapse; font-size: 0.8125rem; }
+.dash-scroll th, .dash-scroll td { padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+.dash-scroll th { color: var(--text-secondary); font-weight: 600; }
+.dash-scroll th:first-child, .dash-scroll td:first-child { padding-left: 0; }
 .dash-report [data-table^="discovery-"] :is(th, td) { padding-inline: 0.3rem; }
 .dash-report [data-table^="discovery-"] td:not(:nth-last-child(2)) { white-space: normal; overflow-wrap: break-word; }
 
-.dash-checks { margin: 0; padding: 0; list-style: none; }
-.dash-checks li { padding: 0.35rem 0; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
-.dash-checks .is-warning { color: var(--text-primary); font-weight: 600; }
+/* ---- Widths ---- */
 
-.dash-report summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 68.75rem) {
+    .dash-columns { display: block; }
+    .dash-rail { display: none; }
+}
 
-@media (max-width: 30rem) {
-    .dash-bars li { grid-template-columns: 1fr auto; }
-    .dash-bars svg { grid-column: 1 / -1; grid-row: 2; }
+@media (max-width: 56rem) {
+    /* Window and carried notes stay above the data; the remaining caveats follow it. */
+    .dash-section { display: flex; flex-direction: column; gap: 0; }
+    .dash-section-main, .dash-margin { display: contents; }
+    .dash-section-main > * { order: 4; }
+    .dash-section-main > h2 { order: 1; }
+    .dash-section-main > .dash-lede { order: 2; }
+    .dash-margin > * { order: 5; }
+    .dash-margin > .dash-margin-window, .dash-margin > .dash-warning { order: 3; margin-bottom: 1rem; }
+    .dash-margin > :first-child, .dash-margin > .dash-notes:first-child { padding-top: 0; border-top: 0; }
+    .dash-margin > p, .dash-margin > ul { color: var(--text-secondary); font-size: 0.8125rem; line-height: 1.5; }
+    .dash-margin > .dash-margin-window, .dash-margin > .dash-warning { color: var(--text-primary); }
+    .dash-margin > :nth-child(1 of :not(.dash-margin-window, .dash-warning)) { margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    .dash-overview .dash-notes { grid-template-columns: 1fr; gap: 0.5rem; }
+    .dash-pair { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (max-width: 40rem) {
+    .dash-order a { grid-template-columns: 2.25rem minmax(0, 1fr) auto; row-gap: 0.15rem; }
+    .dash-order-fact { grid-column: 2 / -1; grid-row: 2; font-size: 0.9375rem; }
+    .dash-order-period { grid-column: 3; grid-row: 1; }
+    .dash-band-inner { display: flex; flex-direction: column; }
+    .dash-band-head { display: contents; }
+    .dash-band-lock { order: 5; align-self: flex-start; margin-top: 1.25rem; }
+    .dash-section h2, .dash-overview h2 { font-size: 1.375rem; }
+    .dash-slab { grid-template-columns: 1fr; gap: 0.5rem; padding: 1rem 1.25rem; }
+    .dash-slab-no { font-size: 2rem; }
+    .dash-lede { font-size: 1rem; }
+    .dash-eyebrow { letter-spacing: 0.06em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash-rail { transition: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+    .dash-chart-marks { animation: dash-reveal 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 }

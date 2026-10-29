@@ -32,20 +32,17 @@
     </section>
 
     <section class="dash-panel" data-state="unavailable" aria-labelledby="unavailable-title">
-        <p class="dash-kicker">Μη διαθέσιμο</p>
         <h1 id="unavailable-title">Ο πίνακας δεν είναι διαθέσιμος</h1>
         <p class="dash-copy" data-unavailable-reason>Ο πίνακας χρειάζεται έναν σύγχρονο browser με JavaScript. Δεν εμφανίζονται στοιχεία.</p>
     </section>
 
     <section class="dash-panel" data-state="empty" aria-labelledby="empty-title" hidden>
-        <p class="dash-kicker">Κανένα στιγμιότυπο</p>
         <h1 id="empty-title">Δεν υπάρχουν ακόμη στοιχεία</h1>
         <p class="dash-copy">Η πρώτη ημερήσια ενημέρωση δεν έχει δημοσιευθεί ακόμη.</p>
     </section>
 
     <section class="dash-panel" data-state="locked" aria-labelledby="locked-title" hidden>
-        <p class="dash-kicker">Κρυπτογραφημένο στιγμιότυπο</p>
-        <h1 id="locked-title">Άνοιγμα</h1>
+        <h1 id="locked-title">Κρυπτογραφημένο στιγμιότυπο</h1>
         <p class="dash-copy">Γράψε το κλειδί αποκρυπτογράφησης του πίνακα. Η αποκρυπτογράφηση γίνεται μόνο σε αυτή την καρτέλα: το κλειδί δεν αποστέλλεται πουθενά και δεν αποθηκεύεται.</p>
         <form class="dash-form" novalidate>
             <label for="dash-key">Κλειδί αποκρυπτογράφησης</label>
@@ -56,87 +53,176 @@
     </section>
 
     <section class="dash-panel" data-state="damaged" aria-labelledby="damaged-title" hidden>
-        <p class="dash-kicker">Σφάλμα ακεραιότητας</p>
         <h1 id="damaged-title">Το στιγμιότυπο απορρίφθηκε</h1>
         <p class="dash-copy">Το κλειδί είναι σωστό, αλλά το αρχείο έχει αλλοιωθεί ή καταστραφεί. Δεν εμφανίζεται κανένα στοιχείο του.</p>
     </section>
 
     <section class="dash-report" data-state="report" aria-labelledby="report-title" hidden>
-        <div class="dash-panel dash-status">
-            <p class="dash-kicker" data-field="window"></p>
-            <h1 id="report-title">Στοιχεία έως <span data-field="end"></span></h1>
-            <p class="dash-copy" data-field="updated"></p>
-            <p class="dash-warning" role="status" data-stale hidden></p>
-            <button type="button" class="dash-secondary" data-lock>Κλείδωμα</button>
+        <div class="dash-band">
+            <div class="dash-band-inner">
+                <div class="dash-band-head">
+                    <h1 id="report-title">Στοιχεία έως <span data-field="end"></span></h1>
+                    <button type="button" class="dash-band-lock" data-lock>Κλείδωμα</button>
+                </div>
+                <p class="dash-band-window" data-field="window"></p>
+                <p class="dash-band-meta" data-field="updated"></p>
+                <p class="dash-warning" role="status" data-stale hidden></p>
+            </div>
         </div>
 
-        <ul class="dash-notes">
-            <li>Μόνο επισκέψεις με συναίνεση στα cookies ανάλυσης: δεν είναι όλοι οι αναγνώστες.</li>
-            <li>Οι μονάδες είναι γεγονότα (events): προβολές σελίδας, όχι επισκέπτες. Το session_start δεν είναι ακριβείς συνεδρίες.</li>
-            <li>Γραμμές κάτω από <span data-field="min"></span> γεγονότα ή παρατηρήσεις σημειώνονται «μικρό δείγμα» και δεν συγκρίνονται.</li>
-        </ul>
+        <div class="dash-sheet">
+            <section class="dash-overview" aria-labelledby="overview-title">
+                <h2 id="overview-title">Με μια ματιά</h2>
+                <ol class="dash-order" data-list="overview"></ol>
+                <ul class="dash-notes">
+                    <li>Μόνο επισκέψεις με συναίνεση στα cookies ανάλυσης: δεν είναι όλοι οι αναγνώστες.</li>
+                    <li>Οι μονάδες είναι γεγονότα (events): προβολές σελίδας, όχι επισκέπτες. Το session_start δεν είναι ακριβείς συνεδρίες.</li>
+                    <li>Γραμμές κάτω από <span data-field="min"></span> γεγονότα ή παρατηρήσεις είναι «μικρό δείγμα» και δεν συγκρίνονται. Στις μπάρες, η κάθετη γραμμή σημειώνει αυτό το όριο.</li>
+                </ul>
+            </section>
 
-        <section class="dash-panel" aria-labelledby="activity-title">
-            <h2 id="activity-title">Ημερήσιες προβολές σελίδας</h2>
-            <p class="dash-copy">Γεγονότα page_view ανά ημέρα (ζώνη ώρας ιδιοκτησίας: <span data-field="timezone"></span>). Αχνές στήλες: μικρό δείγμα.</p>
-            <div class="dash-chart" data-chart="activity"></div>
-            <details><summary>Πίνακας</summary><div class="dash-scroll" data-table="activity"></div></details>
-        </section>
+            <div class="dash-columns">
+                <nav class="dash-rail" aria-labelledby="rail-title">
+                    <p class="dash-rail-title" id="rail-title">Ενότητες</p>
+                    <ol>
+                        <li><a href="#activity"><span class="dash-rail-no">01</span><span class="dash-rail-name">Κίνηση</span><span class="dash-rail-status" data-status="activity"></span></a></li>
+                        <li><a href="#articles"><span class="dash-rail-no">02</span><span class="dash-rail-name">Άρθρα</span><span class="dash-rail-status" data-status="articles"></span></a></li>
+                        <li><a href="#categories"><span class="dash-rail-no">03</span><span class="dash-rail-name">Κατηγορίες</span><span class="dash-rail-status" data-status="categories"></span></a></li>
+                        <li><a href="#acquisition"><span class="dash-rail-no">04</span><span class="dash-rail-name">Πηγές</span><span class="dash-rail-status" data-status="acquisition"></span></a></li>
+                        <li class="dash-rail-group"><a href="#discovery"><span class="dash-rail-no">05</span><span class="dash-rail-name">Ανακάλυψη</span><span class="dash-rail-status" data-status="discovery"></span></a></li>
+                        <li><a href="#navigation"><span class="dash-rail-no">06</span><span class="dash-rail-name">Πλοήγηση</span><span class="dash-rail-status" data-status="navigation"></span></a></li>
+                        <li class="dash-rail-group"><a href="#vitals"><span class="dash-rail-no">07</span><span class="dash-rail-name">Core Web Vitals</span><span class="dash-rail-status" data-status="vitals"></span></a></li>
+                        <li><a href="#quality"><span class="dash-rail-no">08</span><span class="dash-rail-name">Ποιότητα</span><span class="dash-rail-status" data-status="quality"></span></a></li>
+                    </ol>
+                </nav>
 
-        <section class="dash-panel" aria-labelledby="acquisition-title">
-            <h2 id="acquisition-title">Από πού έρχονται οι αναγνώστες</h2>
-            <p class="dash-copy">Απόδοση καναλιού τελευταίου κλικ της GA4 (session scope). Μόνο consented γεγονότα και το τελευταίο διάστημα έως 7 πλήρων ημερών: <span data-field="acquisition-window">—</span>. Μετράμε <code>session_start</code> και <code>page_view</code> events, όχι μοναδικούς επισκέπτες ή ακριβείς συνεδρίες.</p>
-            <div class="dash-scroll" data-table="acquisition"></div>
-            <ul class="dash-checks" data-list="acquisition-quality"></ul>
-            <p class="dash-copy">Το «unattributed» σημαίνει ότι η GA4 δεν προσδιόρισε έγκυρη πηγή· δεν είναι Direct. Οι ταξινομήσεις έχουν μικρό δείγμα και δεν ταυτίζονται με το Google Search Console.</p>
-        </section>
+                <div class="dash-flow">
+                    <section class="dash-section" id="activity" aria-labelledby="activity-title">
+                        <div class="dash-section-main">
+                            <h2 id="activity-title">Ημερήσια κίνηση</h2>
+                            <p class="dash-lede" data-lede="activity"></p>
+                            <div class="dash-chart" data-chart="activity"></div>
+                            <details><summary>Πίνακας ανά ημέρα</summary><div class="dash-scroll" data-table="activity"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p>Γεγονότα <code>page_view</code> ανά ημέρα, στη ζώνη ώρας της ιδιοκτησίας (<span data-field="timezone"></span>). Μία στήλη για κάθε ημέρα εξαγωγής· οι στήλες με περίγραμμα είναι κάτω από 30 (μικρό δείγμα) και η γκρι γραμμή στη βάση είναι ημέρα χωρίς καμία προβολή.</p>
+                        </aside>
+                    </section>
 
-        <section class="dash-panel" aria-labelledby="articles-title">
-            <h2 id="articles-title">Άρθρα με τις περισσότερες προβολές</h2>
-            <p class="dash-copy">Έως 15 άρθρα, βάσει των συναινετικών γεγονότων page_view. Δεν πρόκειται για μοναδικούς αναγνώστες ή κατάταξη δημοφιλίας χωρίς στατιστική αβεβαιότητα. Κάθε άρθρο με λιγότερα από 30 γεγονότα επισημαίνεται ως «μικρό δείγμα».</p>
-            <div class="dash-scroll" data-table="articles"></div>
-        </section>
+                    <section class="dash-section" id="articles" aria-labelledby="articles-title">
+                        <div class="dash-section-main">
+                            <h2 id="articles-title">Άρθρα με τις περισσότερες προβολές</h2>
+                            <p class="dash-lede" data-lede="articles"></p>
+                            <div data-viz="articles" class="dash-class"></div>
+                            <details><summary>Πίνακας άρθρων</summary><div class="dash-scroll" data-table="articles"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p>Έως 15 άρθρα, βάσει των συναινετικών γεγονότων <code>page_view</code>. Δεν είναι μοναδικοί αναγνώστες ούτε κατάταξη δημοφιλίας με στατιστική βεβαιότητα.</p>
+                        </aside>
+                    </section>
 
-        <section class="dash-panel" aria-labelledby="discovery-title">
-            <h2 id="discovery-title">Εσωτερική ανακάλυψη άρθρων</h2>
-            <p class="dash-copy">Κλικ σε εσωτερικούς συνδέσμους του site (γεγονότα <code>internal_page_click</code>, μόνο με συναίνεση), για την περίοδο <span data-field="discovery-window">—</span>. <span data-field="discovery-freshness"></span></p>
-            <ul class="dash-notes">
-                <li>Ένα κλικ δεν είναι προβολή σελίδας ούτε επίσκεψη, και δεν αποδεικνύει ότι η σελίδα προορισμού φόρτωσε.</li>
-                <li>Δεν καταγράφονται κλικ χωρίς συναίνεση, με Ctrl/Cmd ή μεσαίο πλήκτρο, ούτε πληκτρολογημένες διευθύνσεις. Μηδέν κλικ δεν αποδεικνύει ότι ένα στοιχείο δεν χρησιμοποιήθηκε.</li>
-                <li>Με τόσο λίγους αναγνώστες οι κατατάξεις είναι ενδεικτικές: δεν υπολογίζονται ποσοστά μετατροπής, διαδρομές ή συνεδρίες αναγνωστών.</li>
-            </ul>
-            <h3>Από πού γίνονται τα κλικ προς άρθρα</h3>
-            <div class="dash-scroll" data-table="discovery-surfaces"></div>
-            <h3>Ποια στοιχεία πλοήγησης δέχονται κλικ</h3>
-            <p class="dash-copy">Όλα τα εσωτερικά κλικ, ανά <code>link_section</code> όπως το καταγράφει το analytics.js. Το «article_link» περιλαμβάνει κάρτες, λίστες και τους συνδέσμους προηγούμενου/επόμενου άρθρου, που δεν ξεχωρίζουν.</p>
-            <div class="dash-scroll" data-table="discovery-sections"></div>
-            <h3>Άρθρα με τα περισσότερα εσωτερικά κλικ</h3>
-            <div class="dash-scroll" data-table="discovery-articles"></div>
-            <h3>Κλικ από ενότητα σε ενότητα</h3>
-            <p class="dash-copy">Πλήθος κλικ ανά ζεύγος ενοτήτων. Δεν είναι ανασυνθεμένες διαδρομές ή συνεδρίες αναγνωστών.</p>
-            <div class="dash-scroll" data-table="discovery-transitions"></div>
-        </section>
+                    <section class="dash-section" id="categories" aria-labelledby="categories-title">
+                        <div class="dash-section-main">
+                            <h2 id="categories-title">Προβολές άρθρων ανά κατηγορία</h2>
+                            <p class="dash-lede" data-lede="categories"></p>
+                            <div data-viz="categories" class="dash-class"></div>
+                            <details><summary>Πίνακας κατηγοριών</summary><div class="dash-scroll" data-table="categories"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p>Κύρια κατηγορία κάθε άρθρου. «Άρθρα»: πόσα άρθρα της κατηγορίας είχαν τουλάχιστον μία προβολή, από όσα έχει ο κατάλογος. Με έντονα: τουλάχιστον 30 προβολές.</p>
+                        </aside>
+                    </section>
 
-        <section class="dash-panel" aria-labelledby="categories-title">
-            <h2 id="categories-title">Προβολές άρθρων ανά κατηγορία</h2>
-            <p class="dash-copy">Γεγονότα page_view σε άρθρα, ανά κύρια κατηγορία.</p>
-            <div data-chart="categories"></div>
-            <details><summary>Πίνακας</summary><div class="dash-scroll" data-table="categories"></div></details>
-        </section>
+                    <section class="dash-section" id="acquisition" aria-labelledby="acquisition-title">
+                        <div class="dash-section-main">
+                            <h2 id="acquisition-title">Από πού έρχονται οι αναγνώστες</h2>
+                            <p class="dash-lede" data-lede="acquisition"></p>
+                            <div data-viz="acquisition" class="dash-class"></div>
+                            <details><summary>Πίνακας πηγών</summary><div class="dash-scroll" data-table="acquisition"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p class="dash-margin-window">Τελευταίες έως 7 πλήρεις ημέρες: <span data-field="acquisition-window">—</span></p>
+                            <p>Απόδοση καναλιού τελευταίου κλικ της GA4 (session scope). Μετράμε γεγονότα <code>session_start</code> και <code>page_view</code>, όχι μοναδικούς επισκέπτες ή ακριβείς συνεδρίες.</p>
+                            <ul class="dash-checks" data-list="acquisition-quality"></ul>
+                            <p>Το «unattributed» σημαίνει ότι η GA4 δεν προσδιόρισε έγκυρη πηγή· δεν είναι Direct. Δεν ταυτίζεται με το Google Search Console.</p>
+                        </aside>
+                    </section>
 
-        <section class="dash-panel" aria-labelledby="cwv-title">
-            <h2 id="cwv-title">Core Web Vitals</h2>
-            <p class="dash-copy">Παρατηρήσεις πραγματικών χρηστών και p75, ανά κλάση κάλυψης (δεν αθροίζονται μεταξύ τους). Καλό: LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.</p>
-            <p class="dash-warning" data-field="cwv-carried" hidden></p>
-            <div class="dash-scroll" data-table="cwv"></div>
-        </section>
+                    <div class="dash-slab">
+                        <span class="dash-slab-no">05–06</span>
+                        <p>Εβδομαδιαίες ενότητες. Ανανεώνονται μία φορά κάθε 7 ημέρες και στις ενδιάμεσες ημέρες μεταφέρονται αυτούσιες· η καθεμιά δείχνει τη δική της περίοδο και πόσες ημέρες έχουν περάσει.</p>
+                    </div>
 
-        <section class="dash-panel" aria-labelledby="rum-title">
-            <h2 id="rum-title">Κάλυψη RUM και ποιότητα δεδομένων</h2>
-            <p class="dash-warning" data-field="rum-carried" hidden></p>
-            <ul class="dash-checks" data-list="rum"></ul>
-            <details><summary>Όλοι οι έλεγχοι</summary><div class="dash-scroll" data-table="rum"></div></details>
-        </section>
+                    <section class="dash-section" id="discovery" aria-labelledby="discovery-title">
+                        <div class="dash-section-main">
+                            <h2 id="discovery-title">Εσωτερική ανακάλυψη άρθρων</h2>
+                            <p class="dash-lede">Κλικ σε εσωτερικούς συνδέσμους του site (γεγονότα <code>internal_page_click</code>, μόνο με συναίνεση). Περίοδος: <span data-field="discovery-window">—</span>. <span data-field="discovery-freshness"></span></p>
+                            <div class="dash-pair">
+                                <div>
+                                    <h3>Από πού γίνονται τα κλικ προς άρθρα</h3>
+                                    <div data-viz="discovery-surfaces" class="dash-class"></div>
+                                    <details><summary>Πίνακας επιφανειών</summary><div class="dash-scroll" data-table="discovery-surfaces"></div></details>
+                                </div>
+                                <div>
+                                    <h3>Ποια στοιχεία πλοήγησης δέχονται κλικ</h3>
+                                    <div data-viz="discovery-sections" class="dash-class"></div>
+                                    <details><summary>Πίνακας στοιχείων</summary><div class="dash-scroll" data-table="discovery-sections"></div></details>
+                                </div>
+                            </div>
+                            <h3>Άρθρα με τα περισσότερα εσωτερικά κλικ</h3>
+                            <div data-viz="discovery-articles" class="dash-class"></div>
+                            <details><summary>Πίνακας άρθρων προορισμού</summary><div class="dash-scroll" data-table="discovery-articles"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <ul class="dash-notes">
+                                <li>Ένα κλικ δεν είναι προβολή σελίδας ούτε επίσκεψη, και δεν αποδεικνύει ότι η σελίδα προορισμού φόρτωσε.</li>
+                                <li>Δεν καταγράφονται κλικ χωρίς συναίνεση, με Ctrl/Cmd ή μεσαίο πλήκτρο, ούτε πληκτρολογημένες διευθύνσεις. Μηδέν κλικ δεν αποδεικνύει ότι ένα στοιχείο δεν χρησιμοποιήθηκε.</li>
+                                <li>Με τόσο λίγους αναγνώστες οι κατατάξεις είναι ενδεικτικές: δεν υπολογίζονται ποσοστά μετατροπής, διαδρομές ή συνεδρίες αναγνωστών.</li>
+                            </ul>
+                            <p>Τα στοιχεία <code>link_section</code> είναι όσα καταγράφει το analytics.js. Το «article_link» περιλαμβάνει κάρτες, λίστες και τους συνδέσμους προηγούμενου/επόμενου άρθρου, που δεν ξεχωρίζουν.</p>
+                        </aside>
+                    </section>
+
+                    <section class="dash-section" id="navigation" aria-labelledby="navigation-title">
+                        <div class="dash-section-main">
+                            <h2 id="navigation-title">Κλικ από ενότητα σε ενότητα</h2>
+                            <p class="dash-lede" data-lede="navigation"></p>
+                            <div data-viz="discovery-transitions" class="dash-matrix-wrap"></div>
+                            <details><summary>Όλα τα ζεύγη ενοτήτων</summary><div class="dash-scroll" data-table="discovery-transitions"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p>Γραμμές: η ενότητα όπου έγινε το κλικ. Στήλες: η ενότητα του συνδέσμου. Πλήθος κλικ ανά ζεύγος, όχι ανασυνθεμένες διαδρομές ή συνεδρίες αναγνωστών. Ίδια εβδομαδιαία περίοδος με την ανακάλυψη άρθρων.</p>
+                            <p>Τελεία (·): κανένα καταγεγραμμένο κλικ για το ζεύγος, όχι απόδειξη ότι δεν έγινε.</p>
+                        </aside>
+                    </section>
+
+                    <section class="dash-section" id="vitals" aria-labelledby="cwv-title">
+                        <div class="dash-section-main">
+                            <h2 id="cwv-title">Core Web Vitals</h2>
+                            <p class="dash-lede" data-lede="vitals"></p>
+                            <div data-viz="vitals" class="dash-bullets"></div>
+                            <details><summary>Πίνακας όλων των κλάσεων κάλυψης</summary><div class="dash-scroll" data-table="cwv"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p class="dash-warning" data-field="cwv-carried" hidden></p>
+                            <p>Παρατηρήσεις πραγματικών χρηστών, p75 ανά κλάση κάλυψης· οι κλάσεις δεν αθροίζονται μεταξύ τους. Καλό: LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1. Γεμάτος δείκτης: τουλάχιστον 30 παρατηρήσεις· κενός δείκτης: μικρό δείγμα.</p>
+                        </aside>
+                    </section>
+
+                    <section class="dash-section" id="quality" aria-labelledby="rum-title">
+                        <div class="dash-section-main">
+                            <h2 id="rum-title">Κάλυψη RUM και ποιότητα δεδομένων</h2>
+                            <ul class="dash-checks dash-ledger" data-list="rum"></ul>
+                            <details><summary>Όλοι οι έλεγχοι</summary><div class="dash-scroll" data-table="rum"></div></details>
+                        </div>
+                        <aside class="dash-margin">
+                            <p class="dash-warning" data-field="rum-carried" hidden></p>
+                            <p>Έλεγχοι ακεραιότητας για τις παρατηρήσεις web_vital της ίδιας περιόδου με τα Core Web Vitals.</p>
+                        </aside>
+                    </section>
+                </div>
+            </div>
+        </div>
     </section>
 </main>
 </body>
