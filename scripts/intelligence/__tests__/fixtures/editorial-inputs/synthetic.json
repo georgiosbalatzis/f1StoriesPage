@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "gsc": {
+    "source": "search-console",
+    "population": "google-search",
+    "unit": "search-performance",
+    "period": { "start": "2026-10-19", "end": "2026-10-25" },
+    "timezone": "America/Los_Angeles",
+    "asOf": "2026-10-29",
+    "freshness": { "cadence": "daily", "carried": false, "dataState": "final" },
+    "status": "present",
+    "property": "https://f1-stories.gr/",
+    "aggregation": "page",
+    "searchType": "web",
+    "rows": [
+      {
+        "date": null,
+        "page": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+        "mapping": "mapped",
+        "query": null,
+        "country": null,
+        "device": null,
+        "clicks": 1,
+        "impressions": 4,
+        "ctr": 0.25,
+        "position": 3.5
+      }
+    ]
+  },
+  "site": {
+    "source": "ga4-bigquery",
+    "population": "consented-ga4-events",
+    "unit": "events",
+    "period": { "start": "2026-10-19", "end": "2026-10-25" },
+    "timezone": "America/Los_Angeles",
+    "asOf": "2026-10-29",
+    "freshness": { "cadence": "daily", "carried": false, "dataState": "final" },
+    "status": "present",
+    "articles": [
+      { "page": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html", "mapping": "mapped", "page_view_events": 3 }
+    ],
+    "categories": [ { "category": "SYNTHETIC category", "page_view_events": 3 } ],
+    "discovery": {
+      "source": "ga4-bigquery",
+      "population": "consented-ga4-events",
+      "unit": "events",
+      "period": { "start": "2026-10-19", "end": "2026-10-23" },
+      "timezone": "America/Los_Angeles",
+      "asOf": "2026-10-27",
+      "freshness": { "cadence": "weekly", "carried": true, "dataState": "final" },
+      "status": "present",
+      "rows": [
+        { "page": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html", "mapping": "mapped", "source_surface": "home", "link_section": "article_link", "click_events": 1 }
+      ]
+    },
+    "rum": {
+      "source": "ga4-bigquery",
+      "population": "consented-rum-observations",
+      "unit": "observations",
+      "period": { "start": "2026-10-19", "end": "2026-10-25" },
+      "timezone": "America/Los_Angeles",
+      "asOf": "2026-10-29",
+      "freshness": { "cadence": "daily", "carried": false, "dataState": "final" },
+      "status": "present",
+      "assessment": "NOT VERIFIED"
+    }
+  },
+  "catalogue": {
+    "source": "repository",
+    "population": "public-articles",
+    "unit": "articles",
+    "period": { "start": "2026-10-29", "end": "2026-10-29" },
+    "timezone": "Europe/Athens",
+    "asOf": "2026-10-29",
+    "freshness": { "cadence": "static", "carried": false, "dataState": "final" },
+    "status": "present",
+    "rows": [
+      { "id": "20260222T", "url": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html", "title": "SYNTHETIC — δοκιμαστικό άρθρο", "category": "SYNTHETIC category", "published": "2026-02-22", "entities": [] }
+    ]
+  },
+  "linkGraph": {
+    "source": "repository",
+    "population": "public-internal-links",
+    "unit": "edges",
+    "period": { "start": "2026-10-29", "end": "2026-10-29" },
+    "timezone": "Europe/Athens",
+    "asOf": "2026-10-29",
+    "freshness": { "cadence": "static", "carried": false, "dataState": "final" },
+    "status": "present",
+    "rows": [
+      { "from": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html", "to": "https://f1-stories.gr/blog-module/blog-entries/20260822J/article.html", "fromMapping": "mapped", "toMapping": "mapped" }
+    ]
+  },
+  "comparisons": [ { "left": "gsc.clicks", "right": "site.page_view_events", "operation": "side-by-side" } ]
+}
