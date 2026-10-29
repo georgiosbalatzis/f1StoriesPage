@@ -491,3 +491,120 @@ grains, incomplete/immature periods, carried data, contradictory evidence, deter
 topic restrictions, deterministic boolean synthetic provenance, and private/exclusive/symlink-guarded
 CLI output including Git ancestor rejection and the synthetic disclaimer.
 No real analytics, credentials, production reconciliation or live editorial conclusion was accessed or verified.
+
+## I-07C — Owner-local editorial action queue
+
+Status: **offline worklist with synthetic checks only; production reconciliation and editorial conclusions
+NOT VERIFIED**. `scripts/intelligence/editorial-queue.mjs` consumes I-07B results. No dashboard UI, server,
+browser storage, new transport, network call, SQL, schedule, dependency or cost-guard change. The owner keeps
+review decisions in a private JSON file outside the repository. Nothing is published automatically, including
+when an item is accepted. Acceptance records a human review decision, not verified effectiveness.
+
+### Pure queue and review-state contract
+
+`buildQueue(insightsResult, reviewState)` returns `{ version: 1, asOf, review_date, synthetic, groups, stale }`
+without reading files, the clock or environment, logging, or mutating either argument. Omitting review state
+means `{ version: 1, signals: {} }`. Groups always appear in this order, including empty groups:
+
+1. `content_opportunity` — «Ευκαιρία περιεχομένου».
+2. `article_improvement` — «Βελτίωση υπάρχοντος άρθρου».
+3. `internal_discovery` — «Εσωτερική ανακάλυψη».
+4. `technical_seo` — «Τεχνικό SEO».
+5. `data_quality` — «Ποιότητα δεδομένων / Ανεπαρκή στοιχεία», including all abstentions.
+
+Within each group, items sort by type, subject and signal ID, with abstention reason/status as tie-breakers.
+This is an organisational running order, never a statistical ranking. Signals preserve their evidence and gain
+`kind: signal` and a `review` view. Abstentions gain `kind: abstention`; I-07B supplies only type, subject,
+status and reason, so no period, source, sample, confidence or observations are invented. Their missing
+fields render as NOT VERIFIED. They have no `signal_id`, so no decision is attached to them.
+
+The state schema is `{ version: 1, signals: { [signal_id]: { decision, date, note, until?, history } } }`.
+`decision` is `pending` (the default view), `accepted`, `rejected` or `deferred`. A recorded decision has
+an ISO calendar `date` and a single-line owner `note` of at most 500 characters (empty is allowed).
+Only a deferred decision may have an optional `until` ISO calendar day, on or after its decision day.
+`history` contains every recorded `{ decision, date, note, until? }` in order; the current fields must match
+its last entry. Malformed state fails closed rather than discarding earlier entries.
+
+`applyDecision(reviewState, signalId, decision, { date, note, until })` returns a new state with a new history
+entry; `until` is optional and only for deferral. It preserves all other IDs and prior history, deep-copies
+state, and refuses dates before the last recorded decision. No decision automatically removes a worklist
+item. Unknown IDs are retained unchanged and listed in `stale`; absence from an export is not resolution.
+A later export with the same ID recovers its saved decision. I-07B IDs include exact periods, so a new
+period usually creates new pending work and leaves the previous period's review state stale.
+
+Deferral is inclusive through `until`. Once that day has passed, the view is `pending` with `expired: true`;
+the stored decision/history remain deferred. Without `until`, deferral has no automatic expiry. For pure,
+repeatable evaluation the reference day is `insightsResult.review_date`, falling back to the upstream
+`asOf`. If neither day is available, expiry is NOT VERIFIED and the stored deferral remains visible.
+The CLI supplies today's **UTC calendar day** as `review_date`, preserving upstream `asOf` and every
+source period. This view date never relabels carried or weekly measurements as today's evidence.
+
+`renderQueue(queue)` returns plain Greek Markdown, with numbered items, full subjects/optional titles,
+raw observations and denominators, separately labelled periods/sources/units, sample status, confidence,
+limitations, counterevidence, human review, evidence links and current decisions. Text is escaped; titles
+are not truncated. There are no KPI-card tables, effect forecasts or significance claims. The header says
+this is decision support, not instructions, and that nothing publishes automatically. `synthetic: true`
+on the supplied insights result adds **«συνθετικά δεδομένα»**. The reviewed I-07B JSON currently omits that
+marker, although its companion Markdown preserves it; missing provenance is explicitly NOT VERIFIED,
+never silently asserted real or synthetic. I-07C does not modify or infer the upstream contract. Carrying
+that boolean into I-07B JSON needs a separate integration change. Queue fixtures explicitly supply it.
+
+### Private local workflow: import → insights → render → decide
+
+Use an existing private directory outside this working tree and every other repository. Dates below are
+synthetic placeholders; replace them with the export's exact dates and only assert final maturity after
+local confirmation. Keep the CSV, contract inputs, site aggregates (if any), insights JSON/Markdown,
+worklist Markdown, review state and owner notes private. **None is committed, uploaded to issues/PRs,
+printed in CI, or attached as a public artifact.** Only wholly invented fixtures belong in this repository.
+Do not supply credentials, keys, visitor-level data or decrypted dashboard payloads at any step.
+
+```sh
+node scripts/intelligence/editorial-inputs-import.mjs \
+  --csv="$HOME/private-intelligence/Pages.csv" \
+  --property=https://f1-stories.gr/ --search-type=web \
+  --start=2026-10-19 --end=2026-10-25 --as-of=2026-10-29 \
+  --output="$HOME/private-intelligence/editorial-inputs.json"
+
+node scripts/intelligence/editorial-insights.mjs \
+  "$HOME/private-intelligence/editorial-inputs.json" \
+  --out="$HOME/private-intelligence/editorial-insights.json"
+
+node scripts/intelligence/editorial-queue.mjs render \
+  "$HOME/private-intelligence/editorial-insights.json" \
+  --out="$HOME/private-intelligence/editorial-queue.md"
+
+node scripts/intelligence/editorial-queue.mjs decide \
+  "$HOME/private-intelligence/review-state.json" SIGNAL_ID_FROM_WORKLIST accepted \
+  --note='Ελέγχθηκε χειροκίνητα· απαιτείται συντακτική απόφαση.'
+
+node scripts/intelligence/editorial-queue.mjs render \
+  "$HOME/private-intelligence/editorial-insights.json" \
+  --state="$HOME/private-intelligence/review-state.json" \
+  --out="$HOME/private-intelligence/editorial-queue-reviewed.md"
+```
+
+The first `decide` creates the state file if absent; subsequent decisions append history. Other choices
+are `rejected`, `pending`, or `deferred --until=YYYY-MM-DD` (the latter date must not precede today in UTC).
+Omit `--until` for indefinite deferral. Run decisions serially against one local state file; simultaneous
+writers are not coordinated. `render` never rewrites state. Without `--state` all current signals are
+pending. With `--state`, a missing/malformed state file is an error. Each report uses a **new output name**;
+existing reports are refused. The default report path is `$HOME/f1stories-editorial-queue.md`.
+
+Both commands refuse CI (`CI` or `GITHUB_ACTIONS`), including synthetic invocations. State reads/writes and
+report writes inside this worktree are refused without any test bypass. Paths are checked both as requested
+and after resolving parent symlinks; direct symlinks, hard-linked existing files and non-file destinations
+are refused. Parent directories must already exist. Reports are created exclusively with mode `0600`.
+State replacement uses a mode-`0600` temporary file and atomic rename, with temporary files removed after
+success/failure, so interrupted writing does not truncate the previous state. The local directory itself
+must stay private. CLI logs contain fixed PASS/FAIL messages, never measurements, paths or owner notes.
+PASS confirms only a local write, not analytical validity; errors exit 1 without echoing parser/OS errors.
+
+An optional private dashboard queue view is a **separate reviewed PR**, using the existing encrypted snapshot
+transport. It is not implemented here. Public article identities and synthetic fixtures do not establish
+production correctness, real signal usefulness, GSC connection/completeness or actual editorial impact.
+
+Checks: `node --test scripts/intelligence/__tests__/editorial-queue.test.mjs` and
+`npm run test:intelligence`. Tests use invented fixtures under `__tests__/fixtures/editorial-queue/` and
+private temporary files, covering group order/defaults, retained stale IDs, view-only expiry, immutable
+append-only history, deterministic output, long titles and evidence, abstentions, synthetic provenance,
+CLI privacy/permissions, repository/symlink/hard-link refusal, CI refusal and preservation on errors.
