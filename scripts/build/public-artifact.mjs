@@ -41,6 +41,7 @@ const ROOT_FILES = new Set([
 
 const AUTHOR_TOOL_FILES = new Set([
     'scripts/author/research-catalog.json',
+    'scripts/author/research-content/manifest.json',
     // Retain the author portrait fallback after preview markup moves into the renderer.
     'images/authors/default.webp',
     // The article preview stylesheet of generate.html / housekeeping.html (no public page loads it).
@@ -380,6 +381,7 @@ function shouldCopy(relPath) {
     if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
     if (AUTHOR_TOOL_FILES.has(relPath)) return true;
+    if (/^scripts\/author\/research-content\/\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(relPath)) return true;
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (ENTITY_PUBLIC_FILES.has(relPath)) return true;

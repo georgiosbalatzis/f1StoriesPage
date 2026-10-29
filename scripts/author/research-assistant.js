@@ -69,7 +69,32 @@
                 && post.url === '/blog-module/blog-entries/' + encodeURIComponent(post.id) + '/article.html';
         });
     }
-    function search(posts, query) {
+    var passageCache = new WeakMap();
+    function passageWords(passage) {
+        if (!passageCache.has(passage)) passageCache.set(passage, words(passage.text));
+        return passageCache.get(passage);
+    }
+    function bodyMatch(list, token, exactOther) {
+        if (list.includes(token)) return 1;
+        return exactOther && token.length >= 6 && !/\d/.test(token) && list.some(function (word) {
+            return word.length >= 6 && !/\d/.test(word) && Math.abs(word.length - token.length) <= 2
+                && (word.startsWith(token) || token.startsWith(word));
+        }) ? 0.5 : 0;
+    }
+    function hasLiteral(text, literal) {
+        var escaped = literal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp('(?<![\\p{L}\\p{N}])(?<!\\d[.,:])' + escaped + '(?![\\p{L}\\p{N}]|[.,:]\\d)', 'u').test(text);
+    }
+    function passageSnippet(text, tokens) {
+        var position = 0, match, re = /[\p{L}\p{N}]+/gu;
+        while ((match = re.exec(text))) {
+            if (tokens.some(function (token) { return normal(match[0]) === token; })) { position = Array.from(text.slice(0, match.index)).length; break; }
+        }
+        var chars = Array.from(text), start = Math.max(0, position - 100), end = Math.min(chars.length, start + 238);
+        if (end === chars.length) start = Math.max(0, end - 238);
+        return (start ? '…' : '') + chars.slice(start, end).join('') + (end < chars.length ? '…' : '');
+    }
+    function search(posts, query, content) {
         var raw = String(query || '').trim(), original = raw.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
         var tokens = [], shown = {};
         original.forEach(function (word) {
@@ -80,25 +105,74 @@
         var phrase = tokens.length > 1 ? tokens.join(' ') : '';
         return posts.map(function (post) {
             var f = postFields(post), terms = {}, score = 0;
-            if (normal(raw) === normal(post.id) || words(raw).join(' ') === f.titleText) {
-                return { post: post, matched: tokens.length + 1, score: 1000, terms: {}, reason: normal(raw) === normal(post.id) ? 'Ακριβές ID' : 'Ακριβής τίτλος' };
-            }
-            var matched = 0;
+            var exactReason = normal(raw) === normal(post.id) ? 'Ακριβές ID' : words(raw).join(' ') === f.titleText ? 'Ακριβής τίτλος' : '';
+            if (exactReason && !content) return { post: post, matched: tokens.length + 1, score: 1000, terms: {}, reason: exactReason };
+            var matched = 0, metadataTokens = new Set();
             tokens.forEach(function (token) {
                 var best = 0, where = '';
                 FIELDS.forEach(function (field) {
                     var value = wordMatch(f[field[0]], token) * field[2];
                     if (value > best) { best = value; where = field[1]; }
                 });
-                if (best) { matched++; score += best; (terms[where] = terms[where] || []).push(shown[token]); }
+                if (best) { matched++; metadataTokens.add(token); score += best; (terms[where] = terms[where] || []).push(shown[token]); }
             });
             if (phrase && (' ' + f.titleText + ' ').includes(' ' + phrase + ' ')) score += 10;
             else if (phrase && (' ' + f.excerptText + ' ').includes(' ' + phrase + ' ')) score += 4;
-            return { post: post, matched: matched, score: score, terms: terms, reason: FIELDS.map(function (field) { return field[1]; })
-                .filter(function (label) { return terms[label]; }).map(function (label) { return label + ': ' + terms[label].join(', '); }).join(' · ') };
+            var selected = null, article = content && content.get(post.id);
+            var literals = raw.match(/\d+(?:[.,:]\d+)+/g) || [];
+            if (article) article.passages.forEach(function (passage) {
+                var list = passageWords(passage), bodyTerms = [], bodyScore = 0, covered = new Set(metadataTokens);
+                tokens.forEach(function (token) {
+                    var guarded = literals.some(function (literal) { return words(literal).includes(token) && !hasLiteral(passage.text, literal); });
+                    var exactOther = tokens.some(function (other) { return other !== token && list.includes(other) && !literals.some(function (literal) { return words(literal).includes(other) && !hasLiteral(passage.text, literal); }); });
+                    var value = guarded ? 0 : bodyMatch(list, token, exactOther);
+                    if (value) { covered.add(token); bodyScore += value; bodyTerms.push(shown[token] + (value === 0.5 ? ' (πρόθεμα)' : '')); }
+                });
+                if (!bodyTerms.length) return;
+                if (phrase && (' ' + list.join(' ') + ' ').includes(' ' + phrase + ' ') && literals.every(function (literal) { return hasLiteral(passage.text, literal); })) bodyScore++;
+                bodyScore = Math.min(4, bodyScore);
+                var candidate = { passage: passage, matched: covered.size, score: bodyScore, terms: bodyTerms };
+                if (!selected || candidate.matched > selected.matched || (candidate.matched === selected.matched && (candidate.score > selected.score
+                    || (candidate.score === selected.score && passage.ordinal < selected.passage.ordinal)))) selected = candidate;
+            });
+            if (selected) { matched = selected.matched; score += selected.score; terms['Σώμα'] = selected.terms; }
+            if (exactReason) { matched = tokens.length + 1; score = 1000; }
+            var reason = FIELDS.map(function (field) { return field[1]; }).concat('Σώμα')
+                .filter(function (label) { return terms[label]; }).map(function (label) { return label + ': ' + terms[label].join(', '); }).join(' · ');
+            var hit = { post: post, matched: matched, score: score, terms: terms, reason: exactReason ? exactReason + (selected ? ' · Σώμα: ' + selected.terms.join(', ') : '') : reason };
+            if (selected) { hit.passage = selected.passage; hit.heading = article.headings[selected.passage.heading]; hit.snippet = passageSnippet(selected.passage.text, tokens); }
+            return hit;
         }).filter(function (hit) { return hit.score > 0; }).sort(function (a, b) {
             return b.matched - a.matched || b.score - a.score || String(b.post.date).localeCompare(String(a.post.date)) || String(a.post.id).localeCompare(String(b.post.id));
         }).slice(0, 24);
+    }
+    var CONTENT_ROOT = '/scripts/author/research-content/';
+    function validateContentManifest(data) {
+        if (!data || data.version !== 1 || !/^[a-f0-9]{64}$/.test(data.metadataSha256) || !Array.isArray(data.shards)
+            || data.shards.length > 1200 || !data.coverage || !Number.isInteger(data.coverage.eligible) || data.coverage.eligible < 0
+            || !Number.isInteger(data.coverage.searchableProse) || data.coverage.searchableProse < 0 || data.coverage.searchableProse > data.coverage.eligible
+            || data.coverage.minimumProseCharacters !== 40 || !Array.isArray(data.coverage.excluded)
+            || data.coverage.excluded.length !== data.coverage.eligible - data.coverage.searchableProse
+            || !data.coverage.excluded.every(function (entry) { return entry && typeof entry.id === 'string' && /^[\p{L}\p{N}_-]+$/u.test(entry.id) && typeof entry.reason === 'string'; })
+            || !data.shards.every(function (shard) { return shard && /^\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(shard.file)
+                && /^[a-f0-9]{64}$/.test(shard.sha256) && Number.isInteger(shard.articles) && shard.articles >= 0
+                && Number.isInteger(shard.passages) && shard.passages >= 0; })
+            || new Set(data.shards.map(function (shard) { return shard.file; })).size !== data.shards.length
+            || data.shards.reduce(function (sum, shard) { return sum + shard.articles; }, 0) !== data.coverage.eligible) throw new Error('Μη έγκυρος κατάλογος πλήρους κειμένου.');
+        return data;
+    }
+    function validateContentShard(data, descriptor) {
+        if (!data || data.version !== 1 || !Array.isArray(data.articles) || data.articles.length !== descriptor.articles
+            || new Set(data.articles.map(function (article) { return article && article.id; })).size !== data.articles.length
+            || !data.articles.every(function (article) {
+                return article && typeof article.id === 'string' && /^[\p{L}\p{N}_-]+$/u.test(article.id)
+                    && /^[a-f0-9]{64}$/.test(article.digest) && Array.isArray(article.headings) && Array.isArray(article.passages)
+                    && article.headings.every(function (heading) { return heading && typeof heading.text === 'string' && typeof heading.id === 'string'; })
+                    && article.passages.every(function (passage) { return passage && ['heading', 'paragraph', 'list-item'].includes(passage.kind)
+                        && Number.isInteger(passage.ordinal) && passage.ordinal >= 0 && Number.isInteger(passage.heading)
+                        && passage.heading >= -1 && passage.heading < article.headings.length && typeof passage.text === 'string'; });
+            }) || data.articles.reduce(function (sum, article) { return sum + article.passages.length; }, 0) !== descriptor.passages) throw new Error('Μη έγκυρο αρχείο πλήρους κειμένου.');
+        return data;
     }
     // The author's own phrase as anchor text; the old headline is never substituted for it.
     function markdownLink(anchor, post) {
@@ -234,7 +308,7 @@
     // Only notebook-owned elements and approved public reads. No editor state or mutation interface.
     function attach(panel, toggle, archive) {
         // decoded: the eligible posts of each loaded index, so repeated searches rank without decoding again.
-        var notes = [], cache = new Map(), decoded = new WeakMap(), catalog, searchRevision = 0, standingRevision = 0, initialized = false;
+        var notes = [], cache = new Map(), decoded = new WeakMap(), hashes = new WeakMap(), catalog, contentManifest, searchRevision = 0, standingRevision = 0, initialized = false;
         var state = blankWorkspace(), epoch = 0, listeners = [], exportButton;
         function snapshotWorkspace() {
             if (initialized) {
@@ -288,7 +362,8 @@
         function detail(title, open) { var node = el('details'); node.open = !!open; node.appendChild(el('summary', title)); panel.appendChild(node); return node; }
         function link(label, href) { var node = el('a', label); node.href = href; node.target = '_blank'; node.rel = 'noopener noreferrer'; return node; }
         async function load(path) {
-            var approved = ['/scripts/author/research-catalog.json', '/blog-module/blog-index-data.json', '/standings/standings-cache.json'];
+            var approved = ['/scripts/author/research-catalog.json', CONTENT_ROOT + 'manifest.json', '/blog-module/blog-index-data.json', '/standings/standings-cache.json'];
+            if (contentManifest) approved = approved.concat(contentManifest.shards.map(function (shard) { return CONTENT_ROOT + shard.file; }));
             if (catalog) approved = approved.concat(catalog.rounds.map(function (pair) { return '/standings/rounds/' + pair.join('-') + '.json'; }));
             if (!approved.includes(path)) throw new Error('Μη εγκεκριμένη διαδρομή δεδομένων.');
             if (cache.has(path)) return cache.get(path);
@@ -297,7 +372,9 @@
                 if (!response.ok) throw new Error('Τα δεδομένα δεν είναι διαθέσιμα (HTTP ' + response.status + '). Δοκίμασε ξανά.');
                 var text = await response.text();
                 if (text.length > 2000000) throw new Error('Το αρχείο δεδομένων είναι υπερβολικά μεγάλο.');
-                return JSON.parse(text);
+                var data = JSON.parse(text);
+                if (path === '/blog-module/blog-index-data.json' || path.startsWith(CONTENT_ROOT) && path !== CONTENT_ROOT + 'manifest.json') hashes.set(data, global.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (bytes) { return Array.from(new Uint8Array(bytes), function (b) { return b.toString(16).padStart(2, '0'); }).join(''); }));
+                return data;
             }).catch(function (error) { cache.delete(path); throw error; }).finally(function () { clearTimeout(timer); });
             cache.set(path, request); return request;
         }
@@ -336,11 +413,18 @@
                     button('Αντιγραφή URL', function () { copy(post.url, 'Αντιγράφηκε η διεύθυνση ' + post.url + '. Επικόλλησε τη μέσα σε [φράση](…).', note); }),
                     button('Αντιγραφή συνδέσμου Markdown', function () { copyMarkdown(post, note); }),
                     button('Αντιγραφή αναφοράς', function () { copy(articleText(post), null, note); }), note);
+                if (hit.passage) {
+                    var locator = hit.heading ? hit.heading.text : 'Παράγραφος ' + (hit.passage.ordinal + 1);
+                    var label = el('p', 'Απόσπασμα · ', 'gb-hint');
+                    if (hit.heading && hit.heading.id) label.appendChild(link(locator, post.url + '#' + encodeURIComponent(hit.heading.id)));
+                    else label.appendChild(document.createTextNode(locator));
+                    var before = row.querySelector('a'); row.insertBefore(label, before); row.insertBefore(el('p', hit.snippet, 'gb-research-passage'), before);
+                }
                 articles.appendChild(row);
             });
             var left = hits.length - articles.children.length;
             more.hidden = left <= 0; more.textContent = 'Περισσότερα αποτελέσματα (' + left + ')';
-            if (start && articles.children[start]) articles.children[start].querySelector('a').focus();
+            if (start && articles.children[start]) articles.children[start].querySelector('a[href$="/article.html"]').focus();
         }
         function completeBrief() { return brief(question.value, season.value && round.value ? season.value + ' / γύρος ' + round.value : '', notes); }
         function renderNotes() {
@@ -364,13 +448,36 @@
             if (!query) { message('Γράψε θέμα ή λέξεις αναζήτησης.'); question.focus(); return; }
             message('Αναζήτηση στον δημόσιο κατάλογο…');
             try {
-                var posts = await load('/blog-module/blog-index-data.json').then(function (data) {
-                    if (!decoded.has(data)) decoded.set(data, eligible(decodeIndex(data), global.F1S_TAXONOMY.athensDay()));
-                    return decoded.get(data);
-                });
+                var index = await load('/blog-module/blog-index-data.json');
+                if (!decoded.has(index)) decoded.set(index, eligible(decodeIndex(index), global.F1S_TAXONOMY.athensDay()));
+                var posts = decoded.get(index), allowed = new Set(posts.map(function (post) { return post.id; }));
                 if (revision !== searchRevision) return;
-                hits = search(posts, query); renderHits();
-                message(hits.length ? hits.length + ' άρθρα προς έλεγχο: διάβασέ τα πριν τα συνδέσεις. Δεν αποτελούν ανεξάρτητη επαλήθευση.' : 'Δεν βρέθηκαν άρθρα. Δοκίμασε όνομα ή λιγότερες λέξεις.');
+                var content = new Map(), failed = 0, completed = 0, manifest;
+                try {
+                    manifest = validateContentManifest(await load(CONTENT_ROOT + 'manifest.json'));
+                    if (await hashes.get(index) !== manifest.metadataSha256) throw new Error('Οι εκδόσεις καταλόγου και κειμένου διαφέρουν.');
+                    contentManifest = manifest;
+                    var cursor = 0;
+                    async function worker() {
+                        while (cursor < manifest.shards.length && revision === searchRevision) {
+                            var descriptor = manifest.shards[cursor++], path = CONTENT_ROOT + descriptor.file;
+                            try {
+                                var shard = await load(path);
+                                if (await hashes.get(shard) !== descriptor.sha256) throw new Error('Το αρχείο δεν συμφωνεί με τον κατάλογο.');
+                                validateContentShard(shard, descriptor);
+                                shard.articles.forEach(function (article) { if (allowed.has(article.id)) content.set(article.id, article); });
+                                completed++;
+                            } catch (_) { cache.delete(path); failed++; }
+                            if (revision === searchRevision) message('Φόρτωση κειμένου: ' + completed + '/' + manifest.shards.length + ' αρχεία.');
+                        }
+                    }
+                    await Promise.all(Array.from({ length: Math.min(4, manifest.shards.length) }, worker));
+                } catch (_) { cache.delete(CONTENT_ROOT + 'manifest.json'); contentManifest = null; failed++; }
+                if (revision !== searchRevision) return;
+                hits = search(posts, query, content); renderHits();
+                var coverage = manifest ? ' Κάλυψη κειμένου: ' + completed + '/' + manifest.shards.length + ' αρχεία. Στον κατάλογο: ' + manifest.coverage.searchableProse + '/' + manifest.coverage.eligible + ' άρθρα με πρόζα τουλάχιστον 40 χαρακτήρων.' : ' Το πλήρες κείμενο δεν φορτώθηκε.';
+                if (failed) coverage += ' Μερική κάλυψη: πάτησε ξανά «Εύρεση αναφορών» για επανάληψη.';
+                message((hits.length ? hits.length + ' άρθρα προς έλεγχο: διάβασέ τα πριν τα συνδέσεις. Δεν αποτελούν ανεξάρτητη επαλήθευση.' : 'Δεν βρέθηκαν άρθρα. Δοκίμασε όνομα ή λιγότερες λέξεις.') + coverage);
             } catch (error) { cache.delete('/blog-module/blog-index-data.json'); if (revision === searchRevision) message('Ο κατάλογος άρθρων δεν φορτώθηκε. ' + error.message); }
         }
         function resetStanding() { ++standingRevision; standings.replaceChildren(); }
@@ -425,7 +532,7 @@
             var head = el('div', null, 'gb-research-actions'), heading = el('h2', 'Ερευνητικό σημειωματάριο'); heading.id = 'research-heading';
             head.append(heading, button('Κλείσιμο έρευνας', hide)); panel.append(head,
                 el('p', 'Το σημειωματάριο αποθηκεύεται μαζί με το άρθρο μόνο με “Αποθήκευση ως πρόχειρο”. Δεν γίνεται αυτόματη αποθήκευση. Τα δεδομένα μένουν σε αυτόν τον browser, στην ίδια διεύθυνση ιστοτόπου (origin: πρωτόκολλο, όνομα και θύρα). localhost, 127.0.0.1 και διαφορετικές θύρες έχουν ξεχωριστά πρόχειρα. Δεν συγχρονίζονται μεταξύ συσκευών.', 'gb-hint'),
-                el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη και ID δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Δεν γίνεται αναζήτηση στο σώμα άρθρων ή απάντηση με AI.', 'gb-hint'));
+                el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη, ID και κείμενο δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Πίνακες, εικόνες και ενσωματωμένα εργαλεία δεν αναζητούνται. Δεν δίνεται απάντηση με AI.', 'gb-hint'));
             status = el('p', '', 'gb-hint'); status.id = 'research-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); panel.appendChild(status);
             question = field(panel, 'question', 'Εκδοτικό ερώτημα / λέξεις αναζήτησης');
             question.addEventListener('input', function () { ++searchRevision; hits = []; articles.replaceChildren(); more.hidden = true; });
@@ -523,7 +630,7 @@
             });
         });
     }
-    global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, markdownLink: markdownLink, validateCatalog: validateCatalog,
+    global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, validateContentManifest: validateContentManifest, validateContentShard: validateContentShard, markdownLink: markdownLink, validateCatalog: validateCatalog,
         validateWorkspace: validateWorkspace, snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');
     if (panel) attach(panel, document.getElementById('research-toggle'), document.getElementById('archive-toggle'));

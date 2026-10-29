@@ -33,6 +33,7 @@ const { buildPages, writeDiscoveryPages } = require('./discovery');
 const { loadFoundation } = require('./entities');
 const { writeSearchDestinations } = require('./search-destinations');
 const { buildHubPages, writeHubPages, hubPath } = require('./entities/hubs');
+const { buildResearchContent } = require('./research-content');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
 
@@ -1201,6 +1202,7 @@ async function processBlogEntries(options = {}) {
     checkBodyLinks(blogPosts, { today });
     const authorPages = writeAuthorPages(blogPosts, { today });
     generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages], authorPages);
+    buildResearchContent(REPO_ROOT, fs.readFileSync(indexPath));
 
     // Standings caches are refreshed only by `npm run build:standings-data`.
     console.log('Blog processing complete');
