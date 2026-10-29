@@ -1,0 +1,96 @@
+[
+    {
+        "metric": "internal_page_click",
+        "unit": "events",
+        "source": "ga4",
+        "population": "SYNTHETIC consented events; Main; America/Los_Angeles; synthetic URL only",
+        "period": {
+            "start": "2000-01-01",
+            "end": "2000-01-07"
+        },
+        "numerator": 40,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    },
+    {
+        "metric": "mobile_lcp_p75",
+        "unit": "ms",
+        "source": "rum",
+        "population": "SYNTHETIC mobile; full coverage; America/Los_Angeles",
+        "period": {
+            "start": "2000-01-01",
+            "end": "2000-01-07"
+        },
+        "numerator": 2100,
+        "denominator": 60,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    },
+    {
+        "metric": "mobile_cls_p75",
+        "unit": "unitless",
+        "source": "rum",
+        "population": "SYNTHETIC mobile; full coverage; America/Los_Angeles",
+        "period": {
+            "start": "2000-01-01",
+            "end": "2000-01-07"
+        },
+        "numerator": 0.05,
+        "denominator": 60,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    },
+    {
+        "metric": "internal_page_click",
+        "unit": "events",
+        "source": "ga4",
+        "population": "SYNTHETIC consented events; Main; America/Los_Angeles; synthetic URL only",
+        "period": {
+            "start": "2000-01-08",
+            "end": "2000-01-14"
+        },
+        "numerator": 60,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    },
+    {
+        "metric": "mobile_lcp_p75",
+        "unit": "ms",
+        "source": "rum",
+        "population": "SYNTHETIC mobile; full coverage; America/Los_Angeles",
+        "period": {
+            "start": "2000-01-08",
+            "end": "2000-01-14"
+        },
+        "numerator": 2200,
+        "denominator": 60,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    },
+    {
+        "metric": "mobile_cls_p75",
+        "unit": "unitless",
+        "source": "rum",
+        "population": "SYNTHETIC mobile; full coverage; America/Los_Angeles",
+        "period": {
+            "start": "2000-01-08",
+            "end": "2000-01-14"
+        },
+        "numerator": 0.06,
+        "denominator": 60,
+        "asOf": "2000-01-18",
+        "urls": [
+            "https://f1-stories.gr/synthetic-example/"
+        ]
+    }
+]
