@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261029G",
+      "title": "GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-29",
+      "dateISO": "2026-10-29",
+      "displayDate": "29 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261029G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261029G/1.webp",
+      "excerpt": "Στο καθιερωμένο GridCast για την ανάλυση του Αγώνα στο Μεξικό. Ελαστικά, καιρός, συνθήκες και δεδομένα.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261029G/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "GridCast",
+        "Ανάλυση",
+        "Μεξικό"
+      ],
+      "wordCount": 470,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 901,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 901,
+      "inputDigest": "c510aa5dfda3085d00f9d8ee5a0068870000792d9e43b97142d9e3a0affb1dab"
+    },
+    {
       "id": "20261028W",
       "title": "Ο Verstappen 2 φορές πρωταθλητής(κατασκευαστών)",
       "author": "Themis Charvalis",
@@ -11253,5 +11284,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-28T18:54:53.142Z"
+  "lastUpdated": "2026-10-29T18:52:03.691Z"
 }

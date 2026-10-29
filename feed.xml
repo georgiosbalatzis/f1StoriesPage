@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Tue, 27 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 28 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261029G/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261029G/article.html</guid>
+      <pubDate>Wed, 28 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Στο καθιερωμένο GridCast για την ανάλυση του Αγώνα στο Μεξικό. Ελαστικά, καιρός, συνθήκες και δεδομένα.</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
+    </item>
     <item>
       <title>Ο Verstappen 2 φορές πρωταθλητής(κατασκευαστών)</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261028W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Το πρώτο integration test της Formula 1 του 2026 έγινε στη βροχή του Sepang Για δεκαπέντε αγώνες, το 2026 έλεγε σε γενικές γραμμές μια ιστορία που είχαμε…</description>
       <category>Ειδήσεις</category>
       <dc:creator>F1 Stories</dc:creator>
-    </item>
-    <item>
-      <title>Η πίστα άλλαξε, όχι η AMR26</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261007G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261007G/article.html</guid>
-      <pubDate>Tue, 06 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Μία εβδομάδα πριν από το Sepang, στο Baku, η Aston Martin δεν είχε πολλά να θυμάται με χαρά. Ο Fernando Alonso και ο Lance Stroll ήταν 19ος και 21ος…</description>
-      <category>Ομάδες</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>
