@@ -202,6 +202,20 @@ test('local writes are validated, private, exclusive, and guarded against worktr
     writeEditorialInputs(fixture(), inRepo, { allowRepoPath: true });
     fs.symlinkSync(output, path.join(tmp, 'existing-link.json'));
     assert.throws(() => writeEditorialInputs(fixture(), path.join(tmp, 'existing-link.json')), /EEXIST/);
+    const otherWorktree = path.join(tmp, 'other-worktree');
+    const nested = path.join(otherWorktree, 'private-exports');
+    fs.mkdirSync(nested, { recursive: true });
+    fs.writeFileSync(path.join(otherWorktree, '.git'), 'gitdir: /SYNTHETIC/unused\n');
+    const linkedWorktree = path.join(tmp, 'linked-worktree');
+    fs.symlinkSync(nested, linkedWorktree);
+    const nonSynthetic = { ...fixture(), synthetic: false };
+    for (const directory of [otherWorktree, nested, linkedWorktree]) {
+        const refused = path.join(directory, 'private-inputs.json');
+        assert.throws(() => writeEditorialInputs(nonSynthetic, refused), /repository output refused/);
+        assert.equal(fs.existsSync(refused), false);
+    }
+    assert.throws(() => writeEditorialInputs(fixture(), path.join(nested, 'synthetic.json'), { allowRepoPath: true }), /repository output refused/);
+    assert.equal(fs.existsSync(path.join(nested, 'synthetic.json')), false);
 });
 
 test('CLI synthetic round trip and failure output never prints queries; real imports refuse CI', t => {

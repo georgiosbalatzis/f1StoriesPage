@@ -82,7 +82,12 @@ export function writeEditorialInputs(doc, output, { allowRepoPath = false } = {}
     // Resolve the existing parent before checking: a symlink outside the worktree must not bypass the guard.
     const destination = path.join(fs.realpathSync(path.dirname(requested)), path.basename(requested));
     const fixtureRoot = fs.realpathSync(path.join(ROOT, 'scripts/intelligence/__tests__/fixtures/editorial-inputs'));
-    if (inside(destination, fs.realpathSync(ROOT)) && !(allowRepoPath && doc.synthetic === true
+    let inRepository = inside(destination, fs.realpathSync(ROOT));
+    for (let directory = path.dirname(destination); ; directory = path.dirname(directory)) {
+        if (fs.existsSync(path.join(directory, '.git'))) { inRepository = true; break; }
+        if (directory === path.dirname(directory)) break;
+    }
+    if (inRepository && !(allowRepoPath && doc.synthetic === true
         && inside(destination, fixtureRoot) && path.extname(destination) === '.json')) {
         throw new Error('repository output refused; --allow-repo-path requires synthetic fixtures');
     }
