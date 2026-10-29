@@ -1,0 +1,40 @@
+{
+    "version": 1,
+    "experiments": [
+        {
+            "id": "EG-2000-001",
+            "hypothesis": "ΣΥΝΘΕΤΙΚΟ: σαφέστερο κείμενο συνδέσμου ίσως αυξήσει τα συμβάντα εσωτερικών κλικ.",
+            "urls": ["https://f1-stories.gr/synthetic-example/"],
+            "topic": "ΣΥΝΘΕΤΙΚΟ θέμα, όχι πραγματικό άρθρο",
+            "owner": "Συνθετικός υπεύθυνος",
+            "changeType": "link_copy",
+            "targetBehaviour": "Επιλογή του συνδέσμου προς σχετικό άρθρο",
+            "mechanism": "Η περιγραφή κάνει σαφέστερο τον προορισμό.",
+            "primaryOutcome": {
+                "metric": "internal_page_click",
+                "unit": "συμβάντα κλικ, όχι φορτώσεις προορισμού",
+                "source": "ga4",
+                "population": "Συνθετικά consented συμβάντα της συγκεκριμένης URL στο Main, ίδιο φίλτρο και στις δύο περιόδους"
+            },
+            "guardrails": [
+                { "metric": "LCP p75", "threshold": "<= 2500 ms, χωριστά ανά coverage, με επαρκείς παρατηρήσεις", "source": "rum" },
+                { "metric": "Αναγνωσιμότητα και συντακτική ποιότητα", "threshold": "Καμία παραπλανητική υπόσχεση, έλεγχος από τον υπεύθυνο", "source": "repo" }
+            ],
+            "baselinePeriod": { "start": "2000-01-01", "end": "2000-01-07" },
+            "comparisonPeriod": { "start": "2000-01-08", "end": "2000-01-14" },
+            "confounders": ["Συνθετικό αγωνιστικό Σαββατοκύριακο", "Συνθετική δημοσίευση την ημέρα αλλαγής"],
+            "evidenceFloor": 30,
+            "decisionPolicy": "INCONCLUSIVE αν μία περίοδος έχει λιγότερα από 30 συμβάντα ή λείπει έλεγχος guardrail. Διατήρηση μόνο μετά από ανθρώπινο έλεγχο· καμία αιτιώδης δήλωση.",
+            "failureModes": ["Παραπλανητικό κείμενο συνδέσμου", "Αλλαγή του προγράμματος δημοσιεύσεων"],
+            "rollback": "1. Επαναφορά μόνο του κειμένου συνδέσμου από το προηγούμενο diff. 2. Έλεγχος URL, πληκτρολογίου και αναγνωσιμότητας. 3. Ξεχωριστό PR επαναφοράς από τον υπεύθυνο. 4. Προσθήκη ROLLED_BACK στο history με σύνδεσμο PR/commit.",
+            "status": "RUNNING",
+            "history": [
+                { "status": "PROPOSED", "date": "1999-12-20", "actor": "Συνθετικός υπεύθυνος", "note": "ΣΥΝΘΕΤΙΚΗ πρόταση, χωρίς δεδομένα." },
+                { "status": "APPROVED", "date": "1999-12-21", "actor": "Συνθετικός υπεύθυνος", "note": "ΣΥΝΘΕΤΙΚΗ έγκριση. Ο σύνδεσμος commit είναι πλασματικός.", "commit": "https://github.com/georgiosbalatzis/f1StoriesPage/commit/0000000000000000000000000000000000000000" },
+                { "status": "RUNNING", "date": "2000-01-08", "actor": "Συνθετικός υπεύθυνος", "note": "ΣΥΝΘΕΤΙΚΗ έναρξη. Ο σύνδεσμος commit είναι πλασματικός.", "commit": "https://github.com/georgiosbalatzis/f1StoriesPage/commit/0000000000000000000000000000000000000000" }
+            ],
+            "pr": null,
+            "commit": "https://github.com/georgiosbalatzis/f1StoriesPage/commit/0000000000000000000000000000000000000000"
+        }
+    ]
+}
