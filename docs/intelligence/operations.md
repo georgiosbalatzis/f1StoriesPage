@@ -52,9 +52,10 @@ Snapshot generation uses `cron: '0 3 * * *'`, `timezone: Europe/Athens`. Health 
 also `Europe/Athens`, plus manual `workflow_dispatch` with `dry-run: true` by default. Both health jobs run only on
 `refs/heads/main`. Schedules are best effort, not a 03:00 delivery promise.
 
-The schedule clock uses the most recent actual 03:00 Athens instant: none on the spring DST gap day; the first
-occurrence on the autumn overlap. Its expected `asOf` is that instant's `America/Los_Angeles` date. The producer
-uses the LA date when it runs, so a late execution can legitimately have a newer `asOf`. GitHub timestamps are UTC.
+The schedule clock uses the most recent due Athens instant: 03:00 normally, the first valid instant after the spring
+DST gap (04:00), and the first 03:00 occurrence on the autumn overlap. Its expected `asOf` is that instant's
+`America/Los_Angeles` date. The producer uses the LA date when it runs, so a late execution can legitimately have a
+newer `asOf`. GitHub timestamps are UTC.
 The mature end is `asOf − 4 days`; the primary window is at most 28 days, acquisition at most 7, never before the
 2026-10-19 export start. Compare dates in these zones, not against the Athens calendar alone.
 

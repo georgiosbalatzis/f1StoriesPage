@@ -44,13 +44,13 @@ const models = values => Array.isArray(values) && values.every(value => Object.h
 const worst = values => STATES[Math.max(...values.map(value => STATES.indexOf(value)))];
 const mib = value => bytes(value) ? `${(value / 1048576).toFixed(2)} MiB` : 'UNKNOWN';
 
-// First 03:00 in Athens; on the spring gap there is no scheduled instant, and on the fall overlap only one is due.
+// First valid Athens instant at or after 03:00: 04:00 in the spring gap, first 03:00 in the fall overlap.
 export function scheduleClock(now) {
     const formatter = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Athens', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
     for (let day = propertyDay(now, 'Europe/Athens'), count = 0; count < 3; day = dayBefore(day), count++) {
         for (let offset = -4; offset <= 4; offset += 0.5) {
             const candidate = new Date(Date.parse(day) + offset * HOUR);
-            if (candidate <= now && propertyDay(candidate, 'Europe/Athens') === day && formatter.format(candidate) === '03:00') {
+            if (candidate <= now && propertyDay(candidate, 'Europe/Athens') === day && formatter.format(candidate) >= '03:00') {
                 return { scheduledAt: candidate.toISOString(), asOf: propertyDay(candidate) };
             }
         }
