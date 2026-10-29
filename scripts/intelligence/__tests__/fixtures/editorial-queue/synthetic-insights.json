@@ -1,0 +1,322 @@
+{
+  "version": 1,
+  "asOf": "2026-10-29",
+  "signals": [
+    {
+      "signal_id": "ca1f42b38151ee72f71fb7ea",
+      "type": "data_explainer_opportunity",
+      "group": "content_opportunity",
+      "subject": "https://f1-stories.gr/blog-module/blog-entries/20260822J/article.html",
+      "scope": {
+        "host": "f1-stories.gr",
+        "grain": "article",
+        "topic": "ελαστικά"
+      },
+      "observations": {
+        "page_view_events": 40,
+        "minimum_page_view_events": 30,
+        "catalogue_articles": 1
+      },
+      "data_source": {
+        "catalogue": {
+          "source": "repository",
+          "population": "public-articles",
+          "unit": "articles",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "static",
+            "carried": false,
+            "dataState": "final"
+          }
+        },
+        "site": {
+          "source": "ga4-bigquery",
+          "population": "consented-ga4-events",
+          "unit": "events",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "daily",
+            "carried": false,
+            "dataState": "final"
+          }
+        }
+      },
+      "exact_period": {
+        "catalogue": {
+          "start": "2026-10-29",
+          "end": "2026-10-29",
+          "timezone": "Europe/Athens"
+        },
+        "site": {
+          "start": "2026-10-19",
+          "end": "2026-10-25",
+          "timezone": "America/Los_Angeles"
+        }
+      },
+      "metric_units": {
+        "page_view_events": "consented page_view events",
+        "catalogue_articles": "articles"
+      },
+      "minimum_sample_status": "MET",
+      "confidence": "low",
+      "limitations": [
+        "Τα συναινετικά συμβάντα GA4 δεν είναι μοναδικοί αναγνώστες ή συνεδρίες και δεν καλύπτουν όλο το κοινό.",
+        "Τα εσωτερικά κλικ δεν αποδεικνύουν φόρτωση προορισμού· απουσία καταγραφής δεν αποδεικνύει απουσία δραστηριότητας.",
+        "Η ρητή κατηγορία καταλόγου συνδέει το θέμα· δεν γίνεται ταξινόμηση τίτλων, ερωτημάτων ή χρήση εργαλείων.",
+        "Παρατηρησιακή ένδειξη για ανθρώπινο έλεγχο· η παραγωγική ορθότητα παραμένει NOT VERIFIED."
+      ],
+      "why_it_matters": "Υπάρχει καταγεγραμμένο ενδιαφέρον συμβάντων σε άρθρο της ρητής κατηγορίας «ελαστικά».",
+      "recommended_human_review": "Εξετάστε αν ένας επεξηγηματικός οδηγός δεδομένων εξυπηρετεί το συγκεκριμένο θέμα· ελέγξτε πρώτα την υπάρχουσα κάλυψη.",
+      "counterevidence": [
+        "Υπάρχει ήδη άρθρο για το θέμα· νέα κάλυψη μπορεί να είναι περιττή."
+      ],
+      "evidence_links": [
+        "https://f1-stories.gr/blog-module/blog-entries/20260822J/article.html",
+        "docs/intelligence/editorial-intelligence.md"
+      ],
+      "title": "SYNTHETIC — Ένας μεγάλος δοκιμαστικός τίτλος για τον ανθρώπινο συντακτικό έλεγχο, με όλες τις λέξεις ορατές χωρίς αποκοπή ή συντόμευση"
+    },
+    {
+      "signal_id": "31c8e6b969d2e0c9c0d46053",
+      "type": "discovery_dropoff",
+      "group": "internal_discovery",
+      "subject": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+      "scope": {
+        "host": "f1-stories.gr",
+        "grain": "article",
+        "hypothesis": true
+      },
+      "observations": {
+        "internal_click_events": 40,
+        "page_view_events": 2,
+        "minimum_click_events": 30,
+        "weak_view_ceiling_exclusive": 5
+      },
+      "data_source": {
+        "discovery": {
+          "source": "ga4-bigquery",
+          "population": "consented-ga4-events",
+          "unit": "events",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "weekly",
+            "carried": false,
+            "dataState": "final"
+          }
+        },
+        "site": {
+          "source": "ga4-bigquery",
+          "population": "consented-ga4-events",
+          "unit": "events",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "daily",
+            "carried": false,
+            "dataState": "final"
+          }
+        }
+      },
+      "exact_period": {
+        "discovery": {
+          "start": "2026-10-19",
+          "end": "2026-10-25",
+          "timezone": "America/Los_Angeles"
+        },
+        "site": {
+          "start": "2026-10-19",
+          "end": "2026-10-25",
+          "timezone": "America/Los_Angeles"
+        }
+      },
+      "metric_units": {
+        "internal_click_events": "consented internal_page_click events",
+        "page_view_events": "consented page_view events"
+      },
+      "minimum_sample_status": "MET",
+      "confidence": "low",
+      "limitations": [
+        "Τα συναινετικά συμβάντα GA4 δεν είναι μοναδικοί αναγνώστες ή συνεδρίες και δεν καλύπτουν όλο το κοινό.",
+        "Τα εσωτερικά κλικ δεν αποδεικνύουν φόρτωση προορισμού· απουσία καταγραφής δεν αποδεικνύει απουσία δραστηριότητας.",
+        "Παρατηρησιακή ένδειξη για ανθρώπινο έλεγχο· η παραγωγική ορθότητα παραμένει NOT VERIFIED."
+      ],
+      "why_it_matters": "Υπόθεση: υπάρχει ζήτηση εσωτερικών κλικ και περιορισμένη καταγραφή page_view στον προορισμό.",
+      "recommended_human_review": "Ελέγξτε χειροκίνητα σύνδεσμο, συναίνεση και καταγραφή προορισμού· η υπόθεση δεν αποτελεί διάγνωση αποτυχημένης πλοήγησης.",
+      "counterevidence": [
+        "Υπάρχουν page_view events προορισμού· η καταγραφή δεν απουσιάζει πλήρως."
+      ],
+      "evidence_links": [
+        "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+        "docs/intelligence/editorial-intelligence.md"
+      ]
+    },
+    {
+      "signal_id": "9abeda15fa44bedb97b99461",
+      "type": "evergreen_refresh",
+      "group": "article_improvement",
+      "subject": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+      "scope": {
+        "host": "f1-stories.gr",
+        "grain": "article"
+      },
+      "observations": {
+        "earlier": {
+          "clicks": 7,
+          "impressions": 700,
+          "days": 7
+        },
+        "later": {
+          "clicks": 0,
+          "impressions": 1400,
+          "days": 7
+        },
+        "minimum_impressions_per_period": 100,
+        "minimum_absolute_change": 100,
+        "published": "2026-02-22"
+      },
+      "data_source": {
+        "gsc": {
+          "source": "search-console",
+          "population": "google-search",
+          "unit": "search-performance",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "daily",
+            "carried": false,
+            "dataState": "final"
+          },
+          "property": "https://f1-stories.gr/",
+          "aggregation": "page",
+          "searchType": "web"
+        },
+        "catalogue": {
+          "source": "repository",
+          "population": "public-articles",
+          "unit": "articles",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "static",
+            "carried": false,
+            "dataState": "final"
+          }
+        }
+      },
+      "exact_period": {
+        "gsc": {
+          "earlier": {
+            "start": "2026-10-12",
+            "end": "2026-10-18"
+          },
+          "later": {
+            "start": "2026-10-19",
+            "end": "2026-10-25"
+          },
+          "timezone": "America/Los_Angeles"
+        },
+        "catalogue": {
+          "start": "2026-10-29",
+          "end": "2026-10-29",
+          "timezone": "Europe/Athens"
+        }
+      },
+      "metric_units": {
+        "clicks": "Google search clicks",
+        "impressions": "Google search impressions",
+        "days": "calendar days",
+        "published": "calendar date"
+      },
+      "minimum_sample_status": "MET",
+      "confidence": "low",
+      "limitations": [
+        "Ανωνυμοποιημένα ερωτήματα και όρια εξαγωγής μπορεί να αποκρύπτουν στοιχεία· δεν υπολογίζεται σύνολο ιδιοκτησίας.",
+        "Η μέση θέση, η πρόθεση αναζήτησης και το μείγμα συσκευών επηρεάζουν το CTR.",
+        "Το CTR αναφοράς ανά ζώνη θέσης είναι μη βαθμονομημένο φίλτρο συντακτικού ελέγχου, όχι πρόβλεψη ή στατιστικό εύρημα.",
+        "Η μεταβολή εμφανίσεων δεν αποδεικνύει μεταβολή αναγνωστών· εποχικότητα, θέση και πρόθεση μπορεί να αλλάζουν.",
+        "Παρατηρησιακή ένδειξη για ανθρώπινο έλεγχο· η παραγωγική ορθότητα παραμένει NOT VERIFIED."
+      ],
+      "why_it_matters": "Οι εμφανίσεις αναζήτησης παλαιότερου άρθρου διαφέρουν μεταξύ δύο ίσων ώριμων περιόδων.",
+      "recommended_human_review": "Ελέγξτε αν χρειάζεται συντακτική ανανέωση, διατηρώντας την αρχική ημερομηνία δημοσίευσης και την υπογραφή.",
+      "counterevidence": [
+        "Τα κλικ δεν μεταβάλλονται προς την ίδια κατεύθυνση με τις εμφανίσεις."
+      ],
+      "evidence_links": [
+        "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+        "docs/intelligence/editorial-intelligence.md"
+      ]
+    },
+    {
+      "signal_id": "6074690a48b757fa082e1620",
+      "type": "search_ctr_gap",
+      "group": "technical_seo",
+      "subject": "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+      "scope": {
+        "host": "f1-stories.gr",
+        "grain": "article"
+      },
+      "observations": {
+        "clicks": 7,
+        "impressions": 2100,
+        "impression_weighted_position": 5,
+        "baseline_ctr_numerator": 3,
+        "baseline_ctr_denominator": 100,
+        "minimum_impressions": 100
+      },
+      "data_source": {
+        "gsc": {
+          "source": "search-console",
+          "population": "google-search",
+          "unit": "search-performance",
+          "asOf": "2026-10-29",
+          "freshness": {
+            "cadence": "daily",
+            "carried": false,
+            "dataState": "final"
+          },
+          "property": "https://f1-stories.gr/",
+          "aggregation": "page",
+          "searchType": "web"
+        }
+      },
+      "exact_period": {
+        "gsc": {
+          "start": "2026-10-12",
+          "end": "2026-10-25",
+          "timezone": "America/Los_Angeles"
+        }
+      },
+      "metric_units": {
+        "clicks": "Google search clicks",
+        "impressions": "Google search impressions",
+        "impression_weighted_position": "average position",
+        "baseline_ctr": "ratio of numerator / denominator",
+        "minimum_impressions": "impressions"
+      },
+      "minimum_sample_status": "MET",
+      "confidence": "low",
+      "limitations": [
+        "Ανωνυμοποιημένα ερωτήματα και όρια εξαγωγής μπορεί να αποκρύπτουν στοιχεία· δεν υπολογίζεται σύνολο ιδιοκτησίας.",
+        "Η μέση θέση, η πρόθεση αναζήτησης και το μείγμα συσκευών επηρεάζουν το CTR.",
+        "Το CTR αναφοράς ανά ζώνη θέσης είναι μη βαθμονομημένο φίλτρο συντακτικού ελέγχου, όχι πρόβλεψη ή στατιστικό εύρημα.",
+        "Παρατηρησιακή ένδειξη για ανθρώπινο έλεγχο· η παραγωγική ορθότητα παραμένει NOT VERIFIED."
+      ],
+      "why_it_matters": "Το CTR βρίσκεται κάτω από το δηλωμένο φίλτρο της ζώνης θέσης, με επαρκείς εμφανίσεις για έλεγχο.",
+      "recommended_human_review": "Ελέγξτε χειροκίνητα την εμφάνιση στα αποτελέσματα και τη συνάφεια με την πρόθεση αναζήτησης.",
+      "counterevidence": [
+        "Υπάρχουν καταγεγραμμένα κλικ αναζήτησης· το άρθρο ήδη προσελκύει κάποια κλικ."
+      ],
+      "evidence_links": [
+        "https://f1-stories.gr/blog-module/blog-entries/20260222T/article.html",
+        "docs/intelligence/editorial-intelligence.md"
+      ]
+    }
+  ],
+  "abstentions": [
+    {
+      "type": "data_quality",
+      "subject": "SYNTHETIC missing evidence",
+      "status": "NOT VERIFIED",
+      "reason": "SYNTHETIC — Μικρό δείγμα· δεν εξάγεται ασφαλές συμπέρασμα."
+    }
+  ],
+  "synthetic": true,
+  "review_date": "2026-10-29"
+}

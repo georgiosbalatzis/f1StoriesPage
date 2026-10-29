@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "signals": {
+    "6074690a48b757fa082e1620": {
+      "decision": "deferred",
+      "date": "2026-10-27",
+      "note": "SYNTHETIC — μεταγενέστερος έλεγχος",
+      "until": "2026-10-28",
+      "history": [
+        {
+          "decision": "deferred",
+          "date": "2026-10-27",
+          "note": "SYNTHETIC — μεταγενέστερος έλεγχος",
+          "until": "2026-10-28"
+        }
+      ]
+    },
+    "SYNTHETIC-stale-id": {
+      "decision": "rejected",
+      "date": "2026-10-27",
+      "note": "SYNTHETIC — διατήρηση ιστορικού",
+      "history": [
+        {
+          "decision": "rejected",
+          "date": "2026-10-27",
+          "note": "SYNTHETIC — διατήρηση ιστορικού"
+        }
+      ]
+    }
+  }
+}
