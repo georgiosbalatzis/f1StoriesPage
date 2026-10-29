@@ -372,6 +372,26 @@
         }
         return !!scope.event.trim() && !!scope.season && !!scope.round && !!scope.session && !scope.period.start && !scope.period.end;
     }
+    function claimIssues(workspace, body) {
+        var issues = [];
+        (workspace && workspace.claims || []).forEach(function (claim) {
+            function add(code) { issues.push({ claimId: claim.id, code: code }); }
+            var anchor = claim.anchor, found = locateClaimAnchor(body, anchor), scope = claim.scope, numeric = claim.numeric;
+            if (!claim.text.trim()) add('claim-incomplete');
+            if (!anchor || anchor.quote !== claim.text || found.status !== 'found'
+                || body.slice(Math.max(0, found.start - anchor.prefix.length), found.start) !== anchor.prefix
+                || body.slice(found.end, found.end + anchor.suffix.length) !== anchor.suffix) add('claim-anchor');
+            if (numeric && (!numeric.metric.trim() || !/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(numeric.value)
+                || !numeric.units.trim() || !numeric.sample.trim() || !numeric.method.trim() || !numeric.originalValues.length
+                || numeric.originalValues.some(function (item) { return !item.label.trim() || !item.value.trim(); })
+                || ((scope.session === 'period' || scope.period.start || scope.period.end) && !completeScope(scope)))) add('numeric-invalid');
+            if (!completeScope(scope)) add('scope-missing');
+            if (claim.status === 'unreviewed' || claim.status === 'insufficient') add(numeric ? 'unsupported-number' : 'evidence-unresolved');
+            if (claim.status === 'disputed' || claim.sources.some(function (source) { return source.stance === 'contradicts'; })) add('evidence-disputed');
+            if (claim.status === 'stale' || (claim.review && claim.review.fingerprint !== claimFingerprint(claim))) add('review-stale');
+        });
+        return issues;
+    }
     function reviewable(claim, rationale) {
         var numeric = claim.numeric;
         return !!claim.text.trim() && !!rationale.trim() && claim.claimType !== 'unsupported-hypothesis'
@@ -949,7 +969,7 @@
     }
     global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, validateContentManifest: validateContentManifest, validateContentShard: validateContentShard, markdownLink: markdownLink, validateCatalog: validateCatalog,
         validateWorkspace: validateWorkspace, validateClaim: validateClaim, importResearch: importResearch, claimFingerprint: claimFingerprint,
-        assessClaim: assessClaim, reviewableClaim: reviewable, sourceKey: sourceKey, newClaimSource: newClaimSource, sourceGroups: sourceGroups, locateClaimAnchor: locateClaimAnchor,
+        claimIssues: claimIssues, assessClaim: assessClaim, reviewableClaim: reviewable, sourceKey: sourceKey, newClaimSource: newClaimSource, sourceGroups: sourceGroups, locateClaimAnchor: locateClaimAnchor,
         snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');
     if (panel) attach(panel, document.getElementById('research-toggle'), document.getElementById('archive-toggle'));

@@ -167,3 +167,7 @@ A search loads the public month shards only after the editor explicitly submits 
 The 17 shards total **4,733,653 bytes raw / 1,174,565 bytes gzip**; the manifest adds **2,569 / 1,090 bytes**. The largest shard, `2025-05.json`, is **540,086 bytes raw / 135,134 bytes gzip**. These are Node default-gzip measurements of the current build.
 
 Search covers rendered paragraphs, list items and headings. Authored tables, text in images and embedded tool contents are not covered. Matches and their passages are candidates for reading, not evidence, independent verification or proof of a relationship. Search results are not saved in the research workspace.
+
+## E-03: editorial quality preflight
+
+Step 5 offers advisory checks for registered claims only. Empty claim text, anchor consistency and numeric fields are mechanical checks. Scope completeness, unresolved or disputed evidence, and stale reviews depend on structured evidence supplied by the author. Optional prompts ask for human judgement about meaning, causality, predictions, population and method, independent sources and quotation rights. No check verifies truth or blocks publishing; unregistered prose is not scanned for numbers.

@@ -696,3 +696,28 @@ test('evidence controls keep keyboard focus through additions and removals', asy
     await card.getByRole('button', { name: 'Αφαίρεση', exact: true }).focus(); await page.keyboard.press('Enter');
     assert.equal(await page.locator('#research-new-claim').evaluate(node => node === document.activeElement), true);
 });
+
+test('step 5 advisories locate claims and fall back to their card across layouts', async t => {
+    const { page, external } = await pageFor(t); await open(page);
+    await page.locator('#gen-content').fill('Συνθετικός ισχυρισμός');
+    await page.locator('#gen-content').evaluate(node => node.setSelectionRange(0, node.value.length));
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Από την επιλογή του άρθρου' }).click();
+    await page.locator('.gb-step[data-step="4"]').click();
+    const advisories = page.locator('#gen-preflight-advisories');
+    assert.match(await advisories.textContent(), /evidence-unresolved/);
+    for (const width of [1440, 390]) for (const theme of ['light', 'dark']) {
+        await page.setViewportSize({ width, height: 1000 });
+        await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    const locate = advisories.getByRole('button', { name: 'Εντοπισμός' }).first();
+    await locate.focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#gen-content').evaluate(node => node.value.slice(node.selectionStart, node.selectionEnd)), 'Συνθετικός ισχυρισμός');
+    await page.locator('#gen-content').fill('Άλλο κείμενο');
+    await page.locator('.gb-step[data-step="4"]').click();
+    await advisories.getByRole('button', { name: 'Εντοπισμός' }).first().click();
+    assert.equal(await page.locator('details[id^="research-claim-"]').evaluate(node => node.open), true);
+    assert.deepEqual(external, []);
+});

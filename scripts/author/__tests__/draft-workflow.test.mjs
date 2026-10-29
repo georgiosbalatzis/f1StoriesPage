@@ -866,3 +866,16 @@ test('pending decision edits dirty a saved draft and survive save and reopen wit
     assert.equal(await card.locator('[id$="-rationale"]').inputValue(), 'Εκκρεμής αιτιολόγηση');
     assert.equal(await card.locator('[id$="-reviewer"]').inputValue(), 'Συνθετικός συντάκτης');
 });
+
+test('step 5 keeps required checks separate from advisory evidence', async t => {
+    const page = await pageFor(t);
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), true);
+    assert.match(await page.locator('#gen-review').textContent(), /Λείπει ο τίτλος/);
+    assert.match(await page.locator('#gen-preflight-advisories').textContent(), /Δεν έχουν καταγραφεί ισχυρισμοί/);
+    await setText(page, 'Συνθετικός τίτλος', 'Συνθετικό κείμενο χωρίς καταγεγραμμένους ισχυρισμούς.');
+    await step(page, 0); await setExcerpt(page, 'Μια συνθετική περιγραφή για τον έλεγχο της δημοσίευσης του άρθρου.');
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), false);
+    assert.match(await page.locator('#gen-preflight-advisories').textContent(), /Δεν έχουν καταγραφεί ισχυρισμοί/);
+});
