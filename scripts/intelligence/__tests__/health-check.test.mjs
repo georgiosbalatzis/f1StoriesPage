@@ -664,8 +664,13 @@ test('malicious run titles, logs, API errors and issue bodies never become publi
 
 const clockCases = [
     ['2026-03-28T12:00:00Z', '2026-03-28T01:00:00.000Z', '2026-03-27'],
-    ['2026-03-29T12:00:00Z', '2026-03-28T01:00:00.000Z', '2026-03-27'], // Athens spring gap: no 03:00 occurrence
+    ['2026-03-29T12:00:00Z', '2026-03-29T01:00:00.000Z', '2026-03-28'], // Athens spring gap: 04:00 instead
+    ['2027-03-28T00:59:59Z', '2027-03-27T01:00:00.000Z', '2027-03-26'], // before 04:00 Athens
+    ['2027-03-28T01:00:00Z', '2027-03-28T01:00:00.000Z', '2027-03-27'], // at 04:00 Athens
+    ['2027-03-28T14:00:00Z', '2027-03-28T01:00:00.000Z', '2027-03-27'], // 17:00 Athens
     ['2026-03-30T12:00:00Z', '2026-03-30T00:00:00.000Z', '2026-03-29'],
+    ['2026-10-25T00:30:00Z', '2026-10-25T00:00:00.000Z', '2026-10-24'], // before the repeated 03:00
+    ['2026-10-25T01:00:00Z', '2026-10-25T00:00:00.000Z', '2026-10-24'], // at the repeated 03:00
     ['2026-10-25T12:00:00Z', '2026-10-25T00:00:00.000Z', '2026-10-24'], // first of two 03:00 occurrences
     ['2026-10-26T12:00:00Z', '2026-10-26T01:00:00.000Z', '2026-10-25'],
     ['2026-03-08T12:00:00Z', '2026-03-08T01:00:00.000Z', '2026-03-07'], // LA spring
@@ -682,6 +687,35 @@ for (const [now, scheduledAt, asOf] of clockCases) {
         assert.equal(Date.parse(asOf) - Date.parse(window.end), 4 * 86400000);
     });
 }
+
+test('spring-forward missing run remains critical and cannot close an incident; 04:05 execution recovers', () => {
+    const value = evidence();
+    const now = '2027-03-28T14:00:00Z'; // 17:00 Athens, 13h after the shifted schedule.
+    const previousRun = '2027-03-27T01:05:00.000Z';
+    value.runs.value = [run(1, { created_at: previousRun, run_started_at: previousRun })];
+    value.operations = { 1: ok(operation({ asOf: '2027-03-26', observedAt: previousRun })) };
+    value.repoSnapshot = value.publicSnapshot = ok(envelope('2027-03-26', previousRun));
+    value.jobs[1] = ok([{ name: 'Commit the encrypted snapshot', conclusion: 'success' }]);
+    value.pagesRuns.value = [run(3, { event: 'workflow_dispatch', created_at: previousRun, run_started_at: previousRun })];
+    const issue = { number: 42, state: 'open', labels: [LABEL],
+        body: '<!-- intelligence-health:schedule-missing -->\n<!-- intelligence-health-state:CRITICAL -->' };
+    const missing = assess(value, now);
+    assert.equal(state(missing, 'schedule'), 'CRITICAL');
+    assert.equal(incident(missing, 'schedule-missing').recoveryObserved, false);
+    assert.ok(!planIncidents([issue], missing).some(item => item.category === 'schedule-missing' && item.type === 'close'));
+
+    const currentRun = '2027-03-28T01:05:00.000Z';
+    value.runs.value.unshift(run(2, { created_at: currentRun, run_started_at: currentRun }));
+    value.operations[2] = ok(operation({ asOf: '2027-03-27', observedAt: currentRun }));
+    value.repoSnapshot = value.publicSnapshot = ok(envelope('2027-03-27', currentRun));
+    value.pagesRuns.value = [run(3, { event: 'workflow_dispatch', created_at: currentRun, run_started_at: currentRun })];
+    const recovered = assess(value, now);
+    assert.equal(recovered.overall, 'HEALTHY');
+    assert.equal(state(recovered, 'schedule'), 'HEALTHY');
+    assert.doesNotMatch(recovered.components.schedule.detail, /delayed/);
+    assert.equal(planIncidents([issue], recovered).find(item => item.category === 'schedule-missing').type, 'close');
+});
+
 for (const [before, after, expectedBefore, expectedAfter] of [
     ['2026-03-08T09:59:59Z', '2026-03-08T10:00:00Z', '2026-03-08', '2026-03-08'],
     ['2026-11-01T08:59:59Z', '2026-11-01T09:00:00Z', '2026-11-01', '2026-11-01'],
