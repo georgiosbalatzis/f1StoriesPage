@@ -349,6 +349,7 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
     for (const width of [1440, 390]) {
         const { page } = await pageFor(t, width); await open(page);
         await page.locator('#research-question').fill('Hamilton'); await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click(); await page.waitForSelector('.gb-research-results li');
+        await page.waitForFunction(() => /προς έλεγχο|Δεν βρέθηκαν/.test(document.getElementById('research-status').textContent));
         await page.locator('details').filter({ has: page.locator('#research-season') }).evaluate(node => { node.open = true; });
         await page.locator('#research-season').selectOption('2026'); await page.locator('#research-round').selectOption('17'); await page.waitForSelector('#research-standing-entry');
         // Keep the notebook compact while retaining the selected round for the second capture.
@@ -365,6 +366,8 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
                     return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05) >= 4.5;
                 });
             });
+            // Measure layout, not scroll: earlier steps can scroll the page.
+            await page.evaluate(() => scrollTo({ top: 0, left: 0, behavior: 'instant' }));
             const box = await page.locator('#research-notebook').boundingBox(), writer = await page.locator('#gen-content').boundingBox();
             const dimensions = await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth }));
             assert.ok(dimensions.width <= dimensions.viewport, JSON.stringify(dimensions));
