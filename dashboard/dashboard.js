@@ -198,8 +198,8 @@
         entry.draw(entry.target, width);
     }
 
-    // One column per export day on a scale that reaches the sample threshold; a day without page views is an open
-    // circle, not a missing bar. Weekends (race weekends) are banded. The only line is the 7-day mean, drawn as a
+    // One column per export day on a scale that reaches the sample threshold; a column under it is tinted and outlined
+    // (the page's one "small sample" mark), and a day without page views is a grey baseline tick. Weekends (race weekends) are banded. The only line is the 7-day mean, drawn as a
     // step per day from the seventh day on: nothing is interpolated between raw daily values.
     function activityChart(target, rows, threshold, width) {
         var narrow = width < 520;
@@ -228,9 +228,9 @@
         var marks = chart.appendChild(shape('g', { class: 'dash-chart-marks' }));
         var bars = rows.map(function (row, i) {
             var center = (i + 0.5) * slotWidth, barHeight = row.page_view_events / max * plot;
-            if (!row.page_view_events) marks.appendChild(shape('circle', { cx: center.toFixed(1), cy: base - 4, r: 3, class: 'dash-zero' }));
+            if (!row.page_view_events) marks.appendChild(shape('line', { x1: (center - barWidth / 2).toFixed(1), x2: (center + barWidth / 2).toFixed(1), y1: base - 4, y2: base - 4, class: 'dash-zero' }));
             return marks.appendChild(shape('rect', { x: (center - barWidth / 2).toFixed(1), y: (base - barHeight).toFixed(1), width: barWidth.toFixed(1), height: barHeight.toFixed(1),
-                rx: Math.min(2, barWidth / 4).toFixed(1), class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' }));
+                class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' }));
         });
         if (rows.length >= 7) {
             var d = '';

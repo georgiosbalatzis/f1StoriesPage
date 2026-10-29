@@ -405,13 +405,14 @@ schema, encryption primitive, IAM permission, browser network origin, CSP or con
 - **Running-order rail:** a sticky rail at ≥ 1100 px, showing each section's status.
 - **Sections:** each has a reading column and a margin where its caveats sit, next to the figure they qualify.
 
-The visual system is IBM Plex Sans for all Greek text (sentence case, as on the site), Barlow Condensed for numerals
-only, square edges, hairline rules and no gradients, shadows or cards.
+The visual system is IBM Plex Sans for all Greek text (sentence case, as on the site), Barlow Condensed only for the
+band and section numerals (counts in tables are Plex with tabular figures), square edges, hairline rules and no gradients, shadows or cards.
 
 **Chart grammar.**
 
 - **Daily activity:** one accent column per export day, on a scale that always reaches the 30-event sample threshold,
-  which is drawn as a labelled dashed line over the columns. A day with zero views is an open circle. Weekends (race
+  which is drawn as a labelled dashed line over the columns. A column under 30 is tinted and outlined, the same
+  small-sample mark as the ranking bars; a day with zero views is a grey baseline tick. Square columns. Weekends (race
   weekends) are banded. The only line is the 7-day mean, drawn as a step per day from the seventh day on: nothing is
   interpolated between raw daily values. Pointer hover (or a tap) shows the day, its views and its 7-day mean. The
   columns sweep in once (not under reduced motion; a height-only resize does not replay it). The chart is drawn at its
@@ -425,7 +426,7 @@ only, square edges, hairline rules and no gradients, shadows or cards.
 - **Section to section:** a source × destination matrix of click counts, with a total column. Accent shading only helps
   find the larger cells, and empty pairs are dots.
 - **Core Web Vitals:** bullet rows for every metric × coverage class (never pooled), p75 against the good,
-  needs-improvement and poor zones in timing-screen sector colours (green, yellow, red), always named in a key. The
+  needs-improvement and poor zones in green, yellow and magenta-red (kept off the accent hue), always named in a key. The
   pointer marker is filled at 30 or more observations and hollow below.
 - **RUM checks:** an OK / Προσοχή ledger.
 

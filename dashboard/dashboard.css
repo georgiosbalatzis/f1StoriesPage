@@ -22,7 +22,7 @@
     /* Core Web Vitals zones, in timing-screen sector colours; always named in the key beside them. */
     --zone-good: #3ccf7e;
     --zone-mid: #f0c03a;
-    --zone-poor: #ff5d5d;
+    --zone-poor: #e0508f; /* magenta-leaning, so "poor" never reads as the accent */
     --zone-strength: 46%;
     --font-body: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
     --font-brand: 'Barlow Condensed', 'IBM Plex Sans', sans-serif;
@@ -43,8 +43,8 @@
     --accent-contrast: #f2eee4;
     --zone-good: #23854f;
     --zone-mid: #c8960f;
-    --zone-poor: #c4302b;
-    --zone-strength: 30%;
+    --zone-poor: #a51d5f;
+    --zone-strength: 44%;
     color-scheme: light;
 }
 
@@ -355,7 +355,7 @@ a { color: inherit; }
 .dash-class-table th:last-child, .dash-class-table td:last-child { padding-right: 0; }
 
 .dash-class-pos { width: 2rem; }
-td.dash-class-pos { font-family: var(--font-brand); font-weight: 700; font-size: 1.0625rem; line-height: 1.35; color: var(--text-secondary); }
+td.dash-class-pos { font-weight: 600; line-height: 1.35; color: var(--text-secondary); }
 .dash-class-name { display: block; font-weight: 600; line-height: 1.35; overflow-wrap: break-word; }
 .dash-class-meta { display: block; margin-top: 0.15rem; color: var(--text-secondary); font-size: 0.75rem; overflow-wrap: break-word; }
 .dash-class-extra-inline { display: none; }
@@ -369,7 +369,7 @@ td.dash-class-extra { color: var(--text-secondary); }
 .dash-scale-inline { display: none; margin-top: 0.4rem; }
 .dash-mark { fill: var(--accent); }
 /* Under the threshold: an outlined, tinted bar, still clearly the same series. */
-.dash-mark.is-small { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dash-mark.is-small, .dash-bar.is-small { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .dash-scale-base { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .dash-scale-threshold { stroke: var(--text-secondary); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 
@@ -393,7 +393,7 @@ td.dash-class-extra { color: var(--text-secondary); }
 }
 .dash-ledger-table td { padding: 0.5rem 0; border-bottom: 1px solid var(--border); vertical-align: baseline; }
 .dash-ledger-table .dash-ledger-value { width: 1%; padding-left: 1rem; text-align: right; white-space: nowrap; }
-.dash-ledger-table td.dash-ledger-value { font-family: var(--font-brand); font-size: 1.25rem; line-height: 1; color: var(--text-secondary); }
+.dash-ledger-table td.dash-ledger-value { font-weight: 600; color: var(--text-secondary); }
 .dash-ledger-table .is-adequate td.dash-ledger-value:not(.dash-ledger-extra) { color: var(--text-primary); }
 .dash-ledger-table td.dash-ledger-extra { font-family: var(--font-body); font-size: 0.875rem; }
 .dash-units, .dash-ledger-scale { display: block; max-width: 100%; height: auto; margin-top: 0.45rem; }
@@ -408,7 +408,7 @@ td.dash-class-extra { color: var(--text-secondary); }
 .dash-chart svg { touch-action: pan-y; cursor: crosshair; }
 .dash-bar { fill: var(--accent); }
 .dash-bar.is-active { fill: var(--text-primary); }
-.dash-zero { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.dash-zero { stroke: var(--text-secondary); stroke-width: 2; }
 .dash-weekend { fill: color-mix(in srgb, var(--text-primary) 6%, transparent); }
 .dash-trend { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-linejoin: round; }
 .dash-axis { stroke: var(--text-primary); stroke-width: 1; }
