@@ -185,3 +185,22 @@ test('all individual limits and closed nested records are enforced', () => {
         { ...c, anchor: { quote: 'x', prefix: '', suffix: 'x'.repeat(65), start: 0, end: 1 } }
     ]) assert.throws(() => api.validateClaim(bad));
 });
+
+test('pending decision migrates, is capped and cannot approve; weak locators cannot be reviewed', () => {
+    const old = review(claim()); delete old.pendingDecision;
+    const migrated = clone(api.validateClaim(old));
+    assert.deepEqual(migrated.pendingDecision, { rationale: old.review.rationale, reviewer: old.review.reviewer });
+    const pending = claim({ pendingDecision: { rationale: 'Εκκρεμεί', reviewer: 'Συντάκτης' } });
+    assert.equal(api.validateWorkspace(workspace([pending])).claims[0].status, 'unreviewed');
+    assert.throws(() => api.validateClaim({ ...pending, pendingDecision: { rationale: 'x'.repeat(4001), reviewer: '' } }));
+    assert.throws(() => api.validateClaim({ ...pending, pendingDecision: { rationale: '', reviewer: '', extra: 1 } }));
+    for (const kind of ['section', 'row']) for (const value of ['https://example.com/story', 'www.example.com/a', 'example.com/a', 'row', 'section', '  ']) {
+        const weak = claim({ sources: [source({ locator: { kind, value } })] });
+        assert.throws(() => review(weak), `${kind}: ${value}`);
+        const forged = clone(review(claim())); forged.sources[0].locator = { kind, value };
+        forged.review.fingerprint = api.claimFingerprint(forged);
+        assert.equal(api.validateWorkspace(workspace([forged])).claims[0].status, 'stale');
+        const imported = api.importResearch(envelope(workspace([forged]))).claims[0];
+        assert.equal(imported.status, 'stale'); assert.throws(() => review(imported));
+    }
+});

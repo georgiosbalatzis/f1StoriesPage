@@ -673,3 +673,24 @@ test('claim review imports are demoted and controls fit mobile and desktop theme
         }
     }
 });
+
+test('evidence controls keep keyboard focus through additions and removals', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const card = page.locator('details[id^="research-claim-"]');
+    await card.getByText('Πηγές & τεκμήρια', { exact: true }).click();
+    await card.getByRole('button', { name: 'Προσθήκη πηγής' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Πηγή'); assert.equal(await card.locator('[id$="-source-0-title"]').inputValue(), 'Πηγή');
+    await card.getByRole('button', { name: 'Αφαίρεση πηγής' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη πηγής' }).evaluate(node => node === document.activeElement), true);
+    await card.getByText('Αριθμητικά στοιχεία', { exact: true }).click();
+    await card.getByRole('button', { name: 'Προσθήκη αριθμητικών στοιχείων' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Metric'); assert.equal(await card.locator('[id$="-numeric-metric"]').inputValue(), 'Metric');
+    await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Value'); assert.equal(await card.locator('[id$="-original-0-label"]').inputValue(), 'Value');
+    await card.getByRole('button', { name: 'Αφαίρεση αρχικής τιμής' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).evaluate(node => node === document.activeElement), true);
+    await card.getByRole('button', { name: 'Αφαίρεση αριθμητικών στοιχείων' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη αριθμητικών στοιχείων' }).evaluate(node => node === document.activeElement), true);
+});

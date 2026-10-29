@@ -840,3 +840,29 @@ test('v1 research opens clean without a write and the next explicit save writes 
     const updated = await page.evaluate(async id => window.F1S_LOCAL_DRAFTS.get(id), old.id);
     assert.equal(updated.version, 1); assert.equal(updated.research.version, 2); assert.deepEqual(updated.research.claims, []);
 });
+
+test('pending decision edits dirty a saved draft and survive save and reopen without approval', async t => {
+    const page = await pageFor(t);
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const card = page.locator('details[id^="research-claim-"]');
+    await card.locator('[id$="-text"]').fill('Συνθετικός ισχυρισμός');
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.evaluate(() => document.querySelectorAll('#research-notebook details').forEach(node => { node.open = true; }));
+    await card.locator('[id$="-rationale"]').fill('Εκκρεμής αιτιολόγηση');
+    await card.locator('[id$="-reviewer"]').fill('Συνθετικός συντάκτης');
+    assert.match(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    const claim = await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0]);
+    assert.deepEqual(claim.pendingDecision, { rationale: 'Εκκρεμής αιτιολόγηση', reviewer: 'Συνθετικός συντάκτης' });
+    assert.equal(claim.status, 'unreviewed'); assert.equal(claim.review, null);
+    await step(page, 1); await page.locator('#research-toggle').click();
+    assert.equal(await card.locator('[id$="-rationale"]').inputValue(), 'Εκκρεμής αιτιολόγηση');
+    assert.equal(await card.locator('[id$="-reviewer"]').inputValue(), 'Συνθετικός συντάκτης');
+});

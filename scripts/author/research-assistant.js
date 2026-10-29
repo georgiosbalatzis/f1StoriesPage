@@ -322,7 +322,8 @@
             var range = /^(\d+)(?:\s*[-–]\s*(\d+))?$/.exec(value);
             return !!range && +range[1] > 0 && (!range[2] || +range[2] > +range[1]);
         }
-        if (locator.kind === 'section' || locator.kind === 'row') return value.replace(/\s/g, '').length >= 3 && /[\p{L}\p{N}]/u.test(value);
+        if (locator.kind === 'section' || locator.kind === 'row') return value.replace(/\s/g, '').length >= 3 && /[\p{L}\p{N}]/u.test(value)
+            && !/^(?:row|section|γραμμή|ενότητα)$/iu.test(value) && !/^(?:[a-z][a-z0-9+.-]*:\/\/|www\.|[^\s/]+\.[a-z]{2,}(?:[/:?#]|$))/i.test(value);
         return locator.kind === 'timestamp' && /^\d{2}:[0-5]\d:[0-5]\d(?:\.\d{1,3})?$/.test(value);
     }
     function sourceKey(url) {
@@ -380,7 +381,9 @@
                 && numeric.originalValues.every(function (item) { return !!item.label.trim() && !!item.value.trim(); })));
     }
     function validateClaim(value) {
-        if (!plain(value, ['id', 'text', 'anchor', 'claimType', 'status', 'sources', 'scope', 'numeric', 'review'])
+        var claimKeys = ['id', 'text', 'anchor', 'claimType', 'status', 'sources', 'scope', 'numeric', 'review'];
+        if (Object.hasOwn(value || {}, 'pendingDecision')) claimKeys.push('pendingDecision');
+        if (!plain(value, claimKeys)
             || typeof value.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value.id)
             || typeof value.text !== 'string' || value.text.length > 4000 || !CLAIM_TYPES.includes(value.claimType) || !CLAIM_STATUSES.includes(value.status)
             || !Array.isArray(value.sources) || value.sources.length > 8) invalidResearch();
@@ -416,7 +419,9 @@
         }
         var review = value.review === null ? null : strings(value.review, { rationale: 4000, reviewer: 100, reviewedAt: 64, fingerprint: 65536 });
         if (review && (!review.reviewedAt.includes('T') || !isoDate(review.reviewedAt))) invalidResearch();
-        var claim = { id: value.id, text: value.text, anchor: anchor, claimType: value.claimType, status: value.status, sources: sources, scope: scope, numeric: numeric, review: review };
+        var pendingDecision = Object.hasOwn(value, 'pendingDecision') ? strings(value.pendingDecision, { rationale: 4000, reviewer: 100 })
+            : { rationale: review ? review.rationale : '', reviewer: review ? review.reviewer : '' };
+        var claim = { id: value.id, text: value.text, anchor: anchor, claimType: value.claimType, status: value.status, sources: sources, scope: scope, numeric: numeric, review: review, pendingDecision: pendingDecision };
         if (review && review.fingerprint !== claimFingerprint(claim)) claim.status = 'stale';
         if (claim.status === 'reviewed-with-evidence' && (!review || !reviewable(claim, review.rationale))) claim.status = 'stale';
         return claim;
@@ -427,6 +432,7 @@
             || typeof reviewer !== 'string' || reviewer.length > 100 || (status === 'reviewed-with-evidence' && !reviewable(claim, rationale))) invalidResearch();
         claim.review = { rationale: rationale, reviewer: reviewer, reviewedAt: new Date().toISOString(), fingerprint: claimFingerprint(claim) };
         claim.status = status;
+        claim.pendingDecision = { rationale: rationale, reviewer: reviewer };
         return validateClaim(claim);
     }
     function validateWorkspace(value) {
@@ -635,12 +641,15 @@
             try { validateClaim(Object.assign({}, item, { anchor: selection })); } catch (_) { message('Η επιλογή δεν είναι έγκυρη.'); return; }
             item.anchor = selection; changed(); message('Η επιλογή συνδέθηκε με τον ισχυρισμό.');
         }
+        function focusClaimControl(id, name) {
+            // Fields get the 'research-' prefix from field(); buttons carry their own 'claim-' id.
+            var node = document.getElementById('research-claim-' + id + '-' + name) || document.getElementById('claim-' + id + '-' + name); if (node) node.focus();
+        }
         function renderClaims() {
             if (!claimList) return;
             Array.from(claimList.children).forEach(function (card) {
                 var id = card.id.slice('research-claim-'.length), rationale = card.querySelector('[id$="-rationale"]'), reviewer = card.querySelector('[id$="-reviewer"]');
-                if (rationale && reviewer) claimDrafts[id] = { rationale: rationale.value, reviewer: reviewer.value,
-                    open: Array.from(card.querySelectorAll('details')).map(function (node) { return node.open; }) };
+                if (rationale && reviewer) claimDrafts[id] = { open: Array.from(card.querySelectorAll('details')).map(function (node) { return node.open; }) };
             });
             claimList.replaceChildren();
             state.claims.forEach(function (item) {
@@ -665,24 +674,24 @@
                 function nested(title) { var node = el('details'); node.appendChild(el('summary', title)); card.appendChild(node); return node; }
                 input(card, 'text', 'Κείμενο ισχυρισμού', item, 'text', 4000, 'textarea');
                 var type = input(card, 'type', 'Τύπος ισχυρισμού', item, 'claimType', 0, 'select', claimTypeLabels);
-                type.addEventListener('change', function () { if (item.claimType === 'calculated-statistic' && !item.numeric) { item.numeric = emptyNumeric(); renderClaims(); changed(); openClaim(item.id); } });
+                type.addEventListener('change', function () { if (item.claimType === 'calculated-statistic' && !item.numeric) { item.numeric = emptyNumeric(); renderClaims(); changed(); focusClaimControl(item.id, 'type'); } });
                 var scope = nested('Πλαίσιο');
                 [['event', 'Γεγονός', 200], ['season', 'Σεζόν', 4], ['round', 'Γύρος', 2]].forEach(function (row) { input(scope, 'scope-' + row[0], row[1], item.scope, row[0], row[2]); });
                 input(scope, 'scope-session', 'Σκέλος', item.scope, 'session', 0, 'select', sessionLabels);
                 input(scope, 'period-start', 'Αρχή περιόδου (ISO)', item.scope.period, 'start', 64);
                 input(scope, 'period-end', 'Τέλος περιόδου (ISO)', item.scope.period, 'end', 64);
                 var numbers = nested('Αριθμητικά στοιχεία');
-                if (!item.numeric) numbers.appendChild(button('Προσθήκη αριθμητικών στοιχείων', function () { item.numeric = emptyNumeric(); updateStatus(); renderClaims(); changed(); }));
+                if (!item.numeric) { var addNumeric = button('Προσθήκη αριθμητικών στοιχείων', function () { item.numeric = emptyNumeric(); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'numeric-metric'); }); addNumeric.id = 'claim-' + item.id + '-add-numeric'; numbers.appendChild(addNumeric); }
                 else {
                     [['metric', 'Μέγεθος', 160], ['value', 'Αποτέλεσμα (δεκαδικό με τελεία)', 64], ['units', 'Μονάδες', 32], ['sample', 'Δείγμα', 500], ['method', 'Μέθοδος', 1000]].forEach(function (row) { input(numbers, 'numeric-' + row[0], row[1], item.numeric, row[0], row[2]); });
                     item.numeric.originalValues.forEach(function (value, index) {
                         var group = el('div'); numbers.appendChild(group);
                         input(group, 'original-' + index + '-label', 'Όνομα αρχικής τιμής', value, 'label', 100);
                         input(group, 'original-' + index + '-value', 'Αρχική τιμή (όπως γράφτηκε)', value, 'value', 200);
-                        group.appendChild(button('Αφαίρεση αρχικής τιμής', function () { item.numeric.originalValues.splice(index, 1); updateStatus(); renderClaims(); changed(); }));
+                        group.appendChild(button('Αφαίρεση αρχικής τιμής', function () { item.numeric.originalValues.splice(index, 1); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, item.numeric.originalValues.length ? 'original-' + Math.min(index, item.numeric.originalValues.length - 1) + '-label' : 'add-original'); }));
                     });
-                    numbers.appendChild(button('Προσθήκη αρχικής τιμής', function () { if (item.numeric.originalValues.length >= 20) { hint.textContent = 'Έως 20 αρχικές τιμές.'; return; } item.numeric.originalValues.push({ label: '', value: '' }); updateStatus(); renderClaims(); changed(); }));
-                    numbers.appendChild(button('Αφαίρεση αριθμητικών στοιχείων', function () { item.numeric = null; updateStatus(); renderClaims(); changed(); }));
+                    var addOriginal = button('Προσθήκη αρχικής τιμής', function () { if (item.numeric.originalValues.length >= 20) { hint.textContent = 'Έως 20 αρχικές τιμές.'; return; } item.numeric.originalValues.push({ label: '', value: '' }); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'original-' + (item.numeric.originalValues.length - 1) + '-label'); }); addOriginal.id = 'claim-' + item.id + '-add-original'; numbers.appendChild(addOriginal);
+                    numbers.appendChild(button('Αφαίρεση αριθμητικών στοιχείων', function () { item.numeric = null; updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'add-numeric'); }));
                 }
                 var evidence = nested('Πηγές & τεκμήρια');
                 var groups = el('p', '', 'gb-hint'); evidence.appendChild(groups);
@@ -702,15 +711,16 @@
                     input(group, 'source-' + index + '-excerpt', 'Σύντομο απόσπασμα — μόνο όπου επιτρέπεται', source, 'excerpt', 1000, 'textarea');
                     var independence = input(group, 'source-' + index + '-key', 'Δηλωμένο κλειδί ανεξαρτησίας', source, 'independenceKey', 200); independence.setAttribute('data-independence', ''); independence.addEventListener('input', showGroups);
                     input(group, 'source-' + index + '-stance', 'Σχέση με ισχυρισμό', source, 'stance', 0, 'select', { supports: 'Υποστηρίζει', contradicts: 'Αντικρούει', context: 'Πλαίσιο' });
-                    group.appendChild(button('Αφαίρεση πηγής', function () { item.sources.splice(index, 1); updateStatus(); renderClaims(); changed(); }));
+                    group.appendChild(button('Αφαίρεση πηγής', function () { item.sources.splice(index, 1); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, item.sources.length ? 'source-' + Math.min(index, item.sources.length - 1) + '-title' : 'add-source'); }));
                 });
-                evidence.appendChild(button('Προσθήκη πηγής', function () { if (item.sources.length >= 8) { hint.textContent = 'Έως 8 πηγές.'; return; } item.sources.push(newClaimSource('')); updateStatus(); renderClaims(); changed(); })); showGroups();
+                var addSource = button('Προσθήκη πηγής', function () { if (item.sources.length >= 8) { hint.textContent = 'Έως 8 πηγές.'; return; } item.sources.push(newClaimSource('')); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'source-' + (item.sources.length - 1) + '-title'); }); addSource.id = 'claim-' + item.id + '-add-source'; evidence.appendChild(addSource); showGroups();
                 var draft = claimDrafts[item.id];
                 if (draft) Array.from(card.querySelectorAll('details')).forEach(function (node, index) { node.open = !!draft.open[index]; });
-                var rationale = field(card, 'claim-' + item.id + '-rationale', 'Αιτιολόγηση απόφασης', 'textarea'); rationale.maxLength = 4000; rationale.value = draft ? draft.rationale : item.review ? item.review.rationale : '';
-                var reviewer = field(card, 'claim-' + item.id + '-reviewer', 'Συντάκτης ελέγχου (προαιρετικά)'); reviewer.maxLength = 100; reviewer.value = draft ? draft.reviewer : item.review ? item.review.reviewer : '';
-                rationale.addEventListener('input', changed); reviewer.addEventListener('input', changed);
-                card.appendChild(el('p', 'Η αιτιολόγηση και το όνομα καταγράφονται όταν επιλέξεις μια απόφαση ελέγχου.', 'gb-hint'));
+                var rationale = field(card, 'claim-' + item.id + '-rationale', 'Αιτιολόγηση απόφασης', 'textarea'); rationale.maxLength = 4000; rationale.value = item.pendingDecision.rationale;
+                var reviewer = field(card, 'claim-' + item.id + '-reviewer', 'Συντάκτης ελέγχου (προαιρετικά)'); reviewer.maxLength = 100; reviewer.value = item.pendingDecision.reviewer;
+                rationale.addEventListener('input', function () { item.pendingDecision.rationale = rationale.value; changed(); });
+                reviewer.addEventListener('input', function () { item.pendingDecision.reviewer = reviewer.value; changed(); });
+                card.appendChild(el('p', 'Η αιτιολόγηση και το όνομα αποθηκεύονται ως εκκρεμείς τιμές· η απόφαση καταγράφεται μόνο όταν την επιλέξεις.', 'gb-hint'));
                 function assess(status) { try { var checked = assessClaim(item, status, rationale.value, reviewer.value); state.claims[state.claims.indexOf(item)] = checked; renderClaims(); changed(); openClaim(checked.id); }
                     catch (_) { hint.textContent = 'Χρειάζεται αιτιολόγηση και, για έλεγχο, τίτλος, ασφαλής σύνδεσμος και έγκυρη θέση υποστηρικτικής πηγής. Τα αριθμητικά στοιχεία απαιτούν πλήρες πλαίσιο και τιμές.'; } }
                 card.append(button('Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια', function () { assess('reviewed-with-evidence'); }),
