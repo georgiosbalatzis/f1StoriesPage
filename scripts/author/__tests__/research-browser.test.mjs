@@ -585,6 +585,10 @@ test('full-text scoring yields and an edited query cancels the in-progress scan'
     await page.locator('#research-question').press('Enter');
     await page.waitForFunction(() => window.__researchYields > 0);
     await page.locator('#research-question').fill('');
-    await page.waitForTimeout(100);
+    // Wait until no scan is still yielding, so a scan that ignored the edit would have rendered by now.
+    await page.evaluate(async () => {
+        let last = -1;
+        while (window.__researchYields !== last) { last = window.__researchYields; await new Promise(resolve => setTimeout(resolve, 200)); }
+    });
     assert.equal(await page.locator('.gb-research-results li').count(), 0);
 });
