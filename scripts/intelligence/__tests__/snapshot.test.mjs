@@ -1,7 +1,7 @@
 // I-06B encrypted snapshot: schedule, window, cost guards, fail-closed paths, encryption and publication.
 // Synthetic data and generated keys only; no BigQuery, Google or GitHub request is ever made.
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -465,6 +465,101 @@ test('publication is idempotent, newer-only, and never replaces the snapshot wit
     assert.deepEqual(fs.readdirSync(path.dirname(file)), ['snapshot.json'], 'no temporary file is left behind');
 });
 
+test('operational telemetry always runs without blocking refresh or weakening publication gates', () => {
+    const steps = job('refresh').split('\n      - name: ').slice(1);
+    for (const name of ['Finalize operational metadata', 'Upload operational metadata']) {
+        const step = steps.find(value => value.startsWith(`${name}\n`));
+        assert.ok(step, name);
+        assert.match(step, /^ {8}if: \$\{\{ always\(\) \}\}$/m);
+        assert.match(step, /^ {8}continue-on-error: true$/m);
+    }
+    assert.equal(steps.filter(step => /continue-on-error:/.test(step)).length, 2);
+    assert.match(job('publish'), /needs\.refresh\.result == 'success' && needs\.refresh\.outputs\.envelope == 'true'/);
+});
+
+test('unwritable summaries preserve plan and refresh results, envelope output and original failures', async () => {
+    const root = tempRoot();
+    try {
+        const preload = path.join(root, 'fetch.mjs');
+        const blocked = path.join(root, 'private-telemetry-path');
+        fs.mkdirSync(blocked);
+        const results = Object.fromEntries(Object.entries(syntheticRows(WINDOW)).map(([model, rows]) => [model, queryResult(rows)]));
+        const dryRun = await fakeClient(WINDOW).dryRun();
+        fs.writeFileSync(preload, `import fs from 'node:fs';
+            const RealDate = Date;
+            globalThis.Date = class extends RealDate { constructor(...args) { super(...(args.length ? args : [${JSON.stringify(NOW.toISOString())}])); } };
+            const exists = fs.existsSync;
+            fs.existsSync = file => String(file).endsWith('dashboard/data/snapshot.json') ? false : exists(file);
+            const results = ${JSON.stringify(results)};
+            const queries = new Map();
+            globalThis.fetch = async (url, options) => {
+                const body = options.body && JSON.parse(options.body);
+                if (url.includes('/tables/')) return Response.json({});
+                if (body?.configuration?.dryRun) return Response.json(${JSON.stringify(dryRun)});
+                if (body?.jobReference) {
+                    const id = body.jobReference.jobId;
+                    const model = Object.keys(results).find(model => id.includes('_' + model.replaceAll('-', '_') + '_'));
+                    queries.set(id, results[model]);
+                    return Response.json({});
+                }
+                const id = url.match(/\\/(?:jobs|queries)\\/([^?]+)/)?.[1];
+                if (queries.has(id)) {
+                    if (url.includes('/queries/')) return Response.json(queries.get(id));
+                    return Response.json({ status: { state: 'DONE', ...(process.env.FAIL_QUERY ? { errorResult: { message: 'synthetic query failure' } } : {}) },
+                        statistics: { query: { totalBytesBilled: '10485760' } } });
+                }
+                throw new Error('test forbids unexpected network access');
+            };\n`);
+        const cli = (command, summaryPath, overrides = {}) => spawnSync(process.execPath,
+            ['--import', preload, 'scripts/intelligence/snapshot.mjs', command, '--mode=refresh', `--out=${path.join(root, 'snapshot.json')}`],
+            { env: { PATH: process.env.PATH, ...env(), ...overrides, ...(summaryPath ? { SNAPSHOT_SUMMARY_PATH: summaryPath } : {}) }, encoding: 'utf8' });
+        for (const [command, overrides, expected] of [
+            ['plan', {}, 0], ['plan', { DASHBOARD_SNAPSHOT_KEY: '' }, 1],
+            ['refresh', {}, 0], ['refresh', { FAIL_QUERY: 'true' }, 1]
+        ]) {
+            const baseline = cli(command, null, overrides);
+            assert.equal(baseline.status, expected, baseline.stderr);
+            const file = path.join(root, 'snapshot.json');
+            if (expected === 0 && command === 'refresh') {
+                assertEnvelope(fs.readFileSync(file, 'utf8'));
+                fs.unlinkSync(file);
+            }
+            const result = cli(command, blocked, overrides);
+            assert.equal(result.status, baseline.status, result.stderr);
+            assert.equal(result.stdout, baseline.stdout);
+            assert.ok(result.stderr.includes(baseline.stderr.trim()), 'original failure is retained');
+            assert.match(result.stderr, /Operational metadata unavailable/);
+            assert.ok(!result.stderr.includes(blocked), 'telemetry errors never reveal paths or provider data');
+            if (expected === 0 && command === 'refresh') {
+                assertEnvelope(fs.readFileSync(file, 'utf8'));
+                fs.unlinkSync(file);
+            }
+        }
+        for (const summaryPath of [blocked, path.join(blocked, 'missing', 'summary.json')]) {
+            const result = cli('finalize-summary', summaryPath);
+            assert.equal(result.status, 0, result.stderr);
+            assert.match(result.stderr, /Operational metadata unavailable/);
+            assert.ok(!result.stderr.includes(summaryPath));
+        }
+        const malformed = path.join(root, 'malformed.json');
+        fs.writeFileSync(malformed, 'private-malformed-telemetry');
+        const result = cli('finalize-summary', malformed);
+        assert.equal(result.status, 0, result.stderr);
+        assert.doesNotMatch(result.stderr, /private-malformed-telemetry/);
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+// GitHub rejects the whole workflow file (no job runs) when workflow- or job-level env uses a step-only context.
+test('workflow- and job-level env use only contexts GitHub allows there', () => {
+    const dir = path.join(REPO_ROOT, '.github/workflows');
+    for (const name of fs.readdirSync(dir).filter(file => /\.ya?ml$/.test(file))) {
+        const text = fs.readFileSync(path.join(dir, name), 'utf8');
+        for (const [, indent, body] of text.matchAll(/^( {0}| {4})env:\n((?:\1 {2}.*\n)+)/gm)) {
+            assert.doesNotMatch(body, /\$\{\{[^}]*\b(?:runner|steps|job|env)\./, `${name}: ${indent.length ? 'job' : 'workflow'}-level env uses a step-only context`);
+        }
+    }
+});
+
 test('the workflow keeps credentials, writes and deploys in separate least-privilege jobs', () => {
     assert.match(workflow, /^permissions: \{\}$/m);
     assert.match(workflow, /^concurrency:\n {2}group: intelligence-snapshot\n {2}cancel-in-progress: false$/m);
@@ -484,8 +579,8 @@ test('the workflow keeps credentials, writes and deploys in separate least-privi
     assert.match(steps[authIndex], /token_format: access_token\n[\s\S]*create_credentials_file: false\n\s+export_environment_variables: false/);
     assert.doesNotMatch(workflow, /credentials_json|GOOGLE_APPLICATION_CREDENTIALS|secrets\.GITHUB_TOKEN|secrets\.[A-Z_]*PAT/);
     assert.doesNotMatch(refreshJob, /npm (?:ci|install)|uses: \.\/\.github\/actions\/setup/);
-    // Only the encrypted envelope is uploaded.
-    assert.deepEqual([...workflow.matchAll(/\n\s+path: ([^\n]+)/g)].map(m => m[1]), ['${{ runner.temp }}/snapshot.json', '${{ runner.temp }}/snapshot']);
+    // Only the envelope and the allowlisted operational metadata are uploaded; no plaintext analytics.
+    assert.deepEqual([...workflow.matchAll(/\n\s+path: ([^\n]+)/g)].map(m => m[1]), ['${{ runner.temp }}/snapshot.json', '${{ runner.temp }}/intelligence-operation.json', '${{ runner.temp }}/snapshot']);
 
     // Publication: the content publishers' lock, the shared commit helper, only the snapshot path.
     assert.match(publishJob, /needs\.refresh\.outputs\.envelope == 'true'/);
@@ -510,6 +605,9 @@ test('no other workflow can reach Google credentials or the snapshot key; pull r
         const text = read(`.github/workflows/${file}`);
         assert.doesNotMatch(text, /google-github-actions|DASHBOARD_SNAPSHOT_KEY|INTELLIGENCE_|intelligence-snapshots|bigquery/i, file);
     }
+    const health = read('.github/workflows/intelligence-health.yml');
+    assert.doesNotMatch(health, /id-token|environment:|secrets\.|actions: write|contents: write/);
+    assert.match(health, /run: node scripts\/intelligence\/health-check\.mjs/);
     assert.doesNotMatch(workflow, /pull_request|push:|workflow_run|repository_dispatch/);
 });
 
