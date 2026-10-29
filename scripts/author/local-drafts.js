@@ -19,6 +19,16 @@
                 : 'Δεν ήταν δυνατή η πρόσβαση στα τοπικά πρόχειρα. Δοκίμασε ξανά χωρίς να καθαρίσεις τα δεδομένα του ιστοτόπου.', error);
     }
 
+    function research(value) {
+        if (value === undefined || value === null) return null;
+        try {
+            if (!global.F1S_RESEARCH || !global.F1S_RESEARCH.validateWorkspace) throw new Error();
+            return global.F1S_RESEARCH.validateWorkspace(value);
+        } catch (_) {
+            throw failure('corrupt', 'Μη αναγνώσιμη έρευνα (RESEARCH_INVALID). Διατήρησε τα δεδομένα του browser και κράτησε ιδιωτικό αντίγραφο για ανάκτηση. Εξήγαγε πρώτα κάθε αναγνώσιμο σημειωματάριο.');
+        }
+    }
+
     // Explicit fields keep credentials and unrelated editor/session objects out of IndexedDB.
     function record(input, previous) {
         var now = new Date().toISOString();
@@ -36,7 +46,7 @@
             version: 1, id: previous ? previous.id : global.crypto.randomUUID(),
             createdAt: previous ? previous.createdAt : now, updatedAt: now,
             title: String(input.title || ''), author: String(input.author || ''), category: String(input.category || ''),
-            tags: String(input.tags || ''), text: String(input.text || ''), metadata: metadata,
+            tags: String(input.tags || ''), text: String(input.text || ''), metadata: metadata, research: research(input.research),
             hero: image(input.hero), banner: image(input.banner), images: (input.images || []).map(image),
             // The ordered array is the marker map: slot 3 corresponds to the first marker, etc.
             editor: { step: Math.max(0, Math.min(4, Number(input.editor && input.editor.step) || 0)),
@@ -78,22 +88,23 @@
         var db = await open();
         return new Promise(function (resolve, reject) {
             var result;
-            var tx;
+            var tx, actionError;
             try {
                 tx = db.transaction(STORE, mode);
-                action(tx.objectStore(STORE), function (value) { result = value; });
+                action(tx.objectStore(STORE), function (value) { result = value; }, function (error) { actionError = error; tx.abort(); });
             } catch (error) { db.close(); reject(storageError(error)); return; }
             tx.oncomplete = function () { db.close(); resolve(result); };
-            tx.onabort = tx.onerror = function () { db.close(); reject(storageError(tx.error)); };
+            tx.onabort = tx.onerror = function () { db.close(); reject(actionError || storageError(tx.error)); };
         });
     }
 
     async function save(input, id) {
         record(input, { id: 'validation', createdAt: new Date().toISOString() }); // Validate before asynchronous request callbacks; open() checks browser support.
         // Read and write in one transaction so an update cannot become a duplicate draft.
-        return transaction('readwrite', function (store, done) {
+        return transaction('readwrite', function (store, done, fail) {
             function put(previous) {
                 if (id && !previous) { store.transaction.abort(); return; }
+                if (previous) research(previous.research);
                 var value = record(input, previous);
                 store.put(value);
                 done(value);
@@ -102,7 +113,7 @@
             else {
                 var request = store.get(id);
                 request.onsuccess = function () {
-                    try { put(request.result); } catch (_) { store.transaction.abort(); }
+                    try { put(request.result); } catch (error) { fail(error && error.code === 'corrupt' ? error : storageError(error)); }
                 };
             }
         });

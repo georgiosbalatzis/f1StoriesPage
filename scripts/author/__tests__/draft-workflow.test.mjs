@@ -82,13 +82,21 @@ test('storage quota, aborted transactions, corrupt records and database/unsuppor
     const page = await pageFor(t);
     const codes = await page.evaluate(async () => {
         const api = window.F1S_LOCAL_DRAFTS, results = [];
+        const research = { version: 1, question: 'Συνθετική έρευνα', anchor: '', season: '', round: '', notes: [], form: { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' } };
         const put = IDBObjectStore.prototype.put;
         IDBObjectStore.prototype.put = function () { throw new DOMException('Full', 'QuotaExceededError'); };
-        try { await api.save({ text: 'κείμενο' }); } catch (error) { results.push(error.code); }
+        try { await api.save({ text: 'κείμενο', research }); } catch (error) { results.push(error.code); }
         IDBObjectStore.prototype.put = function (value) { const request = put.call(this, value); this.transaction.abort(); return request; };
-        try { await api.save({ text: 'κείμενο' }); } catch (error) { results.push(error.code); }
+        try { await api.save({ text: 'κείμενο', research }); } catch (error) { results.push(error.code); }
         IDBObjectStore.prototype.put = put;
         results.push((await api.list()).length);
+        // Updating an existing draft reports the same localized quota error as creating one, and keeps the stored record.
+        const kept = await api.save({ text: 'κείμενο', research });
+        IDBObjectStore.prototype.put = function () { throw new DOMException('Full', 'QuotaExceededError'); };
+        try { await api.save({ text: 'νέο', research }, kept.id); } catch (error) { results.push(error.code); }
+        IDBObjectStore.prototype.put = put;
+        results.push((await api.get(kept.id)).text);
+        await api.remove(kept.id);
         await new Promise((resolve, reject) => {
             const request = indexedDB.open('f1stories-author-drafts', 1);
             request.onsuccess = () => { const db = request.result, tx = db.transaction('drafts', 'readwrite'); tx.objectStore('drafts').put({ id: 'broken', title: '<img onerror=alert(1)>' }); tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject; };
@@ -103,7 +111,7 @@ test('storage quota, aborted transactions, corrupt records and database/unsuppor
         try { await api.list(); } catch (error) { results.push(error.code); }
         return results;
     });
-    assert.deepEqual(codes, ['quota', 'storage', 0, 'corrupt', true, 'storage', 'unsupported']);
+    assert.deepEqual(codes, ['quota', 'storage', 0, 'quota', 'κείμενο', 'corrupt', true, 'storage', 'unsupported']);
 });
 
 test('save/reopen/edit/delete restores every editor image and never makes GitHub requests', async t => {
@@ -209,17 +217,20 @@ test('edits made during a save remain visibly unsaved and update the same draft 
         };
     });
     await setText(page, 'Αρχικός τίτλος', 'Κείμενο πριν από την αποθήκευση.');
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.locator('#research-question').fill('Πριν την αποθήκευση');
     await step(page, 4); await page.locator('#gen-save-draft').click();
     await page.waitForFunction(() => Boolean(window.__finishDraftSave));
     await setText(page, 'Νεότερος τίτλος', 'Κείμενο που γράφτηκε ενώ αποθηκευόταν.');
+    await step(page, 1); await page.locator('#research-question').fill('Μετά την αποθήκευση'); await step(page, 4);
     await page.evaluate(() => window.__finishDraftSave());
     await saved(page);
     assert.match(await page.locator('#gen-draft-status').textContent(), /νεότερες μη αποθηκευμένες αλλαγές/);
     const before = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0]);
-    assert.equal(before.title, 'Αρχικός τίτλος');
+    assert.equal(before.title, 'Αρχικός τίτλος'); assert.equal(before.research.question, 'Πριν την αποθήκευση');
     await page.locator('#gen-save-draft').click(); await saved(page);
     const after = await page.evaluate(async () => await window.F1S_LOCAL_DRAFTS.list());
-    assert.equal(after.length, 1); assert.equal(after[0].id, before.id); assert.equal(after[0].title, 'Νεότερος τίτλος');
+    assert.equal(after.length, 1); assert.equal(after[0].id, before.id); assert.equal(after[0].title, 'Νεότερος τίτλος'); assert.equal(after[0].research.question, 'Μετά την αποθήκευση');
 });
 
 test('only explicit publish from a saved draft retains author/blog PR behavior and keeps the draft', async t => {
@@ -237,11 +248,40 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
         else data = { sha: 'mock-sha' };
         await route.fulfill({ json: data });
     });
+    const canary = 'SYNTHETIC_E01_CANARY_42891';
+    await page.evaluate(() => { localStorage.setItem('f1stories-cookie-consent-v1', JSON.stringify({ analytics: true })); window.__events = []; window.gtag = (...args) => window.__events.push(args); });
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.locator('details').filter({ has: page.locator('#research-note-text') }).evaluate(node => { node.open = true; });
+    await page.locator('#research-note-text').fill(canary);
+    await page.getByRole('button', { name: 'Προσθήκη σημείωσης', exact: true }).click();
+    await page.locator('#research-import').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{' + canary) });
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('δεν είναι έγκυρο'));
+    await page.evaluate(async () => {
+        const put = IDBObjectStore.prototype.put;
+        IDBObjectStore.prototype.put = function () { throw new DOMException('Full', 'QuotaExceededError'); };
+        try { await window.F1S_LOCAL_DRAFTS.save({ research: window.F1S_RESEARCH_NOTEBOOK.snapshot() }); } catch (_) {}
+        finally { IDBObjectStore.prototype.put = put; }
+        sessionStorage.removeItem('f1s-err-count');
+        const reason = new Error('synthetic failure'), promise = Promise.reject(reason); promise.catch(() => {});
+        window.dispatchEvent(new PromiseRejectionEvent('unhandledrejection', { promise, reason }));
+    });
+    assert.ok((await page.evaluate(() => window.__events.length)) > 0);
     await setText(page, 'Άρθρο από πρόχειρο', 'Κείμενο για άμεση δημοσίευση.');
-    await setExcerpt(page, 'Η ανάλυση του αγώνα: γιατί η McLaren & η Mercedes «χάνουν» χρόνο στα φρένα;');
+    await step(page, 0); await setExcerpt(page, 'Η ανάλυση του αγώνα: γιατί η McLaren & η Mercedes «χάνουν» χρόνο στα φρένα;');
     await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
     await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
+    await step(page, 3); await page.waitForFunction(() => Boolean(window.F1S_ARTICLE_PREVIEW));
+    await page.evaluate(() => { const original = window.F1S_ARTICLE_PREVIEW.render; window.F1S_ARTICLE_PREVIEW.render = async state => { window.__previewInput = JSON.stringify(state); return original(state); }; });
     await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    const savedResearch = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].research);
+    assert.ok(JSON.stringify(savedResearch).includes(canary));
+    await step(page, 3); await page.waitForFunction(() => window.__previewInput !== undefined);
+    assert.ok(!(await page.evaluate(() => window.__previewInput)).includes(canary));
+    assert.ok(!(await page.locator('#gen-article-preview').getAttribute('srcdoc')).includes(canary));
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    const [archive] = await Promise.all([page.waitForEvent('download'), page.locator('#gen-export-btn').click()]);
+    const zip = await JSZip.loadAsync(fs.readFileSync(await archive.path()));
+    for (const entry of Object.values(zip.files)) if (!entry.dir) assert.ok(!(await entry.async('nodebuffer')).includes(Buffer.from(canary)));
     assert.deepEqual(calls, []);
     await page.locator('#gen-publish-btn').click();
     await page.getByRole('dialog').getByRole('textbox').fill('dummy-token-only-for-tests');
@@ -257,6 +297,11 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     assert.equal(calls.filter(call => call.suffix === '/pulls' && call.method === 'POST').length, 1);
     assert.ok(calls.some(call => call.suffix === '/git/commits' && call.method === 'POST'));
     assert.ok(!JSON.stringify(calls).includes('f1s-publish-at'));
+    assert.ok(!JSON.stringify(calls).includes(canary));
+    for (const call of calls.filter(value => value.suffix === '/git/blobs' && value.body?.encoding === 'base64')) assert.ok(!Buffer.from(call.body.content, 'base64').includes(Buffer.from(canary)));
+    assert.ok(!JSON.stringify(await page.evaluate(() => window.__events)).includes(canary));
+    assert.deepEqual(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].research), savedResearch);
+    assert.deepEqual(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), savedResearch);
     assert.ok(!calls.some(call => /actions|deploy|merge/.test(call.suffix)));
     assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).length), 1);
     assert.match(await page.locator('#gen-result').innerText(), /Η δημοσίευση εκκρεμεί/);
@@ -619,4 +664,133 @@ test('CSV cards, desktop view switching and compact tables retain their behavior
             }
         }
     }
+});
+
+test('old v1 records open empty without rewriting or dirtying an untouched editor', async t => {
+    const page = await pageFor(t);
+    assert.equal(await page.evaluate(() => window.F1S_DRAFT_MANAGER !== undefined), true);
+    await step(page, 1); await page.locator('#research-toggle').click();
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    assert.doesNotMatch(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+    const old = await page.evaluate(async () => {
+        const record = await window.F1S_LOCAL_DRAFTS.save({ title: 'Παλαιό', text: 'Κείμενο', editor: { step: 1 } });
+        delete record.research;
+        await new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
+            const db = request.result, tx = db.transaction('drafts', 'readwrite'); tx.objectStore('drafts').put(record);
+            tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject;
+        }; }); return record;
+    });
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    assert.deepEqual(await page.evaluate(async id => window.F1S_LOCAL_DRAFTS.get(id), old.id), old);
+    assert.doesNotMatch(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+});
+
+test('corrupt research is unreadable and a corrupted previous record cannot be overwritten', async t => {
+    const page = await pageFor(t);
+    const id = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.save({ title: 'Αποθηκευμένο', text: 'Κείμενο', editor: { step: 4 } })).id);
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    const corrupted = await page.evaluate(async id => {
+        const record = await window.F1S_LOCAL_DRAFTS.get(id); record.research = { version: 99, secret: 'synthetic' };
+        await new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
+            const db = request.result, tx = db.transaction('drafts', 'readwrite'); tx.objectStore('drafts').put(record);
+            tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject;
+        }; }); return record;
+    }, id);
+    await setText(page, 'Τρέχον', 'Δεν πρέπει να χαθεί'); await page.locator('#gen-save-draft').click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.includes('RESEARCH_INVALID'));
+    const stored = await page.evaluate(async id => new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
+        const db = request.result, tx = db.transaction('drafts'), get = tx.objectStore('drafts').get(id); get.onsuccess = () => { db.close(); resolve(get.result); }; get.onerror = reject;
+    }; }), id);
+    assert.deepEqual(stored, corrupted);
+    assert.equal((await page.evaluate(async () => window.F1S_LOCAL_DRAFTS.list()))[0].corrupt, true);
+    await page.locator('#gen-show-drafts').click();
+    await page.waitForFunction(() => !document.getElementById('gen-drafts').hidden);
+    assert.match(await page.locator('#gen-draft-list').textContent(), /Μη αναγνώσιμ/);
+    assert.equal(await page.locator('#gen-draft-list').getByRole('button', { name: 'Άνοιγμα' }).isDisabled(), true);
+    await page.locator('#gen-return-editor').click(); assert.equal(await page.locator('#gen-title').inputValue(), 'Τρέχον');
+});
+
+test('new, ZIP replacement and deleting an open draft isolate research', async t => {
+    const page = await pageFor(t);
+    await step(page, 1); await page.locator('#research-toggle').click(); await page.locator('#research-question').fill('Έρευνα μόνο');
+    await page.locator('#gen-new-draft').click(); await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια χωρίς αποθήκευση' }).click();
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    await step(page, 1); if (!(await page.locator('#research-notebook').isVisible())) await page.locator('#research-toggle').click();
+    await page.locator('#research-question').fill('Έρευνα πριν ZIP');
+    const archive = new JSZip(); archive.file('test/source.txt', '---\ntitle: Από ZIP\ncategory: Analysis\ntags: test\n---\n\nΚείμενο ZIP.');
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await archive.generateAsync({ type: 'nodebuffer' }) });
+    assert.match(await page.getByRole('dialog').textContent(), /έρευνα/);
+    await page.getByRole('dialog').getByRole('button', { name: /Συνέχεια|OK/ }).click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'Από ZIP');
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), null);
+    await step(page, 1); if (!(await page.locator('#research-notebook').isVisible())) await page.locator('#research-toggle').click();
+    await page.locator('#research-question').fill('Έρευνα που μένει στη μνήμη');
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Διαγραφή: Από ZIP' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Διαγραφή', exact: true }).click();
+    await page.waitForFunction(async () => (await window.F1S_LOCAL_DRAFTS.list()).length === 0);
+    await page.locator('#gen-return-editor').click();
+    assert.equal(await page.locator('#gen-title').inputValue(), 'Από ZIP');
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().question), 'Έρευνα που μένει στη μνήμη');
+    await page.locator('#gen-new-draft').click(); assert.equal(await page.getByRole('dialog').isVisible(), true);
+});
+
+// Holds the ZIP read until the test releases it, so another action can run while an import is in flight.
+async function holdZipRead(page) {
+    await page.evaluate(async () => {
+        await window.F1S_AUTHOR_DOM_TOOLS.loadJSZip();
+        const load = JSZip.loadAsync.bind(JSZip);
+        JSZip.loadAsync = async (...args) => { await new Promise(resolve => { window.__releaseZip = resolve; }); return load(...args); };
+    });
+}
+async function startZipImport(page, files) {
+    const archive = new JSZip(); for (const [name, text] of Object.entries(files)) archive.file(name, text);
+    if (!(await page.locator('#gen-import-input').isVisible())) await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await archive.generateAsync({ type: 'nodebuffer' }) });
+    await page.getByRole('dialog').getByRole('button', { name: /Συνέχεια|OK/ }).click();
+    await page.waitForFunction(() => Boolean(window.__releaseZip));
+}
+
+test('a save that finishes after a ZIP replaced the editor never rebinds or overwrites the previous draft', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Πρόχειρο Α', 'Κείμενο Α.');
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await holdZipRead(page);
+    await page.evaluate(() => {
+        const save = window.F1S_LOCAL_DRAFTS.save;
+        let first = true;
+        window.F1S_LOCAL_DRAFTS.save = async (...args) => {
+            const result = await save(...args);
+            if (first) { first = false; await new Promise(resolve => { window.__finishDraftSave = resolve; }); }
+            return result;
+        };
+    });
+    await startZipImport(page, { 'test/source.txt': '---\ntitle: Από ZIP\ncategory: Analysis\ntags: test\n---\n\nΚείμενο ZIP.' });
+    await page.locator('#gen-save-draft').click(); await page.waitForFunction(() => Boolean(window.__finishDraftSave));
+    await page.evaluate(() => window.__releaseZip());
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'Από ZIP');
+    await page.evaluate(() => window.__finishDraftSave());
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.includes('δεν έχει αποθηκευτεί'));
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    const titles = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list()).map(draft => draft.title).sort());
+    assert.deepEqual(titles, ['Από ZIP', 'Πρόχειρο Α'].sort());
+});
+
+test('a ZIP import that fails after the author moved to another draft leaves that draft untouched', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Πρόχειρο Α', 'Κείμενο Α.');
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await holdZipRead(page);
+    await startZipImport(page, { 'test/readme.txt': 'χωρίς source.txt' });
+    await page.locator('#gen-new-draft').click();
+    await page.waitForFunction(() => document.getElementById('gen-title').value === '');
+    await page.evaluate(() => window.__releaseZip());
+    await page.waitForTimeout(300);
+    assert.equal(await page.getByRole('dialog').isVisible(), false);
+    assert.equal(await page.locator('#gen-import-text').textContent(), 'Συνέχεια από ZIP');
+    assert.equal(await page.locator('#gen-title').inputValue(), '');
 });

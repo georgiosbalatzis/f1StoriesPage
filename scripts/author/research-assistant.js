@@ -173,6 +173,47 @@
         if (note.kind === 'odds' && note.verification === 'checked' && (!note.market.trim() || !note.sourceDate.includes('T'))) throw new Error('Η ιστορική απόδοση απαιτεί αγορά, πηγή και χρονοσφραγίδα με ζώνη ώρας.');
         return note;
     }
+    var NOTE_FIELDS = ['text', 'section', 'type', 'kind', 'verification', 'sourceTitle', 'url', 'sourceDate', 'event', 'market', 'units', 'period', 'calculation', 'limitations'];
+    function blankForm() {
+        return { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' };
+    }
+    function blankWorkspace() { return { version: 1, question: '', anchor: '', season: '', round: '', notes: [], form: blankForm() }; }
+    function plain(value, keys) {
+        return value && Object.prototype.toString.call(value) === '[object Object]'
+            && (Object.getPrototypeOf(value) === null || Object.getPrototypeOf(Object.getPrototypeOf(value)) === null)
+            && Object.keys(value).length === keys.length && keys.every(function (key) { return Object.hasOwn(value, key); });
+    }
+    function utf8Size(value) {
+        var size = 0;
+        for (var char of value) { var code = char.codePointAt(0); size += code < 128 ? 1 : code < 2048 ? 2 : code < 65536 ? 3 : 4; }
+        return size;
+    }
+    function validateWorkspace(value) {
+        if (value === null) return null;
+        function invalid() { throw new Error('Μη έγκυρα δεδομένα σημειωματαρίου.'); }
+        if (!plain(value, ['version', 'question', 'anchor', 'season', 'round', 'notes', 'form']) || value.version !== 1
+            || typeof value.question !== 'string' || value.question.length > 2000 || typeof value.anchor !== 'string' || value.anchor.length > 200
+            || typeof value.season !== 'string' || (value.season && (!/^\d{4}$/.test(value.season) || +value.season < 1950 || +value.season > 2100))
+            || typeof value.round !== 'string' || (value.round && (!value.season || !/^(?:[1-9]|[12]\d|30)$/.test(value.round)))
+            || !Array.isArray(value.notes) || value.notes.length > 500 || utf8Size(JSON.stringify({ format: 'f1stories-research', version: 1, research: value })) > 2 * 1024 * 1024) invalid();
+        function fields(input, completed) {
+            if (!plain(input, NOTE_FIELDS)) invalid();
+            var output = {};
+            NOTE_FIELDS.forEach(function (key) {
+                var limit = key === 'text' || key === 'limitations' ? 12000 : 2000;
+                if (typeof input[key] !== 'string' || input[key].length > limit) invalid();
+                output[key] = input[key];
+            });
+            if (!Object.hasOwn(SECTIONS, output.section) || !Object.hasOwn(TYPES, output.type) || !Object.hasOwn(KINDS, output.kind)
+                || !['pending', 'checked'].includes(output.verification)) invalid();
+            if (completed) { try { validateNote(Object.assign({}, output)); } catch (_) { invalid(); } }
+            return output;
+        }
+        var result = { version: 1, question: value.question, anchor: value.anchor, season: value.season, round: value.round,
+            // Array.from, not map: a hole in a damaged stored array becomes undefined and fails, instead of being skipped.
+            notes: Array.from(value.notes, function (note) { return fields(note, true); }), form: fields(value.form, false) };
+        return JSON.stringify(result) === JSON.stringify(blankWorkspace()) ? null : result;
+    }
     function noteText(note) {
         return [note.text, 'Τύπος: ' + TYPES[note.type] + ' · ' + KINDS[note.kind],
             'Έλεγχος συντάκτη: ' + (note.verification === 'checked' ? 'Ρητά επαληθευμένο από τον συντάκτη' : 'Εκκρεμεί'),
@@ -194,6 +235,41 @@
     function attach(panel, toggle, archive) {
         // decoded: the eligible posts of each loaded index, so repeated searches rank without decoding again.
         var notes = [], cache = new Map(), decoded = new WeakMap(), catalog, searchRevision = 0, standingRevision = 0, initialized = false;
+        var state = blankWorkspace(), epoch = 0, listeners = [], exportButton;
+        function snapshotWorkspace() {
+            if (initialized) {
+                state.question = question.value; state.anchor = anchor.value; state.season = season.value; state.round = round.value;
+                state.notes = notes; Object.keys(fields).forEach(function (key) { state.form[key] = fields[key].value; });
+            }
+            var copy = JSON.parse(JSON.stringify(state));
+            return JSON.stringify(copy) === JSON.stringify(blankWorkspace()) ? null : copy;
+        }
+        function changed() {
+            try { if (exportButton) exportButton.disabled = !snapshotWorkspace(); listeners.slice().forEach(function (fn) { fn(); }); }
+            catch (_) { if (exportButton) exportButton.disabled = true; message('Το σημειωματάριο είναι υπερβολικά μεγάλο ή μη έγκυρο.'); }
+        }
+        function selectValue(node, value) {
+            if (value && !Array.from(node.options).some(function (option) { return option.value === value; })) {
+                var option = el('option', value + ' (μη διαθέσιμο)'); option.value = value; node.appendChild(option);
+            }
+            node.value = value;
+        }
+        function paintState() {
+            question.value = state.question; anchor.value = state.anchor;
+            selectValue(season, state.season); setRounds(state.round);
+            notes = state.notes; Object.keys(fields).forEach(function (key) { fields[key].value = state.form[key]; });
+            hits = []; articles.replaceChildren(); more.hidden = true; standings.replaceChildren();
+            fallback.value = ''; fallback.hidden = true; status.textContent = ''; formStatus.textContent = ''; renderNotes();
+            if (exportButton) exportButton.disabled = !snapshotWorkspace();
+        }
+        function hydrate(value) {
+            var validated = validateWorkspace(value);
+            ++epoch; ++searchRevision; ++standingRevision; state = validated || blankWorkspace(); notes = state.notes;
+            if (initialized) paintState();
+        }
+        global.F1S_RESEARCH_NOTEBOOK = { snapshot: snapshotWorkspace, hydrate: hydrate, clear: function () {
+            var had = snapshotWorkspace(); hydrate(null); if (had) changed();
+        }, onChange: function (fn) { listeners.push(fn); return function () { listeners = listeners.filter(function (item) { return item !== fn; }); }; } };
         function el(tag, text, className) {
             var node = document.createElement(tag);
             if (text != null) node.textContent = text;
@@ -225,13 +301,15 @@
             }).catch(function (error) { cache.delete(path); throw error; }).finally(function () { clearTimeout(timer); });
             cache.set(path, request); return request;
         }
-        var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, fallback, form, fields = {}, hits = [], opener = toggle;
+        var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle;
         function message(text) { status.textContent = text; }
         // note: an optional line beside the button, so the outcome is visible where the author clicked.
         async function copy(text, done, note) {
+            var copyEpoch = epoch;
             done = done || 'Αντιγράφηκε μαζί με τις πηγές. Επικόλλησε χειροκίνητα στο άρθρο.';
-            try { await navigator.clipboard.writeText(text); fallback.hidden = true; message(done); if (note) note.textContent = done; }
+            try { await navigator.clipboard.writeText(text); if (copyEpoch !== epoch) return; fallback.hidden = true; message(done); if (note) note.textContent = done; }
             catch (_) {
+                if (copyEpoch !== epoch) return;
                 fallback.hidden = false; fallback.value = text; fallback.focus(); fallback.select(); message('Δεν επιτράπηκε το πρόχειρο. Επίλεξε και αντέγραψε το κείμενο παρακάτω.');
                 if (note) note.textContent = 'Δεν επιτράπηκε το πρόχειρο: το κείμενο είναι επιλεγμένο στο πεδίο χειροκίνητης αντιγραφής.';
             }
@@ -276,7 +354,7 @@
                     var row = el('div', null, 'gb-research-result'); row.appendChild(el('p', noteText(note), 'gb-research-text'));
                     if (note.url) row.appendChild(link('Άνοιγμα πηγής', note.url));
                     row.append(button('Αντιγραφή ευρήματος', function () { copy(noteText(note)); }), button('Αφαίρεση', function () {
-                        notes = notes.filter(function (value) { return value !== note; }); renderNotes(); message('Το εύρημα αφαιρέθηκε.');
+                        notes = notes.filter(function (value) { return value !== note; }); renderNotes(); changed(); message('Το εύρημα αφαιρέθηκε.');
                     })); group.appendChild(row);
                 }); noteList.appendChild(group);
             });
@@ -296,11 +374,11 @@
             } catch (error) { cache.delete('/blog-module/blog-index-data.json'); if (revision === searchRevision) message('Ο κατάλογος άρθρων δεν φορτώθηκε. ' + error.message); }
         }
         function resetStanding() { ++standingRevision; standings.replaceChildren(); }
-        function setRounds() {
+        function setRounds(selected) {
             resetStanding(); round.replaceChildren(el('option', 'Επίλεξε γύρο')); round.firstChild.value = '';
             (catalog ? catalog.rounds : []).filter(function (pair) { return String(pair[0]) === season.value; }).forEach(function (pair) {
                 var option = el('option', String(pair[1])); option.value = String(pair[1]); round.appendChild(option);
-            }); round.disabled = !season.value;
+            }); selectValue(round, selected || ''); round.disabled = !season.value;
         }
         async function loadStandings() {
             resetStanding();
@@ -326,24 +404,27 @@
             }
         }
         async function loadCatalog(event) {
+            var catalogEpoch = epoch;
             try {
-                catalog = validateCatalog(await load('/scripts/author/research-catalog.json'));
+                var loaded = validateCatalog(await load('/scripts/author/research-catalog.json'));
+                if (catalogEpoch !== epoch) return;
+                catalog = loaded; var selectedSeason = season.value, selectedRound = round.value;
                 season.replaceChildren(el('option', 'Επίλεξε σεζόν')); season.firstChild.value = '';
                 Array.from(new Set(catalog.rounds.map(function (pair) { return pair[0]; }))).forEach(function (year) {
                     var option = el('option', String(year)); option.value = String(year); season.appendChild(option);
                 });
-                setRounds();
+                selectValue(season, selectedSeason); setRounds(selectedRound);
                 tools.replaceChildren(); catalog.tools.forEach(function (tool) { var row = el('p'); row.append(link(tool.label, safeURL(tool.href)), el('span', ' — ' + TOOL_LIMITS[tool.id])); tools.appendChild(row); });
                 // The background load on opening never replaces a search message that arrived first; a retry always reports.
                 if (event || !status.textContent || status.textContent === catalogNote) catalogMessage('Διαθέσιμοι γύροι και εργαλεία φορτώθηκαν. Δεν έχει επιλεγεί αυτόματα στιγμιότυπο.');
-            } catch (error) { cache.delete('/scripts/author/research-catalog.json'); catalogMessage('Δεν φορτώθηκαν οι διαθέσιμοι γύροι / εργαλεία. ' + error.message); }
+            } catch (error) { cache.delete('/scripts/author/research-catalog.json'); if (catalogEpoch !== epoch) return; catalogMessage('Δεν φορτώθηκαν οι διαθέσιμοι γύροι / εργαλεία. ' + error.message); }
         }
         function catalogMessage(text) { catalogNote = text; message(text); }
         function initialize() {
             initialized = true;
             var head = el('div', null, 'gb-research-actions'), heading = el('h2', 'Ερευνητικό σημειωματάριο'); heading.id = 'research-heading';
             head.append(heading, button('Κλείσιμο έρευνας', hide)); panel.append(head,
-                el('p', 'Μόνο για αυτή τη συνεδρία. Το κλείσιμο διατηρεί τις σημειώσεις· η ανανέωση τις χάνει. Κατέβασέ τες πριν φύγεις. Δεν αποθηκεύονται στα πρόχειρα άρθρων.', 'gb-hint'),
+                el('p', 'Το σημειωματάριο αποθηκεύεται μαζί με το άρθρο μόνο με “Αποθήκευση ως πρόχειρο”. Δεν γίνεται αυτόματη αποθήκευση. Τα δεδομένα μένουν σε αυτόν τον browser, στην ίδια διεύθυνση ιστοτόπου (origin: πρωτόκολλο, όνομα και θύρα). localhost, 127.0.0.1 και διαφορετικές θύρες έχουν ξεχωριστά πρόχειρα. Δεν συγχρονίζονται μεταξύ συσκευών.', 'gb-hint'),
                 el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη και ID δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Δεν γίνεται αναζήτηση στο σώμα άρθρων ή απάντηση με AI.', 'gb-hint'));
             status = el('p', '', 'gb-hint'); status.id = 'research-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); panel.appendChild(status);
             question = field(panel, 'question', 'Εκδοτικό ερώτημα / λέξεις αναζήτησης');
@@ -360,7 +441,7 @@
             dataDetails.appendChild(el('p', 'Επίλεξε ρητά σεζόν και διαθέσιμο γύρο. Φορτώνεται μόνο το συγκεκριμένο αρχείο, χωρίς αντικατάσταση από το τελευταίο.', 'gb-hint'));
             var scope = el('div', null, 'gb-research-scope'); dataDetails.appendChild(scope);
             season = field(scope, 'season', 'Σεζόν', 'select', { '': 'Επίλεξε σεζόν' }); round = field(scope, 'round', 'Γύρος', 'select', { '': 'Επίλεξε γύρο' }); round.disabled = true;
-            season.addEventListener('change', setRounds); round.addEventListener('change', loadStandings);
+            season.addEventListener('change', function () { setRounds(''); }); round.addEventListener('change', loadStandings);
             dataDetails.appendChild(button('Επανάληψη καταλόγου', loadCatalog)); standings = el('div'); dataDetails.appendChild(standings);
             var toolDetails = detail('Εργαλεία F1 Stories'); tools = el('div', null, 'gb-hint'); toolDetails.appendChild(tools);
             var addDetails = detail('Προσθήκη ευρήματος / πηγής');
@@ -377,12 +458,13 @@
             fields.sourceDate.placeholder = '2026-10-22 ή 2026-10-22T14:00:00+03:00';
             fields.limitations = field(form, 'note-limitations', 'Τεκμηρίωση ελέγχου / σημειώσεις / περιορισμοί', 'textarea');
             var submit = el('button', 'Προσθήκη σημείωσης', 'gb-btn gb-btn-sm'); submit.type = 'submit'; form.appendChild(submit);
-            var formStatus = el('p', '', 'gb-hint is-warn'); formStatus.setAttribute('role', 'status'); form.appendChild(formStatus);
+            formStatus = el('p', '', 'gb-hint is-warn'); formStatus.setAttribute('role', 'status'); form.appendChild(formStatus);
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
                 try {
                     var note = {}; Object.keys(fields).forEach(function (key) { note[key] = fields[key].value.trim(); });
-                    notes.push(validateNote(note)); renderNotes(); form.reset(); fields.type.value = 'unverified'; fields.section.value = 'unverified';
+                    if (notes.length >= 500) throw new Error('Το σημειωματάριο δέχεται έως 500 σημειώσεις.');
+                    notes.push(validateNote(note)); renderNotes(); form.reset(); fields.type.value = 'unverified'; fields.section.value = 'unverified'; changed();
                     formStatus.textContent = 'Η σημείωση προστέθηκε μόνο στο σημειωματάριο.';
                 } catch (error) { formStatus.textContent = error.message; }
             });
@@ -393,13 +475,39 @@
                     download.href = url; download.download = 'brief.txt'; panel.appendChild(download); download.click(); download.remove();
                     setTimeout(function () { URL.revokeObjectURL(url); }, 1000); message('Έγινε λήψη του brief.txt σε UTF-8.');
                 }), button('Καθαρισμός σημειωματαρίου', async function () {
-                    var hasNotes = notes.length || question.value.trim() || Object.keys(fields).some(function (key) { return ['INPUT', 'TEXTAREA'].includes(fields[key].tagName) && fields[key].value.trim(); });
-                    if (hasNotes && !(await global.F1S_AUTHOR_DIALOGS.confirm('Να διαγραφούν οι σημειώσεις αυτής της συνεδρίας;', { title: 'Καθαρισμός έρευνας', okLabel: 'Καθαρισμός' }))) return;
-                    ++searchRevision; resetStanding(); notes = []; question.value = ''; season.value = ''; setRounds(); form.reset(); fields.type.value = 'unverified'; fields.section.value = 'unverified';
-                    hits = []; anchor.value = ''; more.hidden = true; articles.replaceChildren(); fallback.value = ''; fallback.hidden = true; formStatus.textContent = ''; renderNotes(); message('Το σημειωματάριο καθαρίστηκε.'); question.focus();
+                    var clearEpoch = epoch;
+                    if (snapshotWorkspace() && !(await global.F1S_AUTHOR_DIALOGS.confirm('Να διαγραφούν οι σημειώσεις;', { title: 'Καθαρισμός έρευνας', okLabel: 'Καθαρισμός' }))) return;
+                    if (clearEpoch !== epoch) return;
+                    global.F1S_RESEARCH_NOTEBOOK.clear(); message('Το σημειωματάριο καθαρίστηκε.'); question.focus();
                 })); panel.appendChild(actions);
             var fallbackLabel = el('label', 'Κείμενο για χειροκίνητη αντιγραφή', 'gb-sr'); fallbackLabel.htmlFor = 'research-copy-fallback';
             fallback = el('textarea', null, 'gb-input'); fallback.id = 'research-copy-fallback'; fallback.readOnly = true; fallback.hidden = true; fallback.rows = 8; panel.append(fallbackLabel, fallback);
+            exportButton = button('Εξαγωγή έρευνας JSON', function () {
+                var data; try { data = validateWorkspace(snapshotWorkspace()); } catch (_) { message('Το σημειωματάριο είναι υπερβολικά μεγάλο ή μη έγκυρο.'); return; } if (!data) return;
+                var url = URL.createObjectURL(new Blob([JSON.stringify({ format: 'f1stories-research', version: 1, research: data })], { type: 'application/json' }));
+                var download = el('a'); download.href = url; download.download = 'research.json'; panel.appendChild(download); download.click(); download.remove();
+                setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+            });
+            var input = el('input'); input.type = 'file'; input.accept = '.json,application/json'; input.id = 'research-import'; input.hidden = true;
+            var importButton = button('Εισαγωγή έρευνας JSON', function () { input.click(); });
+            input.addEventListener('change', async function () {
+                var file = input.files && input.files[0], importEpoch = epoch; input.value = ''; if (!file) return;
+                try {
+                    if (file.size > 2 * 1024 * 1024) throw new Error();
+                    var envelope = JSON.parse(await file.text());
+                    if (importEpoch !== epoch) return;
+                    if (!plain(envelope, ['format', 'version', 'research']) || envelope.format !== 'f1stories-research' || envelope.version !== 1 || envelope.research === null) throw new Error();
+                    var value = validateWorkspace(envelope.research);
+                    if (snapshotWorkspace() && !(await global.F1S_AUTHOR_DIALOGS.confirm('Να αντικατασταθεί το σημειωματάριο;', { title: 'Εισαγωγή έρευνας', okLabel: 'Αντικατάσταση' }))) return;
+                    if (importEpoch !== epoch) return;
+                    hydrate(value); changed(); message('Η έρευνα εισήχθη. Αποθήκευσε το πρόχειρο για να διατηρηθεί.');
+                } catch (_) { if (importEpoch === epoch) message('Το αρχείο έρευνας δεν είναι έγκυρο ή είναι υπερβολικά μεγάλο.'); }
+            });
+            actions.append(exportButton, importButton, input);
+            [question, anchor, season, round].concat(Object.values(fields)).forEach(function (node) {
+                node.addEventListener(node.tagName === 'SELECT' ? 'change' : 'input', changed);
+            });
+            paintState();
             panel.addEventListener('keydown', function (event) { if (event.key === 'Escape') { event.preventDefault(); hide(); } });
         }
         // Both buttons open the same notebook; focus returns to the one that opened it.
@@ -416,7 +524,7 @@
         });
     }
     global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, markdownLink: markdownLink, validateCatalog: validateCatalog,
-        snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
+        validateWorkspace: validateWorkspace, snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');
     if (panel) attach(panel, document.getElementById('research-toggle'), document.getElementById('archive-toggle'));
 })(window);

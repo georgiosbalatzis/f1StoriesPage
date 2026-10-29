@@ -115,3 +115,7 @@ Build wiring/security: `scripts/build/asset-sources.mjs`, `scripts/build/minify.
 Tests: new `scripts/author/__tests__/draft-workflow.test.mjs`; updated `scripts/author/__tests__/github-client.test.mjs`, `scripts/build/__tests__/maintenance-schedules.test.mjs`, `scripts/build/__tests__/quality-routing.test.mjs`, `scripts/build/__tests__/security-policy.test.mjs`.
 
 Documentation: `README.md`, `docs/branch-protection-plan.md`, `docs/rss-feed.md`, and this report with its screenshots. Only the article scheduler workflow is deleted. Production article renderer/template/CSS sources are unchanged.
+
+## E-01: research workspaces
+
+Version 1 records optionally contain a validated research snapshot alongside the article; old records without it open as empty. Saving is explicit and atomic, and clearing the notebook takes effect in storage only after saving. Research JSON is a separate, author-controlled import/export, never article metadata or an automatic publishing attachment. Drafts remain browser- and origin-specific and do not sync. If research is unreadable, opening or overwriting that draft is refused: retain browser data and a private backup for recovery, and export readable notebooks first.

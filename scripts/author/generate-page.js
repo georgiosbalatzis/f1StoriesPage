@@ -665,6 +665,8 @@
     importInput.addEventListener('change', async function () {
         if (publishing || drafts.busy()) { importInput.value = ''; return; }
         var startingEpoch = editorEpoch;
+        // The editor epoch this import owns: its own resetForm() moves it, another draft opening moves it again.
+        var importEpoch = startingEpoch;
         var zipFile = importInput.files && importInput.files[0];
         importInput.value = '';
         if (!zipFile) return;
@@ -673,15 +675,17 @@
             await authorDom.loadJSZip();
             if (startingEpoch !== editorEpoch) return;
         } catch (error) {
+            if (startingEpoch !== editorEpoch) return;
             await showAlert(error.message);
             return;
         }
 
-        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl;
-        if (dirty && !(await showConfirm('Θα αντικατασταθούν τα τρέχοντα πεδία και οι εικόνες από το ZIP. Συνέχεια;'))) {
+        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl || (window.F1S_RESEARCH_NOTEBOOK && window.F1S_RESEARCH_NOTEBOOK.snapshot());
+        if (dirty && !(await showConfirm('Θα αντικατασταθούν τα τρέχοντα πεδία, οι εικόνες και η έρευνα από το ZIP. Συνέχεια;'))) {
             return;
         }
 
+        if (startingEpoch !== editorEpoch) return;
         importLabel.classList.remove('has-file');
         var originalText = importText.textContent;
         importText.textContent = 'Φόρτωση…';
@@ -726,6 +730,7 @@
             // Populate text fields
             if (startingEpoch !== editorEpoch) return;
             resetForm();
+            if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.clear();
             drafts.detach();
             titleInput.value = meta.title || '';
             tagInput.value = meta.tags.join(', ');
@@ -737,7 +742,7 @@
             var authorName = authorFromFolderName(folderName);
             if (authorName) setChecked('gen-author', authorName);
 
-            var importEpoch = editorEpoch;
+            importEpoch = editorEpoch;
             // Load thumbnail (slot 1), banner (slot 2), content (slot >= 3)
             for (var k = 0; k < imageEntries.length; k++) {
                 var ent = imageEntries[k];
@@ -775,6 +780,7 @@
             importLabel.classList.add('has-file');
             importText.textContent = folderName;
         } catch (err) {
+            if (importEpoch !== editorEpoch) return;
             console.error('Import failed', err);
             await showAlert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
             importText.textContent = originalText;
@@ -1312,6 +1318,7 @@
             await loadPreviewRenderer();
             if (revision !== previewRevision) return;
             var state = captureDraft();
+            delete state.research;
             var result = await window.F1S_ARTICLE_PREVIEW.render(state);
             if (revision !== previewRevision) { result.dispose(); return; }
             var frame = byId('gen-article-preview');
@@ -1331,16 +1338,21 @@
         function image(file, meta) {
             return file ? { blob: file, name: file.name, width: meta.width, height: meta.height } : null;
         }
-        return { title: titleInput.value, author: getAuthor(), category: getCategory(), tags: tagInput.value,
+        var state = { title: titleInput.value, author: getAuthor(), category: getCategory(), tags: tagInput.value,
             text: contentArea.value, metadata: Object.assign({}, sourceMetadata),
             hero: image(getHeroFile(), heroImageMeta),
             banner: image(getHeaderFile(), headerImageMeta),
             images: contentImageFiles.map(function (item) { return image(item.file, item); }),
             editor: { step: currentStep, device: previewFrame.classList.contains('is-phone') ? 'phone' : 'desktop',
                 selectionStart: contentArea.selectionStart, selectionEnd: contentArea.selectionEnd } };
+        var research = window.F1S_RESEARCH_NOTEBOOK && window.F1S_RESEARCH_NOTEBOOK.snapshot();
+        if (research) state.research = research;
+        return state;
     }
 
     async function restoreDraft(value) {
+        if (value.research && !window.F1S_RESEARCH_NOTEBOOK) throw new Error('Το σημειωματάριο δεν είναι διαθέσιμο. Δοκίμασε ξανά.');
+        var research = window.F1S_RESEARCH && window.F1S_RESEARCH.validateWorkspace(value.research == null ? null : value.research);
         var epoch = ++editorEpoch;
         var staged = [];
         try {
@@ -1355,7 +1367,9 @@
                 staged[staged.length - 1].height = meta.height;
                 if (epoch !== editorEpoch) throw new Error('Η φόρτωση ακυρώθηκε επειδή άλλαξε το άρθρο.');
             }
+            if (epoch !== editorEpoch) throw new Error('Η φόρτωση ακυρώθηκε επειδή άλλαξε το άρθρο.');
             resetForm();
+            if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.hydrate(research || null);
             titleInput.value = value.title;
             tagInput.value = value.tags;
             setChecked('gen-author', value.author);
@@ -1390,7 +1404,10 @@
 
     paintTokenState(); paintHero(); paintHeader(); renderContentImagesList(); goToStep(0, false);
     var drafts = window.F1S_DRAFT_MANAGER.attach({ capture: captureDraft, restore: restoreDraft,
-        reset: function () { resetForm(); goToStep(0); }, locked: function () { return publishing; } });
+        reset: function () { resetForm(); if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.clear(); goToStep(0); }, locked: function () { return publishing; } });
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.onChange(drafts.changed);
+    });
     window.addEventListener('beforeunload', function (event) {
         if (!closing && (publishing || drafts.dirty())) { event.preventDefault(); event.returnValue = ''; }
     });
