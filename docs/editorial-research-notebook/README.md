@@ -171,3 +171,20 @@ Search covers rendered paragraphs, list items and headings. Authored tables, tex
 ## E-03: editorial quality preflight
 
 Step 5 offers advisory checks for registered claims only. Empty claim text, anchor consistency and numeric fields are mechanical checks. Scope completeness, unresolved or disputed evidence, and stale reviews depend on structured evidence supplied by the author. Optional prompts ask for human judgement about meaning, causality, predictions, population and method, independent sources and quotation rights. No check verifies truth or blocks publishing; unregistered prose is not scanned for numbers.
+
+## E-05: archive review (author-scoped)
+
+**What it does.** From a search result that shows a passage, **Σύγκριση με ισχυρισμό** records a deliberate annotation: one of this draft's claims, the exact span of the published passage, 1–4 shared names or terms, and what that span states (claim type, scope, numeric definition). **Έλεγχος αρχείου → Έλεγχος ενδείξεων** then compares each claim with its annotated spans, using only the article text the last explicit search loaded. It never fetches shards by itself, never edits an article and never creates a correction.
+
+**Signals.** All require the same named terms in both texts and a complete, equal scope (event, season, round, session, period):
+- *Πιθανή αντίφαση*: same factual claim type, same metric, units, sample and method, different value (decimal strings compared exactly; no unit conversion, rounding or grouped-number guessing).
+- *Επικαλυπτόμενη κάλυψη*: at least 8 shared content words and word-set similarity ≥ 0.80.
+- *Υποψήφιο για ενημέρωση*: a possible conflict where the draft claim is reviewed with evidence after the article's publication day and a supporting source is dated after it too.
+
+Different seasons, sessions, populations, conditions, methods or units produce no signal; missing scope is reported as **Ελλιπές πλαίσιο σύγκρισης**, outside the queue. Each row shows both declared scopes and values and says: *Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.* At most 4 rows per claim and 24 in total.
+
+**Storage.** Research workspace v3 adds `archiveReview: { comparisons, dismissals }` to the draft (v1/v2 migrate on read; draft record and IndexedDB versions unchanged). A dismissal is keyed by a SHA-256 of the claim, its review, the article digest, the span and the annotation, so it stops applying when any of them changes. Dismissals are saved with the draft only; **Επαναφορά απορρίψεων** clears them. Removing a claim removes its comparisons and dismissals. If the published article text changes, its annotations need re-recording.
+
+**Benchmark.** 13 labeled pairs (`scripts/author/__tests__/fixtures/archive-review-cases.json`, all five categories, real passages with synthetic draft claims) emit exactly the expected signals: 4 of 4 correct, 0 false positives, 0 misses. This is a fixed regression set, not a measured contradiction-detection accuracy.
+
+**Not included.** General contradiction detection, scanning article prose, archive-to-archive queues and dismissals shared across drafts.

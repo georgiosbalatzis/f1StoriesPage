@@ -818,7 +818,7 @@ test('a ZIP import that fails after the author moved to another draft leaves tha
     assert.equal(await page.locator('#gen-title').inputValue(), '');
 });
 
-test('v1 research opens clean without a write and the next explicit save writes v2', async t => {
+test('v1 research opens clean without a write and the next explicit save writes the current version (v3)', async t => {
     const page = await pageFor(t);
     const old = await page.evaluate(async () => {
         const record = await window.F1S_LOCAL_DRAFTS.save({ title: 'Παλαιό v1', text: 'Κείμενο', editor: { step: 1 } });
@@ -830,7 +830,7 @@ test('v1 research opens clean without a write and the next explicit save writes 
     });
     await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
     await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
-    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().version), 2);
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().version), 3);
     assert.doesNotMatch(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
     const raw = await page.evaluate(async id => new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
         const db = request.result, tx = db.transaction('drafts'), get = tx.objectStore('drafts').get(id); get.onsuccess = () => { db.close(); resolve(get.result); }; get.onerror = reject;
@@ -838,7 +838,7 @@ test('v1 research opens clean without a write and the next explicit save writes 
     assert.deepEqual(raw, old);
     await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
     const updated = await page.evaluate(async id => window.F1S_LOCAL_DRAFTS.get(id), old.id);
-    assert.equal(updated.version, 1); assert.equal(updated.research.version, 2); assert.deepEqual(updated.research.claims, []);
+    assert.equal(updated.version, 1); assert.equal(updated.research.version, 3); assert.deepEqual(updated.research.claims, []);
 });
 
 test('pending decision edits dirty a saved draft and survive save and reopen without approval', async t => {

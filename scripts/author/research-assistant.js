@@ -272,7 +272,7 @@
     function blankForm() {
         return { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' };
     }
-    function blankWorkspace() { return { version: 2, question: '', anchor: '', season: '', round: '', notes: [], form: blankForm(), claims: [] }; }
+    function blankWorkspace() { return { version: 3, question: '', anchor: '', season: '', round: '', notes: [], form: blankForm(), claims: [], archiveReview: { comparisons: [], dismissals: [] } }; }
     function plain(value, keys) {
         return value && Object.prototype.toString.call(value) === '[object Object]'
             && (Object.getPrototypeOf(value) === null || Object.getPrototypeOf(Object.getPrototypeOf(value)) === null)
@@ -457,12 +457,117 @@
         claim.pendingDecision = { rationale: rationale, reviewer: reviewer };
         return validateClaim(claim);
     }
+    function validateArchiveReview(value, claims) {
+        if (!plain(value, ['comparisons', 'dismissals']) || !Array.isArray(value.comparisons) || value.comparisons.length > 100
+            || !Array.isArray(value.dismissals) || value.dismissals.length > 200) invalidResearch();
+        var comparisons = Array.from(value.comparisons, function (entry) {
+            if (!plain(entry, ['claimId', 'postId', 'articleDigest', 'kind', 'ordinal', 'start', 'end', 'quote', 'entities', 'claimType', 'scope', 'numeric', 'annotatedAt'])
+                || !claims.some(function (claim) { return claim.id === entry.claimId; }) || typeof entry.postId !== 'string' || !/^[\p{L}\p{N}_-]+$/u.test(entry.postId)
+                || !/^[a-f0-9]{64}$/.test(entry.articleDigest) || !['heading', 'paragraph', 'list-item'].includes(entry.kind)
+                || !Number.isSafeInteger(entry.ordinal) || entry.ordinal < 0 || !Number.isSafeInteger(entry.start) || entry.start < 0
+                || !Number.isSafeInteger(entry.end) || typeof entry.quote !== 'string' || !entry.quote.trim() || entry.quote.length > 4000 || entry.end - entry.start !== entry.quote.length
+                || !Array.isArray(entry.entities) || entry.entities.length < 1 || entry.entities.length > 4
+                || !entry.entities.every(function (token) { return typeof token === 'string' && token.length <= 64 && words(token).length === 1 && /\p{L}/u.test(token) && !STOP_WORDS.has(normal(token)) && !generic(token); })
+                || !isoDate(entry.annotatedAt) || !entry.annotatedAt.includes('T')) invalidResearch();
+            var base = claims.find(function (claim) { return claim.id === entry.claimId; });
+            var descriptor = validateClaim(Object.assign({}, base, { claimType: entry.claimType, scope: entry.scope, numeric: entry.numeric, status: 'unreviewed', review: null }));
+            return { claimId: entry.claimId, postId: entry.postId, articleDigest: entry.articleDigest, kind: entry.kind, ordinal: entry.ordinal,
+                start: entry.start, end: entry.end, quote: entry.quote, entities: Array.from(entry.entities), claimType: descriptor.claimType,
+                scope: descriptor.scope, numeric: descriptor.numeric, annotatedAt: entry.annotatedAt };
+        });
+        var dismissals = Array.from(value.dismissals, function (entry) {
+            if (!plain(entry, ['claimId', 'key', 'dismissedAt']) || !claims.some(function (claim) { return claim.id === entry.claimId; })
+                || !/^[a-f0-9]{64}$/.test(entry.key) || !isoDate(entry.dismissedAt) || !entry.dismissedAt.includes('T')) invalidResearch();
+            return { claimId: entry.claimId, key: entry.key, dismissedAt: entry.dismissedAt };
+        });
+        return { comparisons: comparisons, dismissals: dismissals };
+    }
+    function archiveSignals(claim, comparison, post, passage) {
+        if (!post || !passage || post.id !== comparison.postId || passage.articleDigest !== comparison.articleDigest
+            || passage.kind !== comparison.kind || passage.ordinal !== comparison.ordinal || passage.text.slice(comparison.start, comparison.end) !== comparison.quote) return { incomplete: true, signals: [] };
+        var left = words(claim.text), right = words(comparison.quote);
+        if (!comparison.entities.every(function (token) { var term = normal(token); return left.includes(term) && right.includes(term); })) return { incomplete: true, signals: [] };
+        var a = claim.scope, b = comparison.scope;
+        if (!completeScope(a) || !completeScope(b)) return { incomplete: true, signals: [] };
+        function boundary(x, y) { return !x && !y || !!x && !!y && x.includes('T') === y.includes('T') && (x.includes('T') ? Date.parse(x) === Date.parse(y) : x === y); }
+        function clean(value) { return value.normalize('NFC').trim().replace(/\s+/g, ' '); }
+        if (a.session !== b.session || a.season !== b.season || a.round !== b.round || normal(a.event).trim().replace(/\s+/g, ' ') !== normal(b.event).trim().replace(/\s+/g, ' ')
+            || !boundary(a.period.start, b.period.start) || !boundary(a.period.end, b.period.end)) return { incomplete: false, signals: [] };
+        var n = claim.numeric, m = comparison.numeric, signals = [];
+        function definition(x, y) { return ['metric', 'units', 'sample', 'method'].every(function (key) { return clean(x[key]) && clean(x[key]) === clean(y[key]); }); }
+        function decimal(value) {
+            if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(value)) return null;
+            var negative = value[0] === '-', parts = value.replace(/^[+-]/, '').split('.'), whole = (parts[0] || '0').replace(/^0+(?=\d)/, ''), fraction = (parts[1] || '').replace(/0+$/, '');
+            return (negative && (whole !== '0' || fraction) ? '-' : '') + whole + (fraction ? '.' + fraction : '');
+        }
+        var sameDefinition = n && m && definition(n, m), leftValue = n && decimal(n.value), rightValue = m && decimal(m.value);
+        if (sameDefinition && leftValue !== null && rightValue !== null && claim.claimType === comparison.claimType
+            && ['official-fact', 'reported-observation', 'calculated-statistic'].includes(claim.claimType) && leftValue !== rightValue) {
+            signals.push('possible-conflict');
+            if (claim.status === 'reviewed-with-evidence' && claim.review && claim.review.fingerprint === claimFingerprint(claim)
+                && claim.review.reviewedAt.slice(0, 10) > post.date && claim.sources.some(function (source) { return source.stance === 'supports' && source.sourceDate && source.sourceDate.slice(0, 10) > post.date; })) signals.push('update-candidate');
+        }
+        var content = function (list) { return new Set(list.filter(function (token) { return /\p{L}/u.test(token) && !STOP_WORDS.has(token) && !generic(token); })); };
+        var x = content(left), y = content(right), shared = Array.from(x).filter(function (token) { return y.has(token); }).length, union = new Set(Array.from(x).concat(Array.from(y))).size;
+        var similarity = union ? shared / union : 0;
+        if ((!n || !m || sameDefinition) && shared >= 8 && similarity >= 0.8) signals.push('overlapping-coverage');
+        return { incomplete: false, signals: signals, similarity: similarity };
+    }
+    var SIGNAL_LABELS = { 'possible-conflict': 'Πιθανή αντίφαση', 'overlapping-coverage': 'Επικαλυπτόμενη κάλυψη', 'update-candidate': 'Υποψήφιο για ενημέρωση' };
+    // The author's annotation of one exact span of an archive passage; offsets address the original passage text.
+    function makeComparison(claim, post, article, passage, input) {
+        var start = input.quote ? passage.text.indexOf(input.quote) : -1;
+        if (start < 0) throw new Error('Το απόσπασμα πρέπει να υπάρχει αυτούσιο στο κείμενο του άρθρου.');
+        return { claimId: claim.id, postId: post.id, articleDigest: article.digest, kind: passage.kind, ordinal: passage.ordinal,
+            start: start, end: start + input.quote.length, quote: input.quote, entities: input.entities, claimType: input.claimType,
+            scope: input.scope, numeric: input.numeric, annotatedAt: new Date().toISOString() };
+    }
+    // A dismissal holds only while the claim, its review, the article text and the annotation stay exactly the same.
+    async function dismissalKey(claim, comparison, signal) {
+        var c = comparison, s = c.scope, n = c.numeric;
+        var descriptor = JSON.stringify([c.entities, c.claimType, [s.event, s.season, s.round, s.session, s.period.start, s.period.end], n && [n.metric, n.value, n.units, n.sample, n.method]]);
+        var tuple = JSON.stringify(['e05-signals-v1', claim.id, claimFingerprint(claim), claim.review ? claim.review.reviewedAt : null,
+            c.postId, c.articleDigest, c.kind, c.ordinal, c.start, c.end, descriptor, signal]);
+        var bytes = await global.crypto.subtle.digest('SHA-256', new TextEncoder().encode(tuple));
+        return Array.from(new Uint8Array(bytes), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    }
+    // resolve(postId) → { post, article } from text an explicit search already loaded, or null. Never fetches.
+    // Conflicts first, then overlaps by similarity; ties: claim order, newer article, ID, kind, ordinal. ≤4 per claim, ≤24 rows.
+    async function reviewQueue(workspace, resolve) {
+        var claims = workspace ? workspace.claims : [], review = workspace ? workspace.archiveReview : { comparisons: [], dismissals: [] };
+        var dismissed = new Set(review.dismissals.map(function (entry) { return entry.key; })), rows = [], incomplete = [], seen = new Set();
+        for (var comparison of review.comparisons) {
+            var claim = claims.find(function (item) { return item.id === comparison.claimId; }), found = resolve(comparison.postId);
+            var raw = found && found.article.passages.find(function (item) { return item.kind === comparison.kind && item.ordinal === comparison.ordinal; });
+            var passage = raw && { kind: raw.kind, ordinal: raw.ordinal, text: raw.text, heading: found.article.headings[raw.heading] || null, articleDigest: found.article.digest };
+            var result = archiveSignals(claim, comparison, found && found.post, passage);
+            if (result.incomplete) { incomplete.push({ claim: claim, comparison: comparison, loaded: !!found }); continue; }
+            var pair = [comparison.claimId, comparison.postId, comparison.kind, comparison.ordinal].join('|'), signals = [];
+            if (seen.has(pair)) continue;
+            for (var signal of result.signals) {
+                var key = await dismissalKey(claim, comparison, signal);
+                if (!dismissed.has(key)) signals.push({ kind: signal, key: key });
+            }
+            if (!signals.length) continue;
+            seen.add(pair);
+            rows.push({ claim: claim, comparison: comparison, post: found.post, passage: passage, signals: signals, similarity: result.similarity, order: claims.indexOf(claim) });
+        }
+        function overlapOnly(row) { return row.signals.some(function (item) { return item.kind === 'possible-conflict'; }) ? 0 : 1; }
+        rows.sort(function (a, b) {
+            return overlapOnly(a) - overlapOnly(b) || (overlapOnly(a) ? b.similarity - a.similarity : 0) || a.order - b.order
+                || String(b.post.date).localeCompare(String(a.post.date)) || String(a.post.id).localeCompare(String(b.post.id))
+                || a.comparison.kind.localeCompare(b.comparison.kind) || a.comparison.ordinal - b.comparison.ordinal;
+        });
+        var perClaim = {}, kept = rows.filter(function (row) { perClaim[row.claim.id] = (perClaim[row.claim.id] || 0) + 1; return perClaim[row.claim.id] <= 4; });
+        return { rows: kept.slice(0, 24), incomplete: incomplete, truncated: kept.length > 24 || kept.length < rows.length };
+    }
     function validateWorkspace(value) {
         if (value == null) return null;
         var invalid = invalidResearch;
         var keys = ['version', 'question', 'anchor', 'season', 'round', 'notes', 'form'];
-        if (value.version === 2) keys.push('claims');
-        if (!plain(value, keys) || ![1, 2].includes(value.version)
+        if (value.version >= 2) keys.push('claims');
+        if (value.version === 3) keys.push('archiveReview');
+        if (!plain(value, keys) || ![1, 2, 3].includes(value.version)
             || typeof value.question !== 'string' || value.question.length > 2000 || typeof value.anchor !== 'string' || value.anchor.length > 200
             || typeof value.season !== 'string' || (value.season && (!/^\d{4}$/.test(value.season) || +value.season < 1950 || +value.season > 2100))
             || typeof value.round !== 'string' || (value.round && (!value.season || !/^(?:[1-9]|[12]\d|30)$/.test(value.round)))
@@ -480,12 +585,13 @@
             if (completed) { try { validateNote(Object.assign({}, output)); } catch (_) { invalid(); } }
             return output;
         }
-        if (value.version === 2 && (!Array.isArray(value.claims) || value.claims.length > 100)) invalid();
+        if (value.version >= 2 && (!Array.isArray(value.claims) || value.claims.length > 100)) invalid();
         var claims = value.version === 1 ? [] : Array.from(value.claims, validateClaim);
         if (new Set(claims.map(function (claim) { return claim.id; })).size !== claims.length) invalid();
-        var result = { version: 2, question: value.question, anchor: value.anchor, season: value.season, round: value.round,
+        var archiveReview = value.version === 3 ? validateArchiveReview(value.archiveReview, claims) : { comparisons: [], dismissals: [] };
+        var result = { version: 3, question: value.question, anchor: value.anchor, season: value.season, round: value.round,
             // Array.from, not map: a hole in a damaged stored array becomes undefined and fails, instead of being skipped.
-            notes: Array.from(value.notes, function (note) { return fields(note, true); }), form: fields(value.form, false), claims: claims };
+            notes: Array.from(value.notes, function (note) { return fields(note, true); }), form: fields(value.form, false), claims: claims, archiveReview: archiveReview };
         if (utf8Size(JSON.stringify({ format: 'f1stories-research', version: 1, research: result })) > 2 * 1024 * 1024) invalid();
         return JSON.stringify(result) === JSON.stringify(blankWorkspace()) ? null : result;
     }
@@ -542,6 +648,7 @@
             notes = state.notes; Object.keys(fields).forEach(function (key) { fields[key].value = state.form[key]; });
             hits = []; articles.replaceChildren(); more.hidden = true; standings.replaceChildren();
             fallback.value = ''; fallback.hidden = true; status.textContent = ''; formStatus.textContent = ''; renderNotes(); renderClaims();
+            archiveList.replaceChildren(); archiveMore.hidden = true; archiveNote.textContent = '';
             if (exportButton) exportButton.disabled = !snapshotWorkspace();
         }
         function hydrate(value) {
@@ -587,6 +694,8 @@
             cache.set(path, request); return request;
         }
         var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, claimDetails, claimList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle, claimDrafts = {};
+        // archiveSession: public posts and article text the last explicit search loaded; the archive review reads only this.
+        var archiveList, archiveMore, archiveNote, archiveSession = null;
         function message(text) { status.textContent = text; }
         // note: an optional line beside the button, so the outcome is visible where the author clicked.
         async function copy(text, done, note) {
@@ -627,6 +736,7 @@
                     if (hit.heading && hit.heading.id) label.appendChild(link(locator, post.url + '#' + encodeURIComponent(hit.heading.id)));
                     else label.appendChild(document.createTextNode(locator));
                     var before = row.querySelector('a'); row.insertBefore(label, before); row.insertBefore(el('p', hit.snippet, 'gb-research-passage'), before);
+                    row.insertBefore(button('Σύγκριση με ισχυρισμό', function () { annotate(row, hit, note); }), note);
                 }
                 articles.appendChild(row);
             });
@@ -751,7 +861,10 @@
                 card.append(delegated('Εντοπισμός', 'locate'), delegated('Σύνδεση με τρέχουσα επιλογή', 'recapture'),
                     button('Αντιγραφή κειμένου', function () { copy(item.text, 'Η αντιγραφή δεν αποτελεί επαλήθευση. Έλεγξε το πλαίσιο πριν την επικόλληση.', hint); }),
                     button('Αφαίρεση', function () {
-                        var index = state.claims.indexOf(item); state.claims = state.claims.filter(function (claim) { return claim !== item; }); renderClaims(); changed();
+                        var index = state.claims.indexOf(item); state.claims = state.claims.filter(function (claim) { return claim !== item; });
+                        state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry.claimId !== item.id; });
+                        state.archiveReview.dismissals = state.archiveReview.dismissals.filter(function (entry) { return entry.claimId !== item.id; });
+                        renderClaims(); changed();
                         // Keep keyboard focus: the claim now in this place, else the previous one, else «Νέος ισχυρισμός».
                         var next = claimList.children[Math.min(index, claimList.children.length - 1)];
                         (next ? next.querySelector('summary') : document.getElementById('research-new-claim')).focus();
@@ -775,6 +888,81 @@
                     })); group.appendChild(row);
                 }); noteList.appendChild(group);
             });
+        }
+        // E-05: the author annotates one exact span of a result passage against one of the draft's claims.
+        function annotate(row, hit, note) {
+            if (row.querySelector('.gb-research-compare')) { row.querySelector('.gb-research-compare select').focus(); return; }
+            var claims = state.claims.filter(function (claim) { return claim.text.trim(); });
+            if (!claims.length) { note.textContent = 'Πρόσθεσε πρώτα έναν ισχυρισμό στο «Ισχυρισμοί & τεκμήρια».'; return; }
+            var box = el('div', null, 'gb-research-compare'), prefix = 'archive-' + hit.post.id + '-', inputs = {};
+            inputs.claim = field(box, prefix + 'claim', 'Ισχυρισμός', 'select', Object.fromEntries(claims.map(function (claim) { return [claim.id, claim.text.slice(0, 80)]; })));
+            inputs.quote = field(box, prefix + 'quote', 'Ακριβές απόσπασμα (μόνο το σχετικό τμήμα)', 'textarea'); inputs.quote.value = hit.passage.text; inputs.quote.maxLength = 4000;
+            inputs.entities = field(box, prefix + 'entities', 'Κοινά ονόματα / όροι (1–4, με κόμμα)');
+            inputs.claimType = field(box, prefix + 'type', 'Τύπος δήλωσης αρχείου', 'select', { 'official-fact': 'Επίσημο γεγονός', 'reported-observation': 'Αναφερόμενη παρατήρηση',
+                'calculated-statistic': 'Υπολογισμένο στατιστικό', 'technical-interpretation': 'Τεχνική ερμηνεία', prediction: 'Πρόβλεψη', 'unsupported-hypothesis': 'Μη τεκμηριωμένη υπόθεση' });
+            [['event', 'Γεγονός'], ['season', 'Σεζόν'], ['round', 'Γύρος'], ['session', 'Σκέλος (π.χ. q3, race, season)'], ['start', 'Αρχή περιόδου (ISO)'], ['end', 'Τέλος περιόδου (ISO)'],
+                ['metric', 'Μετρική'], ['value', 'Τιμή'], ['units', 'Μονάδες'], ['sample', 'Δείγμα / συνθήκες'], ['method', 'Ορισμός / μέθοδος']].forEach(function (pair) { inputs[pair[0]] = field(box, prefix + pair[0], pair[1]); });
+            box.appendChild(el('p', 'Συμπλήρωσε μόνο ό,τι λέει ρητά το απόσπασμα. Χωρίς πλήρες πλαίσιο δεν βγαίνει ένδειξη.', 'gb-hint'));
+            var status = el('p', '', 'gb-hint is-warn'); status.setAttribute('role', 'status');
+            box.append(button('Καταγραφή σύγκρισης', function () {
+                var value = function (key) { return inputs[key].value.trim(); }, claim = state.claims.find(function (item) { return item.id === inputs.claim.value; });
+                var article = archiveSession && archiveSession.content.get(hit.post.id);
+                try {
+                    if (!claim || !article) throw new Error('Ο ισχυρισμός ή το κείμενο του άρθρου δεν είναι πλέον διαθέσιμο.');
+                    var comparison = makeComparison(claim, hit.post, article, hit.passage, { quote: inputs.quote.value, claimType: inputs.claimType.value,
+                        entities: value('entities').split(',').map(function (item) { return item.trim(); }).filter(Boolean),
+                        scope: { event: value('event'), season: value('season'), round: value('round'), session: value('session'), period: { start: value('start'), end: value('end') } },
+                        numeric: value('metric') || value('value') ? { metric: value('metric'), value: value('value'), units: value('units'), sample: value('sample'), method: value('method'), originalValues: [] } : null });
+                    state.archiveReview = validateArchiveReview({ comparisons: state.archiveReview.comparisons.concat([comparison]), dismissals: state.archiveReview.dismissals }, state.claims);
+                } catch (error) {
+                    status.textContent = /αυτούσιο|διαθέσιμο/.test(error.message) ? error.message : 'Η σύγκριση δεν είναι έγκυρη: έλεγξε όρους (1–4 λέξεις), σεζόν, γύρο, σκέλος και όριο 100 συγκρίσεων.';
+                    return;
+                }
+                box.remove(); changed(); note.textContent = 'Η σύγκριση καταγράφηκε στο πρόχειρο. Δες «Έλεγχος αρχείου».';
+            }), button('Ακύρωση', function () { box.remove(); }), status);
+            row.appendChild(box); inputs.claim.focus();
+        }
+        function scopeText(scope) {
+            return [scope.event, scope.season, scope.round && 'γύρος ' + scope.round, scope.session, scope.period.start && scope.period.start + ' – ' + scope.period.end].filter(Boolean).join(' · ') || 'χωρίς πλαίσιο';
+        }
+        function numericText(numeric) { return numeric ? [numeric.metric, numeric.value + ' ' + numeric.units, numeric.sample, numeric.method].join(' · ') : 'χωρίς αριθμητικό ορισμό'; }
+        function signalReason(signal, row) {
+            if (signal === 'possible-conflict') return 'Ίδιο δηλωμένο πλαίσιο και ορισμός (μετρική, μονάδες, δείγμα, μέθοδος), διαφορετική τιμή: ' + row.claim.numeric.value + ' έναντι ' + row.comparison.numeric.value + '.';
+            if (signal === 'update-candidate') return 'Ο ισχυρισμός ελέγχθηκε μετά τη δημοσίευση του άρθρου (' + row.post.date + ') με υποστηρικτική πηγή μεταγενέστερη της δημοσίευσης.';
+            return 'Ίδιο πλαίσιο και ίδιοι όροι, ομοιότητα λέξεων ' + Math.round(row.similarity * 100) + '%.';
+        }
+        async function runReview() {
+            var reviewEpoch = epoch, session = archiveSession;
+            archiveList.replaceChildren(); archiveMore.hidden = true;
+            var result = await reviewQueue(state, function (id) { return session && session.content.has(id) && session.posts.has(id) ? { post: session.posts.get(id), article: session.content.get(id) } : null; });
+            if (reviewEpoch !== epoch) return;
+            result.rows.forEach(function (row, index) {
+                var item = el('li', null, 'gb-research-result'); item.hidden = index >= 8;
+                item.append(el('h3', row.claim.text), el('p', 'Άρθρο: ' + row.post.title + ' · ' + row.post.date + ' · ' + row.post.id, 'gb-hint'),
+                    el('p', row.comparison.quote, 'gb-research-passage'), el('p', 'Θέση: ' + (row.passage.heading ? row.passage.heading.text : 'Παράγραφος ' + (row.passage.ordinal + 1)), 'gb-hint'),
+                    link('Άνοιγμα άρθρου', row.post.url), el('p', row.post.url, 'gb-hint'),
+                    el('p', 'Ισχυρισμός: ' + scopeText(row.claim.scope) + ' · ' + numericText(row.claim.numeric), 'gb-hint'),
+                    el('p', 'Αρχείο: ' + scopeText(row.comparison.scope) + ' · ' + numericText(row.comparison.numeric), 'gb-hint'));
+                row.signals.forEach(function (signal) { item.appendChild(el('p', SIGNAL_LABELS[signal.kind] + ': ' + signalReason(signal.kind, row))); });
+                item.appendChild(el('p', 'Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.', 'gb-hint is-warn'));
+                var locate = button('Εντοπισμός ισχυρισμού', function () {}); locate.dataset.claimAction = 'locate'; locate.dataset.claimId = row.claim.id; item.appendChild(locate);
+                row.signals.forEach(function (signal) {
+                    item.appendChild(button('Απόρριψη: ' + SIGNAL_LABELS[signal.kind], function () {
+                        if (state.archiveReview.dismissals.length >= 200) { archiveNote.textContent = 'Έφτασες τις 200 απορρίψεις. Πάτησε «Επαναφορά απορρίψεων» πριν απορρίψεις άλλη ένδειξη.'; return; }
+                        state.archiveReview.dismissals.push({ claimId: row.claim.id, key: signal.key, dismissedAt: new Date().toISOString() }); changed(); runReview();
+                    }));
+                });
+                item.appendChild(button('Αφαίρεση σύγκρισης', function () {
+                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== row.comparison; }); changed(); runReview();
+                }));
+                archiveList.appendChild(item);
+            });
+            archiveMore.hidden = result.rows.length <= 8; archiveMore.textContent = 'Περισσότερες ενδείξεις (' + Math.max(0, result.rows.length - 8) + ')';
+            var waiting = result.incomplete.filter(function (entry) { return !entry.loaded; }).length, partial = result.incomplete.length - waiting;
+            archiveNote.textContent = (result.rows.length ? result.rows.length + ' ενδείξεις.' : 'Καμία ένδειξη.')
+                + (result.truncated ? ' Το όριο (4 ανά ισχυρισμό, 24 συνολικά) περιόρισε την εμφάνιση.' : '')
+                + (partial ? ' Ελλιπές πλαίσιο σύγκρισης σε ' + partial + ': συμπλήρωσε πλήρες πλαίσιο και στις δύο πλευρές ή κατάγραψε ξανά αν άλλαξε το άρθρο.' : '')
+                + (waiting ? ' ' + waiting + ' συγκρίσεις δεν ελέγχθηκαν: κάνε πρώτα μια αναζήτηση για να φορτωθεί το κείμενο του αρχείου σε αυτή τη συνεδρία.' : '');
         }
         async function findArticles() {
             var revision = ++searchRevision, query = question.value.trim(); hits = []; articles.replaceChildren(); more.hidden = true;
@@ -809,6 +997,7 @@
                 if (revision !== searchRevision) return;
                 var found = await searchSliced(posts, query, content, function () { return revision === searchRevision; });
                 if (revision !== searchRevision) return;
+                archiveSession = { posts: new Map(posts.map(function (post) { return [post.id, post]; })), content: content };
                 hits = found; renderHits();
                 var coverage = manifest ? ' Κάλυψη κειμένου: ' + completed + '/' + manifest.shards.length + ' αρχεία. Στον κατάλογο: ' + manifest.coverage.searchableProse + '/' + manifest.coverage.eligible + ' άρθρα με πρόζα τουλάχιστον 40 χαρακτήρων.' : ' Το πλήρες κείμενο δεν φορτώθηκε.';
                 if (failed) coverage += ' Μερική κάλυψη: πάτησε ξανά «Εύρεση αναφορών» για επανάληψη.';
@@ -890,6 +1079,15 @@
             var newClaim = button('Νέος ισχυρισμός', function () { addClaim(null); }); newClaim.id = 'research-new-claim';
             claimDetails.append(captureClaim, newClaim);
             claimList = el('div'); claimDetails.appendChild(claimList);
+            var archiveDetails = detail('Έλεγχος αρχείου');
+            archiveDetails.append(el('p', 'Συγκρίνει μόνο ισχυρισμούς του προχείρου με αποσπάσματα που σημείωσες με «Σύγκριση με ισχυρισμό», με το κείμενο που φόρτωσε η τελευταία αναζήτηση. Δεν αλλάζει άρθρα και δεν δημιουργεί διορθώσεις.', 'gb-hint'),
+                el('p', 'Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.', 'gb-hint is-warn'));
+            archiveNote = el('p', '', 'gb-hint'); archiveNote.setAttribute('role', 'status'); archiveList = el('ol', null, 'gb-research-queue');
+            archiveMore = button('Περισσότερες ενδείξεις', function () { archiveList.querySelectorAll('li[hidden]').forEach(function (node) { node.hidden = false; }); archiveMore.hidden = true; }); archiveMore.hidden = true;
+            archiveDetails.append(button('Έλεγχος ενδείξεων', runReview), button('Επαναφορά απορρίψεων', function () {
+                if (!state.archiveReview.dismissals.length) return;
+                state.archiveReview.dismissals = []; changed(); runReview();
+            }), archiveNote, archiveList, archiveMore);
             var toolDetails = detail('Εργαλεία F1 Stories'); tools = el('div', null, 'gb-hint'); toolDetails.appendChild(tools);
             var addDetails = detail('Προσθήκη ευρήματος / πηγής');
             addDetails.appendChild(el('p', 'BetCast, GridCast και AnalystCast είναι σειρές άρθρων. Απόδοση, πρόβλεψη, επίσημο αποτέλεσμα και διακανονισμός καταγράφονται χωριστά. Η πραγματική κατηγορία του άρθρου διατηρείται.', 'gb-hint'));
@@ -970,7 +1168,7 @@
         });
     }
     global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, validateContentManifest: validateContentManifest, validateContentShard: validateContentShard, markdownLink: markdownLink, validateCatalog: validateCatalog,
-        validateWorkspace: validateWorkspace, validateClaim: validateClaim, importResearch: importResearch, claimFingerprint: claimFingerprint,
+        validateWorkspace: validateWorkspace, archiveSignals: archiveSignals, makeComparison: makeComparison, dismissalKey: dismissalKey, reviewQueue: reviewQueue, validateClaim: validateClaim, importResearch: importResearch, claimFingerprint: claimFingerprint,
         claimIssues: claimIssues, assessClaim: assessClaim, reviewableClaim: reviewable, sourceKey: sourceKey, newClaimSource: newClaimSource, sourceGroups: sourceGroups, locateClaimAnchor: locateClaimAnchor,
         snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');

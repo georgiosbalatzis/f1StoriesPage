@@ -1,0 +1,121 @@
+{
+  "note": "E-05 labeled draft-to-archive pairs. Archive sides are exact spans of real published passages with author-declared scope; draft claims are synthetic. Expected signal sets are exact.",
+  "cases": [
+    {
+      "label": "same fact, conflicting numbers", "category": "Technical", "postId": "20261015G", "find": "κατά μόλις 12 χιλιοστά",
+      "quote": "ο Norris πήρε την pole με την τελευταία του προσπάθεια, κατά μόλις 12 χιλιοστά από τον Hamilton", "entities": ["Norris", "Hamilton"],
+      "archive": { "claimType": "reported-observation", "scope": { "event": "Grand Prix Ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "0.012", "units": "s", "sample": "Norris έναντι Hamilton", "method": "καλύτεροι γύροι Q3" } },
+      "claim": { "text": "Ο Norris πήρε την pole από τον Hamilton για 13 χιλιοστά.", "claimType": "reported-observation", "scope": { "event": "Grand Prix  ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "0.0130", "units": "s", "sample": "Norris έναντι Hamilton", "method": "καλύτεροι γύροι Q3" } },
+      "expected": ["possible-conflict"]
+    },
+    {
+      "label": "legitimate change over time", "category": "Analysis", "postId": "20261028W", "find": "454 + 575",
+      "quote": "Το 2022 ο Verstappen κατέκτησε το δεύτερο παγκόσμιο πρωτάθλημα της καριέρας του με 454 βαθμούς", "entities": ["Verstappen"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "", "season": "2022", "round": "", "session": "season" },
+        "numeric": { "metric": "βαθμοί πρωταθλήματος", "value": "454", "units": "βαθμοί", "sample": "Verstappen (οδηγός)", "method": "τελική βαθμολογία" } },
+      "claim": { "text": "Ο Verstappen τελείωσε το 2023 με 575 βαθμούς.", "claimType": "official-fact", "scope": { "event": "", "season": "2023", "round": "", "session": "season" },
+        "numeric": { "metric": "βαθμοί πρωταθλήματος", "value": "575", "units": "βαθμοί", "sample": "Verstappen (οδηγός)", "method": "τελική βαθμολογία" } },
+      "expected": []
+    },
+    {
+      "label": "different sessions", "category": "Technical", "postId": "20261013G", "find": "Στο SQ3, με Soft",
+      "quote": "Στο SQ3, με Soft και οι δύο, ο Russell έγραψε 1:31.276", "entities": ["Russell"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "Grand Prix Μεξικού", "season": "2026", "round": "20", "session": "sq3" },
+        "numeric": { "metric": "χρόνος γύρου", "value": "91.276", "units": "s", "sample": "Russell", "method": "καλύτερος γύρος" } },
+      "claim": { "text": "Ο Russell έγραψε 1:31.747 στο Q3.", "claimType": "official-fact", "scope": { "event": "Grand Prix Μεξικού", "season": "2026", "round": "20", "session": "q3" },
+        "numeric": { "metric": "χρόνος γύρου", "value": "91.747", "units": "s", "sample": "Russell", "method": "καλύτερος γύρος" } },
+      "expected": []
+    },
+    {
+      "label": "different populations", "category": "Analysis", "postId": "20261028W", "find": "454 + 575",
+      "quote": "Το 2022 ο Verstappen κατέκτησε το δεύτερο παγκόσμιο πρωτάθλημα της καριέρας του με 454 βαθμούς, ενώ το 2023 έκανε κάτι ακόμη πιο εντυπωσιακό, φτάνοντας τους 575", "entities": ["Verstappen"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "", "season": "2023", "round": "", "session": "season" },
+        "numeric": { "metric": "βαθμοί πρωταθλήματος", "value": "575", "units": "βαθμοί", "sample": "Verstappen (οδηγός)", "method": "τελική βαθμολογία" } },
+      "claim": { "text": "Η Red Bull με τον Verstappen έφτασε τους 860 βαθμούς το 2023.", "claimType": "official-fact", "scope": { "event": "", "season": "2023", "round": "", "session": "season" },
+        "numeric": { "metric": "βαθμοί πρωταθλήματος", "value": "860", "units": "βαθμοί", "sample": "Red Bull (κατασκευαστής)", "method": "τελική βαθμολογία" } },
+      "expected": []
+    },
+    {
+      "label": "different conditions", "category": "News", "postId": "20261007F", "find": "350 kW",
+      "quote": "Η μέγιστη ισχύς του MGU-K φτάνει πλέον τα 350 kW", "entities": ["MGU"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "", "season": "2026", "round": "", "session": "season" },
+        "numeric": { "metric": "μέγιστη ισχύς MGU-K", "value": "350", "units": "kW", "sample": "κανονικές συνθήκες", "method": "κανονισμοί FIA" } },
+      "claim": { "text": "Στη βροχή η μέγιστη ισχύς του MGU-K περιορίζεται στα 250 kW.", "claimType": "official-fact", "scope": { "event": "", "season": "2026", "round": "", "session": "season" },
+        "numeric": { "metric": "μέγιστη ισχύς MGU-K", "value": "250", "units": "kW", "sample": "βρεγμένη πίστα", "method": "κανονισμοί FIA" } },
+      "expected": []
+    },
+    {
+      "label": "near-identical coverage", "category": "News", "postId": "20261005G", "find": "Η λύση της στιγμής",
+      "quote": "Η λύση της στιγμής ήταν εντυπωσιακά πρακτική. Οι μηχανικοί της FIA εντόπισαν γρήγορα τα minisectors όπου ενεργοποιούνταν το πρόβλημα και έβγαλαν νέα έκδοση του software που απενεργοποιούσε τον περιορισμό ενέργειας σε αυτά τα σημεία.", "entities": ["FIA", "minisectors"],
+      "archive": { "claimType": "reported-observation", "scope": { "event": "Grand Prix Ιαπωνίας", "season": "2026", "round": "3", "session": "race" }, "numeric": null },
+      "claim": { "text": "Η λύση της στιγμής ήταν πολύ πρακτική. Οι μηχανικοί της FIA εντόπισαν γρήγορα τα minisectors όπου ενεργοποιούνταν το πρόβλημα και έβγαλαν νέα έκδοση του software που απενεργοποιούσε τον περιορισμό ενέργειας σε αυτά τα σημεία.", "claimType": "reported-observation",
+        "scope": { "event": "Grand Prix Ιαπωνίας", "season": "2026", "round": "3", "session": "race" }, "numeric": null },
+      "expected": ["overlapping-coverage"]
+    },
+    {
+      "label": "update-worthy", "category": "Technical", "postId": "20261013G", "find": "Στο SQ3, με Soft",
+      "quote": "Στο SQ3, με Soft και οι δύο, ο Russell έγραψε 1:31.276 και πήρε τη δεύτερη θέση πίσω από τον Verstappen. Ο Antonelli έμεινε έβδομος, στο 1:31.849. Η διαφορά των 573 χιλιοστών ήταν μεγάλη", "entities": ["Russell", "Antonelli"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "Grand Prix Μεξικού", "season": "2026", "round": "20", "session": "sq3" },
+        "numeric": { "metric": "διαφορά Russell–Antonelli", "value": "0.573", "units": "s", "sample": "Russell, Antonelli", "method": "καλύτεροι γύροι SQ3" } },
+      "claim": { "text": "Στο SQ3 η διαφορά Russell και Antonelli ήταν 574 χιλιοστά.", "claimType": "official-fact", "scope": { "event": "Grand Prix Μεξικού", "season": "2026", "round": "20", "session": "sq3" },
+        "numeric": { "metric": "διαφορά Russell–Antonelli", "value": "0.574", "units": "s", "sample": "Russell, Antonelli", "method": "καλύτεροι γύροι SQ3" }, "reviewed": true },
+      "expected": ["possible-conflict", "update-candidate"]
+    },
+    {
+      "label": "false lexical match", "category": "Betting", "postId": "20261024J", "find": "σωστό setup",
+      "quote": "ο Lewis Hamilton δεν βρήκε ακόμα το σωστό setup", "entities": ["Hamilton", "setup"],
+      "archive": { "claimType": "reported-observation", "scope": { "event": "Grand Prix ΗΠΑ", "season": "2026", "round": "19", "session": "fp2" }, "numeric": null },
+      "claim": { "text": "Στη Σιγκαπούρη ο Hamilton άλλαξε το setup της εμπρός πτέρυγας και έχασε χρόνο.", "claimType": "reported-observation",
+        "scope": { "event": "Grand Prix Σιγκαπούρης", "season": "2026", "round": "18", "session": "q3" }, "numeric": null },
+      "expected": []
+    },
+    {
+      "label": "historical scope mismatch", "category": "History", "postId": "20261027W", "find": "Το έκανε το 1997",
+      "quote": "Ο Frentzen δεν χρειάστηκε ποτέ να αποδείξει ότι μπορούσε να σταθεί απέναντι στους μεγάλους. Το έκανε το 1997, όταν στη Williams πήρε δύο νίκες", "entities": ["Frentzen"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "", "season": "1997", "round": "", "session": "season" },
+        "numeric": { "metric": "νίκες", "value": "2", "units": "νίκες", "sample": "Frentzen", "method": "τελική κατάταξη" } },
+      "claim": { "text": "Ο Frentzen στη Jordan το 1999 πήρε τρεις νίκες.", "claimType": "official-fact", "scope": { "event": "", "season": "1999", "round": "", "session": "season" },
+        "numeric": { "metric": "νίκες", "value": "3", "units": "νίκες", "sample": "Frentzen", "method": "τελική κατάταξη" } },
+      "expected": []
+    },
+    {
+      "label": "control: ms versus s", "category": "Technical", "postId": "20261015G", "find": "κατά μόλις 12 χιλιοστά",
+      "quote": "ο Norris πήρε την pole με την τελευταία του προσπάθεια, κατά μόλις 12 χιλιοστά από τον Hamilton", "entities": ["Norris", "Hamilton"],
+      "archive": { "claimType": "reported-observation", "scope": { "event": "Grand Prix Ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "0.012", "units": "s", "sample": "Norris έναντι Hamilton", "method": "καλύτεροι γύροι Q3" } },
+      "claim": { "text": "Ο Norris πήρε την pole από τον Hamilton για 12 χιλιοστά.", "claimType": "reported-observation", "scope": { "event": "Grand Prix Ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "12", "units": "ms", "sample": "Norris έναντι Hamilton", "method": "καλύτεροι γύροι Q3" } },
+      "expected": []
+    },
+    {
+      "label": "control: best versus average", "category": "Technical", "postId": "20261015G", "find": "κατά μόλις 12 χιλιοστά",
+      "quote": "ο Norris πήρε την pole με την τελευταία του προσπάθεια, κατά μόλις 12 χιλιοστά από τον Hamilton", "entities": ["Norris", "Hamilton"],
+      "archive": { "claimType": "reported-observation", "scope": { "event": "Grand Prix Ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "0.012", "units": "s", "sample": "Norris έναντι Hamilton", "method": "καλύτεροι γύροι Q3" } },
+      "claim": { "text": "Ο Norris ήταν κατά μέσο όρο 0,2 δευτερόλεπτα ταχύτερος από τον Hamilton στο Q3.", "claimType": "reported-observation", "scope": { "event": "Grand Prix Ουγγαρίας", "season": "2026", "round": "13", "session": "q3" },
+        "numeric": { "metric": "διαφορά pole", "value": "0.2", "units": "s", "sample": "Norris έναντι Hamilton", "method": "μέσος όρος γύρων Q3" } },
+      "expected": []
+    },
+    {
+      "label": "control: ambiguous grouped spelling", "category": "Analysis", "postId": "20261028W", "find": "454 + 575",
+      "quote": "Το 2022 ο Verstappen κατέκτησε το δεύτερο παγκόσμιο πρωτάθλημα της καριέρας του με 454 βαθμούς, ενώ το 2023 έκανε κάτι ακόμη πιο εντυπωσιακό, φτάνοντας τους 575. Συνολικά, 454 + 575 = 1.029 βαθμοί.", "entities": ["Verstappen"],
+      "archive": { "claimType": "calculated-statistic", "scope": { "event": "", "season": "2023", "round": "", "session": "season" },
+        "numeric": { "metric": "άθροισμα βαθμών 2022–2023", "value": "1029", "units": "βαθμοί", "sample": "Verstappen", "method": "άθροισμα" } },
+      "claim": { "text": "Ο Verstappen μάζεψε 1,029 βαθμούς σε δύο σεζόν.", "claimType": "calculated-statistic", "scope": { "event": "", "season": "2023", "round": "", "session": "season" },
+        "numeric": { "metric": "άθροισμα βαθμών 2022–2023", "value": "1,029", "units": "βαθμοί", "sample": "Verstappen", "method": "άθροισμα" } },
+      "expected": []
+    },
+    {
+      "label": "control: missing archive scope", "category": "History", "postId": "20261027W", "find": "Το έκανε το 1997",
+      "quote": "Ο Frentzen δεν χρειάστηκε ποτέ να αποδείξει ότι μπορούσε να σταθεί απέναντι στους μεγάλους. Το έκανε το 1997, όταν στη Williams πήρε δύο νίκες", "entities": ["Frentzen"],
+      "archive": { "claimType": "official-fact", "scope": { "event": "", "season": "1997", "round": "", "session": "" },
+        "numeric": { "metric": "νίκες", "value": "2", "units": "νίκες", "sample": "Frentzen", "method": "τελική κατάταξη" } },
+      "claim": { "text": "Ο Frentzen πήρε τρεις νίκες το 1997.", "claimType": "official-fact", "scope": { "event": "", "season": "1997", "round": "", "session": "season" },
+        "numeric": { "metric": "νίκες", "value": "3", "units": "νίκες", "sample": "Frentzen", "method": "τελική κατάταξη" } },
+      "expectIncomplete": true,
+      "expected": []
+    }
+  ]
+}
