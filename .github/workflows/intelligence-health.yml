@@ -83,4 +83,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}
-        run: node scripts/intelligence/health-check.mjs --incidents="$RUNNER_TEMP/health/health-evidence.json" $DRY_RUN
+        run: node scripts/intelligence/health-check.mjs --incidents="$RUNNER_TEMP/health/health-evidence.json" ${DRY_RUN:+"$DRY_RUN"}

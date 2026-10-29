@@ -45,7 +45,6 @@ jobs:
       id-token: write
     env:
       MODE: ${{ github.event_name == 'schedule' && 'refresh' || inputs.mode }}
-      SNAPSHOT_SUMMARY_PATH: ${{ runner.temp }}/intelligence-operation.json
     outputs:
       envelope: ${{ steps.refresh.outputs.envelope }}
       artifact: ${{ steps.upload.outputs.artifact-id }}
@@ -69,6 +68,8 @@ jobs:
           DASHBOARD_SNAPSHOT_KEY: ${{ secrets.DASHBOARD_SNAPSHOT_KEY }}
           WIF_PROVIDER: ${{ vars.INTELLIGENCE_WIF_PROVIDER }}
           WIF_SERVICE_ACCOUNT: ${{ vars.INTELLIGENCE_SERVICE_ACCOUNT }}
+          # Step-level: the runner context is not available in job-level env.
+          SNAPSHOT_SUMMARY_PATH: ${{ runner.temp }}/intelligence-operation.json
         run: node scripts/intelligence/snapshot.mjs plan --mode="$MODE"
 
       - name: Authenticate to Google Cloud (Workload Identity Federation, no key file)
@@ -92,6 +93,7 @@ jobs:
           WIF_SERVICE_ACCOUNT: ${{ vars.INTELLIGENCE_SERVICE_ACCOUNT }}
           BIGQUERY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           OUT: ${{ runner.temp }}/snapshot.json
+          SNAPSHOT_SUMMARY_PATH: ${{ runner.temp }}/intelligence-operation.json
         run: |
           set -eu
           node scripts/intelligence/snapshot.mjs refresh --mode="$MODE" --out="$OUT"
@@ -115,6 +117,7 @@ jobs:
           PLAN_OUTCOME: ${{ steps.plan.outcome }}
           AUTH_OUTCOME: ${{ steps.auth.outcome }}
           REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+          SNAPSHOT_SUMMARY_PATH: ${{ runner.temp }}/intelligence-operation.json
         run: node scripts/intelligence/snapshot.mjs finalize-summary
 
       # Public-safe metadata only; independent of the encrypted envelope and retained for watchdog recovery.

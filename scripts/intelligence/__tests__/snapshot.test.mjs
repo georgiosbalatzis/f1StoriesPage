@@ -549,6 +549,17 @@ test('unwritable summaries preserve plan and refresh results, envelope output an
     } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 
+// GitHub rejects the whole workflow file (no job runs) when workflow- or job-level env uses a step-only context.
+test('workflow- and job-level env use only contexts GitHub allows there', () => {
+    const dir = path.join(REPO_ROOT, '.github/workflows');
+    for (const name of fs.readdirSync(dir).filter(file => /\.ya?ml$/.test(file))) {
+        const text = fs.readFileSync(path.join(dir, name), 'utf8');
+        for (const [, indent, body] of text.matchAll(/^( {0}| {4})env:\n((?:\1 {2}.*\n)+)/gm)) {
+            assert.doesNotMatch(body, /\$\{\{[^}]*\b(?:runner|steps|job|env)\./, `${name}: ${indent.length ? 'job' : 'workflow'}-level env uses a step-only context`);
+        }
+    }
+});
+
 test('the workflow keeps credentials, writes and deploys in separate least-privilege jobs', () => {
     assert.match(workflow, /^permissions: \{\}$/m);
     assert.match(workflow, /^concurrency:\n {2}group: intelligence-snapshot\n {2}cancel-in-progress: false$/m);
