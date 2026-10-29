@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Wed, 28 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 29 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Oταν ο Rosberg άντεξε την  πίεση του Ricciardo</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261030W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261030W/article.html</guid>
+      <pubDate>Thu, 29 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Στη Σιγκαπούρη το 2016, ο Nico Rosberg άντεξε την καταιγιστική αντεπίθεση του Daniel Ricciardo, κερδίζοντας με διαφορά μόλις 0,488 δευτερολέπτων.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261029G/article.html</link>
@@ -267,15 +276,6 @@
       <description>Να βλέπεις τον Takuma Sato να φοράει τα χρώματα της BAR Honda, να κατεβαίνει στην Eau Rouge, να στρίβει την πρώτη στροφή του Suzuka με εκείνη…</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261007F/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261007F/article.html</guid>
-      <pubDate>Tue, 06 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Το πρώτο integration test της Formula 1 του 2026 έγινε στη βροχή του Sepang Για δεκαπέντε αγώνες, το 2026 έλεγε σε γενικές γραμμές μια ιστορία που είχαμε…</description>
-      <category>Ειδήσεις</category>
-      <dc:creator>F1 Stories</dc:creator>
     </item>
   </channel>
 </rss>

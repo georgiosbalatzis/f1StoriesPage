@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20261030W",
+      "title": "Oταν ο Rosberg άντεξε την  πίεση του Ricciardo",
+      "author": "Themis Charvalis",
+      "date": "2026-10-30",
+      "dateISO": "2026-10-30",
+      "displayDate": "30 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261030W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261030W/2.webp",
+      "excerpt": "Στη Σιγκαπούρη το 2016, ο Nico Rosberg άντεξε την καταιγιστική αντεπίθεση του Daniel Ricciardo, κερδίζοντας με διαφορά μόλις 0,488 δευτερολέπτων.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261030W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Singapore 2016",
+        "Rosberg",
+        "Ricciardo",
+        "Mercedes",
+        "Redbull"
+      ],
+      "wordCount": 1114,
+      "readingTime": "6 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 515,
+      "backgroundImageHeight": 388,
+      "inputDigest": "b2632ed3f387bf43a72ed5562a640408ad66167c5ed83769aab4ecec631e27bf"
+    },
+    {
       "id": "20261029G",
       "title": "GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή",
       "author": "Georgios Balatzis",
@@ -11284,5 +11317,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-29T18:52:03.691Z"
+  "lastUpdated": "2026-10-29T22:08:47.121Z"
 }
