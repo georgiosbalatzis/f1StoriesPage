@@ -6,6 +6,10 @@ workflow, it runs no BigQuery query, and it writes nothing. The owner runs it lo
 ([Run it](#run-it)). Until that run happens, no I-06 model is `PRODUCTION_VALIDATED`
 ([evidence](#production-evidence)).
 
+[I-06E monitoring](operations.md) reports pipeline health; I-06C4 reports analytical correctness and needs the
+owner's key. A snapshot can be operationally `HEALTHY` while analytical checks remain **NOT VERIFIED**
+(`NOT_VERIFIED` in this validator).
+
 The aim is not to make every metric pass. It is to say, for each figure on `/dashboard/`, whether it is consistent
 with the others, whether it is complete, and what evidence supports that, and to say so explicitly when the
 evidence does not exist.

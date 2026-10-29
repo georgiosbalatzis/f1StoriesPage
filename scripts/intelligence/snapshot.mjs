@@ -33,6 +33,8 @@ export const MIN_SAMPLE = 30; // @min_events and @min_observations, as in the mo
 export const MIN_BYTES_PER_TABLE = 10 * 1024 * 1024;
 export const MAX_BYTES_BILLED = 400 * 1024 * 1024; // per query, enforced by BigQuery
 export const DAILY_MAX_BYTES = 1600 * 1024 * 1024; // all queries of one refresh: planned by estimate, then by billed bytes
+// Keep the watchdog aligned with the dashboard's 48-hour stale notice (checked by the monitoring tests).
+export const STALE_MS = 48 * 60 * 60 * 1000;
 export const SNAPSHOT_PATH = 'dashboard/data/snapshot.json';
 export const ENVELOPE_FORMAT = 'f1s-dashboard-snapshot';
 export const PAYLOAD_FORMAT = 'f1s-dashboard-snapshot-payload';
@@ -343,14 +345,17 @@ export function bigQuery({ token, fetch = globalThis.fetch, sleep = ms => new Pr
 }
 
 // Dry-run everything, cost it, and only then (refresh mode) run each model once. Returns the sealed envelope.
-export async function refresh({ mode, env, now, client, root, enabled, inputs = readInputs(), log = console.log }) {
+export async function refresh({ mode, env, now, client, root, enabled, inputs = readInputs(), log = console.log, summary = operationalSummary({ mode, now }) }) {
+    summary.stage = 'configuration';
     const { due, window, reason } = plan({ mode, env, now, root, enabled });
     if (!due) throw new Error(`nothing to refresh: ${reason}`);
+    summary.stage = 'authentication';
     requireConfiguration(env, { needsToken: true });
     const key = parseKey(env.DASHBOARD_SNAPSHOT_KEY);
 
     // A refresh stops at the first missing day. A dry-run (free) reports them and still costs the queries, then fails.
     const missing = [];
+    summary.stage = 'export_tables';
     for (let day = window.start; day <= window.end; day = addDays(day, 1)) {
         try {
             await client.table(day);
@@ -363,7 +368,10 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
 
     const file = publishedPath(root ?? REPO_ROOT);
     const { run, carried } = schedule(window, fs.existsSync(file) ? openSnapshot(fs.readFileSync(file, 'utf8'), key) : null);
+    summary.runModels = run;
+    summary.carriedModels = Object.entries(carried).map(([model, item]) => ({ model, asOf: item.scope.asOf }));
     log(`running ${run.join(', ')}${Object.keys(carried).length ? `; carrying ${Object.entries(carried).map(([model, item]) => `${model} (as_of ${item.scope.asOf})`).join(', ')}` : ''}`);
+    summary.stage = 'dry_run';
     const queries = run.map(model => {
         const sql = renderModel(model, { project: PROJECT, property: PROPERTY, ...inputs });
         const scope = modelWindow(model, window);
@@ -374,21 +382,37 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
         const { processed, referenced, tables, estimate } = conservativeBytes(await client.dryRun(query.sql, query.parameters),
             scannedTables(query.model, query.scope));
         estimates.push({ model: query.model, estimate });
+        summary.queries.push({ model: query.model, estimateBytes: estimate, billedBytes: null });
         log(`dry-run ${query.model}: ${mib(processed)} processed, ${referenced} table(s) listed, ${tables} counted, ≤ ${mib(estimate)} billed`);
     }
+    summary.estimateBytes = estimates.reduce((sum, item) => sum + item.estimate, 0);
+    summary.stage = 'preflight';
     const total = preflight(estimates);
     log(`preflight passed: ≤ ${mib(total)} of the ${mib(DAILY_MAX_BYTES)} daily ceiling; per-query cap ${mib(MAX_BYTES_BILLED)}`);
-    if (missing.length) throw new Error(`${missing.length} daily export table(s) missing (first ${missing[0]}): a refresh would fail closed`);
-    if (mode === 'dry-run') return null;
+    if (missing.length) {
+        summary.stage = 'export_tables';
+        throw new Error(`${missing.length} daily export table(s) missing (first ${missing[0]}): a refresh would fail closed`);
+    }
+    if (mode === 'dry-run') {
+        summary.stage = 'ok';
+        summary.outcome = 'success';
+        return null;
+    }
 
     const models = Object.fromEntries(Object.entries(carried).map(([model, item]) => [model, item.rows]));
     let billed = 0;
+    summary.billedBytes = 0;
     for (const { model, sql, scope, parameters } of queries) {
         const digest = crypto.createHash('sha256').update(sql).update(JSON.stringify(parameters)).digest('hex').slice(0, 16);
         const jobId = `f1s_snapshot_${window.asOf.replaceAll('-', '')}_${model.replaceAll('-', '_')}_${digest}`;
+        summary.stage = 'query';
+        summary.queryCount++;
         const run = await client.run(jobId, sql, parameters);
         billed += run.billed;
+        summary.queries.find(item => item.model === model).billedBytes = run.billed;
+        summary.billedBytes = billed;
         if (billed > DAILY_MAX_BYTES) throw new Error(`billed bytes ${mib(billed)} passed the daily ceiling; stopping`);
+        summary.stage = 'result_validation';
         models[model] = resultRows(model, run.result, scope);
         log(`ran ${model}: ${mib(run.billed)} billed, ${models[model].length} aggregate rows`);
     }
@@ -400,7 +424,18 @@ export async function refresh({ mode, env, now, client, root, enabled, inputs = 
             ...Object.entries(carried).map(([model, item]) => [model, item.scope])
         ]),
         models };
-    return sealSnapshot(payload, key, { generatedAt, window });
+    summary.stage = 'encryption';
+    const envelope = sealSnapshot(payload, key, { generatedAt, window });
+    summary.stage = 'ok';
+    summary.outcome = 'success';
+    return envelope;
+}
+
+// Only operational metadata belongs in the public artifact; never copy errors, SQL, rows or environment values.
+export function operationalSummary({ mode, now }) {
+    return { version: 1, observedAt: now.toISOString(), mode, window: snapshotWindow(now), stage: 'configuration', outcome: 'pending',
+        runModels: [], carriedModels: [], queries: [], queryCount: 0, estimateBytes: null, billedBytes: null,
+        perQueryCapBytes: MAX_BYTES_BILLED, dailyCapBytes: DAILY_MAX_BYTES };
 }
 
 // Publish a sealed envelope over the committed one only when it is valid and newer; otherwise leave it untouched.
@@ -419,20 +454,54 @@ async function main(argv, env) {
     const [command, ...rest] = argv;
     const options = Object.fromEntries(rest.map(arg => arg.match(/^--([a-z-]+)=(.*)$/)).filter(Boolean).map(m => [m[1], m[2]]));
     const output = (name, value) => env.GITHUB_OUTPUT && fs.appendFileSync(env.GITHUB_OUTPUT, `${name}=${value}\n`);
-    if (command === 'plan') {
-        const { due, window, reason } = plan({ mode: options.mode, env, now: new Date() });
-        console.log(due ? reason : `skipped: ${reason}`);
-        output('due', due);
-        output('as_of', window.asOf);
-    } else if (command === 'refresh') {
-        if (options.mode === 'refresh' && !options.out) throw new Error('--out is required');
-        const envelope = await refresh({ mode: options.mode, env, now: new Date(), client: bigQuery({ token: env.BIGQUERY_ACCESS_TOKEN }) });
-        // Written outside the repository; only the publish job copies it into dashboard/data/.
-        if (envelope) fs.writeFileSync(options.out, envelope, { flag: 'wx' });
-    } else if (command === 'install') {
-        console.log(install(fs.readFileSync(rest[0], 'utf8')) ? `published ${SNAPSHOT_PATH}` : 'unchanged: the published snapshot is as new or newer');
-    } else {
-        throw new Error('usage: snapshot.mjs plan|refresh --mode=dry-run|refresh [--out=<file>] | install <file>');
+    const now = new Date();
+    const summary = operationalSummary({ mode: options.mode, now });
+    const metadataUnavailable = () => console.error('Operational metadata unavailable; production result unchanged.');
+    const saveSummary = () => {
+        try {
+            if (env.SNAPSHOT_SUMMARY_PATH) fs.writeFileSync(env.SNAPSHOT_SUMMARY_PATH, `${JSON.stringify(summary, null, 2)}\n`);
+        } catch { metadataUnavailable(); }
+    };
+    try {
+        if (command === 'plan') {
+            const { due, window, reason } = plan({ mode: options.mode, env, now });
+            summary.stage = due ? 'authentication' : 'plan_skipped';
+            summary.outcome = due ? 'pending' : 'skipped';
+            console.log(due ? reason : `skipped: ${reason}`);
+            output('due', due);
+            output('as_of', window.asOf);
+        } else if (command === 'refresh') {
+            if (options.mode === 'refresh' && !options.out) throw new Error('--out is required');
+            const envelope = await refresh({ mode: options.mode, env, now, summary, client: bigQuery({ token: env.BIGQUERY_ACCESS_TOKEN }) });
+            // Written outside the repository; only the publish job copies it into dashboard/data/.
+            if (envelope) {
+                summary.stage = 'encryption';
+                fs.writeFileSync(options.out, envelope, { flag: 'wx' });
+                summary.stage = 'ok';
+            }
+        } else if (command === 'finalize-summary') {
+            // WIF runs outside Node; classify its failure from the step outcome, never from provider error text.
+            if (!env.SNAPSHOT_SUMMARY_PATH) return;
+            // No summary means the plan step never ran (checkout or setup failed): never report that as pending.
+            try {
+                if (fs.existsSync(env.SNAPSHOT_SUMMARY_PATH)) Object.assign(summary, JSON.parse(fs.readFileSync(env.SNAPSHOT_SUMMARY_PATH, 'utf8')));
+                else Object.assign(summary, { stage: 'configuration', outcome: 'unknown' });
+            } catch {
+                metadataUnavailable();
+                Object.assign(summary, { stage: 'configuration', outcome: 'unknown' });
+            }
+            if (env.AUTH_OUTCOME === 'failure') Object.assign(summary, { stage: 'authentication', outcome: 'failure' });
+            else if (env.PLAN_OUTCOME === 'failure' || env.REFRESH_OUTCOME === 'failure') summary.outcome = 'failure';
+        } else if (command === 'install') {
+            console.log(install(fs.readFileSync(rest[0], 'utf8')) ? `published ${SNAPSHOT_PATH}` : 'unchanged: the published snapshot is as new or newer');
+        } else {
+            throw new Error('usage: snapshot.mjs plan|refresh --mode=dry-run|refresh [--out=<file>] | install <file>');
+        }
+    } catch (error) {
+        summary.outcome = 'failure';
+        throw error;
+    } finally {
+        if (['plan', 'refresh', 'finalize-summary'].includes(command)) saveSummary();
     }
 }
 

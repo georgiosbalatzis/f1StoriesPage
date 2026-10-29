@@ -513,6 +513,7 @@ test('the validator is offline: no network, no file writes, no BigQuery, and not
     for (const name of fs.readdirSync(path.join(REPO_ROOT, '.github/workflows'))) {
         assert.doesNotMatch(read(`.github/workflows/${name}`), /validate-snapshot/, name);
     }
+    assert.doesNotMatch(read('scripts/intelligence/health-check.mjs'), /openSnapshot\(|parseKey\(|createDecipher|from ['"]\.\/validate-snapshot/);
 });
 
 test('the documentation lists every check and every model of the contract', () => {

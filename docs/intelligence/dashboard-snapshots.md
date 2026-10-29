@@ -249,6 +249,21 @@ Open items inherited from [bigquery-validation.md](bigquery-validation.md) still
 G-X68J6MQKSM stream mapping and the small LCP/INP samples.
 
 
+## I-06E — Monitoring
+
+[operations.md](operations.md) covers the independent `intelligence-health.yml` watchdog, health states, incident
+categories, thresholds, notifications, recovery and monitoring shutdown. Checks run at 11:00 and 17:00
+`Europe/Athens`; monitoring uses no Google credentials, dashboard key or BigQuery queries. `UNKNOWN` is missing
+evidence, never proof of recovery. I-06C4 analytical correctness remains owner-run with the key; operational
+`HEALTHY` can coexist with analytical checks **NOT VERIFIED**.
+
+The snapshot workflow finalizes and uploads `intelligence-operation-<run_id>-<run_attempt>` on refresh-job cleanup,
+with `intelligence-operation.json` retained for 21 days. It records dates, mode, stage/outcome, selected/carried model
+ids, query-attempt count, conservative estimates, actual billed bytes and caps, without SQL, rows, keys or tokens. If no
+plan summary exists, finalization records `stage: configuration`, `outcome: unknown`, unless a step explicitly
+failed. Missing/invalid artifacts leave checks unknown. This is separate from the one-day encrypted-envelope
+artifact and does not establish the Cloud bill. The separate €10 budget alert remains required.
+
 ## I-06C1 — Article performance expansion
 
 I-06C is shipped in focused stages: **article performance**, then editorial discovery and audience/acquisition,

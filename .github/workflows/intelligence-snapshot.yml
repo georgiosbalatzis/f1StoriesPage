@@ -45,6 +45,7 @@ jobs:
       id-token: write
     env:
       MODE: ${{ github.event_name == 'schedule' && 'refresh' || inputs.mode }}
+      SNAPSHOT_SUMMARY_PATH: ${{ runner.temp }}/intelligence-operation.json
     outputs:
       envelope: ${{ steps.refresh.outputs.envelope }}
       artifact: ${{ steps.upload.outputs.artifact-id }}
@@ -106,6 +107,26 @@ jobs:
           path: ${{ runner.temp }}/snapshot.json
           retention-days: 1
           if-no-files-found: error
+
+      - name: Finalize operational metadata
+        if: ${{ always() }}
+        continue-on-error: true
+        env:
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+          AUTH_OUTCOME: ${{ steps.auth.outcome }}
+          REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+        run: node scripts/intelligence/snapshot.mjs finalize-summary
+
+      # Public-safe metadata only; independent of the encrypted envelope and retained for watchdog recovery.
+      - name: Upload operational metadata
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: intelligence-operation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-operation.json
+          retention-days: 21
+          if-no-files-found: warn
 
   publish:
     name: Commit the encrypted snapshot

@@ -103,7 +103,7 @@ jobs:
         run: npm run test:security
 
       - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
-        run: npm run test:dashboard && npm run test:dashboard:browser
+        run: npm run test:intelligence && npm run test:dashboard:browser
 
       # Only this visual-review PR publishes screenshot evidence, using synthetic rows and generated keys.
       # Never upload screenshots or unlocked dashboard content from actual production data.

@@ -26,6 +26,7 @@ Baseline: `main` at `5572beb7`, which is also the Main `sourceSha` in the live
 | [dashboard-snapshots.md](dashboard-snapshots.md) | I-06B daily encrypted `/dashboard/` snapshots, I-06C1 article performance, I-06C2 acquisition + attribution quality and I-06C3 weekly editorial discovery, plus I-06D visual dashboard: workflow, fixed cost safeguards, encryption, first owner-validated run and rollout |
 | [bigquery-validation.md](bigquery-validation.md) | BigQuery validation: per-model status, the owner's Console results and reconciliations for 19–22 Oct, schema compatibility, owner commands, production checks, outstanding items |
 | [data-quality.md](data-quality.md) | I-06C4: snapshot quality contract, populations, exact reconciliation rules, freshness and carried-data rules, instrumentation findings, production evidence, the offline validator and an unexecuted BigQuery validation plan |
+| [operations.md](operations.md) | I-06E: pipeline health states, watchdog incidents, failure detection limits, safe recovery, cost telemetry, notifications and owner verification |
 
 The Web Vitals contract and its p75 report are owned by [perf/rum-pilot/](../../perf/rum-pilot/README.md) and are
 referenced, not copied.
