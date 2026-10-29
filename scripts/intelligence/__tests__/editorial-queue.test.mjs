@@ -156,13 +156,16 @@ test('deterministic plain Greek Markdown keeps evidence, long titles, raw counts
     assert.match(nestedOutput, /earlier\.impressions: 200/);
 });
 
-test('direct I-07B results are accepted without inventing synthetic provenance or abstention evidence', () => {
+test('direct I-07B results carry synthetic provenance and never invent abstention evidence', () => {
     const contract = JSON.parse(fs.readFileSync(new URL('./fixtures/editorial-insights/synthetic.json', import.meta.url), 'utf8'));
     const result = evaluateEditorialInsights(contract, { asOf: '2026-10-29' });
     const queue = buildQueue(result);
     assert.equal(signalItems(queue).length, result.signals.length);
-    assert.equal(queue.synthetic, null);
-    assert.match(renderQueue(queue), /Προέλευση συνθετικών δεδομένων: NOT VERIFIED/);
+    assert.equal(queue.synthetic, true);
+    assert.match(renderQueue(queue), /ΠΡΟΣΟΧΗ: συνθετικά δεδομένα/);
+    const { synthetic, ...legacy } = result;
+    assert.equal(buildQueue(legacy).synthetic, null);
+    assert.match(renderQueue(buildQueue(legacy)), /Προέλευση συνθετικών δεδομένων: NOT VERIFIED/);
     const invalid = buildQueue(evaluateEditorialInsights({ version: 1, synthetic: true }));
     assert.equal(signalItems(invalid).length, 0);
     assert.equal(invalid.groups.at(-1).items[0].status, 'FAIL');
