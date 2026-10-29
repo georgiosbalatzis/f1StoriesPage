@@ -1,5 +1,17 @@
 # BigQuery validation (2026-10-26)
 
+> **Current status (2026-10-29, I-06C4).** The record below is the 2026-10-26 validation and is kept unchanged.
+> Since then the daily snapshot pipeline has executed the nine snapshot models in production:
+> - `10`, `11`, `13`, `20`, `26`, `28` and `29` over 19–24 Oct (run `40830298650`, 70 MiB billed);
+> - `30` and `33` over 19–23 Oct (run `40489852956`).
+>
+> These runs make the nine models `PRODUCTION_EXECUTED` in the pipeline. They are still not `PRODUCTION_VALIDATED`.
+> Reconciliation now has an offline validator, and it remains open until the owner runs that validator on a
+> decrypted snapshot. Rules, evidence and what remains: [data-quality.md](data-quality.md).
+> - Outstanding item 2 (19–25 Oct) is covered for the snapshot models by the snapshot with `as_of` 2026-10-29, once
+>   the owner validates it.
+> - Items 1, 4 and 5 are unchanged.
+
 Code under test: `main` at `fe220330` (I-05 #357 merged), plus this PR, which changes no model SQL. Export:
 `f1-stories-analytics.analytics_485678890` (EU), measurement ID `G-X68J6MQKSM`.
 

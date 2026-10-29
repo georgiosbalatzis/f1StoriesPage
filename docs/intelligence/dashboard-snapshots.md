@@ -385,11 +385,25 @@ the day after any snapshot with yesterday's RUM, normally the next scheduled run
 `static-source-guard.mjs`; a test derives the required list from `SNAPSHOT_MODELS`. No new secret, IAM permission,
 Google Cloud service, network origin or CSP change.
 
-**Production validation still required:** the first discovery-day dry-run and its `totalBytesBilled` (expected ≤ 1540 MiB
-planned, about 70 MiB billed if the 10 MiB-per-query pattern holds); that `internal_page_click` rows carry
-`page_location`, `link_path` and `link_section` as `analytics.js` sends them (marked unverified in
-editorial-model.md); and a check that carried Core Web Vitals labels appear on that day.
+**Production validation.** The first discovery day ran on 2026-10-29 (run `40830298650`, `as_of` 2026-10-28,
+19–24 Oct):
+- seven models ran, `30` and `33` were carried from `as_of` 2026-10-27;
+- preflight was 420 MiB, and 70 MiB was billed (7 × 10.00 MiB).
 
+Still required, and checked by the I-06C4 validator once the owner runs it on the decrypted snapshot
+([data-quality.md](data-quality.md)):
+- that kept `internal_page_click` rows carry `link_path` and `link_section` (`discovery.fields`);
+- that carried RUM keeps its own dates (`window.carried`).
+
+A visual check that the page shows the carried labels also remains.
+
+
+## I-06C4 — Data quality and reconciliation
+
+`scripts/intelligence/validate-snapshot.mjs` checks a decrypted payload offline: the quality contract, exact
+cross-model reconciliations (only for the same unit, window and a compatible population), windows, carried data,
+freshness and instrumentation completeness. It runs no query, writes nothing, and is not part of this workflow.
+Snapshot format, encryption, schedule, caps and models are unchanged. See [data-quality.md](data-quality.md).
 
 ## I-06D — Editorial Intelligence interface and presentation
 
