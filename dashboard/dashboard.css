@@ -1,6 +1,7 @@
 /* dashboard.css — /dashboard/. The F1 Stories "Paddock Edition" world (docs/design-tokens.json): cream or graphite
    sheet under a near-black document band, IBM Plex Sans (Greek) for all text, Barlow Condensed for numerals only,
-   square edges and hairline rules. Data marks are ink; the alert colour marks only what needs attention. */
+   square edges and hairline rules. Data marks and running-order numbers wear the accent; anything that needs
+   attention is a filled accent chip, so an alert never reads as data. */
 
 :root {
     --bg-base: #1b1a19;
@@ -18,6 +19,11 @@
     --band-rule: rgba(233, 227, 214, 0.18); /* --border-inverse */
     --band-control: rgba(233, 227, 214, 0.5); /* control boundary on the band: 4.4:1 */
     --band-alert: #ff775f;
+    /* Core Web Vitals zones, in timing-screen sector colours; always named in the key beside them. */
+    --zone-good: #3ccf7e;
+    --zone-mid: #f0c03a;
+    --zone-poor: #ff5d5d;
+    --zone-strength: 46%;
     --font-body: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
     --font-brand: 'Barlow Condensed', 'IBM Plex Sans', sans-serif;
     --radius-control: 2px;
@@ -35,6 +41,10 @@
     --accent: #a82e1c;
     --accent-hover: #8e281a;
     --accent-contrast: #f2eee4;
+    --zone-good: #23854f;
+    --zone-mid: #c8960f;
+    --zone-poor: #c4302b;
+    --zone-strength: 30%;
     color-scheme: light;
 }
 
@@ -192,11 +202,19 @@ a { color: inherit; }
 }
 
 .dash-order a:hover { background: var(--bg-surface); }
-.dash-order-no, .dash-rail-no { font-family: var(--font-brand); font-weight: 700; font-size: 1.25rem; line-height: 1; color: var(--text-secondary); }
+.dash-order-no, .dash-rail-no { font-family: var(--font-brand); font-weight: 700; font-size: 1.25rem; line-height: 1; color: var(--accent); }
 .dash-order-name { font-weight: 600; }
 .dash-order-fact { overflow-wrap: anywhere; }
 .dash-order-period { justify-self: end; color: var(--text-secondary); font-size: 0.8125rem; text-align: right; }
-.is-alert .dash-order-period { color: var(--accent); font-weight: 600; }
+.is-alert .dash-order-period, .dash-rail-status.is-alert, .dash-checks .is-warning .dash-ledger-mark {
+    justify-self: start;
+    align-self: start;
+    padding: 0.05rem 0.4rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+}
+.is-alert .dash-order-period { justify-self: end; }
 
 .dash-overview .dash-notes {
     display: grid;
@@ -252,7 +270,6 @@ a { color: inherit; }
 .dash-rail a:hover .dash-rail-name { text-decoration: underline; text-underline-offset: 3px; }
 .dash-rail-no { font-size: 1rem; }
 .dash-rail-status { grid-column: 2; color: var(--text-secondary); font-size: 0.75rem; font-weight: 400; }
-.dash-rail-status.is-alert { color: var(--accent); font-weight: 600; }
 .dash-rail-status:empty { display: none; }
 
 .dash-section {
@@ -273,7 +290,7 @@ a { color: inherit; }
     counter-increment: section;
     content: counter(section, decimal-leading-zero);
     margin-right: 0.6rem;
-    color: var(--text-secondary);
+    color: var(--accent);
     font-family: var(--font-brand);
     font-size: 0.85em;
     font-weight: 700;
@@ -291,7 +308,7 @@ a { color: inherit; }
     color: var(--band-text);
 }
 .dash-slab p { max-width: 60ch; margin: 0; color: var(--band-secondary); font-size: 0.9375rem; }
-.dash-slab-no { font-family: var(--font-brand); font-size: 2.75rem; font-weight: 700; line-height: 1; letter-spacing: 0.01em; }
+.dash-slab-no { font-family: var(--font-brand); font-size: 2.75rem; font-weight: 700; line-height: 1; letter-spacing: 0.01em; color: var(--band-alert); }
 .dash-slab + .dash-section { border-top: 0; }
 .dash-section h3 { margin: 2rem 0 0.5rem; font-size: 0.9375rem; }
 .dash-pair h3 { margin-top: 1.5rem; }
@@ -350,7 +367,9 @@ td.dash-class-extra { color: var(--text-secondary); }
 
 .dash-scale { display: block; width: 100%; height: 10px; overflow: visible; }
 .dash-scale-inline { display: none; margin-top: 0.4rem; }
-.dash-mark { fill: var(--text-primary); }
+.dash-mark { fill: var(--accent); }
+/* Under the threshold: an outlined, tinted bar, still clearly the same series. */
+.dash-mark.is-small { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .dash-scale-base { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .dash-scale-threshold { stroke: var(--text-secondary); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 
@@ -377,26 +396,50 @@ td.dash-class-extra { color: var(--text-secondary); }
 .dash-ledger-table td.dash-ledger-value { font-family: var(--font-brand); font-size: 1.25rem; line-height: 1; color: var(--text-secondary); }
 .dash-ledger-table .is-adequate td.dash-ledger-value:not(.dash-ledger-extra) { color: var(--text-primary); }
 .dash-ledger-table td.dash-ledger-extra { font-family: var(--font-body); font-size: 0.875rem; }
+.dash-units, .dash-ledger-scale { display: block; max-width: 100%; height: auto; margin-top: 0.45rem; }
+.dash-ledger-scale { width: 16rem; height: 10px; overflow: visible; }
+.dash-unit { fill: var(--accent); }
+.dash-unit.is-empty { fill: none; stroke: var(--border); stroke-width: 1; }
 
 /* ---- Daily chart (drawn at real size, so text is never scaled) ---- */
 
 .dash-chart { margin: 0 0 0.5rem; }
 .dash-chart svg, .dash-bullets svg { display: block; max-width: 100%; height: auto; overflow: visible; }
-.dash-bar { fill: var(--text-primary); }
-.dash-zero { fill: none; stroke: var(--text-primary); stroke-width: 1.5; }
+.dash-chart svg { touch-action: pan-y; cursor: crosshair; }
+.dash-bar { fill: var(--accent); }
+.dash-bar.is-active { fill: var(--text-primary); }
+.dash-zero { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.dash-weekend { fill: color-mix(in srgb, var(--text-primary) 6%, transparent); }
+.dash-trend { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-linejoin: round; }
 .dash-axis { stroke: var(--text-primary); stroke-width: 1; }
 .dash-chart-threshold { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 4 4; }
 .dash-tick { fill: var(--text-secondary); font-family: var(--font-body); font-size: 12px; }
 .dash-tick-strong { fill: var(--text-primary); font-weight: 600; }
+.dash-cross { stroke: var(--text-secondary); stroke-width: 1; }
+.dash-tip { fill: var(--bg-surface); stroke: var(--border); }
+
+/* The columns sweep in left to right once, like a lap trace being drawn. */
+@keyframes dash-reveal {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+}
 
 /* ---- Core Web Vitals bullets ---- */
 
 .dash-bullets { display: grid; gap: 1.25rem; margin-bottom: 0.5rem; }
-.dash-zone-good { fill: color-mix(in srgb, var(--text-primary) 8%, transparent); }
-.dash-zone-mid { fill: color-mix(in srgb, var(--text-primary) 17%, transparent); }
-.dash-zone-poor { fill: color-mix(in srgb, var(--text-primary) 28%, transparent); }
-.dash-marker { fill: var(--text-primary); }
+.dash-zone-good { fill: color-mix(in srgb, var(--zone-good) var(--zone-strength), transparent); }
+.dash-zone-mid { fill: color-mix(in srgb, var(--zone-mid) var(--zone-strength), transparent); }
+.dash-zone-poor { fill: color-mix(in srgb, var(--zone-poor) var(--zone-strength), transparent); }
+.dash-marker, .dash-marker-tip { fill: var(--text-primary); }
 .dash-marker.is-small { fill: var(--bg-base); stroke: var(--text-primary); stroke-width: 1.5; }
+
+.dash-zone-key { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; margin: 0; color: var(--text-secondary); font-size: 0.75rem; }
+.dash-zone-key span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.dash-zone-key span::before { content: ""; width: 0.75rem; height: 0.75rem; }
+.dash-zone-key-good::before { background: color-mix(in srgb, var(--zone-good) var(--zone-strength), transparent); }
+.dash-zone-key-mid::before { background: color-mix(in srgb, var(--zone-mid) var(--zone-strength), transparent); }
+.dash-zone-key-poor::before { background: color-mix(in srgb, var(--zone-poor) var(--zone-strength), transparent); }
+.dash-zone-key-small::before { width: 0.375rem; border: 1.5px solid var(--text-primary); }
 
 /* ---- Section-to-section matrix ---- */
 
@@ -409,10 +452,10 @@ td.dash-class-extra { color: var(--text-secondary); }
 .dash-matrix td { min-width: 3.25rem; padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border); text-align: center; }
 .dash-matrix .dash-matrix-total { border-left: 1px solid var(--border); font-weight: 600; color: var(--text-primary); }
 .dash-q0 { color: var(--text-secondary); }
-.dash-q1 { background: color-mix(in srgb, var(--text-primary) 7%, transparent); }
-.dash-q2 { background: color-mix(in srgb, var(--text-primary) 13%, transparent); }
-.dash-q3 { background: color-mix(in srgb, var(--text-primary) 20%, transparent); font-weight: 600; }
-.dash-q4 { background: color-mix(in srgb, var(--text-primary) 27%, transparent); font-weight: 600; }
+.dash-q1 { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.dash-q2 { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.dash-q3 { background: color-mix(in srgb, var(--accent) 34%, transparent); font-weight: 600; }
+.dash-q4 { background: color-mix(in srgb, var(--accent) 46%, transparent); font-weight: 600; }
 
 /* ---- Checks: a ledger of OK / attention lines ---- */
 
@@ -421,7 +464,6 @@ td.dash-class-extra { color: var(--text-secondary); }
 .dash-ledger li { padding: 0.6rem 0; font-size: 0.9375rem; }
 .dash-ledger-mark { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; line-height: 2; color: var(--text-secondary); }
 .dash-checks .is-warning { color: var(--text-primary); font-weight: 600; }
-.dash-checks .is-warning .dash-ledger-mark { color: var(--accent); }
 
 /* ---- Exact tables, one click away ---- */
 
@@ -483,4 +525,5 @@ td.dash-class-extra { color: var(--text-secondary); }
 
 @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
+    .dash-chart-marks { animation: dash-reveal 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 }

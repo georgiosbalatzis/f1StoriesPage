@@ -13,6 +13,7 @@
     var keyError = document.querySelector('[data-key-error]');
     var reason = document.querySelector('[data-unavailable-reason]');
     var integer = new Intl.NumberFormat('el-GR');
+    var decimal = new Intl.NumberFormat('el-GR', { maximumFractionDigits: 1 });
     var envelope = null;
     // Charts drawn at their real pixel width (so labels keep their size); redrawn on resize, dropped on lock.
     var sized = [];
@@ -97,12 +98,12 @@
         target.appendChild(element);
     }
 
-    // A horizontal ink bar on a scale that always reaches the sample threshold, with the threshold drawn as a tick:
-    // a bar that stops short of the tick is a small sample. Stretched by CSS, so only rectangles and lines.
+    // A horizontal bar on a scale that always reaches the sample threshold, with the threshold drawn as a tick:
+    // a hollow bar that stops short of the tick is a small sample. Stretched by CSS, so only rectangles and lines.
     function scaleBar(value, max, threshold, className) {
         var bar = shape('svg', { viewBox: '0 0 100 10', preserveAspectRatio: 'none', 'aria-hidden': 'true', class: className });
         bar.appendChild(shape('line', { x1: 0, x2: 100, y1: 9.5, y2: 9.5, class: 'dash-scale-base' }));
-        if (value > 0) bar.appendChild(shape('rect', { x: 0, y: 2, width: Math.max(0.8, value / max * 100).toFixed(2), height: 6, class: 'dash-mark' }));
+        if (value > 0) bar.appendChild(shape('rect', { x: 0, y: 2, width: Math.max(0.8, value / max * 100).toFixed(2), height: 6, class: value < threshold ? 'dash-mark is-small' : 'dash-mark' }));
         var t = (threshold / max * 100).toFixed(2);
         bar.appendChild(shape('line', { x1: t, x2: t, y1: 0, y2: 10, class: 'dash-scale-threshold' }));
         return bar;
@@ -139,11 +140,25 @@
         return element;
     }
 
-    // A ledger of counts for short lists where every count is small: bars would suggest a precision the data lacks.
-    // Counts at or over the threshold are set bold; the note under the ledger says which case applies.
+    // One dot per event in rows of `threshold`, over an empty first row: a count that leaves the first row
+    // unfilled is still a small sample. Drawn at a fixed pitch, so a dot always means one event.
+    function dotStrip(value, threshold) {
+        var pitch = 8, rows = Math.max(1, Math.ceil(value / threshold));
+        var strip = shape('svg', { viewBox: '0 0 ' + threshold * pitch + ' ' + rows * pitch, width: threshold * pitch, height: rows * pitch, 'aria-hidden': 'true', class: 'dash-units' });
+        for (var i = 0; i < Math.max(value, threshold); i++) {
+            strip.appendChild(shape('circle', { cx: (i % threshold + 0.5) * pitch, cy: (Math.floor(i / threshold) + 0.5) * pitch, r: 2.75,
+                class: i < value ? 'dash-unit' : 'dash-unit is-empty' }));
+        }
+        return strip;
+    }
+
+    // A ledger of counts for short lists where every count is small: each event is a dot (up to three rows),
+    // larger counts fall back to the threshold scale. Counts at or over the threshold are set bold.
     function ledger(target, rows, options) {
         if (!rows.length) return target.appendChild(node('p', options.empty, 'dash-copy'));
         var threshold = options.threshold;
+        var max = Math.max.apply(null, rows.map(function (row) { return row.value; }).concat(threshold));
+        var dots = max <= threshold * 3;
         var element = target.appendChild(node('table', undefined, 'dash-ledger-table'));
         element.appendChild(node('caption', options.caption, 'dash-sr'));
         var head = element.appendChild(node('thead')).appendChild(node('tr'));
@@ -156,13 +171,15 @@
             var name = tr.appendChild(node('td'));
             name.appendChild(node('span', row.name, 'dash-class-name'));
             if (row.meta) name.appendChild(node('span', row.meta, 'dash-class-meta'));
+            name.appendChild(dots ? dotStrip(row.value, threshold) : scaleBar(row.value, max, threshold, 'dash-scale dash-ledger-scale'));
             var value = tr.appendChild(node('td', integer.format(row.value), 'dash-ledger-value'));
             if (small) value.appendChild(node('span', ' (μικρό δείγμα)', 'dash-sr'));
             if (options.extraLabel) tr.appendChild(node('td', row.extra, 'dash-ledger-value dash-ledger-extra'));
         });
         var adequate = rows.filter(function (row) { return row.value >= threshold; }).length;
-        target.appendChild(node('p', adequate ? 'Με έντονα: τουλάχιστον ' + threshold + '. Οι υπόλοιπες τιμές είναι μικρό δείγμα.'
-            : 'Όλες οι τιμές είναι κάτω από ' + threshold + ': μικρό δείγμα, ενδεικτικές μόνο.', 'dash-aside'));
+        target.appendChild(node('p', (dots ? 'Κάθε κουκκίδα: ' + options.unit + '· η πρώτη σειρά γεμίζει στις ' + threshold + '. ' : '')
+            + (adequate ? 'Με έντονα: τουλάχιστον ' + threshold + '. Οι υπόλοιπες τιμές είναι μικρό δείγμα.'
+                : 'Όλες οι τιμές είναι κάτω από ' + threshold + ': μικρό δείγμα, ενδεικτικές μόνο.'), 'dash-aside'));
         return element;
     }
 
@@ -172,33 +189,59 @@
         redraw(entry);
     }
 
+    // Height-only resizes (a phone's address bar) keep the drawing, so the chart's reveal does not replay.
     function redraw(entry) {
+        var width = Math.max(280, Math.round(entry.target.getBoundingClientRect().width) || 640);
+        if (width === entry.width && entry.target.firstChild) return;
+        entry.width = width;
         entry.target.replaceChildren();
-        entry.draw(entry.target, Math.max(280, Math.round(entry.target.getBoundingClientRect().width) || 640));
+        entry.draw(entry.target, width);
     }
 
-    // One column per export day on a scale that reaches the sample threshold. No line or area: nothing is
-    // interpolated between days, and a day without page views is an open circle, not a missing bar.
+    // One column per export day on a scale that reaches the sample threshold; a day without page views is an open
+    // circle, not a missing bar. Weekends (race weekends) are banded. The only line is the 7-day mean, drawn as a
+    // step per day from the seventh day on: nothing is interpolated between raw daily values.
     function activityChart(target, rows, threshold, width) {
         var narrow = width < 520;
-        var top = 22, plot = narrow ? 120 : 160, height = top + plot + 30;
+        var top = 40, plot = narrow ? 120 : 170, height = top + plot + 30;
         var max = Math.max.apply(null, rows.map(function (row) { return row.page_view_events; }).concat(threshold));
         var peak = rows.reduce(function (best, row) { return row.page_view_events > best.page_view_events ? row : best; }, rows[0]);
-        var slotWidth = width / rows.length, barWidth = Math.max(2, Math.min(slotWidth * 0.5, 14));
+        var slotWidth = width / rows.length, barWidth = Math.max(2, Math.min(slotWidth * 0.56, 16));
         var base = top + plot;
         var y = function (value) { return base - value / max * plot; };
+        var mean = function (i) { return i < 6 ? null : sum(rows.slice(i - 6, i + 1), 'page_view_events') / 7; };
+        var weekend = function (row) { return [0, 6].indexOf(new Date(row.event_day + 'T00:00:00Z').getUTCDay()) >= 0; };
         var chart = target.appendChild(shape('svg', { viewBox: '0 0 ' + width + ' ' + height, width: width, height: height, role: 'img',
             'aria-label': 'Ημερήσιες προβολές σελίδας, ' + day(rows[0].event_day) + ' έως ' + day(rows[rows.length - 1].event_day)
                 + ', μέγιστο ' + integer.format(peak.page_view_events) + '. Όριο δείγματος ' + threshold + '.' }));
-        chart.appendChild(shape('line', { x1: 0, x2: width, y1: y(threshold), y2: y(threshold), class: 'dash-chart-threshold' }));
-        label(chart, width, y(threshold) - 6, threshold + ' · όριο δείγματος', 'dash-tick', 'end');
         rows.forEach(function (row, i) {
-            var center = (i + 0.5) * slotWidth, barHeight = row.page_view_events / max * plot;
-            chart.appendChild(shape('rect', { x: (center - barWidth / 2).toFixed(1), y: (base - barHeight).toFixed(1), width: barWidth.toFixed(1), height: barHeight.toFixed(1),
-                class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' },
-                day(row.event_day) + ': ' + integer.format(row.page_view_events) + ' προβολές' + (row.meets_min_events ? '' : ' (μικρό δείγμα)')));
-            if (!row.page_view_events) chart.appendChild(shape('circle', { cx: center.toFixed(1), cy: base - 4, r: 3, class: 'dash-zero' }));
+            if (weekend(row)) chart.appendChild(shape('rect', { x: (i * slotWidth).toFixed(1), y: top - 6, width: slotWidth.toFixed(1), height: plot + 6, class: 'dash-weekend' }));
         });
+        var key = 0;
+        if (rows.some(weekend)) {
+            chart.appendChild(shape('rect', { x: 0, y: 2, width: 12, height: 12, class: 'dash-weekend' }));
+            label(chart, 18, 12, 'Σαββατοκύριακο', 'dash-tick');
+            key = 128;
+        }
+        var thresholdLine = shape('line', { x1: 0, x2: width, y1: y(threshold), y2: y(threshold), class: 'dash-chart-threshold' });
+        label(chart, width, y(threshold) - 6, threshold + ' · όριο δείγματος', 'dash-tick', 'end');
+        var marks = chart.appendChild(shape('g', { class: 'dash-chart-marks' }));
+        var bars = rows.map(function (row, i) {
+            var center = (i + 0.5) * slotWidth, barHeight = row.page_view_events / max * plot;
+            if (!row.page_view_events) marks.appendChild(shape('circle', { cx: center.toFixed(1), cy: base - 4, r: 3, class: 'dash-zero' }));
+            return marks.appendChild(shape('rect', { x: (center - barWidth / 2).toFixed(1), y: (base - barHeight).toFixed(1), width: barWidth.toFixed(1), height: barHeight.toFixed(1),
+                rx: Math.min(2, barWidth / 4).toFixed(1), class: row.meets_min_events ? 'dash-bar' : 'dash-bar is-small' }));
+        });
+        if (rows.length >= 7) {
+            var d = '';
+            rows.forEach(function (row, i) {
+                if (i < 6) return;
+                d += (d ? 'V' : 'M' + (i * slotWidth).toFixed(1) + ' ') + y(mean(i)).toFixed(1) + 'H' + ((i + 1) * slotWidth).toFixed(1);
+            });
+            marks.appendChild(shape('path', { d: d, class: 'dash-trend' }));
+            chart.appendChild(shape('line', { x1: key, x2: key + 16, y1: 8, y2: 8, class: 'dash-trend' }));
+            label(chart, key + 22, 12, 'Μέσος όρος 7 ημερών', 'dash-tick');
+        }
         chart.appendChild(shape('line', { x1: 0, x2: width, y1: base + 0.5, y2: base + 0.5, class: 'dash-axis' }));
         var peakIndex = rows.indexOf(peak);
         if (peak.page_view_events) {
@@ -214,6 +257,39 @@
             var x = anchor === 'start' ? 0 : anchor === 'end' ? width : (i + 0.5) * slotWidth;
             label(chart, x, base + 20, day(row.event_day), 'dash-tick', anchor);
         });
+        chart.appendChild(thresholdLine); // over the columns, so it reads through the tall ones
+
+        // Pointer readout (the exact table below stays the accessible route to every value).
+        var focus = chart.appendChild(shape('g', { class: 'dash-focus', visibility: 'hidden', 'aria-hidden': 'true' }));
+        var cross = focus.appendChild(shape('line', { y1: top - 6, y2: base, class: 'dash-cross' }));
+        var tip = focus.appendChild(shape('g', {}));
+        var tipBox = tip.appendChild(shape('rect', { x: 0, y: 0, height: 42, rx: 2, class: 'dash-tip' }));
+        var tipDay = tip.appendChild(shape('text', { x: 8, y: 17, class: 'dash-tick dash-tick-strong' }));
+        var tipValue = tip.appendChild(shape('text', { x: 8, y: 34, class: 'dash-tick' }));
+        var active = null;
+        function point(i) {
+            if (active) active.classList.remove('is-active');
+            active = i < 0 ? null : bars[i];
+            focus.setAttribute('visibility', active ? 'visible' : 'hidden');
+            if (!active) return;
+            active.classList.add('is-active');
+            var center = (i + 0.5) * slotWidth;
+            cross.setAttribute('x1', center.toFixed(1));
+            cross.setAttribute('x2', center.toFixed(1));
+            tipDay.textContent = day(rows[i].event_day, true);
+            tipValue.textContent = plural(rows[i].page_view_events, 'προβολή', 'προβολές') + (i >= 6 ? ' · μ.ό. 7 ημ. ' + decimal.format(mean(i)) : '');
+            var tipWidth = Math.max(tipDay.getComputedTextLength(), tipValue.getComputedTextLength()) + 16;
+            tipBox.setAttribute('width', tipWidth.toFixed(1));
+            var x = center + 10 + tipWidth > width ? center - 10 - tipWidth : center + 10;
+            tip.setAttribute('transform', 'translate(' + Math.max(0, x).toFixed(1) + ' ' + top + ')');
+        }
+        function track(event) {
+            var box = chart.getBoundingClientRect();
+            point(Math.min(rows.length - 1, Math.max(0, Math.floor((event.clientX - box.left) / box.width * rows.length))));
+        }
+        chart.addEventListener('pointermove', track);
+        chart.addEventListener('pointerdown', track);
+        chart.addEventListener('pointerleave', function (event) { if (event.pointerType === 'mouse') point(-1); });
     }
 
     var CWV = {
@@ -224,9 +300,15 @@
 
     // Bullet rows: each coverage class on its own row (never pooled), p75 against the good / needs-improvement /
     // poor thresholds. A filled marker has at least `minimum` observations; a hollow one is a small sample.
+    // Zones in timing-screen sector colours, always named in the key, so colour is never the only cue.
     function vitalBullets(target, rows, minimum, width) {
-        var narrow = width < 520, labelWidth = narrow ? 0 : 150, valueWidth = narrow ? 64 : 150, rowHeight = narrow ? 46 : 28;
+        var narrow = width < 520, labelWidth = narrow ? 0 : 150, valueWidth = narrow ? 64 : 150, rowHeight = narrow ? 52 : 32;
         var scaleWidth = width - labelWidth - valueWidth - 12;
+        var key = target.appendChild(node('p', undefined, 'dash-zone-key'));
+        [['good', 'Καλό'], ['mid', 'Θέλει βελτίωση'], ['poor', 'Κακό']].forEach(function (zone) {
+            key.appendChild(node('span', zone[1], 'dash-zone-key-' + zone[0]));
+        });
+        key.appendChild(node('span', 'Κούφιο σημάδι: μικρό δείγμα', 'dash-zone-key-small'));
         ['LCP', 'INP', 'CLS'].forEach(function (metric) {
             var spec = CWV[metric];
             var cohort = rows.filter(function (row) { return row.metric === metric && row.core_web_vital; });
@@ -240,15 +322,17 @@
             label(svg, x(spec.poor), 13, spec.limits[1], 'dash-tick', 'middle');
             cohort.forEach(function (row, i) {
                 var rowTop = 22 + i * rowHeight;
-                var barTop = narrow ? rowTop + 20 : rowTop + 5;
-                label(svg, 0, narrow ? rowTop + 13 : rowTop + 16, row.coverage, 'dash-tick');
+                var barTop = narrow ? rowTop + 26 : rowTop + 9;
+                label(svg, 0, narrow ? rowTop + 13 : barTop + 10, row.coverage, 'dash-tick');
                 [[0, spec.good, 'dash-zone-good'], [spec.good, spec.poor, 'dash-zone-mid'], [spec.poor, spec.max, 'dash-zone-poor']].forEach(function (zone) {
                     svg.appendChild(shape('rect', { x: x(zone[0]).toFixed(1), y: barTop, width: (x(zone[1]) - x(zone[0])).toFixed(1), height: 12, class: zone[2] }));
                 });
                 var detail = row.observations ? plural(row.observations, 'παρατήρηση', 'παρατηρήσεις') : 'καμία παρατήρηση';
                 if (row.p75 !== null && row.observations) {
-                    var small = row.observations < minimum;
-                    svg.appendChild(shape('rect', { x: (x(row.p75) - 3).toFixed(1), y: barTop - 4, width: 6, height: 20, class: small ? 'dash-marker is-small' : 'dash-marker' },
+                    var small = row.observations < minimum, at = x(row.p75);
+                    svg.appendChild(shape('path', { d: 'M' + (at - 5).toFixed(1) + ' ' + (barTop - 10) + 'H' + (at + 5).toFixed(1) + 'L' + at.toFixed(1) + ' ' + (barTop - 4) + 'Z',
+                        class: 'dash-marker-tip', 'aria-hidden': 'true' }));
+                    svg.appendChild(shape('rect',{ x: (x(row.p75) - 3).toFixed(1), y: barTop - 4, width: 6, height: 20, class: small ? 'dash-marker is-small' : 'dash-marker' },
                         metric + ' ' + row.coverage + ': p75 ' + spec.text(row.p75) + ', ' + detail + (small ? ', μικρό δείγμα' : '')));
                     label(svg, narrow ? width : labelWidth + scaleWidth + 12, barTop + 10, spec.text(row.p75), 'dash-tick dash-tick-strong', narrow ? 'end' : 'start');
                 }
@@ -407,7 +491,7 @@
         var pairs = clickTotals(navigation, function (r) { return r.source_section + '\u0000' + r.destination_section; });
         var unmapped = discovery.filter(function (r) { return r.destination_article_id === '(unmapped)'; })
             .reduce(function (total, r) { return total + r.click_events; }, 0);
-        var options = { threshold: minimum, valueLabel: 'Κλικ', empty: none };
+        var options = { threshold: minimum, valueLabel: 'Κλικ', unit: 'ένα κλικ', empty: none };
 
         ledger(slot('viz', 'discovery-surfaces'), surfaces.map(function (g) {
             return { name: plainName(CLASS_NAMES, g.row.source_surface), meta: String(g.row.source_surface), value: g.clicks };
@@ -564,7 +648,7 @@
             var unmappedCategory = r.category === '(unmapped)';
             return { name: unmappedCategory ? 'Μη αντιστοιχισμένα' : r.category, meta: unmappedCategory ? '(unmapped): εκτός καταλόγου' : '',
                 value: r.page_view_events, extra: unmappedCategory ? '—' : integer.format(r.articles_with_events) + ' / ' + integer.format(r.catalog_articles) };
-        }), { threshold: minimum, nameLabel: 'Κατηγορία', valueLabel: 'Προβολές', extraLabel: 'Άρθρα', caption: 'Προβολές άρθρων ανά κατηγορία', empty: 'Καμία προβολή άρθρου στην περίοδο.' });
+        }), { threshold: minimum, nameLabel: 'Κατηγορία', valueLabel: 'Προβολές', unit: 'μία προβολή', extraLabel: 'Άρθρα', caption: 'Προβολές άρθρων ανά κατηγορία', empty: 'Καμία προβολή άρθρου στην περίοδο.' });
         table(slot('table', 'categories'), [
             ['Κατηγορία', function (r) { return r.category; }],
             ['page_view', function (r) { return integer.format(r.page_view_events); }],

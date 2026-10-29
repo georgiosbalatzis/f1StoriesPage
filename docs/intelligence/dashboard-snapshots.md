@@ -410,23 +410,30 @@ only, square edges, hairline rules and no gradients, shadows or cards.
 
 **Chart grammar.**
 
-- **Daily activity:** one ink column per export day, on a scale that always reaches the 30-event sample threshold,
-  which is drawn as a labelled dashed line. A day with zero views is an open circle. No line or area is drawn between
-  days, and the chart is drawn at its real pixel width, so labels stay 12 px at every size.
-- **Rankings** (articles, categories, channels, discovery surfaces, link sections, destination articles): classification
-  tables. Each row has a position, the name with one meta line (raw class or category), and the count. Its ink bar sits
-  on the same threshold scale, and a tick marks 30. Below the threshold is stated once in the notes, and per row only
-  for assistive technology. No per-row "μικρό δείγμα" repetition.
-- **Section to section:** a source × destination matrix of click counts, with a total column. Shading only helps find
-  the larger cells, and empty pairs are dots.
+- **Daily activity:** one accent column per export day, on a scale that always reaches the 30-event sample threshold,
+  which is drawn as a labelled dashed line over the columns. A day with zero views is an open circle. Weekends (race
+  weekends) are banded. The only line is the 7-day mean, drawn as a step per day from the seventh day on: nothing is
+  interpolated between raw daily values. Pointer hover (or a tap) shows the day, its views and its 7-day mean. The
+  columns sweep in once (not under reduced motion; a height-only resize does not replay it). The chart is drawn at its
+  real pixel width, so labels stay 12 px at every size.
+- **Rankings** (articles, channels, destination articles): classification tables. Each row has a position, the name
+  with one meta line (raw class or category), and the count. Its accent bar sits on the same threshold scale, and a
+  tick marks 30. A bar below the threshold is tinted and outlined, so the same series stays visible. Below the threshold
+  is stated once in the notes, and per row only for assistive technology. No per-row "μικρό δείγμα" repetition.
+- **Count ledgers** (categories, discovery surfaces, link sections): one dot per event in rows of 30 over an empty first
+  row, so how far a count is from the threshold is visible. Above 90 the ledger falls back to the threshold scale.
+- **Section to section:** a source × destination matrix of click counts, with a total column. Accent shading only helps
+  find the larger cells, and empty pairs are dots.
 - **Core Web Vitals:** bullet rows for every metric × coverage class (never pooled), p75 against the good,
-  needs-improvement and poor zones. The marker is filled at 30 or more observations and hollow below.
+  needs-improvement and poor zones in timing-screen sector colours (green, yellow, red), always named in a key. The
+  pointer marker is filled at 30 or more observations and hollow below.
 - **RUM checks:** an OK / Προσοχή ledger.
 
 The exact tables remain behind native `details` for every section.
 
-**Colour discipline.** Data marks are ink. The alert colour is used only for a stale snapshot, data-quality warnings and
-an overdue weekly refresh. Carried and weekly states are information: prominent, but not red.
+**Colour discipline.** The accent (#366's, `--accent`) is the data colour and marks the running-order numbers.
+Anything that needs action (a stale snapshot, data-quality warnings, an overdue weekly refresh) is a filled accent chip,
+so an alert never reads as data. Carried and weekly states are information: prominent, but not a chip.
 
 **Unchanged contracts.** Values are `textContent` or SVG attributes only. Locking empties every chart, table, list,
 summary line and rail status. Snapshots with 4, 5, 7 or 9 models still render, with pending states for what is

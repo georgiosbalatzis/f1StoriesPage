@@ -154,8 +154,8 @@ try {
         window: document.querySelector('[data-field="window"]').textContent,
         updated: document.querySelector('[data-field="updated"]').textContent,
         stale: document.querySelector('[data-stale]').hidden,
-        days: document.querySelectorAll('[data-chart="activity"] rect').length,
-        small: document.querySelectorAll('[data-chart="activity"] rect.is-small').length,
+        days: document.querySelectorAll('[data-chart="activity"] .dash-bar').length,
+        small: document.querySelectorAll('[data-chart="activity"] .dash-bar.is-small').length,
         categories: [...document.querySelectorAll('[data-viz="categories"] .dash-class-name')].map(element => element.textContent),
         articles: [...document.querySelectorAll('[data-table="articles"] tbody tr')].map(element => element.cells[0].textContent),
         articleScripts: document.querySelectorAll('[data-table="articles"] script').length,
@@ -172,7 +172,9 @@ try {
         cwvCarried: document.querySelector('[data-field="cwv-carried"]').hidden,
         overview: [...document.querySelectorAll('[data-list="overview"] li')].map(li => [li.querySelector('.dash-order-name').textContent, li.querySelector('a').getAttribute('href')]),
         overviewFacts: [...document.querySelectorAll('[data-list="overview"] .dash-order-fact')].map(el => el.textContent),
-        chartPaths: document.querySelectorAll('[data-chart="activity"] path').length,
+        chartPaths: [...document.querySelectorAll('[data-chart="activity"] path')].map(el => el.getAttribute('class')),
+        trendStart: Number(document.querySelector('[data-chart="activity"] path.dash-trend')?.getAttribute('d').match(/^M([\d.]+)/)[1]),
+        slot: document.querySelector('[data-chart="activity"] svg').viewBox.baseVal.width / document.querySelectorAll('[data-chart="activity"] .dash-bar').length,
         threshold: document.querySelectorAll('[data-chart="activity"] .dash-chart-threshold').length,
         chartLabelSize: Math.round(document.querySelector('[data-chart="activity"] .dash-tick').getBoundingClientRect().height),
         rankedArticles: [...document.querySelectorAll('[data-viz="articles"] .dash-class-name')].map(el => el.textContent),
@@ -209,8 +211,10 @@ try {
     assert.deepEqual(report.railHrefs, sections);
     assert.match(report.overviewFacts[0], /^[\d.]+ προβολές · μέγιστο [\d.]+ \(.+\)/);
     assert.match(report.overviewFacts[4], /σε αναμονή/i, 'discovery is pending before its first weekly run');
-    // One column per day and nothing interpolated between days; labels are drawn at their real size.
-    assert.equal(report.chartPaths, 0, 'no line or area across days');
+    // One column per day and nothing interpolated between raw daily values: the only line is the 7-day mean, which
+    // starts at the seventh day. Labels are drawn at their real size.
+    assert.deepEqual(report.chartPaths, freshDays >= 7 ? ['dash-trend'] : [], 'no line or area through daily values');
+    if (freshDays >= 7) assert.ok(Math.abs(report.trendStart - 6 * report.slot) < 0.2, 'the 7-day mean starts at the seventh day');
     assert.equal(report.threshold, 1, 'the sample threshold is drawn on the scale');
     assert.ok(report.chartLabelSize >= 11, `chart labels stay legible (${report.chartLabelSize}px)`);
     assert.deepEqual(report.rankedArticles, ['Ταχύτερος γύρος', 'Ειδήσεις <script>alert(1)</script>']);
@@ -321,7 +325,7 @@ try {
     session = await open(fourDays);
     await unlock(session.page, key);
     assert.deepEqual(await session.page.evaluate(() => [document.querySelector('[data-field="window"]').textContent,
-        document.getElementById('report-title').textContent, document.querySelectorAll('[data-chart="activity"] rect').length]),
+        document.getElementById('report-title').textContent, document.querySelectorAll('[data-chart="activity"] .dash-bar').length]),
     ['4 πλήρεις ημέρες, όσες υπάρχουν από την έναρξη της εξαγωγής · 19 Οκτ 2026 – 22 Οκτ 2026', 'Στοιχεία έως 22 Οκτ 2026', 4]);
     if (shots) await session.page.screenshot({ path: path.join(shots, 'dashboard-4-days.png'), fullPage: true });
     await finish(session, 'four days');
