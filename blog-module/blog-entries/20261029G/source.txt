@@ -1,0 +1,64 @@
+---
+category: Analysis
+tags: GridCast, Ανάλυση, Μεξικό
+title: GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή
+excerpt: Στο καθιερωμένο GridCast για την ανάλυση του Αγώνα στο Μεξικό. Ελαστικά, καιρός, συνθήκες και δεδομένα.
+---
+
+Είμαστε μία ανάσα πριν δούμε τον Andrea Kimi Antonelli να πανηγυρίζει τον πρώτο του παγκόσμιο τίτλο. Σε μία χρονιά όπου η Mercedes είχε το πάνω χέρι, με τους καινούργιους κανόνες για τη νέα εποχή της F1. Παρά το γεγονός ότι έχουμε έναν απρόσμενο πρωταθλητή (σχεδόν), οι φίλαθλοι της Φόρμουλα 1 έχουν χάσει σημαντικά το ενδιαφέρον τους για αυτό το πρωτάθλημα. Η αλήθεια είναι, όμως, ότι για το top 3 έχουμε πολλούς πρωταγωνιστές. Ας δούμε λίγο την κατάταξη πριν ξεκινήσουμε για το καθιερωμένο μας GridCast.
+
+<iframe src="https://f1-stories.gr/standings/?tab=drivers&amp;focus=drivers-chart&amp;embed=1&amp;season=2026&amp;round=18" title="Γράφημα βαθμών οδηγών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:490px;border:0;"></iframe>
+
+Με τους λιγοστούς αγώνες να απομένουν, η F1 ταξιδεύει στη χώρα της τεκίλας και των τάκος... Τουλάχιστον αυτά γνωρίζουμε, αφού δεν έχουμε παρευρεθεί. Α... γνωρίζουμε και τον κύριο Sergio Perez, ο οποίος ανανέωσε το συμβόλαιό του με την Cadillac. Τι μεταβλητές έχει, όμως, να μας προσφέρει η μεξικανική εξίσωση;
+
+##Autódromo Hermanos Rodríguez
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/circuit-info/" title="Στοιχεία πίστας: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="1213" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Εδώ προβλέπουμε να έχουμε ανακατεμένη τράπουλα, και θα με ρωτήσετε από πού το συμπέρανα αυτό... Αυτό έρχεται ως αποτέλεσμα του μεγάλου υψομέτρου στο οποίο βρίσκεται η πίστα, με τον δείκτη να φτάνει περίπου τα 2.285 μέτρα πάνω από τη θάλασσα. Ο αραιότερος αέρας μειώνει την αεροδυναμική κάθετη δύναμη και την αντίσταση. Έτσι, οι ομάδες χρησιμοποιούν ρυθμίσεις υψηλής κάθετης δύναμης, αλλά τα μονοθέσια εξακολουθούν να δυσκολεύονται να βρουν πρόσφυση.
+
+Σε αυτό θα έχουμε και διαφορές στην απόδοση του θερμικού κινητήρα, αφού οι αεροσυμπιεστές - turbo δεν θα έχουν τα «σωστά συστατικά» για να δουλέψουν καλύτερα. Σε αυτές τις διαφορές θα έχουμε και... νέα άσφαλτο. Στο circuit έχουν ασφαλτοστρωθεί ξανά τμήματα για το 2026.
+
+Ας δούμε, όμως, και τις απαιτήσεις της πίστας...
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/3d/" title="Τρισδιάστατη προβολή: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="632" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/demands/" title="Απαιτήσεις πίστας: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="370" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/car/" title="Απαίτηση ανά ελαστικό: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="486" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Στα ελαστικά του αγώνα, η Pirelli θα φέρει τον μαλακό συνδυασμό.
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/summary/" title="Ελαστικά αγώνα: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="446" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Στην προϊστορία τώρα έχουμε:
+
+2022: Pole Position - Max Verstappen | Winner - Max Verstappen | Red Bull
+
+2023: Pole Position - Charles Leclerc | Winner - Max Verstappen | Red Bull
+
+2024: Pole Position - Carlos Sainz | Winner - Carlos Sainz | Ferrari
+
+2025: Pole Position - Lando Norris | Winner - Lando Norris | McLaren
+
+Στις τελευταίες τέσσερις διοργανώσεις, η pole position μετατράπηκε σε νίκη τρεις φορές. Το 2023 ήταν η εξαίρεση, με τον Verstappen να κερδίζει ξεκινώντας από την τρίτη θέση.
+
+Οπότε έχουμε τα εξής:
+
+**1. Ποιος θα βρει την καλύτερη ισορροπία;**
+
+Η πίστα απαιτεί καλή απόδοση στις ευθείες, αλλά και όσο το δυνατόν περισσότερη πρόσφυση στις αργές στροφές. Το υψόμετρο κάνει αυτή την ισορροπία ακόμη πιο δύσκολη.
+
+**2. Ποιος θα διαχειριστεί καλύτερα ελαστικά και θερμοκρασίες;**
+
+Με τη νέα άσφαλτο, η προετοιμασία των ελαστικών στις κατατακτήριες μπορεί να αποδειχθεί εξίσου σημαντική με τον καθαρό ρυθμό του μονοθεσίου.
+
+**3. Πόσο θα κρίνει η εκκίνηση τον αγώνα;**
+
+Η μεγάλη ευθεία μέχρι την πρώτη στροφή προσφέρει ευκαιρίες για προσπεράσματα, αλλά και τον κίνδυνο επαφών. Όποιος βγει μπροστά από την πρώτη στροφή μπορεί να αποκτήσει σημαντικό πλεονέκτημα.
+
+Στον καιρό τώρα, για το τριήμερο θα έχουμε:
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/mexico-city/weather/" title="Καιρός τριημέρου: Mexican Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="802" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Αυτά για τον 20ό αγώνα του φετινού πρωταθλήματος.
