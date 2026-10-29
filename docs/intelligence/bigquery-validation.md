@@ -8,8 +8,9 @@
 > These runs make the nine models `PRODUCTION_EXECUTED` in the pipeline. They are still not `PRODUCTION_VALIDATED`.
 > Reconciliation now has an offline validator, and it remains open until the owner runs that validator on a
 > decrypted snapshot. Rules, evidence and what remains: [data-quality.md](data-quality.md).
-> - Outstanding item 2 (19–25 Oct) is covered for the snapshot models by the snapshot with `as_of` 2026-10-29, once
->   the owner validates it.
+> - Outstanding item 2 (19–25 Oct) can be checked for models whose own window in the `as_of` 2026-10-29 snapshot
+>   covers those days, once the owner validates it. Rotated pairs may cover earlier days; a snapshot does not
+>   close the full 20-model check. See the [closeout guide](i06c4-closeout.md).
 > - Items 1, 4 and 5 are unchanged.
 
 Code under test: `main` at `fe220330` (I-05 #357 merged), plus this PR, which changes no model SQL. Export:
@@ -252,7 +253,7 @@ These checks use the existing models only, with no new diagnostics. Run them wit
 | I-04 | Scope separation | Structural (tests). Then compare `24`, `25`, `26` side by side, never summed | Executed: each scope reconciles to 84 / 32; Facebook 15 / 14 / 18 kept apart |
 | I-05 | Version mix, consent and host stages, identity and revision integrity, duplicate/conflicting snapshots, missing fields, cohort placement, library-rating agreement | `33` (plus I-01 `03` for a ≤ 7-day sub-window) | `33` executed: see the reconciliations. I-01 `03` was not run as written |
 | I-05 | CLS conversion and valid zeros | `30` (CLS p75 in native units; zeros are kept by construction and tested). A separate zero count is not produced; add one only if a concrete question needs it | Executed: CLS p75 0 (n = 32). The conversion is not exercised by a zero p75 |
-| I-05 | Agreement with `perf/rum-pilot/report.sql` | Possible only for a **28-day** cohort, which `report.sql` hard-codes: `@first_day = start_day`, I-05 `end_day = start_day + 27`, `report.sql @as_of_day = I-05 as_of_day − 4`, `@deployment_day ≤ start_day − 1`, same `@report_timezone`, `@coverage = 'all'`, `@navigation_type = 'all'`. `report.sql` has no consent or host filter, so p75s must match exactly only when `33` shows no consent/host exclusions. The first such cohort (19 Oct → 15 Nov) is mature from **2026-11-19** | Pending |
+| I-05 | Agreement with `perf/rum-pilot/report.sql` | Possible only for a **28-day** cohort, which `report.sql` hard-codes: `@first_day = start_day`, I-05 `end_day = start_day + 27`, `report.sql @as_of_day = I-05 as_of_day − 4`, `@deployment_day = start_day − 1` for identical scan bounds, same `@report_timezone`, `@version = 'wv6.2.3-rum1'`, `@coverage = 'all'`, `@navigation_type = 'all'`. `report.sql` has no consent or host filter: `33` must show no such exclusions for matching populations. Sum reference samples per coverage/metric to compare with `30` (LCP/INP/CLS only). Reference p75s are additionally stratified by navigation type, page group and viewport; they cannot be pooled or averaged into `30`'s p75. Exact p75 agreement requires identical grain and population; otherwise it remains NOT VERIFIED. The first cohort (19 Oct → 15 Nov) is mature from **2026-11-19**. See [closeout conditions](i06c4-closeout.md#rum-reference-comparison). | Pending |
 
 ## Final window
 

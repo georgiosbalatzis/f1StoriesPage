@@ -122,7 +122,7 @@ Source coverage and instrumentation: `continuity.zero-days`, `continuity.session
 `discovery.destinations`, `discovery.fields`, `discovery.classes`, `discovery.unmapped`, `rum.integrity`,
 `rum.library`.
 
-Sample: `sample.sizes` is one consolidated note, never a warning. At about five readers a day almost every row is
+Sample: `sample.sizes` is one consolidated note, never a warning. At this low consented traffic almost every row is
 below 30. That is expected and is not reported row by row.
 
 Outside the snapshot, always `NOT_VERIFIED`: `external.ga4-stream`, `external.parameters`,
@@ -189,16 +189,21 @@ regardless.
 
 ## Run it
 
-Locally, by the owner only, against the committed encrypted file. The key is read from the environment, so it never
-appears in shell history or arguments. Nothing is written to disk.
+Locally, by the owner only, against the committed encrypted file. With hidden input as below and shell tracing off,
+the key reaches the process environment without appearing in shell history or arguments. An inline assignment
+containing the literal key would enter history; the environment is not a secret store. Nothing is written to disk.
 
 ```sh
-read -rs DASHBOARD_SNAPSHOT_KEY && export DASHBOARD_SNAPSHOT_KEY   # paste the key; it is not echoed
+set +x
+read -rs DASHBOARD_SNAPSHOT_KEY && export DASHBOARD_SNAPSHOT_KEY   # paste locally; it is not echoed
 node scripts/intelligence/validate-snapshot.mjs                   # report with counts (terminal only)
-node scripts/intelligence/validate-snapshot.mjs --redact          # outcomes and dates only, safe to share
-node scripts/intelligence/validate-snapshot.mjs --json --redact   # machine-readable, no counts
+node scripts/intelligence/validate-snapshot.mjs --redact          # local review; dates and diagnostic counts remain
+node scripts/intelligence/validate-snapshot.mjs --json --redact   # local review; details removed, report counts remain
 unset DASHBOARD_SNAPSHOT_KEY
 ```
+
+For hidden input without exporting the key to the interactive shell, and **PASS/FAIL lines only** for sharing,
+use the [closeout guide](i06c4-closeout.md#owner-local-validation).
 
 The exit code is 0 without a `FAIL`, 1 with one, and 2 when the snapshot does not open. Under GitHub Actions the CLI
 always redacts. It is deliberately not part of the scheduled workflow: the first runs should show whether real data
@@ -215,9 +220,9 @@ but that is not guaranteed.
 | # | Query | Period | Expected bytes (dry-run first) | `maximumBytesBilled` | Billable | Permissions | Answers |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | `bq show --format=prettyjson f1-stories-analytics:analytics_485678890.events_YYYYMMDD` per day (`numRows`, `lastModifiedTime`) | each window day | 0: metadata API call, not a query | — | no | dataset metadata read (owner already has it) | `external.export-completeness`: a present but partial table; late modifications |
-| 2 | `docs/intelligence/sql/02-event-inventory.sql` as written | 2026-10-19 → 25 (capped at 7 tables) | ≤ 70 MiB | `104857600` (100 MiB) | yes | BigQuery Job User + dataset Data Viewer (owner) | `external.parameters`: which `internal_page_click` parameters exist, their types, host and path classes |
-| 3 | `docs/intelligence/sql/03-web-vital-integrity.sql` as written | 2026-10-19 → 25 | ≤ 70 MiB | `104857600` | yes | as 2 | RUM id, revision and conflict integrity per version (complements `rum.integrity`) |
-| 4 | `perf/rum-pilot/report.sql` against model 30 for the same 28-day cohort | `@first_day` 2026-10-19, `as_of` ≥ 2026-11-19 | ≤ 330 MiB (about 33 tables) | `419430400` (400 MiB) | yes | as 2 | `external.rum-reference` |
+| 2 | `docs/intelligence/sql/02-event-inventory.sql` as written | 2026-10-19 → 25 (capped at 7 tables) | 70 MiB planning floor, not an upper bound; dry-run required | `104857600` (100 MiB) | yes | BigQuery Job User + dataset Data Viewer (owner) | `external.parameters`: which `internal_page_click` parameters exist, their types, host and path classes |
+| 3 | `docs/intelligence/sql/03-web-vital-integrity.sql` as written | 2026-10-19 → 25 | 70 MiB planning floor, not an upper bound; dry-run required | `104857600` | yes | as 2 | RUM id, revision and conflict integrity per version (complements `rum.integrity`) |
+| 4 | `perf/rum-pilot/report.sql` against model 30 for the same 28-day cohort | owner date ≥ 2026-11-19; reference `first_day=2026-10-19`, `as_of_day=2026-11-15`, `deployment_day=2026-10-18` | 29 suffix dates (including the pre-export margin); 290 MiB planning floor, not an upper bound | `419430400` (400 MiB) | yes | as 2 | `external.rum-reference`: compare counts at matching grain; stratified reference p75s cannot be pooled into 30's p75 ([conditions](i06c4-closeout.md#rum-reference-comparison)) |
 | 5 | GA4 Admin → Data streams | — | — | — | no | GA4 property access | `external.ga4-stream` |
 
 Use the owner's account, never the snapshot workflow's service account. A read-only query still costs money. The
