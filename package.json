@@ -45,6 +45,8 @@
     "test:dashboard": "node --test scripts/intelligence/__tests__/snapshot.test.mjs",
     "test:dashboard:browser": "node scripts/intelligence/dashboard-browser.mjs",
     "test:standings": "node --test standings/core/__tests__/*.test.mjs",
+    "test:race-desk": "node --test scripts/race-desk/__tests__/*.test.mjs",
+    "validate:race-desk": "node scripts/race-desk/validate.mjs",
     "test:security": "node --test scripts/build/__tests__/security-policy.test.mjs scripts/quality/__tests__/*.test.mjs",
     "pages:guard": "node scripts/build/pages-source-guard.mjs",
     "quality:rendering": "node scripts/quality/rendering-sink-guard.mjs",

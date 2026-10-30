@@ -27,6 +27,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Run race desk contract tests
+        run: npm run test:race-desk
+
       - name: Classify changed files
         id: changes
         env:
