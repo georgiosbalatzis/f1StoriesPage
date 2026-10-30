@@ -367,12 +367,16 @@ test('desktop/mobile, light/dark, focus and overflow QA use actual public refere
                 });
             });
             // Measure layout, not scroll: earlier steps can scroll the page.
-            await page.evaluate(() => scrollTo({ top: 0, left: 0, behavior: 'instant' }));
-            const box = await page.locator('#research-notebook').boundingBox(), writer = await page.locator('#gen-content').boundingBox();
-            const dimensions = await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth }));
+            const { box, writer, scroll, dimensions } = await page.evaluate(() => {
+                scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                const box = document.querySelector('#research-notebook').getBoundingClientRect();
+                const writer = document.querySelector('#gen-content').getBoundingClientRect();
+                return { box: { x: box.x, y: box.y }, writer: { x: writer.x, y: writer.y }, scroll: { x: scrollX, y: scrollY },
+                    dimensions: { viewport: innerWidth, width: document.documentElement.scrollWidth } };
+            });
             assert.ok(dimensions.width <= dimensions.viewport, JSON.stringify(dimensions));
-            if (width === 1440) assert.ok(box.x > writer.x && Math.abs(box.y - writer.y) < 10);
-            else assert.ok(box.y < writer.y);
+            if (width === 1440) assert.ok(box.x > writer.x && Math.abs(box.y - writer.y) < 10, JSON.stringify({ box, writer, scroll }));
+            else assert.ok(box.y < writer.y, JSON.stringify({ box, writer, scroll }));
             const colors = await page.locator('#research-notebook').evaluate(node => ({ foreground: getComputedStyle(node.querySelector('.gb-research-text')).color,
                 secondary: getComputedStyle(node.querySelector('.gb-hint')).color, background: getComputedStyle(node).backgroundColor }));
             const luminance = color => color.match(/[\d.]+/g).slice(0, 3).map(Number).map(value => value / 255).map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4).reduce((sum, value, i) => sum + value * [.2126, .7152, .0722][i], 0);
