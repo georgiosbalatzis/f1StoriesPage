@@ -249,11 +249,25 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
         await route.fulfill({ json: data });
     });
     const canary = 'SYNTHETIC_E01_CANARY_42891';
+    const claimCanary = 'SYNTHETIC_E02_CLAIM_92841', reviewCanary = 'SYNTHETIC_E02_REVIEW_92841';
     await page.evaluate(() => { localStorage.setItem('f1stories-cookie-consent-v1', JSON.stringify({ analytics: true })); window.__events = []; window.gtag = (...args) => window.__events.push(args); });
     await step(page, 1); await page.locator('#research-toggle').click();
     await page.locator('details').filter({ has: page.locator('#research-note-text') }).evaluate(node => { node.open = true; });
     await page.locator('#research-note-text').fill(canary);
     await page.getByRole('button', { name: 'Προσθήκη σημείωσης', exact: true }).click();
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const claimCard = page.locator('details[id^="research-claim-"]');
+    await claimCard.locator('[id$="-text"]').fill(claimCanary);
+    await claimCard.getByText('Πηγές & τεκμήρια', { exact: true }).click();
+    await claimCard.getByRole('button', { name: 'Προσθήκη πηγής' }).click();
+    await claimCard.locator('[id$="-source-0-title"]').fill('Συνθετική πηγή');
+    await claimCard.locator('[id$="-source-0-url"]').fill('https://example.com/synthetic');
+    await claimCard.locator('[id$="-source-0-locator-kind"]').selectOption('section');
+    await claimCard.locator('[id$="-source-0-locator-value"]').fill('Ενότητα 1');
+    await claimCard.locator('[id$="-rationale"]').fill(reviewCanary);
+    await claimCard.getByRole('button', { name: 'Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια' }).click();
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0].status), 'reviewed-with-evidence');
     await page.locator('#research-import').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{' + canary) });
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('δεν είναι έγκυρο'));
     await page.evaluate(async () => {
@@ -275,6 +289,7 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
     const savedResearch = await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].research);
     assert.ok(JSON.stringify(savedResearch).includes(canary));
+    for (const secret of [claimCanary, reviewCanary]) assert.ok(JSON.stringify(savedResearch).includes(secret));
     await step(page, 3); await page.waitForFunction(() => window.__previewInput !== undefined);
     assert.ok(!(await page.evaluate(() => window.__previewInput)).includes(canary));
     assert.ok(!(await page.locator('#gen-article-preview').getAttribute('srcdoc')).includes(canary));
@@ -300,6 +315,14 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     assert.ok(!JSON.stringify(calls).includes(canary));
     for (const call of calls.filter(value => value.suffix === '/git/blobs' && value.body?.encoding === 'base64')) assert.ok(!Buffer.from(call.body.content, 'base64').includes(Buffer.from(canary)));
     assert.ok(!JSON.stringify(await page.evaluate(() => window.__events)).includes(canary));
+    for (const secret of [claimCanary, reviewCanary]) {
+        assert.ok(!(await page.evaluate(() => window.__previewInput)).includes(secret));
+        assert.ok(!(await page.locator('#gen-article-preview').getAttribute('srcdoc')).includes(secret));
+        for (const entry of Object.values(zip.files)) if (!entry.dir) assert.ok(!(await entry.async('nodebuffer')).includes(Buffer.from(secret)));
+        assert.ok(!JSON.stringify(calls).includes(secret));
+        for (const call of calls.filter(value => value.suffix === '/git/blobs' && value.body?.encoding === 'base64')) assert.ok(!Buffer.from(call.body.content, 'base64').includes(Buffer.from(secret)));
+        assert.ok(!JSON.stringify(await page.evaluate(() => window.__events)).includes(secret));
+    }
     assert.deepEqual(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].research), savedResearch);
     assert.deepEqual(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot()), savedResearch);
     assert.ok(!calls.some(call => /actions|deploy|merge/.test(call.suffix)));
@@ -793,4 +816,53 @@ test('a ZIP import that fails after the author moved to another draft leaves tha
     assert.equal(await page.getByRole('dialog').isVisible(), false);
     assert.equal(await page.locator('#gen-import-text').textContent(), 'Συνέχεια από ZIP');
     assert.equal(await page.locator('#gen-title').inputValue(), '');
+});
+
+test('v1 research opens clean without a write and the next explicit save writes v2', async t => {
+    const page = await pageFor(t);
+    const old = await page.evaluate(async () => {
+        const record = await window.F1S_LOCAL_DRAFTS.save({ title: 'Παλαιό v1', text: 'Κείμενο', editor: { step: 1 } });
+        record.research = { version: 1, question: 'Παλαιό α\u0301', anchor: '', season: '2026', round: '17', notes: [], form: { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' } };
+        await new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
+            const db = request.result, tx = db.transaction('drafts', 'readwrite'); tx.objectStore('drafts').put(record);
+            tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject;
+        }; }); return record;
+    });
+    await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().version), 2);
+    assert.doesNotMatch(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+    const raw = await page.evaluate(async id => new Promise((resolve, reject) => { const request = indexedDB.open('f1stories-author-drafts', 1); request.onsuccess = () => {
+        const db = request.result, tx = db.transaction('drafts'), get = tx.objectStore('drafts').get(id); get.onsuccess = () => { db.close(); resolve(get.result); }; get.onerror = reject;
+    }; }), old.id);
+    assert.deepEqual(raw, old);
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    const updated = await page.evaluate(async id => window.F1S_LOCAL_DRAFTS.get(id), old.id);
+    assert.equal(updated.version, 1); assert.equal(updated.research.version, 2); assert.deepEqual(updated.research.claims, []);
+});
+
+test('pending decision edits dirty a saved draft and survive save and reopen without approval', async t => {
+    const page = await pageFor(t);
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const card = page.locator('details[id^="research-claim-"]');
+    await card.locator('[id$="-text"]').fill('Συνθετικός ισχυρισμός');
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.evaluate(() => document.querySelectorAll('#research-notebook details').forEach(node => { node.open = true; }));
+    await card.locator('[id$="-rationale"]').fill('Εκκρεμής αιτιολόγηση');
+    await card.locator('[id$="-reviewer"]').fill('Συνθετικός συντάκτης');
+    assert.match(await page.locator('#gen-draft-status').textContent(), /Μη αποθηκευμένες/);
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    const claim = await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0]);
+    assert.deepEqual(claim.pendingDecision, { rationale: 'Εκκρεμής αιτιολόγηση', reviewer: 'Συνθετικός συντάκτης' });
+    assert.equal(claim.status, 'unreviewed'); assert.equal(claim.review, null);
+    await step(page, 1); await page.locator('#research-toggle').click();
+    assert.equal(await card.locator('[id$="-rationale"]').inputValue(), 'Εκκρεμής αιτιολόγηση');
+    assert.equal(await card.locator('[id$="-reviewer"]').inputValue(), 'Συνθετικός συντάκτης');
 });

@@ -595,3 +595,104 @@ test('full-text scoring yields and an edited query cancels the in-progress scan'
     });
     assert.equal(await page.locator('.gb-research-results li').count(), 0);
 });
+
+test('claims capture, evidence review, stale edits, copy and anchor location stay in the notebook', async t => {
+    const { page, external } = await pageFor(t); await open(page);
+    const text = 'Αρχή · Ρυθμός α\u0301 1.029 δευτερόλεπτα · τέλος';
+    await page.locator('#gen-content').fill(text);
+    const quote = 'Ρυθμός α\u0301 1.029 δευτερόλεπτα';
+    await page.locator('#gen-content').evaluate((node, value) => { const start = node.value.indexOf(value); node.setSelectionRange(start, start + value.length); }, quote);
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Από την επιλογή του άρθρου' }).click();
+    let card = page.locator('details[id^="research-claim-"]');
+    assert.equal(await card.locator('[id$="-text"]').inputValue(), quote);
+    await card.getByRole('button', { name: 'Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια' }).click();
+    assert.match(await card.textContent(), /Χρειάζεται αιτιολόγηση/);
+    await card.locator('[id$="-type"]').selectOption('calculated-statistic');
+    card = page.locator('details[id^="research-claim-"]');
+    await card.locator('summary').filter({ hasText: /^Πλαίσιο$/ }).click();
+    for (const [name, value] of [['scope-event', 'Monza'], ['scope-season', '2026'], ['scope-round', '17']]) await card.locator(`[id$="-${name}"]`).fill(value);
+    await card.locator('[id$="-scope-session"]').selectOption('race');
+    await card.getByText('Αριθμητικά στοιχεία', { exact: true }).click();
+    for (const [name, value] of [['metric', 'Διαφορά α\u0301'], ['value', '1.029'], ['units', 's'], ['sample', '17 γύροι'], ['method', 'Διαφορά τιμών']]) await card.locator(`[id$="-numeric-${name}"]`).fill(value);
+    await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).click();
+    await card.locator('[id$="-original-0-label"]').fill('Πρώτη'); await card.locator('[id$="-original-0-value"]').fill('0,250');
+    await card.getByText('Πηγές & τεκμήρια', { exact: true }).click();
+    await card.getByRole('button', { name: 'Προσθήκη πηγής' }).click();
+    await card.locator('[id$="-source-0-title"]').fill('Πηγή <img src=x>');
+    await card.locator('[id$="-source-0-url"]').fill('https://example.com/entry?edition=1');
+    await card.locator('[id$="-rationale"]').fill('Αξιολόγησα και το πλαίσιο α\u0301.');
+    await card.getByRole('button', { name: 'Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια' }).click();
+    assert.equal(await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0].status), 'unreviewed');
+    await card.locator('[id$="-source-0-locator-kind"]').selectOption('page');
+    await card.locator('[id$="-source-0-locator-value"]').fill('2-3');
+    await card.locator('[id$="-source-0-excerpt"]').fill('<script>untrusted</script>');
+    await card.getByRole('button', { name: 'Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια' }).click();
+    assert.match(await card.locator('summary').first().textContent(), /Ελέγχθηκε με τεκμήρια/);
+    assert.equal(await card.locator('script, img').count(), 0);
+    const reviewed = await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0]);
+    assert.equal(reviewed.numeric.originalValues[0].value, '0,250'); assert.ok(reviewed.review.reviewedAt.endsWith('Z'));
+    await card.locator('[id$="-text"]').fill(quote + '!');
+    assert.match(await card.locator('summary').first().textContent(), /Χρειάζεται νέο έλεγχο/);
+    await page.evaluate(() => { Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async value => { window.__claimCopy = value; } } }); });
+    await card.getByRole('button', { name: 'Αντιγραφή κειμένου' }).click();
+    assert.equal(await page.evaluate(() => window.__claimCopy), quote + '!');
+    assert.match(await card.textContent(), /Η αντιγραφή δεν αποτελεί επαλήθευση/);
+    await card.getByRole('button', { name: 'Εντοπισμός', exact: true }).click();
+    assert.equal(await page.locator('#gen-content').evaluate(node => node.value.slice(node.selectionStart, node.selectionEnd)), quote);
+    assert.equal(await page.locator('#gen-content').inputValue(), text);
+    await page.locator('.gb-step[data-step="4"]').click(); await page.locator('#gen-save-draft').click(); await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Αποθηκεύτηκε'));
+    await page.reload(); await page.locator('#gen-show-drafts').click(); await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό')); await open(page);
+    const reopened = await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0]);
+    assert.equal(reopened.status, 'stale'); assert.equal(reopened.text, quote + '!'); assert.equal(reopened.numeric.originalValues[0].value, '0,250');
+    assert.deepEqual(external, []);
+});
+
+test('claim review imports are demoted and controls fit mobile and desktop themes', async t => {
+    for (const width of [390, 1440]) {
+        const { page } = await pageFor(t, width); await open(page);
+        await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+        await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+        const card = page.locator('details[id^="research-claim-"]');
+        await card.locator('[id$="-text"]').fill('Ισχυρισμός α\u0301');
+        await card.getByText('Πηγές & τεκμήρια', { exact: true }).click(); await card.getByRole('button', { name: 'Προσθήκη πηγής' }).click();
+        await card.locator('[id$="-source-0-title"]').fill('Πηγή'); await card.locator('[id$="-source-0-url"]').fill('https://example.com/a');
+        await card.locator('[id$="-source-0-locator-kind"]').selectOption('section'); await card.locator('[id$="-source-0-locator-value"]').fill('Ενότητα 1');
+        await card.locator('[id$="-rationale"]').fill('Έλεγχος πηγής'); await card.getByRole('button', { name: 'Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια' }).click();
+        const payload = await page.evaluate(() => JSON.stringify({ format: 'f1stories-research', version: 1, research: window.F1S_RESEARCH_NOTEBOOK.snapshot() }));
+        await page.locator('#research-import').setInputFiles({ name: 'research.json', mimeType: 'application/json', buffer: Buffer.from(payload) });
+        await page.getByRole('dialog').getByRole('button', { name: 'Αντικατάσταση', exact: true }).click();
+        await page.waitForFunction(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().claims[0].status === 'stale');
+        for (const theme of ['light', 'dark']) {
+            await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), true);
+            const control = card.getByRole('button', { name: 'Αντιγραφή κειμένου' }); await control.focus();
+            assert.equal(await control.evaluate(node => document.activeElement === node), true);
+            await page.keyboard.press('Tab'); assert.ok(await page.evaluate(() => document.activeElement.closest('#research-notebook') !== null));
+        }
+    }
+});
+
+test('evidence controls keep keyboard focus through additions and removals', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const card = page.locator('details[id^="research-claim-"]');
+    await card.getByText('Πηγές & τεκμήρια', { exact: true }).click();
+    await card.getByRole('button', { name: 'Προσθήκη πηγής' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Πηγή'); assert.equal(await card.locator('[id$="-source-0-title"]').inputValue(), 'Πηγή');
+    await card.getByRole('button', { name: 'Αφαίρεση πηγής' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη πηγής' }).evaluate(node => node === document.activeElement), true);
+    await card.getByText('Αριθμητικά στοιχεία', { exact: true }).click();
+    await card.getByRole('button', { name: 'Προσθήκη αριθμητικών στοιχείων' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Metric'); assert.equal(await card.locator('[id$="-numeric-metric"]').inputValue(), 'Metric');
+    await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).focus(); await page.keyboard.press('Enter');
+    await page.keyboard.type('Value'); assert.equal(await card.locator('[id$="-original-0-label"]').inputValue(), 'Value');
+    await card.getByRole('button', { name: 'Αφαίρεση αρχικής τιμής' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).evaluate(node => node === document.activeElement), true);
+    await card.getByRole('button', { name: 'Αφαίρεση αριθμητικών στοιχείων' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await card.getByRole('button', { name: 'Προσθήκη αριθμητικών στοιχείων' }).evaluate(node => node === document.activeElement), true);
+    await card.getByRole('button', { name: 'Αφαίρεση', exact: true }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#research-new-claim').evaluate(node => node === document.activeElement), true);
+});

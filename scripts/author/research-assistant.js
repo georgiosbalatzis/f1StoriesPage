@@ -272,7 +272,7 @@
     function blankForm() {
         return { text: '', section: 'unverified', type: 'unverified', kind: 'general', verification: 'pending', sourceTitle: '', url: '', sourceDate: '', event: '', market: '', units: '', period: '', calculation: '', limitations: '' };
     }
-    function blankWorkspace() { return { version: 1, question: '', anchor: '', season: '', round: '', notes: [], form: blankForm() }; }
+    function blankWorkspace() { return { version: 2, question: '', anchor: '', season: '', round: '', notes: [], form: blankForm(), claims: [] }; }
     function plain(value, keys) {
         return value && Object.prototype.toString.call(value) === '[object Object]'
             && (Object.getPrototypeOf(value) === null || Object.getPrototypeOf(Object.getPrototypeOf(value)) === null)
@@ -283,10 +283,164 @@
         for (var char of value) { var code = char.codePointAt(0); size += code < 128 ? 1 : code < 2048 ? 2 : code < 65536 ? 3 : 4; }
         return size;
     }
+    function locateClaimAnchor(content, anchor) {
+        if (!anchor || !anchor.quote) return { status: 'missing' };
+        function matches(start) {
+            return content.slice(start, start + anchor.quote.length) === anchor.quote
+                && content.slice(Math.max(0, start - anchor.prefix.length), start) === anchor.prefix
+                && content.slice(start + anchor.quote.length, start + anchor.quote.length + anchor.suffix.length) === anchor.suffix;
+        }
+        if (Number.isInteger(anchor.start) && anchor.start >= 0 && anchor.end === anchor.start + anchor.quote.length && matches(anchor.start)) {
+            return { status: 'found', start: anchor.start, end: anchor.end };
+        }
+        var occurrences = [], offset = 0, index;
+        while ((index = content.indexOf(anchor.quote, offset)) !== -1) { occurrences.push(index); offset = index + 1; }
+        if (!occurrences.length) return { status: 'missing' };
+        if (occurrences.length > 1) occurrences = occurrences.filter(matches);
+        if (occurrences.length !== 1) return { status: 'ambiguous' };
+        return { status: 'found', start: occurrences[0], end: occurrences[0] + anchor.quote.length };
+    }
+    var CLAIM_TYPES = ['official-fact', 'reported-observation', 'calculated-statistic', 'technical-interpretation', 'prediction', 'unsupported-hypothesis'];
+    var CLAIM_STATUSES = ['unreviewed', 'reviewed-with-evidence', 'disputed', 'stale', 'insufficient'];
+    var CLAIM_SESSIONS = ['', 'fp1', 'fp2', 'fp3', 'sq1', 'sq2', 'sq3', 'sprint', 'q1', 'q2', 'q3', 'qualifying', 'race', 'season', 'period'];
+    function invalidResearch() { throw new Error('Μη έγκυρα δεδομένα σημειωματαρίου.'); }
+    function strings(value, limits) {
+        var keys = Object.keys(limits);
+        if (!plain(value, keys)) invalidResearch();
+        var result = {};
+        keys.forEach(function (key) {
+            if (typeof value[key] !== 'string' || value[key].length > limits[key]) invalidResearch();
+            result[key] = value[key];
+        });
+        return result;
+    }
+    function seasonValid(value) { return !value || (/^\d{4}$/.test(value) && +value >= 1950 && +value <= 2100); }
+    function roundValid(value, season) { return !value || (!!season && /^(?:[1-9]|[12]\d|30)$/.test(value)); }
+    function validLocator(locator) {
+        var value = locator.value.trim();
+        if (locator.kind === 'page' || locator.kind === 'paragraph') {
+            var range = /^(\d+)(?:\s*[-–]\s*(\d+))?$/.exec(value);
+            return !!range && +range[1] > 0 && (!range[2] || +range[2] > +range[1]);
+        }
+        if (locator.kind === 'section' || locator.kind === 'row') return value.replace(/\s/g, '').length >= 3 && /[\p{L}\p{N}]/u.test(value)
+            && !/^(?:row|section|γραμμή|ενότητα)$/iu.test(value) && !/^(?:[a-z][a-z0-9+.-]*:\/\/|www\.|[^\s/]+\.[a-z]{2,}(?:[/:?#]|$))/i.test(value);
+        return locator.kind === 'timestamp' && /^\d{2}:[0-5]\d:[0-5]\d(?:\.\d{1,3})?$/.test(value);
+    }
+    function sourceKey(url) {
+        if (!url) return '';
+        var parsed = new URL(safeURL(url));
+        return parsed.origin + parsed.pathname;
+    }
+    function newClaimSource(url) {
+        if (typeof url !== 'string' || url.length > 2048) invalidResearch();
+        var key = sourceKey(url);
+        if (key.length > 200) invalidResearch();
+        return { title: '', url: url, locator: { kind: '', value: '' }, sourceDate: '', excerpt: '', independenceKey: key, stance: 'supports' };
+    }
+    function sourceGroups(sources) {
+        var parents = sources.map(function (_, i) { return i; });
+        function root(i) { while (parents[i] !== i) { parents[i] = parents[parents[i]]; i = parents[i]; } return i; }
+        sources.forEach(function (source, i) {
+            sources.slice(0, i).forEach(function (other, j) {
+                var key = sourceKey(source.url), otherKey = sourceKey(other.url);
+                var keys = [key, source.independenceKey].filter(Boolean), otherKeys = [otherKey, other.independenceKey].filter(Boolean);
+                if (keys.some(function (item) { return otherKeys.includes(item); })) parents[root(i)] = root(j);
+            });
+        });
+        var groups = [];
+        sources.forEach(function (_, i) { var id = root(i), group = groups.find(function (item) { return item.id === id; });
+            if (!group) { group = { id: id, sources: [] }; groups.push(group); } group.sources.push(i);
+        });
+        return groups.map(function (group) { return group.sources; });
+    }
+    function claimFingerprint(claim) {
+        var scope = claim.scope, numeric = claim.numeric && [claim.numeric.metric, claim.numeric.value, claim.numeric.units,
+            claim.numeric.sample, claim.numeric.method, claim.numeric.originalValues.map(function (item) { return [item.label, item.value]; })];
+        var sources = claim.sources.map(function (source) {
+            return JSON.stringify([source.title, source.url ? safeURL(source.url) : '', [source.locator.kind, source.locator.value],
+                source.sourceDate, source.excerpt, source.independenceKey, source.stance]);
+        }).sort();
+        return JSON.stringify(['f1s-claim-review-v1', claim.text, claim.claimType,
+            [scope.event, scope.season, scope.round, scope.session, scope.period.start, scope.period.end], numeric, sources.map(JSON.parse)]);
+    }
+    function completeScope(scope) {
+        if (scope.session === 'season') return !!scope.season && !scope.event && !scope.round && !scope.period.start && !scope.period.end;
+        if (scope.session === 'period') {
+            var start = scope.period.start, end = scope.period.end;
+            function precision(value) { var time = /T\d{2}:\d{2}(?::\d{2}(?:\.(\d+))?)?/.exec(value); return !time ? 'day' : time[1] ? 'fraction:' + time[1].length : time[0].length > 6 ? 'second' : 'minute'; }
+            return !!start && !!end && isoDate(start) && isoDate(end) && precision(start) === precision(end) && Date.parse(end) >= Date.parse(start);
+        }
+        return !!scope.event.trim() && !!scope.season && !!scope.round && !!scope.session && !scope.period.start && !scope.period.end;
+    }
+    function reviewable(claim, rationale) {
+        var numeric = claim.numeric;
+        return !!claim.text.trim() && !!rationale.trim() && claim.claimType !== 'unsupported-hypothesis'
+            && claim.sources.some(function (source) { return source.stance === 'supports' && !!source.title.trim() && !!source.url && validLocator(source.locator); })
+            && (!numeric || (completeScope(claim.scope) && !!numeric.metric.trim() && /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(numeric.value)
+                && !!numeric.units.trim() && !!numeric.sample.trim() && !!numeric.method.trim() && numeric.originalValues.length > 0
+                && numeric.originalValues.every(function (item) { return !!item.label.trim() && !!item.value.trim(); })));
+    }
+    function validateClaim(value) {
+        var claimKeys = ['id', 'text', 'anchor', 'claimType', 'status', 'sources', 'scope', 'numeric', 'review'];
+        if (Object.hasOwn(value || {}, 'pendingDecision')) claimKeys.push('pendingDecision');
+        if (!plain(value, claimKeys)
+            || typeof value.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value.id)
+            || typeof value.text !== 'string' || value.text.length > 4000 || !CLAIM_TYPES.includes(value.claimType) || !CLAIM_STATUSES.includes(value.status)
+            || !Array.isArray(value.sources) || value.sources.length > 8) invalidResearch();
+        var anchor = null;
+        if (value.anchor !== null) {
+            if (!plain(value.anchor, ['quote', 'prefix', 'suffix', 'start', 'end']) || typeof value.anchor.quote !== 'string' || !value.anchor.quote.trim() || value.anchor.quote.length > 4000
+                || typeof value.anchor.prefix !== 'string' || value.anchor.prefix.length > 64 || typeof value.anchor.suffix !== 'string' || value.anchor.suffix.length > 64
+                || !Number.isSafeInteger(value.anchor.start) || value.anchor.start < 0 || !Number.isSafeInteger(value.anchor.end)
+                || value.anchor.end - value.anchor.start !== value.anchor.quote.length) invalidResearch();
+            anchor = { quote: value.anchor.quote, prefix: value.anchor.prefix, suffix: value.anchor.suffix, start: value.anchor.start, end: value.anchor.end };
+        }
+        var sources = Array.from(value.sources, function (source) {
+            if (!plain(source, ['title', 'url', 'locator', 'sourceDate', 'excerpt', 'independenceKey', 'stance'])) invalidResearch();
+            var simple = strings({ title: source.title, url: source.url, sourceDate: source.sourceDate, excerpt: source.excerpt, independenceKey: source.independenceKey },
+                { title: 300, url: 2048, sourceDate: 64, excerpt: 1000, independenceKey: 200 });
+            var locator = strings(source.locator, { kind: 16, value: 500 });
+            if (!['', 'section', 'page', 'paragraph', 'row', 'timestamp'].includes(locator.kind)
+                || !['supports', 'contradicts', 'context'].includes(source.stance) || (simple.sourceDate && !isoDate(simple.sourceDate))) invalidResearch();
+            if (simple.url) { try { safeURL(simple.url); } catch (_) { invalidResearch(); } }
+            return { title: simple.title, url: simple.url, locator: locator, sourceDate: simple.sourceDate, excerpt: simple.excerpt, independenceKey: simple.independenceKey, stance: source.stance };
+        });
+        if (!plain(value.scope, ['event', 'season', 'round', 'session', 'period'])) invalidResearch();
+        var scope = strings({ event: value.scope.event, season: value.scope.season, round: value.scope.round, session: value.scope.session },
+            { event: 200, season: 4, round: 2, session: 16 });
+        scope.period = strings(value.scope.period, { start: 64, end: 64 });
+        if (!seasonValid(scope.season) || !roundValid(scope.round, scope.season) || !CLAIM_SESSIONS.includes(scope.session)) invalidResearch();
+        var numeric = null;
+        if (value.numeric !== null) {
+            if (!plain(value.numeric, ['metric', 'value', 'units', 'sample', 'method', 'originalValues']) || !Array.isArray(value.numeric.originalValues) || value.numeric.originalValues.length > 20) invalidResearch();
+            numeric = strings({ metric: value.numeric.metric, value: value.numeric.value, units: value.numeric.units, sample: value.numeric.sample, method: value.numeric.method },
+                { metric: 160, value: 64, units: 32, sample: 500, method: 1000 });
+            numeric.originalValues = Array.from(value.numeric.originalValues, function (item) { return strings(item, { label: 100, value: 200 }); });
+        }
+        var review = value.review === null ? null : strings(value.review, { rationale: 4000, reviewer: 100, reviewedAt: 64, fingerprint: 65536 });
+        if (review && (!review.reviewedAt.includes('T') || !isoDate(review.reviewedAt))) invalidResearch();
+        var pendingDecision = Object.hasOwn(value, 'pendingDecision') ? strings(value.pendingDecision, { rationale: 4000, reviewer: 100 })
+            : { rationale: review ? review.rationale : '', reviewer: review ? review.reviewer : '' };
+        var claim = { id: value.id, text: value.text, anchor: anchor, claimType: value.claimType, status: value.status, sources: sources, scope: scope, numeric: numeric, review: review, pendingDecision: pendingDecision };
+        if (review && review.fingerprint !== claimFingerprint(claim)) claim.status = 'stale';
+        if (claim.status === 'reviewed-with-evidence' && (!review || !reviewable(claim, review.rationale))) claim.status = 'stale';
+        return claim;
+    }
+    function assessClaim(value, status, rationale, reviewer) {
+        var claim = validateClaim(value);
+        if (!['reviewed-with-evidence', 'disputed', 'insufficient'].includes(status) || typeof rationale !== 'string' || !rationale.trim() || rationale.length > 4000
+            || typeof reviewer !== 'string' || reviewer.length > 100 || (status === 'reviewed-with-evidence' && !reviewable(claim, rationale))) invalidResearch();
+        claim.review = { rationale: rationale, reviewer: reviewer, reviewedAt: new Date().toISOString(), fingerprint: claimFingerprint(claim) };
+        claim.status = status;
+        claim.pendingDecision = { rationale: rationale, reviewer: reviewer };
+        return validateClaim(claim);
+    }
     function validateWorkspace(value) {
-        if (value === null) return null;
-        function invalid() { throw new Error('Μη έγκυρα δεδομένα σημειωματαρίου.'); }
-        if (!plain(value, ['version', 'question', 'anchor', 'season', 'round', 'notes', 'form']) || value.version !== 1
+        if (value == null) return null;
+        var invalid = invalidResearch;
+        var keys = ['version', 'question', 'anchor', 'season', 'round', 'notes', 'form'];
+        if (value.version === 2) keys.push('claims');
+        if (!plain(value, keys) || ![1, 2].includes(value.version)
             || typeof value.question !== 'string' || value.question.length > 2000 || typeof value.anchor !== 'string' || value.anchor.length > 200
             || typeof value.season !== 'string' || (value.season && (!/^\d{4}$/.test(value.season) || +value.season < 1950 || +value.season > 2100))
             || typeof value.round !== 'string' || (value.round && (!value.season || !/^(?:[1-9]|[12]\d|30)$/.test(value.round)))
@@ -304,10 +458,21 @@
             if (completed) { try { validateNote(Object.assign({}, output)); } catch (_) { invalid(); } }
             return output;
         }
-        var result = { version: 1, question: value.question, anchor: value.anchor, season: value.season, round: value.round,
+        if (value.version === 2 && (!Array.isArray(value.claims) || value.claims.length > 100)) invalid();
+        var claims = value.version === 1 ? [] : Array.from(value.claims, validateClaim);
+        if (new Set(claims.map(function (claim) { return claim.id; })).size !== claims.length) invalid();
+        var result = { version: 2, question: value.question, anchor: value.anchor, season: value.season, round: value.round,
             // Array.from, not map: a hole in a damaged stored array becomes undefined and fails, instead of being skipped.
-            notes: Array.from(value.notes, function (note) { return fields(note, true); }), form: fields(value.form, false) };
+            notes: Array.from(value.notes, function (note) { return fields(note, true); }), form: fields(value.form, false), claims: claims };
+        if (utf8Size(JSON.stringify({ format: 'f1stories-research', version: 1, research: result })) > 2 * 1024 * 1024) invalid();
         return JSON.stringify(result) === JSON.stringify(blankWorkspace()) ? null : result;
+    }
+    function importResearch(envelope) {
+        if (!plain(envelope, ['format', 'version', 'research']) || envelope.format !== 'f1stories-research' || envelope.version !== 1 || envelope.research == null
+            || utf8Size(JSON.stringify(envelope)) > 2 * 1024 * 1024) invalidResearch();
+        var result = validateWorkspace(envelope.research);
+        if (result) result.claims.forEach(function (claim) { if (claim.status === 'reviewed-with-evidence') claim.status = 'stale'; });
+        return result;
     }
     function noteText(note) {
         return [note.text, 'Τύπος: ' + TYPES[note.type] + ' · ' + KINDS[note.kind],
@@ -354,15 +519,15 @@
             selectValue(season, state.season); setRounds(state.round);
             notes = state.notes; Object.keys(fields).forEach(function (key) { fields[key].value = state.form[key]; });
             hits = []; articles.replaceChildren(); more.hidden = true; standings.replaceChildren();
-            fallback.value = ''; fallback.hidden = true; status.textContent = ''; formStatus.textContent = ''; renderNotes();
+            fallback.value = ''; fallback.hidden = true; status.textContent = ''; formStatus.textContent = ''; renderNotes(); renderClaims();
             if (exportButton) exportButton.disabled = !snapshotWorkspace();
         }
         function hydrate(value) {
             var validated = validateWorkspace(value);
-            ++epoch; ++searchRevision; ++standingRevision; state = validated || blankWorkspace(); notes = state.notes;
-            if (initialized) paintState();
+            ++epoch; ++searchRevision; ++standingRevision; state = validated || blankWorkspace(); notes = state.notes; claimDrafts = {};
+            if (initialized) { claimList.replaceChildren(); paintState(); }
         }
-        global.F1S_RESEARCH_NOTEBOOK = { snapshot: snapshotWorkspace, hydrate: hydrate, clear: function () {
+        global.F1S_RESEARCH_NOTEBOOK = { snapshot: snapshotWorkspace, hydrate: hydrate, addClaim: addClaim, openClaim: openClaim, setClaimAnchor: setClaimAnchor, clear: function () {
             var had = snapshotWorkspace(); hydrate(null); if (had) changed();
         }, onChange: function (fn) { listeners.push(fn); return function () { listeners = listeners.filter(function (item) { return item !== fn; }); }; } };
         function el(tag, text, className) {
@@ -399,7 +564,7 @@
             }).catch(function (error) { cache.delete(path); throw error; }).finally(function () { clearTimeout(timer); });
             cache.set(path, request); return request;
         }
-        var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle;
+        var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, claimDetails, claimList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle, claimDrafts = {};
         function message(text) { status.textContent = text; }
         // note: an optional line beside the button, so the outcome is visible where the author clicked.
         async function copy(text, done, note) {
@@ -448,6 +613,131 @@
             if (start && articles.children[start]) articles.children[start].querySelector('a[href$="/article.html"]').focus();
         }
         function completeBrief() { return brief(question.value, season.value && round.value ? season.value + ' / γύρος ' + round.value : '', notes); }
+        var claimTypeLabels = { 'official-fact': 'Επίσημο γεγονός', 'reported-observation': 'Αναφερόμενη παρατήρηση',
+            'calculated-statistic': 'Υπολογισμένο στατιστικό', 'technical-interpretation': 'Τεχνική ερμηνεία', prediction: 'Πρόβλεψη', 'unsupported-hypothesis': 'Ατεκμηρίωτη υπόθεση' };
+        var claimStatusLabels = { unreviewed: 'Χωρίς έλεγχο', 'reviewed-with-evidence': 'Ελέγχθηκε με τεκμήρια', disputed: 'Αμφισβητούμενος', stale: 'Χρειάζεται νέο έλεγχο', insufficient: 'Ανεπαρκής τεκμηρίωση' };
+        var sessionLabels = { '': 'Επίλεξε', fp1: 'FP1', fp2: 'FP2', fp3: 'FP3', sq1: 'SQ1', sq2: 'SQ2', sq3: 'SQ3', sprint: 'Sprint', q1: 'Q1', q2: 'Q2', q3: 'Q3', qualifying: 'Κατατακτήριες', race: 'Αγώνας', season: 'Σεζόν', period: 'Περίοδος' };
+        function emptyNumeric() { return { metric: '', value: '', units: '', sample: '', method: '', originalValues: [] }; }
+        function addClaim(selection) {
+            if (state.claims.length >= 100) { message('Το σημειωματάριο δέχεται έως 100 ισχυρισμούς.'); return; }
+            var current = snapshotWorkspace() || blankWorkspace();
+            var item = { id: global.crypto.randomUUID(), text: selection ? selection.quote : '', anchor: selection || null,
+                claimType: 'official-fact', status: 'unreviewed', sources: [], scope: { event: '', season: current.season, round: current.round, session: '', period: { start: '', end: '' } }, numeric: null, review: null };
+            try { item = validateClaim(item); } catch (_) { message('Επίλεξε μη κενό κείμενο έως 4.000 χαρακτήρες.'); return; }
+            state.claims.push(item); renderClaims(); changed(); openClaim(item.id);
+        }
+        function openClaim(id) {
+            var item = state.claims.find(function (claim) { return claim.id === id; });
+            if (!item) return null;
+            if (!initialized) initialize();
+            panel.hidden = false; expanded(true); claimDetails.open = true;
+            var card = document.getElementById('research-claim-' + id);
+            if (card) { card.open = true; card.querySelector('textarea').focus(); }
+            return item.anchor;
+        }
+        function setClaimAnchor(id, selection) {
+            var item = state.claims.find(function (claim) { return claim.id === id; });
+            if (!item || !selection || selection.quote !== item.text) { message('Η επιλογή πρέπει να είναι ακριβώς το κείμενο του ισχυρισμού.'); return; }
+            try { validateClaim(Object.assign({}, item, { anchor: selection })); } catch (_) { message('Η επιλογή δεν είναι έγκυρη.'); return; }
+            item.anchor = selection; changed(); message('Η επιλογή συνδέθηκε με τον ισχυρισμό.');
+        }
+        function focusClaimControl(id, name) {
+            // Fields get the 'research-' prefix from field(); buttons carry their own 'claim-' id.
+            var node = document.getElementById('research-claim-' + id + '-' + name) || document.getElementById('claim-' + id + '-' + name); if (node) node.focus();
+        }
+        function renderClaims() {
+            if (!claimList) return;
+            Array.from(claimList.children).forEach(function (card) {
+                var id = card.id.slice('research-claim-'.length), rationale = card.querySelector('[id$="-rationale"]'), reviewer = card.querySelector('[id$="-reviewer"]');
+                if (rationale && reviewer) claimDrafts[id] = { open: Array.from(card.querySelectorAll('details')).map(function (node) { return node.open; }) };
+            });
+            claimList.replaceChildren();
+            state.claims.forEach(function (item) {
+                var card = el('details', null, 'gb-research-result'); card.id = 'research-claim-' + item.id; card.open = true;
+                var summary = el('summary', 'Ισχυρισμός · ' + claimStatusLabels[item.status]); card.appendChild(summary);
+                var hint = el('p', '', 'gb-hint'); hint.setAttribute('role', 'status');
+                function updateStatus() {
+                    if (item.review) {
+                        try { if (item.review.fingerprint !== claimFingerprint(item)) item.status = 'stale'; }
+                        catch (_) { item.status = 'stale'; }
+                    }
+                    summary.textContent = 'Ισχυρισμός · ' + claimStatusLabels[item.status];
+                }
+                function input(parent, name, label, object, key, limit, tag, options) {
+                    var node = field(parent, 'claim-' + item.id + '-' + name, label, tag, options); node.value = object[key];
+                    if (limit) node.maxLength = limit;
+                    node.addEventListener(node.tagName === 'SELECT' ? 'change' : 'input', function () {
+                        object[key] = node.value; updateStatus(); changed();
+                    });
+                    return node;
+                }
+                function nested(title) { var node = el('details'); node.appendChild(el('summary', title)); card.appendChild(node); return node; }
+                input(card, 'text', 'Κείμενο ισχυρισμού', item, 'text', 4000, 'textarea');
+                var type = input(card, 'type', 'Τύπος ισχυρισμού', item, 'claimType', 0, 'select', claimTypeLabels);
+                type.addEventListener('change', function () { if (item.claimType === 'calculated-statistic' && !item.numeric) { item.numeric = emptyNumeric(); renderClaims(); changed(); focusClaimControl(item.id, 'type'); } });
+                var scope = nested('Πλαίσιο');
+                [['event', 'Γεγονός', 200], ['season', 'Σεζόν', 4], ['round', 'Γύρος', 2]].forEach(function (row) { input(scope, 'scope-' + row[0], row[1], item.scope, row[0], row[2]); });
+                input(scope, 'scope-session', 'Σκέλος', item.scope, 'session', 0, 'select', sessionLabels);
+                input(scope, 'period-start', 'Αρχή περιόδου (ISO)', item.scope.period, 'start', 64);
+                input(scope, 'period-end', 'Τέλος περιόδου (ISO)', item.scope.period, 'end', 64);
+                var numbers = nested('Αριθμητικά στοιχεία');
+                if (!item.numeric) { var addNumeric = button('Προσθήκη αριθμητικών στοιχείων', function () { item.numeric = emptyNumeric(); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'numeric-metric'); }); addNumeric.id = 'claim-' + item.id + '-add-numeric'; numbers.appendChild(addNumeric); }
+                else {
+                    [['metric', 'Μέγεθος', 160], ['value', 'Αποτέλεσμα (δεκαδικό με τελεία)', 64], ['units', 'Μονάδες', 32], ['sample', 'Δείγμα', 500], ['method', 'Μέθοδος', 1000]].forEach(function (row) { input(numbers, 'numeric-' + row[0], row[1], item.numeric, row[0], row[2]); });
+                    item.numeric.originalValues.forEach(function (value, index) {
+                        var group = el('div'); numbers.appendChild(group);
+                        input(group, 'original-' + index + '-label', 'Όνομα αρχικής τιμής', value, 'label', 100);
+                        input(group, 'original-' + index + '-value', 'Αρχική τιμή (όπως γράφτηκε)', value, 'value', 200);
+                        group.appendChild(button('Αφαίρεση αρχικής τιμής', function () { item.numeric.originalValues.splice(index, 1); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, item.numeric.originalValues.length ? 'original-' + Math.min(index, item.numeric.originalValues.length - 1) + '-label' : 'add-original'); }));
+                    });
+                    var addOriginal = button('Προσθήκη αρχικής τιμής', function () { if (item.numeric.originalValues.length >= 20) { hint.textContent = 'Έως 20 αρχικές τιμές.'; return; } item.numeric.originalValues.push({ label: '', value: '' }); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'original-' + (item.numeric.originalValues.length - 1) + '-label'); }); addOriginal.id = 'claim-' + item.id + '-add-original'; numbers.appendChild(addOriginal);
+                    numbers.appendChild(button('Αφαίρεση αριθμητικών στοιχείων', function () { item.numeric = null; updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'add-numeric'); }));
+                }
+                var evidence = nested('Πηγές & τεκμήρια');
+                var groups = el('p', '', 'gb-hint'); evidence.appendChild(groups);
+                function showGroups() { try { var declared = sourceGroups(item.sources); groups.textContent = 'Δηλωμένες ομάδες πηγών: ' + declared.map(function (group) { return group.map(function (index) { return index + 1; }).join(', '); }).join(' · ') + ' (όχι απόδειξη ανεξαρτησίας).'; }
+                    catch (_) { groups.textContent = 'Έλεγξε τους συνδέσμους πηγών.'; } }
+                item.sources.forEach(function (source, index) {
+                    var group = el('div', null, 'gb-research-result'); evidence.appendChild(group); group.appendChild(el('h3', 'Πηγή ' + (index + 1)));
+                    input(group, 'source-' + index + '-title', 'Τίτλος πηγής', source, 'title', 300);
+                    var url = input(group, 'source-' + index + '-url', 'Σύνδεσμος πηγής (HTTP / HTTPS)', source, 'url', 2048);
+                    var sourceLink = el('span'); group.appendChild(sourceLink);
+                    function showSourceLink() { sourceLink.replaceChildren(); try { if (source.url) sourceLink.appendChild(link('Άνοιγμα πηγής', safeURL(source.url))); } catch (_) {} }
+                    url.addEventListener('input', showSourceLink); showSourceLink();
+                    url.addEventListener('change', function () { try { if (!source.independenceKey && source.url) { var key = sourceKey(source.url); if (key.length <= 200) { source.independenceKey = key; group.querySelector('[data-independence]').value = key; updateStatus(); changed(); } else hint.textContent = 'Το κλειδί πηγής υπερβαίνει τους 200 χαρακτήρες· όρισε ένα σύντομο κλειδί.'; } } catch (_) {} showGroups(); });
+                    input(group, 'source-' + index + '-locator-kind', 'Είδος θέσης', source.locator, 'kind', 0, 'select', { '': 'Επίλεξε', section: 'Ενότητα', page: 'Σελίδα', paragraph: 'Παράγραφος', row: 'Γραμμή', timestamp: 'Χρόνος' });
+                    input(group, 'source-' + index + '-locator-value', 'Θέση στην πηγή', source.locator, 'value', 500);
+                    input(group, 'source-' + index + '-date', 'Ημερομηνία πηγής (ISO)', source, 'sourceDate', 64);
+                    input(group, 'source-' + index + '-excerpt', 'Σύντομο απόσπασμα — μόνο όπου επιτρέπεται', source, 'excerpt', 1000, 'textarea');
+                    var independence = input(group, 'source-' + index + '-key', 'Δηλωμένο κλειδί ανεξαρτησίας', source, 'independenceKey', 200); independence.setAttribute('data-independence', ''); independence.addEventListener('input', showGroups);
+                    input(group, 'source-' + index + '-stance', 'Σχέση με ισχυρισμό', source, 'stance', 0, 'select', { supports: 'Υποστηρίζει', contradicts: 'Αντικρούει', context: 'Πλαίσιο' });
+                    group.appendChild(button('Αφαίρεση πηγής', function () { item.sources.splice(index, 1); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, item.sources.length ? 'source-' + Math.min(index, item.sources.length - 1) + '-title' : 'add-source'); }));
+                });
+                var addSource = button('Προσθήκη πηγής', function () { if (item.sources.length >= 8) { hint.textContent = 'Έως 8 πηγές.'; return; } item.sources.push(newClaimSource('')); updateStatus(); renderClaims(); changed(); focusClaimControl(item.id, 'source-' + (item.sources.length - 1) + '-title'); }); addSource.id = 'claim-' + item.id + '-add-source'; evidence.appendChild(addSource); showGroups();
+                var draft = claimDrafts[item.id];
+                if (draft) Array.from(card.querySelectorAll('details')).forEach(function (node, index) { node.open = !!draft.open[index]; });
+                var rationale = field(card, 'claim-' + item.id + '-rationale', 'Αιτιολόγηση απόφασης', 'textarea'); rationale.maxLength = 4000; rationale.value = item.pendingDecision.rationale;
+                var reviewer = field(card, 'claim-' + item.id + '-reviewer', 'Συντάκτης ελέγχου (προαιρετικά)'); reviewer.maxLength = 100; reviewer.value = item.pendingDecision.reviewer;
+                rationale.addEventListener('input', function () { item.pendingDecision.rationale = rationale.value; changed(); });
+                reviewer.addEventListener('input', function () { item.pendingDecision.reviewer = reviewer.value; changed(); });
+                card.appendChild(el('p', 'Η αιτιολόγηση και το όνομα αποθηκεύονται ως εκκρεμείς τιμές· η απόφαση καταγράφεται μόνο όταν την επιλέξεις.', 'gb-hint'));
+                function assess(status) { try { var checked = assessClaim(item, status, rationale.value, reviewer.value); state.claims[state.claims.indexOf(item)] = checked; renderClaims(); changed(); openClaim(checked.id); }
+                    catch (_) { hint.textContent = 'Χρειάζεται αιτιολόγηση και, για έλεγχο, τίτλος, ασφαλής σύνδεσμος και έγκυρη θέση υποστηρικτικής πηγής. Τα αριθμητικά στοιχεία απαιτούν πλήρες πλαίσιο και τιμές.'; } }
+                card.append(button('Έλεγξα τον ισχυρισμό με τα παρακάτω τεκμήρια', function () { assess('reviewed-with-evidence'); }),
+                    button('Αμφισβητούμενος', function () { assess('disputed'); }), button('Ανεπαρκής τεκμηρίωση', function () { assess('insufficient'); }));
+                function delegated(label, action) { var node = button(label, function () {}); node.dataset.claimAction = action; node.dataset.claimId = item.id; return node; }
+                card.append(delegated('Εντοπισμός', 'locate'), delegated('Σύνδεση με τρέχουσα επιλογή', 'recapture'),
+                    button('Αντιγραφή κειμένου', function () { copy(item.text, 'Η αντιγραφή δεν αποτελεί επαλήθευση. Έλεγξε το πλαίσιο πριν την επικόλληση.', hint); }),
+                    button('Αφαίρεση', function () {
+                        var index = state.claims.indexOf(item); state.claims = state.claims.filter(function (claim) { return claim !== item; }); renderClaims(); changed();
+                        // Keep keyboard focus: the claim now in this place, else the previous one, else «Νέος ισχυρισμός».
+                        var next = claimList.children[Math.min(index, claimList.children.length - 1)];
+                        (next ? next.querySelector('summary') : document.getElementById('research-new-claim')).focus();
+                    }), hint);
+                card.querySelectorAll('button').forEach(function (node) { node.style.whiteSpace = 'normal'; node.style.maxWidth = '100%'; });
+                claimList.appendChild(card);
+            });
+        }
         function renderNotes() {
             noteList.replaceChildren();
             Object.keys(SECTIONS).forEach(function (key) {
@@ -573,6 +863,11 @@
             season = field(scope, 'season', 'Σεζόν', 'select', { '': 'Επίλεξε σεζόν' }); round = field(scope, 'round', 'Γύρος', 'select', { '': 'Επίλεξε γύρο' }); round.disabled = true;
             season.addEventListener('change', function () { setRounds(''); }); round.addEventListener('change', loadStandings);
             dataDetails.appendChild(button('Επανάληψη καταλόγου', loadCatalog)); standings = el('div'); dataDetails.appendChild(standings);
+            claimDetails = detail('Ισχυρισμοί & τεκμήρια');
+            var captureClaim = button('Από την επιλογή του άρθρου', function () {}); captureClaim.dataset.claimAction = 'capture';
+            var newClaim = button('Νέος ισχυρισμός', function () { addClaim(null); }); newClaim.id = 'research-new-claim';
+            claimDetails.append(captureClaim, newClaim);
+            claimList = el('div'); claimDetails.appendChild(claimList);
             var toolDetails = detail('Εργαλεία F1 Stories'); tools = el('div', null, 'gb-hint'); toolDetails.appendChild(tools);
             var addDetails = detail('Προσθήκη ευρήματος / πηγής');
             addDetails.appendChild(el('p', 'BetCast, GridCast και AnalystCast είναι σειρές άρθρων. Απόδοση, πρόβλεψη, επίσημο αποτέλεσμα και διακανονισμός καταγράφονται χωριστά. Η πραγματική κατηγορία του άρθρου διατηρείται.', 'gb-hint'));
@@ -626,8 +921,7 @@
                     if (file.size > 2 * 1024 * 1024) throw new Error();
                     var envelope = JSON.parse(await file.text());
                     if (importEpoch !== epoch) return;
-                    if (!plain(envelope, ['format', 'version', 'research']) || envelope.format !== 'f1stories-research' || envelope.version !== 1 || envelope.research === null) throw new Error();
-                    var value = validateWorkspace(envelope.research);
+                    var value = importResearch(envelope);
                     if (snapshotWorkspace() && !(await global.F1S_AUTHOR_DIALOGS.confirm('Να αντικατασταθεί το σημειωματάριο;', { title: 'Εισαγωγή έρευνας', okLabel: 'Αντικατάσταση' }))) return;
                     if (importEpoch !== epoch) return;
                     hydrate(value); changed(); message('Η έρευνα εισήχθη. Αποθήκευσε το πρόχειρο για να διατηρηθεί.');
@@ -654,7 +948,9 @@
         });
     }
     global.F1S_RESEARCH = { safeURL: safeURL, decodeIndex: decodeIndex, eligible: eligible, search: search, validateContentManifest: validateContentManifest, validateContentShard: validateContentShard, markdownLink: markdownLink, validateCatalog: validateCatalog,
-        validateWorkspace: validateWorkspace, snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
+        validateWorkspace: validateWorkspace, validateClaim: validateClaim, importResearch: importResearch, claimFingerprint: claimFingerprint,
+        assessClaim: assessClaim, reviewableClaim: reviewable, sourceKey: sourceKey, newClaimSource: newClaimSource, sourceGroups: sourceGroups, locateClaimAnchor: locateClaimAnchor,
+        snapshot: snapshot, standingText: standingText, validateNote: validateNote, noteText: noteText, brief: brief };
     var panel = typeof document !== 'undefined' && document.getElementById('research-notebook');
     if (panel) attach(panel, document.getElementById('research-toggle'), document.getElementById('archive-toggle'));
 })(window);

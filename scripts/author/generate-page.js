@@ -1405,6 +1405,22 @@
     paintTokenState(); paintHero(); paintHeader(); renderContentImagesList(); goToStep(0, false);
     var drafts = window.F1S_DRAFT_MANAGER.attach({ capture: captureDraft, restore: restoreDraft,
         reset: function () { resetForm(); if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.clear(); goToStep(0); }, locked: function () { return publishing; } });
+    byId('research-notebook').addEventListener('click', function (event) {
+        var button = event.target.closest('[data-claim-action]'), notebook = window.F1S_RESEARCH_NOTEBOOK;
+        if (!button || !notebook) return;
+        var action = button.dataset.claimAction, id = button.dataset.claimId;
+        if (action === 'locate') {
+            var anchor = notebook.openClaim(id), found = window.F1S_RESEARCH.locateClaimAnchor(contentArea.value, anchor);
+            if (found.status === 'found') { goToStep(1, false); contentArea.focus(); contentArea.setSelectionRange(found.start, found.end); }
+            else byId('research-status').textContent = found.status === 'ambiguous' ? 'Η θέση είναι αμφίσημη. Σύνδεσε ξανά τον ισχυρισμό.' : 'Η θέση δεν βρέθηκε. Σύνδεσε ξανά τον ισχυρισμό.';
+            return;
+        }
+        var start = contentArea.selectionStart, end = contentArea.selectionEnd, quote = contentArea.value.slice(start, end);
+        if (!quote.trim() || quote.length > 4000) { byId('research-status').textContent = 'Επίλεξε μη κενό κείμενο έως 4.000 χαρακτήρες στο άρθρο.'; return; }
+        var selection = { quote: quote, prefix: contentArea.value.slice(Math.max(0, start - 64), start), suffix: contentArea.value.slice(end, end + 64), start: start, end: end };
+        if (action === 'capture') notebook.addClaim(selection);
+        else if (action === 'recapture') notebook.setClaimAnchor(id, selection);
+    });
     document.addEventListener('DOMContentLoaded', function () {
         if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.onChange(drafts.changed);
     });
