@@ -364,6 +364,7 @@ export function validateRegistry(registry) {
       continue;
     }
     const sessionKinds = new Map();
+    let previousStart = null;
     for (const [j, s] of r.sessions.entries()) {
       const sp = `${p}.sessions[${j}]`;
       coverage.sessions++;
@@ -393,6 +394,15 @@ export function validateRegistry(registry) {
         `${sp}.startUtc`,
         "Expected null or a canonical UTC timestamp",
       );
+      if (canonicalUtc(s.startUtc)) {
+        if (previousStart !== null && s.startUtc <= previousStart)
+          err(
+            `${sp}.startUtc`,
+            "chronology",
+            "Known session starts must increase in the recorded schedule order",
+          );
+        previousStart = s.startUtc;
+      }
       for (const key of ["openf1SessionKey", "startUtc"])
         if (s[key] === null && nonempty(r.raceId) && kinds.includes(s.kind))
           missing[key].push(`${r.raceId}/${s.kind}`);
@@ -468,8 +478,23 @@ function raceLookup(registry, selector) {
     match = (r) =>
       r.season === selector.season &&
       r.sourceKeys.tyresSlug === selector.tyresSlug;
+  else if (
+    (exact(selector, ["eventName"]) ||
+      (exact(selector, ["eventName", "season"]) && year(selector.season))) &&
+    nonempty(selector.eventName)
+  )
+    match = (r) =>
+      r.eventName === selector.eventName &&
+      (!Object.hasOwn(selector, "season") || r.season === selector.season);
   else invalid("Invalid race selector");
-  const race = registry.races.find(match);
+  const matches = registry.races.filter(match);
+  if (matches.length > 1)
+    return {
+      status: "ambiguous",
+      reason: "race-name-ambiguous",
+      raceIds: matches.map((race) => race.raceId).sort(cmp),
+    };
+  const race = matches[0];
   return race
     ? { status: "resolved", race }
     : { status: "missing", reason: "race-not-found" };
