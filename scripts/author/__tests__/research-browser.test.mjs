@@ -831,3 +831,57 @@ test('archive review cancels concurrent and stale actions and restores focus aft
     assert.equal(await page.locator('.gb-research-queue li').count(), 0);
     assert.equal((await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot().archiveReview.dismissals)).length, 0);
 });
+
+test('archive review keeps each signal evidence, form labels and deletion focus together', async t => {
+    const { page } = await pageFor(t); await open(page);
+    await page.locator('#research-question').fill('minisectors ακορντεόν'); await page.locator('#research-question').press('Enter');
+    await page.waitForSelector('.gb-research-results .gb-research-passage');
+    await page.waitForFunction(() => /προς έλεγχο/.test(document.getElementById('research-status').textContent));
+    await page.getByText('Ισχυρισμοί & τεκμήρια', { exact: true }).click();
+    await page.getByRole('button', { name: 'Νέος ισχυρισμός' }).click();
+    const claimText = page.locator('details[id^="research-claim-"] [id$="-text"]').first();
+    await claimText.fill('Προσωρινό κείμενο');
+    const result = page.locator('.gb-research-results li').first();
+    await result.getByRole('button', { name: 'Σύγκριση με ισχυρισμό' }).click();
+    const quote = await result.locator('[id$="-quote"]').inputValue();
+    await claimText.fill(quote);
+    await result.locator('[id$="-entities"]').fill('minisectors');
+    await result.getByRole('button', { name: 'Καταγραφή σύγκρισης' }).click();
+    const shorter = quote.slice(1);
+    await page.evaluate(shorter => {
+        const state = window.F1S_RESEARCH_NOTEBOOK.snapshot(), claim = state.claims[0], first = state.archiveReview.comparisons[0];
+        const scope = { event: 'Συνθετικό', season: '2026', round: '1', session: 'race', period: { start: '', end: '' } };
+        const numeric = { metric: 'Χρόνος', value: '12', units: 'ms', sample: 'Δοκιμή', method: 'Μέτρηση', originalValues: [] };
+        claim.scope = scope; claim.numeric = numeric; first.scope = scope;
+        state.archiveReview.comparisons.push({ ...structuredClone(first), start: first.start + 1, quote: shorter, numeric: { ...numeric, value: '13' } });
+        window.F1S_RESEARCH_NOTEBOOK.hydrate(state);
+    }, shorter);
+    await page.getByText('Έλεγχος αρχείου', { exact: true }).click();
+    const comparisons = page.locator('.gb-research-comparisons li');
+    await comparisons.nth(0).getByRole('button', { name: 'Επεξεργασία σύγκρισης' }).click();
+    await comparisons.nth(1).getByRole('button', { name: 'Επεξεργασία σύγκρισης' }).click();
+    assert.equal(await page.locator('.gb-research-compare').evaluateAll(forms => {
+        const controls = forms.flatMap(form => Array.from(form.querySelectorAll('input, textarea, select')));
+        return new Set(controls.map(control => control.id)).size === controls.length && forms.every(form => Array.from(form.querySelectorAll('label')).every(label => label.control && form.contains(label.control)));
+    }), true);
+    await page.getByRole('button', { name: 'Έλεγχος ενδείξεων' }).click();
+    const queue = page.locator('.gb-research-queue li').first();
+    await page.waitForFunction(() => document.querySelector('.gb-research-queue li')?.textContent.includes('13'));
+    const evidence = await queue.locator('.gb-research-passage').allTextContents();
+    assert.deepEqual(evidence, [quote, shorter]);
+    const paragraphs = await queue.locator('p').allTextContents();
+    assert.ok(paragraphs.some((text, i) => text === shorter && paragraphs[i + 1].includes('13 ms')));
+    assert.ok(paragraphs.some((text, i) => text === quote && paragraphs[i + 1].includes('χωρίς αριθμητικό ορισμό')));
+    const saved = await page.evaluate(() => window.F1S_RESEARCH_NOTEBOOK.snapshot());
+    await comparisons.nth(0).getByRole('button', { name: 'Αφαίρεση σύγκρισης' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await comparisons.first().getByRole('button', { name: 'Επεξεργασία σύγκρισης' }).evaluate(node => node === document.activeElement), true);
+    await comparisons.first().getByRole('button', { name: 'Αφαίρεση σύγκρισης' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.getByRole('button', { name: 'Έλεγχος ενδείξεων' }).evaluate(node => node === document.activeElement), true);
+    await page.evaluate(state => window.F1S_RESEARCH_NOTEBOOK.hydrate(state), saved);
+    await page.getByRole('button', { name: 'Έλεγχος ενδείξεων' }).click();
+    await page.waitForFunction(() => document.querySelector('.gb-research-queue li')?.textContent.includes('13'));
+    await queue.getByRole('button', { name: 'Αφαίρεση σύγκρισης' }).focus(); await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.querySelector('.gb-research-queue li a') === document.activeElement);
+    await queue.getByRole('button', { name: 'Αφαίρεση σύγκρισης' }).focus(); await page.keyboard.press('Enter');
+    await page.waitForFunction(() => Array.from(document.querySelectorAll('button')).find(node => node.textContent === 'Έλεγχος ενδείξεων') === document.activeElement);
+});

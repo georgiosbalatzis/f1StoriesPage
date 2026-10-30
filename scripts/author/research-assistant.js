@@ -704,7 +704,7 @@
         }
         var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, claimDetails, claimList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle, claimDrafts = {};
         // archiveSession: public posts and article text the last explicit search loaded; the archive review reads only this.
-        var archiveList, archiveMore, archiveNote, comparisonList, archiveSession = null;
+        var archiveList, archiveMore, archiveNote, comparisonList, archiveCheck, archiveSession = null, comparisonFormId = 0;
         function message(text) { status.textContent = text; }
         // note: an optional line beside the button, so the outcome is visible where the author clicked.
         async function copy(text, done, note) {
@@ -903,7 +903,7 @@
             if (row.querySelector('.gb-research-compare')) { row.querySelector('.gb-research-compare select').focus(); return; }
             var claims = state.claims.filter(function (claim) { return claim.text.trim(); });
             if (!claims.length) { note.textContent = 'Πρόσθεσε πρώτα έναν ισχυρισμό στο «Ισχυρισμοί & τεκμήρια».'; return; }
-            var box = el('div', null, 'gb-research-compare'), prefix = 'archive-' + hit.post.id + '-', inputs = {};
+            var box = el('div', null, 'gb-research-compare'), prefix = 'archive-' + (++comparisonFormId) + '-', inputs = {};
             inputs.claim = field(box, prefix + 'claim', 'Ισχυρισμός', 'select', Object.fromEntries(claims.map(function (claim) { return [claim.id, claim.text.slice(0, 80)]; })));
             inputs.quote = field(box, prefix + 'quote', 'Ακριβές απόσπασμα (μόνο το σχετικό τμήμα)', 'textarea'); inputs.quote.value = hit.passage.text; inputs.quote.maxLength = 4000;
             inputs.entities = field(box, prefix + 'entities', 'Κοινά ονόματα / όροι (1–4, με κόμμα)');
@@ -957,9 +957,12 @@
                     annotate(row, { post: { id: comparison.postId }, passage: passage, synthetic: synthetic }, note, comparison, edit);
                 });
                 row.append(edit, button('Αφαίρεση σύγκρισης', function () {
-                    if (!state.archiveReview.comparisons.includes(comparison)) return;
+                    var index = state.archiveReview.comparisons.indexOf(comparison);
+                    if (index < 0) return;
                     state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== comparison; });
                     changed(); renderComparisons();
+                    var next = comparisonList.children[Math.min(index, comparisonList.children.length - 1)];
+                    (next ? next.querySelector('button') : archiveCheck).focus();
                 }), note); comparisonList.appendChild(row);
             });
         }
@@ -972,7 +975,7 @@
             if (signal === 'update-candidate') return 'Ο ισχυρισμός ελέγχθηκε μετά τη δημοσίευση του άρθρου (' + row.post.date + ') με υποστηρικτική πηγή μεταγενέστερη της δημοσίευσης.';
             return 'Ίδιο πλαίσιο και ίδιοι όροι, ομοιότητα λέξεων ' + Math.round(row.similarity * 100) + '%.';
         }
-        async function runReview() {
+        async function runReview(focusIndex) {
             var reviewEpoch = epoch, revision = ++reviewRevision, session = archiveSession;
             archiveList.replaceChildren(); archiveMore.hidden = true;
             var result = await reviewQueue(state, function (id) { return session && session.content.has(id) && session.posts.has(id) ? { post: session.posts.get(id), article: session.content.get(id) } : null; });
@@ -980,11 +983,14 @@
             result.rows.forEach(function (row, index) {
                 var item = el('li', null, 'gb-research-result'); item.hidden = index >= 8;
                 item.append(el('h3', row.claim.text), el('p', 'Άρθρο: ' + row.post.title + ' · ' + row.post.date + ' · ' + row.post.id, 'gb-hint'),
-                    el('p', row.comparison.quote, 'gb-research-passage'), el('p', 'Θέση: ' + (row.passage.heading ? row.passage.heading.text : 'Παράγραφος ' + (row.passage.ordinal + 1)), 'gb-hint'),
+                    el('p', 'Θέση: ' + (row.passage.heading ? row.passage.heading.text : 'Παράγραφος ' + (row.passage.ordinal + 1)), 'gb-hint'),
                     link('Άνοιγμα άρθρου', row.post.url), el('p', row.post.url, 'gb-hint'),
-                    el('p', 'Ισχυρισμός: ' + scopeText(row.claim.scope) + ' · ' + numericText(row.claim.numeric), 'gb-hint'),
-                    el('p', 'Αρχείο: ' + scopeText(row.comparison.scope) + ' · ' + numericText(row.comparison.numeric), 'gb-hint'));
-                row.signals.forEach(function (signal) { item.appendChild(el('p', SIGNAL_LABELS[signal.kind] + ': ' + signalReason(signal.kind, Object.assign({}, row, { comparison: signal.comparison, similarity: signal.similarity })))); });
+                    el('p', 'Ισχυρισμός: ' + scopeText(row.claim.scope) + ' · ' + numericText(row.claim.numeric), 'gb-hint'));
+                row.signals.forEach(function (signal) {
+                    item.append(el('p', SIGNAL_LABELS[signal.kind] + ': ' + signalReason(signal.kind, Object.assign({}, row, { comparison: signal.comparison, similarity: signal.similarity }))),
+                        el('p', signal.comparison.quote, 'gb-research-passage'),
+                        el('p', 'Αρχείο: ' + scopeText(signal.comparison.scope) + ' · ' + numericText(signal.comparison.numeric), 'gb-hint'));
+                });
                 item.appendChild(el('p', 'Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.', 'gb-hint is-warn'));
                 var locate = button('Εντοπισμός ισχυρισμού', function () {}); locate.dataset.claimAction = 'locate'; locate.dataset.claimId = row.claim.id; item.appendChild(locate);
                 row.signals.forEach(function (signal) {
@@ -995,11 +1001,15 @@
                     }));
                 });
                 item.appendChild(button('Αφαίρεση σύγκρισης', function () {
-                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== row.comparison; }); changed(); renderComparisons(); runReview();
+                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== row.comparison; }); changed(); renderComparisons(); runReview(index);
                 }));
                 archiveList.appendChild(item);
             });
             archiveMore.hidden = result.rows.length <= 8; archiveMore.textContent = 'Περισσότερες ενδείξεις (' + Math.max(0, result.rows.length - 8) + ')';
+            if (typeof focusIndex === 'number') {
+                var next = archiveList.children[Math.min(focusIndex, Math.min(archiveList.children.length, 8) - 1)];
+                (next ? next.querySelector('a, button') : archiveCheck).focus();
+            }
             var waiting = result.incomplete.filter(function (entry) { return !entry.loaded; }).length, partial = result.incomplete.length - waiting;
             archiveNote.textContent = (result.rows.length ? result.rows.length + ' ενδείξεις.' : 'Καμία ένδειξη.')
                 + (result.truncated ? ' Το όριο (4 ανά ισχυρισμό, 24 συνολικά) περιόρισε την εμφάνιση.' : '')
@@ -1128,7 +1138,8 @@
             archiveMore = button('Περισσότερες ενδείξεις', function () { var first = archiveList.querySelector('li[hidden]'); archiveList.querySelectorAll('li[hidden]').forEach(function (node) { node.hidden = false; }); archiveMore.hidden = true; if (first) first.querySelector('a, button').focus(); }); archiveMore.hidden = true;
             comparisonList = el('ol', null, 'gb-research-comparisons');
             archiveDetails.append(el('h3', 'Καταγεγραμμένες συγκρίσεις'), comparisonList);
-            archiveDetails.append(button('Έλεγχος ενδείξεων', runReview), button('Επαναφορά απορρίψεων', function () {
+            archiveCheck = button('Έλεγχος ενδείξεων', runReview);
+            archiveDetails.append(archiveCheck, button('Επαναφορά απορρίψεων', function () {
                 if (!state.archiveReview.dismissals.length) return;
                 state.archiveReview.dismissals = []; changed(); runReview();
             }), archiveNote, archiveList, archiveMore);
