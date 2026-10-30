@@ -16,9 +16,12 @@
             frontmatter[1].split('\n').forEach(function (line) {
                 var separator = line.indexOf(':');
                 if (separator !== -1) {
-                    metadata[line.slice(0, separator).trim()] = line.slice(separator + 1).trim();
+                    var key = line.slice(0, separator).trim();
+                    if (key === 'corrections' && Object.prototype.hasOwnProperty.call(metadata, key)) throw new Error('Duplicate corrections field');
+                    metadata[key] = line.slice(separator + 1).trim();
                 }
             });
+            if (Object.prototype.hasOwnProperty.call(metadata, 'corrections')) global.F1S_ARTICLE_CORRECTIONS.parse(metadata.corrections);
             var record = Object.assign({}, metadata, { id: options && options.id });
             if (Object.prototype.hasOwnProperty.call(metadata, 'categories') || global.F1S_TAXONOMY.isPublicCategory(metadata.category)) {
                 record.categories = global.F1S_TAXONOMY.normalizeCategories(metadata.categories || metadata.category);
@@ -78,6 +81,7 @@
         var safeTags = global.F1S_TAXONOMY.normalizeTags(tag).join(', ');
         var safeTitle = String(title || 'Untitled').replace(/[\r\n]+/g, ' ');
         var safeBody = (body || '').replace(/\r/g, '');
+        if (metadata && Object.prototype.hasOwnProperty.call(metadata, 'corrections')) global.F1S_ARTICLE_CORRECTIONS.parse(metadata.corrections);
         var extraFields = Object.keys(metadata || {}).filter(function (key) {
             return ['tag', 'tags', 'category', 'categories', 'title'].indexOf(key) === -1 && /^[a-zA-Z][\w-]*$/.test(key);
         }).map(function (key) {

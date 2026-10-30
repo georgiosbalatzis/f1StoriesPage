@@ -40,20 +40,20 @@ before(async () => {
 });
 after(async () => { await browser?.close(); if (server) await new Promise(resolve => server.close(resolve)); });
 
-async function pageFor(t) {
+async function pageFor(t, options = {}) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     t.after(() => context.close());
     const calls = [], blobs = new Map();
     await context.addInitScript(() => sessionStorage.setItem('f1stories-housekeeping-list-state-v1', JSON.stringify({ lane: 'all' })));
     await context.route('**/*', async route => {
         const request = route.request(), url = request.url();
-        if (url === origin + '/blog-module/blog-index-data.json') return route.fulfill({ json: { posts: POSTS } });
+        if (url === origin + '/blog-module/blog-index-data.json') return route.fulfill({ json: { posts: POSTS.concat(options.legacy ? [{ ...POSTS[0], id: '20260101G', title: 'Παλιό άρθρο', hasSource: false }] : []) } });
         if (!url.startsWith('https://api.github.com/')) return url.startsWith(origin) || url.startsWith('blob:') ? route.continue() : route.abort();
         const suffix = decodeURIComponent(new URL(url).pathname.replace('/repos/georgiosbalatzis/f1StoriesPage', ''));
         const method = request.method(), body = request.postDataJSON();
         calls.push({ suffix, method, body });
         const listing = suffix.match(/^\/contents\/blog-module\/blog-entries\/([^/]+)$/);
-        if (listing) return route.fulfill({ json: FILES.map(name => ({ type: 'file', name, sha: `${listing[1]}/${name}` })) });
+        if (listing) return route.fulfill({ json: (options.missingSource ? FILES.filter(name => name !== 'source.txt') : FILES).map(name => ({ type: 'file', name, sha: `${listing[1]}/${name}` })) });
         const text = suffix.match(/^\/contents\/blog-module\/blog-entries\/([^/]+)\/source\.txt$/);
         if (text) return route.fulfill({ json: { encoding: 'base64', content: Buffer.from(source(text[1])).toString('base64') } });
         if (suffix.startsWith('/pulls') && method === 'GET') return route.fulfill({ json: [] });
@@ -88,6 +88,26 @@ async function save(page) {
     await dialog(page).filter({ hasText: 'Pull Request ανοιχτό' }).getByRole('button', { name: 'OK', exact: true }).click();
 }
 const writes = calls => calls.filter(call => call.method !== 'GET');
+
+test('correction-bearing ZIP replacement uses the review lane', async t => {
+    const session = await pageFor(t), { page } = session, post = POSTS[0];
+    const records = JSON.stringify([{ type: 'substantial-update', date: '2026-10-29', section: 'Αρχή', reason: 'Συνθετική ενημέρωση.', decision: 'approved', approvedBy: 'Synthetic Editor', approvedOn: '2026-10-29' }]);
+    const text = source(post.id).replace('legacy-note: μένει', `legacy-note: μένει\nupdatedDateISO: 2026-10-29\ncorrections: ${records}`);
+    const zip = new JSZip(); zip.file(`${post.id}/source.txt`, text);
+    await page.locator('#hk-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await zip.generateAsync({ type: 'nodebuffer' }) });
+    await dialog(page).locator('input').fill('dummy-token-only-for-tests');
+    await dialog(page).getByRole('button', { name: 'OK', exact: true }).click();
+    await dialog(page).locator('input[value="replace"]').check();
+    await dialog(page).getByRole('button', { name: 'Συνέχεια', exact: true }).click();
+    await dialog(page).getByRole('button', { name: 'Αντικατάσταση', exact: true }).click();
+    assert.match(await dialog(page).innerText(), /ανθρώπινος έλεγχος/);
+    await dialog(page).getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    assert.match(await dialog(page).filter({ hasText: 'Pull Request ανοιχτό' }).innerText(), /ανθρώπινο συντακτικό έλεγχο/);
+    const { branch, pr, written } = pullRequest(session);
+    assert.match(branch, /^refs\/heads\/editorial\/review\//);
+    assert.match(pr.body, /ανθρώπινος έλεγχος/);
+    assert.equal(written[`${ENTRIES}/${post.id}/source.txt`].toString('utf8'), text);
+});
 
 test('open PR lane lists author and review branches across pages without writes', async t => {
     const { page, calls } = await pageFor(t), requests = [];
@@ -262,4 +282,107 @@ test('ZIP replacement refuses a folder awaiting editorial review', async t => {
     await dialog(page).getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
     assert.match(await dialog(page).innerText(), /αναμένει ήδη συντακτικό έλεγχο/);
     assert.equal(writes(calls).length, 0);
+});
+
+test('material correction shows the public notice and uses only the review lane', async t => {
+    const session = await pageFor(t), { page } = session, post = POSTS[0];
+    await openEditor(session, post);
+    await page.locator('#hk-edit-body').fill('Διορθωμένο κείμενο.');
+    await page.locator('#hk-correction-type').selectOption('factual-correction');
+    await page.locator('#hk-correction-date').fill('2026-10-29');
+    await page.locator('#hk-correction-section').fill('Αρχή');
+    await page.locator('#hk-correction-reason').fill('Διορθώθηκε συνθετικό στοιχείο.');
+    await page.locator('#hk-correction-approver').fill('Synthetic Editor');
+    await page.locator('#hk-correction-approved-on').fill('2026-10-29');
+    await page.locator('#hk-edit-save').click();
+    await dialog(page).filter({ hasText: 'ρητή επιβεβαίωση' }).getByRole('button', { name: 'OK', exact: true }).click();
+    assert.equal(writes(session.calls).length, 0);
+    await page.locator('#hk-correction-confirm').check();
+    await page.locator('#hk-edit-save').click();
+    const confirmation = dialog(page).filter({ hasText: 'Δημόσια καταχώριση' });
+    assert.match(await confirmation.innerText(), /Διόρθωση · 2026-10-29[\s\S]*Αρχή[\s\S]*Διορθώθηκε συνθετικό στοιχείο[\s\S]*Synthetic Editor/);
+    await confirmation.getByRole('button', { name: 'Ακύρωση', exact: true }).click();
+    assert.equal(writes(session.calls).length, 0);
+    await save(page);
+    const { tree, written, branch, pr } = pullRequest(session);
+    assert.match(branch, /^refs\/heads\/editorial\/review\//);
+    assert.equal(pr.head, branch.replace('refs/heads/', ''));
+    assert.equal(pr.base, 'main');
+    assert.match(pr.body, /ανθρώπινος έλεγχος/);
+    assert.doesNotMatch(pr.body, /dummy-token|Διορθώθηκε συνθετικό στοιχείο/);
+    assert.deepEqual(tree.map(entry => entry.path), [`${ENTRIES}/${post.id}/source.txt`]);
+    const text = written[`${ENTRIES}/${post.id}/source.txt`].toString('utf8');
+    assert.match(text, /^updatedDateISO: 2026-10-29$/m);
+    assert.deepEqual(JSON.parse(text.match(/^corrections: (.*)$/m)[1]), [{ type: 'factual-correction', date: '2026-10-29', section: 'Αρχή', reason: 'Διορθώθηκε συνθετικό στοιχείο.', decision: 'approved', approvedBy: 'Synthetic Editor', approvedOn: '2026-10-29' }]);
+    assert.doesNotMatch(text, /publishedAtISO:/);
+});
+
+test('copy edit preserves correction metadata and update date; a no-op sends no writes', async t => {
+    const session = await pageFor(t), { page } = session, post = POSTS[0];
+    await page.route('https://api.github.com/**/source.txt', route => route.fulfill({ json: { encoding: 'base64', content: Buffer.from(source(post.id).replace('legacy-note: μένει', 'legacy-note: μένει\nupdatedDateISO: 2026-05-01\ncorrections: []')).toString('base64') } }));
+    await openEditor(session, post);
+    await page.locator('#hk-edit-save').click();
+    await dialog(page).filter({ hasText: 'Δεν υπάρχουν αλλαγές' }).getByRole('button', { name: 'OK', exact: true }).click();
+    assert.equal(writes(session.calls).length, 0);
+    await page.locator('#hk-edit-body').fill('Γλωσσική αλλαγή.');
+    await save(page);
+    const { written, branch } = pullRequest(session);
+    assert.match(branch, /^refs\/heads\/author\/edit\//);
+    const text = written[`${ENTRIES}/${post.id}/source.txt`].toString('utf8');
+    assert.match(text, /^updatedDateISO: 2026-05-01$/m);
+    assert.match(text, /^corrections: \[\]$/m);
+});
+
+test('source-less articles are read-only even when the index is stale', async t => {
+    const legacy = await pageFor(t, { legacy: true });
+    const row = legacy.page.locator('.hk-item-row', { hasText: 'Παλιό άρθρο' });
+    assert.match(await row.innerText(), /Χρειάζεται χειροκίνητη ανάκτηση πηγής/);
+    assert.ok(await row.getByRole('button', { name: 'Πλήρης επεξεργασία' }).isDisabled());
+    assert.equal(writes(legacy.calls).length, 0);
+    const stale = await pageFor(t, { missingSource: true });
+    await stale.page.locator('.hk-item-row', { hasText: POSTS[0].title }).getByRole('button', { name: 'Πλήρης επεξεργασία' }).click();
+    await dialog(stale.page).locator('input').fill('dummy-token-only-for-tests');
+    await dialog(stale.page).getByRole('button', { name: 'OK', exact: true }).click();
+    await stale.page.locator('#hk-edit-status').getByText('Χρειάζεται χειροκίνητη ανάκτηση πηγής', { exact: false }).waitFor();
+    await stale.page.locator('#hk-edit-save').click();
+    assert.equal(writes(stale.calls).length, 0);
+});
+
+test('substantial updates reject date regression and use the review branch', async t => {
+    const session = await pageFor(t), { page } = session, post = POSTS[0];
+    await page.route('https://api.github.com/**/source.txt', route => route.fulfill({ json: { encoding: 'base64', content: Buffer.from(source(post.id).replace('legacy-note: μένει', 'legacy-note: μένει\nupdatedDateISO: 2026-10-01')).toString('base64') } }));
+    await openEditor(session, post);
+    await page.locator('#hk-correction-type').selectOption('substantial-update');
+    await page.locator('#hk-correction-date').fill('2026-09-30');
+    await page.locator('#hk-correction-section').fill('Κείμενο');
+    await page.locator('#hk-correction-reason').fill('Συνθετική ενημέρωση');
+    await page.locator('#hk-correction-approver').fill('Synthetic Editor');
+    await page.locator('#hk-correction-approved-on').fill('2026-09-30');
+    await page.locator('#hk-correction-confirm').check();
+    await page.locator('#hk-edit-save').click();
+    await dialog(page).filter({ hasText: 'τελευταίας ενημέρωσης' }).getByRole('button', { name: 'OK', exact: true }).click();
+    assert.equal(writes(session.calls).length, 0);
+    await page.locator('#hk-correction-date').fill('2026-10-02');
+    await save(page);
+    const { written, branch } = pullRequest(session);
+    assert.match(branch, /^refs\/heads\/editorial\/review\//);
+    const text = written[`${ENTRIES}/${post.id}/source.txt`].toString('utf8');
+    assert.equal(JSON.parse(text.match(/^corrections: (.*)$/m)[1])[0].type, 'substantial-update');
+    assert.match(text, /^updatedDateISO: 2026-10-02$/m);
+});
+
+test('a correction on the existing update day keeps its precise timestamp', async t => {
+    const session = await pageFor(t), { page } = session, post = POSTS[0];
+    await page.route('https://api.github.com/**/source.txt', route => route.fulfill({ json: { encoding: 'base64', content: Buffer.from(source(post.id).replace('legacy-note: μένει', 'legacy-note: μένει\nupdatedDateISO: 2026-10-01T12:00:00+03:00')).toString('base64') } }));
+    await openEditor(session, post);
+    await page.locator('#hk-correction-type').selectOption('factual-correction');
+    await page.locator('#hk-correction-date').fill('2026-10-01');
+    await page.locator('#hk-correction-section').fill('Αρχή');
+    await page.locator('#hk-correction-reason').fill('Συνθετική διόρθωση');
+    await page.locator('#hk-correction-approver').fill('Synthetic Editor');
+    await page.locator('#hk-correction-approved-on').fill('2026-10-01');
+    await page.locator('#hk-correction-confirm').check();
+    await save(page);
+    const { written } = pullRequest(session);
+    assert.match(written[`${ENTRIES}/${post.id}/source.txt`].toString('utf8'), /^updatedDateISO: 2026-10-01T12:00:00\+03:00$/m);
 });
