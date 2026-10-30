@@ -501,9 +501,6 @@
         rows.push({ ok: !excerptIssue, step: 0, text: excerptIssue ? articleSource.excerptMessage(excerptIssue)
             : 'Περιγραφή · ' + articleSource.descriptionLength(sourceMetadata.excerpt) + ' / ' + articleSource.DESCRIPTION_MAX + ' χαρακτήρες' });
         rows.push({ ok: Boolean(contentArea.value.trim()), text: contentArea.value.trim() ? 'Κείμενο · ' + plural(wordCount(), 'λέξη', 'λέξεις') : 'Λείπει το κείμενο', step: 1 });
-        issues.filter(function (issue) { return !issue.block; }).forEach(function (issue) {
-            rows.push({ ok: false, text: issue.text, step: issue.step });
-        });
         if (!issues.some(function (issue) { return issue.step === 2; })) {
             rows.push({ ok: true, text: 'Εικόνες: 1.webp' + (headerObjectUrl ? ', 2.webp' : '') + (contentImageFiles.length ? ' + ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') + ' κειμένου' : ''), step: 2 });
         }
@@ -516,8 +513,41 @@
             li.appendChild(jump);
             return li;
         }));
+        if (currentStep === 4) renderAdvisories(issues);
         reviewFolder.textContent = 'blog-entries/' + folderPreview() + '/';
         publishBtn.disabled = publishing || published || issues.some(function (issue) { return issue.block; });
+    }
+
+    function renderAdvisories(issues) {
+        var list = byId('gen-preflight-advisories'), notebook = window.F1S_RESEARCH_NOTEBOOK;
+        var workspace = notebook && notebook.snapshot(), claims = workspace && workspace.claims || [];
+        var labels = { 'claim-incomplete': 'Λείπει το κείμενο', 'claim-anchor': 'Η σύνδεση με το κείμενο χρειάζεται έλεγχο',
+            'numeric-invalid': 'Ελλιπή ή μη έγκυρα αριθμητικά στοιχεία', 'scope-missing': 'Ελλιπές πλαίσιο',
+            'unsupported-number': 'Αριθμητικός ισχυρισμός χωρίς επαρκή έλεγχο', 'evidence-unresolved': 'Εκκρεμεί τεκμηρίωση',
+            'evidence-disputed': 'Αμφισβητούμενα τεκμήρια', 'review-stale': 'Ο έλεγχος χρειάζεται ανανέωση' };
+        list.replaceChildren();
+        issues.filter(function (issue) { return !issue.block; }).forEach(function (issue) {
+            var row = el('li', 'gb-review-row is-warn'); row.appendChild(el('span', 'gb-review-text', issue.text));
+            var jump = el('button', 'gb-btn gb-btn-sm gb-btn-ghost', 'Βήμα ' + (issue.step + 1)); jump.type = 'button';
+            jump.addEventListener('click', function () { goToStep(issue.step); }); row.appendChild(jump); list.appendChild(row);
+        });
+        if (!claims.length) list.appendChild(el('li', 'gb-review-text', 'Δεν έχουν καταγραφεί ισχυρισμοί· δεν έγινε έλεγχος τεκμηρίων.'));
+        if (!window.F1S_RESEARCH) return;
+        window.F1S_RESEARCH.claimIssues(workspace, contentArea.value).forEach(function (issue) {
+            var claim = claims.find(function (item) { return item.id === issue.claimId; });
+            var row = el('li', 'gb-review-row is-warn');
+            row.appendChild(el('span', 'gb-review-text', issue.code + ' · ' + labels[issue.code] + ' · ' + (claim.text || 'Χωρίς κείμενο')));
+            var locate = el('button', 'gb-btn gb-btn-sm gb-btn-ghost', 'Εντοπισμός'); locate.type = 'button';
+            locate.addEventListener('click', function () {
+                var found = window.F1S_RESEARCH.locateClaimAnchor(contentArea.value, claim.anchor);
+                if (found.status === 'found' && claim.anchor.quote === claim.text
+                    && contentArea.value.slice(Math.max(0, found.start - claim.anchor.prefix.length), found.start) === claim.anchor.prefix
+                    && contentArea.value.slice(found.end, found.end + claim.anchor.suffix.length) === claim.anchor.suffix) {
+                    goToStep(1, false); contentArea.focus(); contentArea.setSelectionRange(found.start, found.end);
+                } else { goToStep(1, false); notebook.openClaim(issue.claimId); }
+            });
+            row.appendChild(locate); list.appendChild(row);
+        });
     }
 
     function renderSummary() {

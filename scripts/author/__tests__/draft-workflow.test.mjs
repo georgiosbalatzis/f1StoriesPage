@@ -866,3 +866,23 @@ test('pending decision edits dirty a saved draft and survive save and reopen wit
     assert.equal(await card.locator('[id$="-rationale"]').inputValue(), 'Εκκρεμής αιτιολόγηση');
     assert.equal(await card.locator('[id$="-reviewer"]').inputValue(), 'Συνθετικός συντάκτης');
 });
+
+test('step 5 keeps required checks separate from advisory evidence', async t => {
+    const page = await pageFor(t);
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), true);
+    assert.match(await page.locator('#gen-review').textContent(), /Λείπει ο τίτλος/);
+    assert.match(await page.locator('#gen-preflight-advisories').textContent(), /Δεν έχουν καταγραφεί ισχυρισμοί/);
+    for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 1000 });
+        const message = page.locator('#gen-preflight-advisories li').filter({ hasText: 'Δεν έχουν καταγραφεί ισχυρισμοί' });
+        assert.equal(await message.evaluate(node => node.getBoundingClientRect().width >= node.parentElement.getBoundingClientRect().width - 1), true);
+        assert.equal(await message.evaluate(node => node.scrollWidth <= node.clientWidth), true);
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await setText(page, 'Συνθετικός τίτλος', 'Συνθετικό κείμενο χωρίς καταγεγραμμένους ισχυρισμούς.');
+    await step(page, 0); await setExcerpt(page, 'Μια συνθετική περιγραφή για τον έλεγχο της δημοσίευσης του άρθρου.');
+    await step(page, 4);
+    assert.equal(await page.locator('#gen-publish-btn').isDisabled(), false);
+    assert.match(await page.locator('#gen-preflight-advisories').textContent(), /Δεν έχουν καταγραφεί ισχυρισμοί/);
+});

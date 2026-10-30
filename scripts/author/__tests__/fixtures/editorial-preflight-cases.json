@@ -1,0 +1,266 @@
+[
+  {
+    "label": "20261007F-210-no-ledger",
+    "article": "20261007F",
+    "line": 210,
+    "variant": "no-ledger",
+    "fault": "unreviewed",
+    "expected": []
+  },
+  {
+    "label": "20261007F-210-reviewed",
+    "article": "20261007F",
+    "line": 210,
+    "variant": "reviewed",
+    "fault": "unreviewed",
+    "expected": []
+  },
+  {
+    "label": "20261007F-210-fault",
+    "article": "20261007F",
+    "line": 210,
+    "variant": "fault",
+    "fault": "unreviewed",
+    "expected": [
+      "unsupported-number"
+    ]
+  },
+  {
+    "label": "20260930G-179-no-ledger",
+    "article": "20260930G",
+    "line": 179,
+    "variant": "no-ledger",
+    "fault": "season",
+    "expected": []
+  },
+  {
+    "label": "20260930G-179-reviewed",
+    "article": "20260930G",
+    "line": 179,
+    "variant": "reviewed",
+    "fault": "season",
+    "expected": []
+  },
+  {
+    "label": "20260930G-179-fault",
+    "article": "20260930G",
+    "line": 179,
+    "variant": "fault",
+    "fault": "season",
+    "expected": [
+      "review-stale",
+      "scope-missing"
+    ]
+  },
+  {
+    "label": "20261028W-186-no-ledger",
+    "article": "20261028W",
+    "line": 186,
+    "variant": "no-ledger",
+    "fault": "operand",
+    "expected": []
+  },
+  {
+    "label": "20261028W-186-reviewed",
+    "article": "20261028W",
+    "line": 186,
+    "variant": "reviewed",
+    "fault": "operand",
+    "expected": []
+  },
+  {
+    "label": "20261028W-186-fault",
+    "article": "20261028W",
+    "line": 186,
+    "variant": "fault",
+    "fault": "operand",
+    "expected": [
+      "review-stale"
+    ]
+  },
+  {
+    "label": "20261028W-187-no-ledger",
+    "article": "20261028W",
+    "line": 187,
+    "variant": "no-ledger",
+    "fault": "sample",
+    "expected": []
+  },
+  {
+    "label": "20261028W-187-reviewed",
+    "article": "20261028W",
+    "line": 187,
+    "variant": "reviewed",
+    "fault": "sample",
+    "expected": []
+  },
+  {
+    "label": "20261028W-187-fault",
+    "article": "20261028W",
+    "line": 187,
+    "variant": "fault",
+    "fault": "sample",
+    "expected": [
+      "review-stale",
+      "numeric-invalid"
+    ]
+  },
+  {
+    "label": "20261015G-209-no-ledger",
+    "article": "20261015G",
+    "line": 209,
+    "variant": "no-ledger",
+    "fault": "disputed",
+    "expected": []
+  },
+  {
+    "label": "20261015G-209-reviewed",
+    "article": "20261015G",
+    "line": 209,
+    "variant": "reviewed",
+    "fault": "disputed",
+    "expected": []
+  },
+  {
+    "label": "20261015G-209-fault",
+    "article": "20261015G",
+    "line": 209,
+    "variant": "fault",
+    "fault": "disputed",
+    "expected": [
+      "evidence-disputed"
+    ]
+  },
+  {
+    "label": "20261013G-236-no-ledger",
+    "article": "20261013G",
+    "line": 236,
+    "variant": "no-ledger",
+    "fault": "method",
+    "expected": []
+  },
+  {
+    "label": "20261013G-236-reviewed",
+    "article": "20261013G",
+    "line": 236,
+    "variant": "reviewed",
+    "fault": "method",
+    "expected": []
+  },
+  {
+    "label": "20261013G-236-fault",
+    "article": "20261013G",
+    "line": 236,
+    "variant": "fault",
+    "fault": "method",
+    "expected": [
+      "review-stale",
+      "numeric-invalid"
+    ]
+  },
+  {
+    "label": "20261027W-180-no-ledger",
+    "article": "20261027W",
+    "line": 180,
+    "variant": "no-ledger",
+    "fault": "insufficient",
+    "expected": []
+  },
+  {
+    "label": "20261027W-180-reviewed",
+    "article": "20261027W",
+    "line": 180,
+    "variant": "reviewed",
+    "fault": "insufficient",
+    "expected": []
+  },
+  {
+    "label": "20261027W-180-fault",
+    "article": "20261027W",
+    "line": 180,
+    "variant": "fault",
+    "fault": "insufficient",
+    "expected": [
+      "evidence-unresolved"
+    ]
+  },
+  {
+    "label": "20261027W-182-no-ledger",
+    "article": "20261027W",
+    "line": 182,
+    "variant": "no-ledger",
+    "fault": "ambiguous",
+    "expected": []
+  },
+  {
+    "label": "20261027W-182-reviewed",
+    "article": "20261027W",
+    "line": 182,
+    "variant": "reviewed",
+    "fault": "ambiguous",
+    "expected": []
+  },
+  {
+    "label": "20261027W-182-fault",
+    "article": "20261027W",
+    "line": 182,
+    "variant": "fault",
+    "fault": "ambiguous",
+    "expected": [
+      "claim-anchor"
+    ]
+  },
+  {
+    "label": "20261002J-185-no-ledger",
+    "article": "20261002J",
+    "line": 185,
+    "variant": "no-ledger",
+    "fault": "decimal",
+    "expected": []
+  },
+  {
+    "label": "20261002J-185-reviewed",
+    "article": "20261002J",
+    "line": 185,
+    "variant": "reviewed",
+    "fault": "decimal",
+    "expected": []
+  },
+  {
+    "label": "20261002J-185-fault",
+    "article": "20261002J",
+    "line": 185,
+    "variant": "fault",
+    "fault": "decimal",
+    "expected": [
+      "unsupported-number",
+      "numeric-invalid"
+    ]
+  },
+  {
+    "label": "20261024J-183-no-ledger",
+    "article": "20261024J",
+    "line": 183,
+    "variant": "no-ledger",
+    "fault": "unreviewed",
+    "expected": []
+  },
+  {
+    "label": "20261024J-183-reviewed",
+    "article": "20261024J",
+    "line": 183,
+    "variant": "reviewed",
+    "fault": "unreviewed",
+    "expected": []
+  },
+  {
+    "label": "20261024J-183-fault",
+    "article": "20261024J",
+    "line": 183,
+    "variant": "fault",
+    "fault": "unreviewed",
+    "expected": [
+      "evidence-unresolved"
+    ]
+  }
+]
