@@ -33,7 +33,7 @@ const review = c => clone(api.assessClaim(c, 'reviewed-with-evidence', 'Αξιο
 test('v1 and v2 migrate without mutation, empty normalizes to null, and imports demote reviews', () => {
     const original = workspace(), v1 = { ...original, version: 1 }; delete v1.claims;
     const saved = JSON.stringify(v1), migrated = clone(api.validateWorkspace(v1));
-    assert.equal(migrated.version, 2); assert.deepEqual(migrated.claims, []); assert.equal(JSON.stringify(v1), saved);
+    assert.equal(migrated.version, 3); assert.deepEqual(migrated.claims, []); assert.deepEqual(migrated.archiveReview, { comparisons: [], dismissals: [] }); assert.equal(JSON.stringify(v1), saved);
     assert.deepEqual(clone(api.importResearch(envelope(v1))), migrated);
     const reviewed = review(claim()), v2 = workspace([reviewed]), imported = clone(api.importResearch(envelope(v2)));
     assert.equal(api.validateWorkspace(v2).claims[0].status, 'reviewed-with-evidence');
