@@ -4,6 +4,7 @@
 
 Current checked contracts:
 
+- `data/race-desk/registry.v1.json`: hand-reviewed race identity and source bindings; see [Race Desk context](race-desk-context.md). Missing optional mappings are reported, not build failures.
 - `blog-module/blog-index-data.json`: compact blog index `v: 2`.
 - `blog-module/blog-source-cache.json`: source cache used by author/build tooling.
 - `blog-module/home-latest.json`: homepage latest-articles payload, at most 4 posts: `[0]` is the cover story, `[1..3]` fill the journal. Optional `deck` (≤240 chars) and `lede` (≤320 chars) are whole sentences from the article's opening paragraph, used by the cover instead of the truncated `excerpt`.

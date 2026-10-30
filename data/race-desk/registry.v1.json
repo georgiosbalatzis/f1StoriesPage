@@ -1,0 +1,1253 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "tyres-2026-jp-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/generated/2026/2026-jp.json",
+      "gitBlob": "45ddfac8c0fc96d7bcdce9b165dee74d5126dbc6",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/generated/2026/2026-jp.json"
+    },
+    {
+      "id": "tyres-2026-jp-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2026-jp.json",
+      "gitBlob": "1afa4d324e426ec3c603965cb8986b275d0d7b17",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-jp.json"
+    },
+    {
+      "id": "grid-2026-3",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "revision": "9f676e1f9a7d1be71691a78164af2f559befffca",
+      "path": "standings/rounds/2026-3.json",
+      "gitBlob": "f8efc61978aa36cbe922189de6024b10c59ec7bc",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/f1StoriesPage/blob/9f676e1f9a7d1be71691a78164af2f559befffca/standings/rounds/2026-3.json"
+    },
+    {
+      "id": "tyres-2026-bh-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/generated/2026/2026-bh.json",
+      "gitBlob": "cd9d54fb1afeab00ca3dc2b6552695da93c6e025",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/generated/2026/2026-bh.json"
+    },
+    {
+      "id": "tyres-2026-bh-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2026-bh.json",
+      "gitBlob": "dca6bc89b951177f1f50d4e2d52d17b1b6d3a0e3",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-bh.json"
+    },
+    {
+      "id": "grid-2026-16",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "revision": "9f676e1f9a7d1be71691a78164af2f559befffca",
+      "path": "standings/rounds/2026-16.json",
+      "gitBlob": "ddd2f0dab24f46e9c707d2ef873cf1029aff8788",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/f1StoriesPage/blob/9f676e1f9a7d1be71691a78164af2f559befffca/standings/rounds/2026-16.json"
+    },
+    {
+      "id": "tyres-2026-az-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/generated/2026/2026-az.json",
+      "gitBlob": "1476c124e133b54716ddcd6362392def40c31f8c",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/generated/2026/2026-az.json"
+    },
+    {
+      "id": "tyres-2026-az-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2026-az.json",
+      "gitBlob": "2e8189af5f23f15dddfaae0fa3592eee7fa0091f",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-az.json"
+    },
+    {
+      "id": "grid-2026-15",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "revision": "9f676e1f9a7d1be71691a78164af2f559befffca",
+      "path": "standings/rounds/2026-15.json",
+      "gitBlob": "3255c3422bd0c9e65f8e0c2d49f2e3fd2f909e99",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/f1StoriesPage/blob/9f676e1f9a7d1be71691a78164af2f559befffca/standings/rounds/2026-15.json"
+    },
+    {
+      "id": "tyres-2026-sg-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/generated/2026/2026-sg.json",
+      "gitBlob": "1d83aa2482f582dc99c2bd909f2187b982709f83",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/generated/2026/2026-sg.json"
+    },
+    {
+      "id": "tyres-2026-sg-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2026-sg.json",
+      "gitBlob": "1ae00fe2279e468e5db4fb9b59777314d2344382",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-sg.json"
+    },
+    {
+      "id": "grid-2026-17",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "revision": "9f676e1f9a7d1be71691a78164af2f559befffca",
+      "path": "standings/rounds/2026-17.json",
+      "gitBlob": "10a7501dd628f1d8f14d4a4215c6f793747748d2",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/f1StoriesPage/blob/9f676e1f9a7d1be71691a78164af2f559befffca/standings/rounds/2026-17.json"
+    },
+    {
+      "id": "tyres-2025-sg-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/overrides/2025/2025-sg.json",
+      "gitBlob": "a26affb3980cb9c7f383f9c73373d43e9370185e",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/overrides/2025/2025-sg.json"
+    },
+    {
+      "id": "tyres-2025-sg-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2025-sg.json",
+      "gitBlob": "00ddf19e1bc8738dbf152d1d341dfa3e799fba91",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2025-sg.json"
+    },
+    {
+      "id": "tyres-2026-mx-identity",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/generated/2026/2026-mx.json",
+      "gitBlob": "30e89a6244918228e2f5684cd0146771f8d53473",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/generated/2026/2026-mx.json"
+    },
+    {
+      "id": "tyres-2026-mx-weekend",
+      "repository": "georgiosbalatzis/Tyres",
+      "revision": "50e5f50be89e038257cbe3426b366810e0c1f59a",
+      "path": "data/weekends/2026-mx.json",
+      "gitBlob": "8ac4f1abb36d1b40ef30581ca2ee41f29c130877",
+      "reviewedAt": "2026-10-30T09:05:16.000Z",
+      "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-mx.json"
+    }
+  ],
+  "races": [
+    {
+      "raceId": "2026-japanese-gp",
+      "season": 2026,
+      "eventName": "Japanese Grand Prix",
+      "displayName": "Japanese Grand Prix",
+      "venue": {
+        "venueId": "suzuka",
+        "name": "Suzuka International Racing Course",
+        "timeZone": "Asia/Tokyo"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": {
+          "season": 2026,
+          "round": 3
+        },
+        "tyresRaceId": "2026-jp",
+        "tyresSlug": "suzuka"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2026-03-27T02:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-03-27T02:30:00.000Z",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp2",
+          "openf1SessionKey": null,
+          "startUtc": "2026-03-27T06:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp2",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-03-27T06:00:00.000Z",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp3",
+          "openf1SessionKey": null,
+          "startUtc": "2026-03-28T02:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp3",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-03-28T02:30:00.000Z",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-03-28T06:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-03-28T06:00:00.000Z",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2026-03-29T05:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-03-29T05:00:00.000Z",
+              "sourceId": "tyres-2026-jp-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2026,
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Japanese Grand Prix",
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "suzuka",
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Suzuka International Racing Course",
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "Asia/Tokyo",
+          "sourceId": "tyres-2026-jp-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2026-jp",
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "suzuka",
+          "sourceId": "tyres-2026-jp-identity",
+          "reference": "/slug",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.jolpica",
+          "value": {
+            "season": 2026,
+            "round": 3
+          },
+          "sourceId": "grid-2026-3",
+          "reference": "/driverStandings/MRData/StandingsTable season and round; /raceName",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "raceId": "2026-bahrain-gp",
+      "season": 2026,
+      "eventName": "Bahrain Grand Prix",
+      "displayName": "Bahrain Grand Prix in Malaysia",
+      "venue": {
+        "venueId": "sepang",
+        "name": "Sepang International Circuit",
+        "timeZone": "Asia/Kuala_Lumpur"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": {
+          "season": 2026,
+          "round": 16
+        },
+        "tyresRaceId": "2026-bh",
+        "tyresSlug": "sepang"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-02T04:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-02T04:30:00.000Z",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp2",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-02T08:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp2",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-02T08:00:00.000Z",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp3",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-03T04:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp3",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-03T04:30:00.000Z",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-03T08:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-03T08:00:00.000Z",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-04T07:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-04T07:00:00.000Z",
+              "sourceId": "tyres-2026-bh-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2026,
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Bahrain Grand Prix",
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "sepang",
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Sepang International Circuit",
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "Asia/Kuala_Lumpur",
+          "sourceId": "tyres-2026-bh-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2026-bh",
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "sepang",
+          "sourceId": "tyres-2026-bh-identity",
+          "reference": "/slug",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.jolpica",
+          "value": {
+            "season": 2026,
+            "round": 16
+          },
+          "sourceId": "grid-2026-16",
+          "reference": "/driverStandings/MRData/StandingsTable season and round; /raceName",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "raceId": "2026-azerbaijan-gp",
+      "season": 2026,
+      "eventName": "Azerbaijan Grand Prix",
+      "displayName": "Azerbaijan Grand Prix",
+      "venue": {
+        "venueId": "baku",
+        "name": "Baku City Circuit",
+        "timeZone": "Asia/Baku"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": {
+          "season": 2026,
+          "round": 15
+        },
+        "tyresRaceId": "2026-az",
+        "tyresSlug": "baku"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2026-09-24T08:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-09-24T08:30:00.000Z",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp2",
+          "openf1SessionKey": null,
+          "startUtc": "2026-09-24T12:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp2",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-09-24T12:00:00.000Z",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp3",
+          "openf1SessionKey": null,
+          "startUtc": "2026-09-25T08:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp3",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-09-25T08:30:00.000Z",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-09-25T12:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-09-25T12:00:00.000Z",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2026-09-26T11:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-09-26T11:00:00.000Z",
+              "sourceId": "tyres-2026-az-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2026,
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Azerbaijan Grand Prix",
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "baku",
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Baku City Circuit",
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "Asia/Baku",
+          "sourceId": "tyres-2026-az-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2026-az",
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "baku",
+          "sourceId": "tyres-2026-az-identity",
+          "reference": "/slug",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.jolpica",
+          "value": {
+            "season": 2026,
+            "round": 15
+          },
+          "sourceId": "grid-2026-15",
+          "reference": "/driverStandings/MRData/StandingsTable season and round; /raceName",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "raceId": "2026-singapore-gp",
+      "season": 2026,
+      "eventName": "Singapore Grand Prix",
+      "displayName": "Singapore Grand Prix",
+      "venue": {
+        "venueId": "marina-bay",
+        "name": "Marina Bay Street Circuit",
+        "timeZone": "Asia/Singapore"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": {
+          "season": 2026,
+          "round": 17
+        },
+        "tyresRaceId": "2026-sg",
+        "tyresSlug": "marina-bay"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-09T08:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-09T08:30:00.000Z",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "sprint-qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-09T12:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "sprint-qualifying",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-09T12:30:00.000Z",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "sprint",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-10T09:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "sprint",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-10T09:00:00.000Z",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-10T13:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-10T13:00:00.000Z",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-11T12:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-11T12:00:00.000Z",
+              "sourceId": "tyres-2026-sg-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2026,
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Singapore Grand Prix",
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "marina-bay",
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Marina Bay Street Circuit",
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "Asia/Singapore",
+          "sourceId": "tyres-2026-sg-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2026-sg",
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "marina-bay",
+          "sourceId": "tyres-2026-sg-identity",
+          "reference": "/slug",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.jolpica",
+          "value": {
+            "season": 2026,
+            "round": 17
+          },
+          "sourceId": "grid-2026-17",
+          "reference": "/driverStandings/MRData/StandingsTable season and round; /raceName",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "raceId": "2025-singapore-gp",
+      "season": 2025,
+      "eventName": "Singapore Grand Prix",
+      "displayName": "Singapore Grand Prix",
+      "venue": {
+        "venueId": "marina-bay",
+        "name": "Marina Bay Street Circuit",
+        "timeZone": "Asia/Singapore"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": null,
+        "tyresRaceId": "2025-sg",
+        "tyresSlug": "marina-bay"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2025-10-03T09:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2025-10-03T09:30:00.000Z",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp2",
+          "openf1SessionKey": null,
+          "startUtc": "2025-10-03T13:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp2",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2025-10-03T13:00:00.000Z",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp3",
+          "openf1SessionKey": null,
+          "startUtc": "2025-10-04T09:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp3",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2025-10-04T09:30:00.000Z",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2025-10-04T13:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2025-10-04T13:00:00.000Z",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2025-10-05T12:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2025-10-05T12:00:00.000Z",
+              "sourceId": "tyres-2025-sg-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2025,
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Singapore Grand Prix",
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "marina-bay",
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Marina Bay Street Circuit",
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "Asia/Singapore",
+          "sourceId": "tyres-2025-sg-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2025-sg",
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "marina-bay",
+          "sourceId": "tyres-2025-sg-identity",
+          "reference": "/slug",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "raceId": "2026-mexican-gp",
+      "season": 2026,
+      "eventName": "Mexican Grand Prix",
+      "displayName": "Mexican Grand Prix",
+      "venue": {
+        "venueId": "mexico-city",
+        "name": "Autódromo Hermanos Rodríguez",
+        "timeZone": "America/Mexico_City"
+      },
+      "sourceKeys": {
+        "openf1MeetingKey": null,
+        "jolpica": null,
+        "tyresRaceId": "2026-mx",
+        "tyresSlug": "mexico-city"
+      },
+      "sessions": [
+        {
+          "kind": "fp1",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-30T18:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp1",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/0/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-30T18:30:00.000Z",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/0/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp2",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-30T22:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp2",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/1/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-30T22:00:00.000Z",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/1/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "fp3",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-31T17:30:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "fp3",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/2/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-31T17:30:00.000Z",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/2/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "qualifying",
+          "openf1SessionKey": null,
+          "startUtc": "2026-10-31T21:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "qualifying",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/3/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-10-31T21:00:00.000Z",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/3/start",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "kind": "race",
+          "openf1SessionKey": null,
+          "startUtc": "2026-11-01T20:00:00.000Z",
+          "evidence": [
+            {
+              "field": "kind",
+              "value": "race",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/4/id",
+              "status": "verified"
+            },
+            {
+              "field": "startUtc",
+              "value": "2026-11-01T20:00:00.000Z",
+              "sourceId": "tyres-2026-mx-weekend",
+              "reference": "/sessions/4/start",
+              "status": "verified"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "season",
+          "value": 2026,
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/season",
+          "status": "verified"
+        },
+        {
+          "field": "eventName",
+          "value": "Mexican Grand Prix",
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/race/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.venueId",
+          "value": "mexico-city",
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/circuit/trackId",
+          "status": "verified"
+        },
+        {
+          "field": "venue.name",
+          "value": "Autódromo Hermanos Rodríguez",
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/circuit/name",
+          "status": "verified"
+        },
+        {
+          "field": "venue.timeZone",
+          "value": "America/Mexico_City",
+          "sourceId": "tyres-2026-mx-weekend",
+          "reference": "/timeZone",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresRaceId",
+          "value": "2026-mx",
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/id",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.tyresSlug",
+          "value": "mexico-city",
+          "sourceId": "tyres-2026-mx-identity",
+          "reference": "/slug",
+          "status": "verified"
+        }
+      ]
+    }
+  ]
+}

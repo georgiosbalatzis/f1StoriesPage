@@ -8,6 +8,7 @@ import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import taxonomy from '../../blog-module/taxonomy.js';
 import feed from '../../blog-module/build/feed.js';
 import search from '../../blog-module/search-destinations.js';
+import { validateRegistry } from '../race-desk/core/index.mjs';
 
 const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
@@ -639,6 +640,13 @@ function validateFeed() {
 }
 
 function main() {
+    const raceDeskPath = 'data/race-desk/registry.v1.json';
+    const previousErrors = errors.length;
+    const registry = readJson(raceDeskPath);
+    if (errors.length === previousErrors) {
+        const result = validateRegistry(registry);
+        result.errors.forEach(error => addError(`${raceDeskPath}${error.path ? `:${error.path}` : ''}`, error.message));
+    }
     validateCompactBlogIndex();
     try { search.validateIndex(readJson('blog-module/search-destinations.json')); }
     catch (error) { addError('blog-module/search-destinations.json', error.message); }
@@ -661,7 +669,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Data contracts validated: blog data, standings caches, YouTube snapshot, asset manifest, sitemap, and RSS feed.');
+    console.log('Data contracts validated: race desk registry, blog data, standings caches, YouTube snapshot, asset manifest, sitemap, and RSS feed.');
 }
 
 main();
