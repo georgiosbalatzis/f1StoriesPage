@@ -125,3 +125,25 @@ test('workspace v1/v2 migrate to v3; comparisons must reference a claim and stay
     assert.throws(() => workspace([claim], [comparison], [{ claimId: claim.id, key: 'not-a-hash', dismissedAt: '2026-10-29T12:00:00.000Z' }]));
     assert.throws(() => api.makeComparison(claim, posts.get(spec.postId), content.get(spec.postId), { kind: 'paragraph', ordinal: 0, text: 'άλλο κείμενο' }, { quote: spec.quote }));
 });
+
+test('signals from multiple annotations on the same passage are combined in either order', async () => {
+    const spec = cases.find(item => item.label === 'near-identical coverage');
+    const claim = draftClaim(spec.claim), overlap = annotation(spec, claim);
+    const numeric = { metric: 'Χρόνος', value: '2', units: 'ms', sample: 'Γύρος', method: 'Μέτρηση', originalValues: [] };
+    claim.numeric = { ...numeric, value: '1', originalValues: [{ label: 'τιμή', value: '1' }] };
+    const conflict = { ...overlap, numeric };
+    for (const comparisons of [[overlap, conflict], [conflict, overlap]]) {
+        const result = await api.reviewQueue(workspace([claim], comparisons), resolve);
+        assert.equal(result.rows.length, 1);
+        assert.deepEqual(emitted(result), ['overlapping-coverage', 'possible-conflict']);
+    }
+});
+
+test('missing numeric definitions report incomplete comparison context', async () => {
+    const spec = cases.find(item => item.label === 'update-worthy');
+    const claim = draftClaim(spec.claim), comparison = annotation(spec, claim);
+    comparison.numeric.method = '';
+    const result = await api.reviewQueue(workspace([claim], [comparison]), resolve);
+    assert.equal(result.rows.length, 0);
+    assert.equal(result.incomplete.length, 1);
+});

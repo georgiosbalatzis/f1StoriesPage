@@ -500,6 +500,8 @@
             var negative = value[0] === '-', parts = value.replace(/^[+-]/, '').split('.'), whole = (parts[0] || '0').replace(/^0+(?=\d)/, ''), fraction = (parts[1] || '').replace(/0+$/, '');
             return (negative && (whole !== '0' || fraction) ? '-' : '') + whole + (fraction ? '.' + fraction : '');
         }
+        var missingDefinition = [n, m].some(function (item) { return item && ['metric', 'units', 'sample', 'method'].some(function (key) { return !clean(item[key]); }); });
+        if (missingDefinition) return { incomplete: true, signals: [] };
         var sameDefinition = n && m && definition(n, m), leftValue = n && decimal(n.value), rightValue = m && decimal(m.value);
         if (sameDefinition && leftValue !== null && rightValue !== null && claim.claimType === comparison.claimType
             && ['official-fact', 'reported-observation', 'calculated-statistic'].includes(claim.claimType) && leftValue !== rightValue) {
@@ -535,7 +537,7 @@
     // Conflicts first, then overlaps by similarity; ties: claim order, newer article, ID, kind, ordinal. ≤4 per claim, ≤24 rows.
     async function reviewQueue(workspace, resolve) {
         var claims = workspace ? workspace.claims : [], review = workspace ? workspace.archiveReview : { comparisons: [], dismissals: [] };
-        var dismissed = new Set(review.dismissals.map(function (entry) { return entry.key; })), rows = [], incomplete = [], seen = new Set();
+        var dismissed = new Set(review.dismissals.map(function (entry) { return entry.key; })), rows = [], incomplete = [], pairs = new Map();
         for (var comparison of review.comparisons) {
             var claim = claims.find(function (item) { return item.id === comparison.claimId; }), found = resolve(comparison.postId);
             var raw = found && found.article.passages.find(function (item) { return item.kind === comparison.kind && item.ordinal === comparison.ordinal; });
@@ -543,14 +545,19 @@
             var result = archiveSignals(claim, comparison, found && found.post, passage);
             if (result.incomplete) { incomplete.push({ claim: claim, comparison: comparison, loaded: !!found }); continue; }
             var pair = [comparison.claimId, comparison.postId, comparison.kind, comparison.ordinal].join('|'), signals = [];
-            if (seen.has(pair)) continue;
             for (var signal of result.signals) {
                 var key = await dismissalKey(claim, comparison, signal);
-                if (!dismissed.has(key)) signals.push({ kind: signal, key: key });
+                if (!dismissed.has(key)) signals.push({ kind: signal, key: key, comparison: comparison, similarity: result.similarity });
             }
             if (!signals.length) continue;
-            seen.add(pair);
-            rows.push({ claim: claim, comparison: comparison, post: found.post, passage: passage, signals: signals, similarity: result.similarity, order: claims.indexOf(claim) });
+            var existing = pairs.get(pair);
+            if (existing) {
+                signals.forEach(function (signal) { if (!existing.signals.some(function (item) { return item.kind === signal.kind; })) existing.signals.push(signal); });
+                existing.similarity = Math.max(existing.similarity, result.similarity);
+            } else {
+                var row = { claim: claim, comparison: comparison, post: found.post, passage: passage, signals: signals, similarity: result.similarity, order: claims.indexOf(claim) };
+                pairs.set(pair, row); rows.push(row);
+            }
         }
         function overlapOnly(row) { return row.signals.some(function (item) { return item.kind === 'possible-conflict'; }) ? 0 : 1; }
         rows.sort(function (a, b) {
@@ -623,7 +630,7 @@
     function attach(panel, toggle, archive) {
         // decoded: the eligible posts of each loaded index, so repeated searches rank without decoding again.
         var notes = [], cache = new Map(), decoded = new WeakMap(), hashes = new WeakMap(), catalog, contentManifest, searchRevision = 0, standingRevision = 0, initialized = false;
-        var state = blankWorkspace(), epoch = 0, listeners = [], exportButton;
+        var state = blankWorkspace(), epoch = 0, reviewRevision = 0, listeners = [], exportButton;
         function snapshotWorkspace() {
             if (initialized) {
                 state.question = question.value; state.anchor = anchor.value; state.season = season.value; state.round = round.value;
@@ -633,6 +640,8 @@
             return JSON.stringify(copy) === JSON.stringify(blankWorkspace()) ? null : copy;
         }
         function changed() {
+            ++reviewRevision;
+            if (archiveList) { archiveList.replaceChildren(); archiveMore.hidden = true; }
             try { if (exportButton) exportButton.disabled = !snapshotWorkspace(); listeners.slice().forEach(function (fn) { fn(); }); }
             catch (_) { if (exportButton) exportButton.disabled = true; message('Το σημειωματάριο είναι υπερβολικά μεγάλο ή μη έγκυρο.'); }
         }
@@ -648,7 +657,7 @@
             notes = state.notes; Object.keys(fields).forEach(function (key) { fields[key].value = state.form[key]; });
             hits = []; articles.replaceChildren(); more.hidden = true; standings.replaceChildren();
             fallback.value = ''; fallback.hidden = true; status.textContent = ''; formStatus.textContent = ''; renderNotes(); renderClaims();
-            archiveList.replaceChildren(); archiveMore.hidden = true; archiveNote.textContent = '';
+            archiveList.replaceChildren(); archiveMore.hidden = true; archiveNote.textContent = ''; renderComparisons();
             if (exportButton) exportButton.disabled = !snapshotWorkspace();
         }
         function hydrate(value) {
@@ -695,7 +704,7 @@
         }
         var catalogNote = '', status, question, anchor, season, round, articles, more, standings, tools, noteList, claimDetails, claimList, fallback, form, formStatus, fields = {}, hits = [], opener = toggle, claimDrafts = {};
         // archiveSession: public posts and article text the last explicit search loaded; the archive review reads only this.
-        var archiveList, archiveMore, archiveNote, archiveSession = null;
+        var archiveList, archiveMore, archiveNote, comparisonList, archiveSession = null;
         function message(text) { status.textContent = text; }
         // note: an optional line beside the button, so the outcome is visible where the author clicked.
         async function copy(text, done, note) {
@@ -736,7 +745,7 @@
                     if (hit.heading && hit.heading.id) label.appendChild(link(locator, post.url + '#' + encodeURIComponent(hit.heading.id)));
                     else label.appendChild(document.createTextNode(locator));
                     var before = row.querySelector('a'); row.insertBefore(label, before); row.insertBefore(el('p', hit.snippet, 'gb-research-passage'), before);
-                    row.insertBefore(button('Σύγκριση με ισχυρισμό', function () { annotate(row, hit, note); }), note);
+                    var compareButton = button('Σύγκριση με ισχυρισμό', function () { annotate(row, hit, note, null, compareButton); }); row.insertBefore(compareButton, note);
                 }
                 articles.appendChild(row);
             });
@@ -864,7 +873,7 @@
                         var index = state.claims.indexOf(item); state.claims = state.claims.filter(function (claim) { return claim !== item; });
                         state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry.claimId !== item.id; });
                         state.archiveReview.dismissals = state.archiveReview.dismissals.filter(function (entry) { return entry.claimId !== item.id; });
-                        renderClaims(); changed();
+                        renderClaims(); changed(); renderComparisons();
                         // Keep keyboard focus: the claim now in this place, else the previous one, else «Νέος ισχυρισμός».
                         var next = claimList.children[Math.min(index, claimList.children.length - 1)];
                         (next ? next.querySelector('summary') : document.getElementById('research-new-claim')).focus();
@@ -890,7 +899,7 @@
             });
         }
         // E-05: the author annotates one exact span of a result passage against one of the draft's claims.
-        function annotate(row, hit, note) {
+        function annotate(row, hit, note, existing, trigger) {
             if (row.querySelector('.gb-research-compare')) { row.querySelector('.gb-research-compare select').focus(); return; }
             var claims = state.claims.filter(function (claim) { return claim.text.trim(); });
             if (!claims.length) { note.textContent = 'Πρόσθεσε πρώτα έναν ισχυρισμό στο «Ισχυρισμοί & τεκμήρια».'; return; }
@@ -902,25 +911,57 @@
                 'calculated-statistic': 'Υπολογισμένο στατιστικό', 'technical-interpretation': 'Τεχνική ερμηνεία', prediction: 'Πρόβλεψη', 'unsupported-hypothesis': 'Μη τεκμηριωμένη υπόθεση' });
             [['event', 'Γεγονός'], ['season', 'Σεζόν'], ['round', 'Γύρος'], ['session', 'Σκέλος (π.χ. q3, race, season)'], ['start', 'Αρχή περιόδου (ISO)'], ['end', 'Τέλος περιόδου (ISO)'],
                 ['metric', 'Μετρική'], ['value', 'Τιμή'], ['units', 'Μονάδες'], ['sample', 'Δείγμα / συνθήκες'], ['method', 'Ορισμός / μέθοδος']].forEach(function (pair) { inputs[pair[0]] = field(box, prefix + pair[0], pair[1]); });
+            if (existing) {
+                inputs.claim.value = existing.claimId; inputs.quote.value = existing.quote; inputs.entities.value = existing.entities.join(', '); inputs.claimType.value = existing.claimType;
+                ['event', 'season', 'round', 'session'].forEach(function (key) { inputs[key].value = existing.scope[key]; });
+                inputs.start.value = existing.scope.period.start; inputs.end.value = existing.scope.period.end;
+                if (existing.numeric) ['metric', 'value', 'units', 'sample', 'method'].forEach(function (key) { inputs[key].value = existing.numeric[key]; });
+            }
             box.appendChild(el('p', 'Συμπλήρωσε μόνο ό,τι λέει ρητά το απόσπασμα. Χωρίς πλήρες πλαίσιο δεν βγαίνει ένδειξη.', 'gb-hint'));
             var status = el('p', '', 'gb-hint is-warn'); status.setAttribute('role', 'status');
             box.append(button('Καταγραφή σύγκρισης', function () {
+                var comparisonIndex = existing ? state.archiveReview.comparisons.indexOf(existing) : -1;
                 var value = function (key) { return inputs[key].value.trim(); }, claim = state.claims.find(function (item) { return item.id === inputs.claim.value; });
                 var article = archiveSession && archiveSession.content.get(hit.post.id);
+                if (existing && hit.synthetic) article = inputs.quote.value === existing.quote ? { digest: existing.articleDigest } : null;
                 try {
-                    if (!claim || !article) throw new Error('Ο ισχυρισμός ή το κείμενο του άρθρου δεν είναι πλέον διαθέσιμο.');
+                    if (!claim || !article || (existing && comparisonIndex < 0)) throw new Error('Ο ισχυρισμός ή το κείμενο του άρθρου δεν είναι πλέον διαθέσιμο.');
                     var comparison = makeComparison(claim, hit.post, article, hit.passage, { quote: inputs.quote.value, claimType: inputs.claimType.value,
                         entities: value('entities').split(',').map(function (item) { return item.trim(); }).filter(Boolean),
                         scope: { event: value('event'), season: value('season'), round: value('round'), session: value('session'), period: { start: value('start'), end: value('end') } },
                         numeric: value('metric') || value('value') ? { metric: value('metric'), value: value('value'), units: value('units'), sample: value('sample'), method: value('method'), originalValues: [] } : null });
-                    state.archiveReview = validateArchiveReview({ comparisons: state.archiveReview.comparisons.concat([comparison]), dismissals: state.archiveReview.dismissals }, state.claims);
+                    if (existing && hit.synthetic) { comparison.start = existing.start; comparison.end = existing.end; }
+                    state.archiveReview = validateArchiveReview({ comparisons: existing ? state.archiveReview.comparisons.map(function (entry) { return entry === existing ? comparison : entry; }) : state.archiveReview.comparisons.concat([comparison]), dismissals: state.archiveReview.dismissals }, state.claims);
                 } catch (error) {
                     status.textContent = /αυτούσιο|διαθέσιμο/.test(error.message) ? error.message : 'Η σύγκριση δεν είναι έγκυρη: έλεγξε όρους (1–4 λέξεις), σεζόν, γύρο, σκέλος και όριο 100 συγκρίσεων.';
                     return;
                 }
-                box.remove(); changed(); note.textContent = 'Η σύγκριση καταγράφηκε στο πρόχειρο. Δες «Έλεγχος αρχείου».';
-            }), button('Ακύρωση', function () { box.remove(); }), status);
+                var index = existing ? comparisonIndex : -1;
+                box.remove(); changed(); renderComparisons(); note.textContent = 'Η σύγκριση καταγράφηκε στο πρόχειρο. Δες «Έλεγχος αρχείου».';
+                if (trigger && trigger.isConnected) trigger.focus(); else if (existing && comparisonList.children[index]) comparisonList.children[index].querySelector('button').focus();
+            }), button('Ακύρωση', function () { box.remove(); if (trigger && trigger.isConnected) trigger.focus(); }), status);
             row.appendChild(box); inputs.claim.focus();
+        }
+        function renderComparisons() {
+            if (!comparisonList) return;
+            comparisonList.replaceChildren();
+            state.archiveReview.comparisons.forEach(function (comparison) {
+                var row = el('li', null, 'gb-research-result'), note = el('p', '', 'gb-hint');
+                var claim = state.claims.find(function (item) { return item.id === comparison.claimId; });
+                row.append(el('p', (claim ? claim.text : comparison.claimId) + ' · ' + comparison.postId), el('p', comparison.quote, 'gb-research-passage'));
+                var edit = button('Επεξεργασία σύγκρισης', function () {
+                    var article = archiveSession && archiveSession.content.get(comparison.postId);
+                    var passage = article && article.passages.find(function (item) { return item.kind === comparison.kind && item.ordinal === comparison.ordinal; });
+                    var synthetic = !passage;
+                    if (!passage) passage = { kind: comparison.kind, ordinal: comparison.ordinal, text: comparison.quote };
+                    annotate(row, { post: { id: comparison.postId }, passage: passage, synthetic: synthetic }, note, comparison, edit);
+                });
+                row.append(edit, button('Αφαίρεση σύγκρισης', function () {
+                    if (!state.archiveReview.comparisons.includes(comparison)) return;
+                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== comparison; });
+                    changed(); renderComparisons();
+                }), note); comparisonList.appendChild(row);
+            });
         }
         function scopeText(scope) {
             return [scope.event, scope.season, scope.round && 'γύρος ' + scope.round, scope.session, scope.period.start && scope.period.start + ' – ' + scope.period.end].filter(Boolean).join(' · ') || 'χωρίς πλαίσιο';
@@ -932,10 +973,10 @@
             return 'Ίδιο πλαίσιο και ίδιοι όροι, ομοιότητα λέξεων ' + Math.round(row.similarity * 100) + '%.';
         }
         async function runReview() {
-            var reviewEpoch = epoch, session = archiveSession;
+            var reviewEpoch = epoch, revision = ++reviewRevision, session = archiveSession;
             archiveList.replaceChildren(); archiveMore.hidden = true;
             var result = await reviewQueue(state, function (id) { return session && session.content.has(id) && session.posts.has(id) ? { post: session.posts.get(id), article: session.content.get(id) } : null; });
-            if (reviewEpoch !== epoch) return;
+            if (reviewEpoch !== epoch || revision !== reviewRevision) return;
             result.rows.forEach(function (row, index) {
                 var item = el('li', null, 'gb-research-result'); item.hidden = index >= 8;
                 item.append(el('h3', row.claim.text), el('p', 'Άρθρο: ' + row.post.title + ' · ' + row.post.date + ' · ' + row.post.id, 'gb-hint'),
@@ -943,17 +984,18 @@
                     link('Άνοιγμα άρθρου', row.post.url), el('p', row.post.url, 'gb-hint'),
                     el('p', 'Ισχυρισμός: ' + scopeText(row.claim.scope) + ' · ' + numericText(row.claim.numeric), 'gb-hint'),
                     el('p', 'Αρχείο: ' + scopeText(row.comparison.scope) + ' · ' + numericText(row.comparison.numeric), 'gb-hint'));
-                row.signals.forEach(function (signal) { item.appendChild(el('p', SIGNAL_LABELS[signal.kind] + ': ' + signalReason(signal.kind, row))); });
+                row.signals.forEach(function (signal) { item.appendChild(el('p', SIGNAL_LABELS[signal.kind] + ': ' + signalReason(signal.kind, Object.assign({}, row, { comparison: signal.comparison, similarity: signal.similarity })))); });
                 item.appendChild(el('p', 'Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.', 'gb-hint is-warn'));
                 var locate = button('Εντοπισμός ισχυρισμού', function () {}); locate.dataset.claimAction = 'locate'; locate.dataset.claimId = row.claim.id; item.appendChild(locate);
                 row.signals.forEach(function (signal) {
                     item.appendChild(button('Απόρριψη: ' + SIGNAL_LABELS[signal.kind], function () {
+                        if (!state.claims.includes(row.claim) || !state.archiveReview.comparisons.includes(signal.comparison)) return;
                         if (state.archiveReview.dismissals.length >= 200) { archiveNote.textContent = 'Έφτασες τις 200 απορρίψεις. Πάτησε «Επαναφορά απορρίψεων» πριν απορρίψεις άλλη ένδειξη.'; return; }
                         state.archiveReview.dismissals.push({ claimId: row.claim.id, key: signal.key, dismissedAt: new Date().toISOString() }); changed(); runReview();
                     }));
                 });
                 item.appendChild(button('Αφαίρεση σύγκρισης', function () {
-                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== row.comparison; }); changed(); runReview();
+                    state.archiveReview.comparisons = state.archiveReview.comparisons.filter(function (entry) { return entry !== row.comparison; }); changed(); renderComparisons(); runReview();
                 }));
                 archiveList.appendChild(item);
             });
@@ -1083,7 +1125,9 @@
             archiveDetails.append(el('p', 'Συγκρίνει μόνο ισχυρισμούς του προχείρου με αποσπάσματα που σημείωσες με «Σύγκριση με ισχυρισμό», με το κείμενο που φόρτωσε η τελευταία αναζήτηση. Δεν αλλάζει άρθρα και δεν δημιουργεί διορθώσεις.', 'gb-hint'),
                 el('p', 'Ένδειξη προς ανθρώπινο έλεγχο. Η ομοιότητα κειμένου ή η διαφορά αριθμών δεν αποδεικνύει αντίφαση ή ανάγκη διόρθωσης.', 'gb-hint is-warn'));
             archiveNote = el('p', '', 'gb-hint'); archiveNote.setAttribute('role', 'status'); archiveList = el('ol', null, 'gb-research-queue');
-            archiveMore = button('Περισσότερες ενδείξεις', function () { archiveList.querySelectorAll('li[hidden]').forEach(function (node) { node.hidden = false; }); archiveMore.hidden = true; }); archiveMore.hidden = true;
+            archiveMore = button('Περισσότερες ενδείξεις', function () { var first = archiveList.querySelector('li[hidden]'); archiveList.querySelectorAll('li[hidden]').forEach(function (node) { node.hidden = false; }); archiveMore.hidden = true; if (first) first.querySelector('a, button').focus(); }); archiveMore.hidden = true;
+            comparisonList = el('ol', null, 'gb-research-comparisons');
+            archiveDetails.append(el('h3', 'Καταγεγραμμένες συγκρίσεις'), comparisonList);
             archiveDetails.append(button('Έλεγχος ενδείξεων', runReview), button('Επαναφορά απορρίψεων', function () {
                 if (!state.archiveReview.dismissals.length) return;
                 state.archiveReview.dismissals = []; changed(); runReview();
