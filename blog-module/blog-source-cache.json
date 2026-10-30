@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261031W",
+      "title": "McLaren Mcl40: Γρήγορη αλλά ασταθής.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-31",
+      "dateISO": "2026-10-31",
+      "displayDate": "31 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261031W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261031W/2.webp",
+      "excerpt": "Η McLaren MCL40 διαθέτει ταχύτητα για βάθρα, αλλά η αστάθεια στην απόδοσή της δυσκολεύει τη μάχη με τους κορυφαίους αντιπάλους.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261031W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "McLaren Mcl40"
+      ],
+      "wordCount": 583,
+      "readingTime": "3 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "45f4e2933fc7a49de7468fd6ac297f8b1a107c6844bb1a98e961794f4224e697"
+    },
+    {
       "id": "20261030W",
       "title": "Oταν ο Rosberg άντεξε την  πίεση του Ricciardo",
       "author": "Themis Charvalis",
@@ -11317,5 +11346,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-29T22:08:47.121Z"
+  "lastUpdated": "2026-10-30T23:07:34.359Z"
 }
