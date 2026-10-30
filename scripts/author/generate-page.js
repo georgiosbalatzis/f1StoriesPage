@@ -43,6 +43,7 @@
     var importLabel       = byId('gen-import-label');
     var importText        = byId('gen-import-text');
     var publishBtn        = byId('gen-publish-btn');
+    var editorialReview = byId('gen-editorial-review');
     var tokenBtn          = byId('gen-token-btn');
     var tokenStateEl      = byId('gen-token-state');
     var clearBtn          = byId('gen-clear-btn');
@@ -150,7 +151,7 @@
     }
 
     function setPublishReady() {
-        authorDom.setIconText(publishBtn, 'fa-rocket', 'Δημοσίευση τώρα');
+        authorDom.setIconText(publishBtn, 'fa-rocket', editorialReview.checked ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
     }
 
     var restoredHeroFile = null;
@@ -485,7 +486,7 @@
             authorDom.setIconText(nextBtn, 'fa-check', 'Τέλος');
             nextBtn.classList.add('gb-nav-publish');
         } else if (currentStep === panels.length - 1) {
-            authorDom.setIconText(nextBtn, 'fa-rocket', 'Δημοσίευση τώρα');
+            authorDom.setIconText(nextBtn, 'fa-rocket', editorialReview.checked ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
             nextBtn.classList.add('gb-nav-publish');
         } else {
             nextBtn.replaceChildren(document.createTextNode('Επόμενο: ' + STEP_TITLES[currentStep + 1] + ' '), authorDom.createSvgIcon('fa-arrow-right'));
@@ -626,6 +627,8 @@
         if (disposePreview) disposePreview();
         byId('gen-article-preview').srcdoc = '';
         titleInput.value = '';
+        editorialReview.checked = false;
+        setPublishReady();
         tagInput.value = '';
         setChecked('gen-category', DEFAULT_CATEGORY);
         setChecked('gen-author', DEFAULT_AUTHOR);
@@ -697,6 +700,7 @@
         var startingEpoch = editorEpoch;
         // The editor epoch this import owns: its own resetForm() moves it, another draft opening moves it again.
         var importEpoch = startingEpoch;
+        var previousReview;
         var zipFile = importInput.files && importInput.files[0];
         importInput.value = '';
         if (!zipFile) return;
@@ -759,6 +763,7 @@
 
             // Populate text fields
             if (startingEpoch !== editorEpoch) return;
+            previousReview = editorialReview.checked;
             resetForm();
             if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.clear();
             drafts.detach();
@@ -811,6 +816,7 @@
             importText.textContent = folderName;
         } catch (err) {
             if (importEpoch !== editorEpoch) return;
+            if (previousReview !== undefined) { editorialReview.checked = previousReview; setPublishReady(); }
             console.error('Import failed', err);
             await showAlert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
             importText.textContent = originalText;
@@ -1070,18 +1076,31 @@
 
     // Folders that open author/* PRs are about to add,
     // keyed lowercase like the branch slug. Best effort: main is still checked.
-    async function pendingPullFolders(token) {
+    async function pendingPullFolders(token, strict) {
         var folders = {};
+        var reviewFolders = {};
         try {
-            var data = await ghFetch('/pulls?state=open&per_page=100', token);
-            (Array.isArray(data) ? data : []).forEach(function (pr) {
-                var folder = window.F1S_AUTHOR_GITHUB.folderFromAuthorBranch(pr && pr.head && pr.head.ref);
-                if (folder) folders[folder] = true;
-            });
+            var page = 1, data;
+            do {
+                data = await ghFetch('/pulls?state=open&per_page=100' + (page > 1 ? '&page=' + page : ''), token);
+                if (!Array.isArray(data)) throw new Error('Invalid pull request listing');
+                data.forEach(function (pr) {
+                    if (!pr) return;
+                    var ref = pr.head && pr.head.ref;
+                    if (ref && ref.indexOf('editorial/review/') === 0 && (!pr.base || pr.base.ref !== 'main')) return;
+                    var folder = window.F1S_AUTHOR_GITHUB.folderFromAuthorBranch(ref);
+                    if (folder) {
+                        folders[folder] = true;
+                        if (ref.indexOf('editorial/review/') === 0) reviewFolders[folder] = true;
+                    }
+                });
+                page++;
+            } while (data.length === 100);
         } catch (e) {
+            if (strict) throw new Error('Δεν ήταν δυνατός ο πλήρης έλεγχος ανοικτών PR. Έλεγξε τη σύνδεση και το token και δοκίμασε ξανά.');
             console.warn('Could not list open pull requests', e);
         }
-        return folders;
+        return { folders: folders, reviewFolders: reviewFolders };
     }
 
     // Finds the next unused "-N<Author>" suffix for a same-day article
@@ -1095,7 +1114,7 @@
         throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για άρθρο της ' + baseDate + '.');
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting) {
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting, needsReview, title) {
         function tick(msg) { if (progress) progress(msg); }
 
         // Phase 1: upload blobs (content-addressed, safe to do once)
@@ -1170,6 +1189,11 @@
         });
         var prTitle = commitMessage;
         var prBody = 'Author tool publish for `blog-module/blog-entries/' + folderName + '`.';
+        if (needsReview) {
+            var review = window.F1S_AUTHOR_GITHUB.reviewPullRequest(folderName, title, replaceExisting);
+            prTitle = review.title;
+            prBody = review.body;
+        }
         var result = await github.createPullRequestFromTree(
             token,
             'blog',
@@ -1178,7 +1202,8 @@
             commitMessage,
             prTitle,
             prBody,
-            tick
+            tick,
+            needsReview
         );
         return result;
     }
@@ -1190,14 +1215,14 @@
         progressList.appendChild(li);
     }
 
-    function showResult(publishResult, folderName) {
+    function showResult(publishResult, folderName, needsReview) {
         var pr = publishResult.pullRequest || {};
         resultBox.replaceChildren();
         resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + ' άνοιξε'));
         var branch = el('p', 'gb-result-branch');
         branch.appendChild(el('code', '', publishResult.branchName));
         resultBox.appendChild(branch);
-        var note = el('p', '', 'Το PR για blog-entries/' + folderName + '/ άνοιξε. Η δημοσίευση εκκρεμεί: μετά τους ελέγχους γίνονται αυτόματα merge, build και deploy. Το τοπικό πρόχειρο διατηρείται.');
+        var note = el('p', '', needsReview ? 'Το PR για blog-entries/' + folderName + '/ αναμένει ανθρώπινο έλεγχο και χειροκίνητο merge μετά την έγκριση του τελικού commit. Το τοπικό πρόχειρο διατηρείται.' : 'Το PR για blog-entries/' + folderName + '/ άνοιξε. Η δημοσίευση εκκρεμεί: μετά τους ελέγχους γίνονται αυτόματα merge, build και deploy. Το τοπικό πρόχειρο διατηρείται.');
         if (pr.html_url) {
             var link = el('a', '', 'Προβολή PR στο GitHub');
             link.href = pr.html_url;
@@ -1238,6 +1263,7 @@
         var heroFile = getHeroFile();
         var headerFile = getHeaderFile();
         var replaceExisting = false;
+        var needsReview = editorialReview.checked;
 
         publishing = true;
         panels.forEach(function (panel) { panel.inert = true; });
@@ -1250,7 +1276,8 @@
         logProgress('Έλεγχος φακέλου ' + folderName + '…');
 
         try {
-            var pendingFolders = await pendingPullFolders(token);
+            var pending = await pendingPullFolders(token, needsReview);
+            var pendingFolders = pending.folders;
             if (await folderExists(token, folderName)) {
                 var choice = await authorDialogs.choose(
                     'Υπάρχει ήδη άρθρο για ' + 'σήμερα' + ' στο blog-entries/' + folderName + '.',
@@ -1265,6 +1292,7 @@
                     authorDom.setBusyText(publishBtn, 'Εύρεση suffix…');
                     folderName = await nextNumberedFolder(token, baseDate, authorCode, pendingFolders);
                 } else {
+                    if (pending.reviewFolders[folderName.toLowerCase()]) throw new Error('Ο φάκελος αναμένει ήδη συντακτικό έλεγχο σε ανοικτό PR. Επίλεξε νέα έκδοση ή ολοκλήρωσε πρώτα τον έλεγχο.');
                     if (!(await showConfirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';', { title: 'Αντικατάσταση φακέλου', okLabel: 'Αντικατάσταση' }))) {
                         logProgress('Ακυρώθηκε.');
                         return;
@@ -1283,7 +1311,7 @@
                 confirmMsg += '\n\nΠεριλαμβάνει ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') +
                     ' κειμένου + ' + plural(markerCount, 'δείκτη', 'δείκτες') + '.';
             }
-            confirmMsg += '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
+            confirmMsg += needsReview ? '\n\nΑπαιτείται ανθρώπινος έλεγχος και χειροκίνητο merge μετά την έγκριση του τελικού commit.' : '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
             if (!(await showConfirm(confirmMsg, { title: 'Άνοιγμα Pull Request', okLabel: 'Άνοιγμα PR' }))) {
                 logProgress('Ακυρώθηκε.');
                 return;
@@ -1305,12 +1333,12 @@
             var publishResult = await publishToGitHub(
                 token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
                 logProgress,
-                replaceExisting
+                replaceExisting, needsReview, title
             );
             logProgress('Ολοκληρώθηκε.');
             progressList.lastChild.className = 'is-done';
             published = true;
-            showResult(publishResult, folderName);
+            showResult(publishResult, folderName, needsReview);
         } catch (err) {
             console.error('Publish failed', err);
             logProgress('Απέτυχε.');
@@ -1349,6 +1377,7 @@
             if (revision !== previewRevision) return;
             var state = captureDraft();
             delete state.research;
+            delete state.needsEditorialReview;
             var result = await window.F1S_ARTICLE_PREVIEW.render(state);
             if (revision !== previewRevision) { result.dispose(); return; }
             var frame = byId('gen-article-preview');
@@ -1377,6 +1406,7 @@
                 selectionStart: contentArea.selectionStart, selectionEnd: contentArea.selectionEnd } };
         var research = window.F1S_RESEARCH_NOTEBOOK && window.F1S_RESEARCH_NOTEBOOK.snapshot();
         if (research) state.research = research;
+        if (editorialReview.checked) state.needsEditorialReview = true;
         return state;
     }
 
@@ -1399,6 +1429,8 @@
             }
             if (epoch !== editorEpoch) throw new Error('Η φόρτωση ακυρώθηκε επειδή άλλαξε το άρθρο.');
             resetForm();
+            editorialReview.checked = value.needsEditorialReview === true;
+            setPublishReady();
             if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.hydrate(research || null);
             titleInput.value = value.title;
             tagInput.value = value.tags;
@@ -1451,6 +1483,8 @@
         if (action === 'capture') notebook.addClaim(selection);
         else if (action === 'recapture') notebook.setClaimAnchor(id, selection);
     });
+
+    editorialReview.addEventListener('change', function () { setPublishReady(); drafts.changed(); refresh(); });
     document.addEventListener('DOMContentLoaded', function () {
         if (window.F1S_RESEARCH_NOTEBOOK) window.F1S_RESEARCH_NOTEBOOK.onChange(drafts.changed);
     });

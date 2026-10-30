@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
 import { authorPrProblems, main, ENTRIES } from './author-pr-guard.mjs';
 
 const at = (folder, name) => `${ENTRIES}${folder}/${name}`;
@@ -107,4 +110,23 @@ test('Publish Article runs the guard from main on the tested commit before mergi
     assert.match(guard, /TESTED_SHA: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/);
     assert.match(guard, /node scripts\/deployment\/author-pr-guard\.mjs --repo "\$REPO" --pr "\$NUMBER" --sha "\$TESTED_SHA"/);
     assert.match(workflow.slice(step('Merge author PR')), /--match-head-commit "\$TESTED_SHA"/);
+});
+
+test('review branches are excluded by all trusted author automation boundaries', async () => {
+    let listed = false;
+    const branch = 'editorial/review/20261029G-20261029120000-abcd';
+    const result = await authorPrProblems({ branch, files: [changed('20261029G', 'source.txt', 'added')], list: async () => { listed = true; } });
+    assert.deepEqual(result, [`${branch}: not an author-tool branch`]);
+    assert.equal(listed, false);
+    const workflow = fs.readFileSync(new URL('../../.github/workflows/auto-publish-author-pr.yml', import.meta.url), 'utf8');
+    const triggers = workflow.match(/    branches:\n((?:      - .*\n)+)/)[1].match(/author\/[^']+/g);
+    assert.deepEqual(triggers, ['author/blog/**', 'author/import/**', 'author/delete/**', 'author/edit/**']);
+    const branchCase = workflow.match(/          case "\$head_ref" in\n[\s\S]*?          esac/)[0].replace(/^          /gm, '');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'review-guard-'));
+    try {
+        const file = path.join(dir, 'output');
+        const output = execFileSync('sh', ['-c', `head_ref="$1"; pr_number=1; GITHUB_OUTPUT="$2"; ${branchCase}\necho merge`, 'test', branch, file], { encoding: 'utf8' });
+        assert.match(fs.readFileSync(file, 'utf8'), /publish=false/);
+        assert.doesNotMatch(output, /merge/);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

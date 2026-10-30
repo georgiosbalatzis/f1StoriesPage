@@ -330,6 +330,71 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     assert.match(await page.locator('#gen-result').innerText(), /Η δημοσίευση εκκρεμεί/);
 });
 
+test('review choice persists and mocked review submission keeps private notebook text local', async t => {
+    const page = await pageFor(t), calls = [], canary = 'SYNTHETIC_REVIEW_PRIVATE_8391';
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), url = new URL(request.url()), suffix = url.pathname.replace('/repos/georgiosbalatzis/f1StoriesPage', '');
+        calls.push({ suffix, method: request.method(), body: request.postDataJSON() });
+        if (suffix.startsWith('/contents/')) return route.fulfill({ status: 404, json: {} });
+        let data = {};
+        if (suffix === '/pulls' && request.method() === 'GET') data = [];
+        else if (suffix === '/git/ref/heads/main') data = { object: { sha: 'base' } };
+        else if (suffix === '/git/commits/base') data = { tree: { sha: 'tree' } };
+        else if (suffix === '/pulls') data = { number: 1, html_url: 'https://github.com/example/dummy/pull/1' };
+        else data = { sha: 'mock' };
+        await route.fulfill({ json: data });
+    });
+    await setText(page, 'Δημόσιος τίτλος', 'Δημόσιο κείμενο.');
+    await step(page, 0); await setExcerpt(page, 'Δημόσια περιγραφή άρθρου για τον αγώνα.');
+    await step(page, 1); await page.locator('#research-toggle').click();
+    await page.locator('details').filter({ has: page.locator('#research-note-text') }).evaluate(node => { node.open = true; });
+    await page.locator('#research-note-text').fill(canary);
+    await page.getByRole('button', { name: 'Προσθήκη σημείωσης', exact: true }).click();
+    await step(page, 4); await page.locator('#gen-editorial-review').check();
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].needsEditorialReview), true);
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    await step(page, 4); assert.equal(await page.locator('#gen-editorial-review').isChecked(), true);
+    await page.locator('#gen-publish-btn').click();
+    await page.getByRole('dialog').getByRole('textbox').fill('dummy-token-only-for-tests');
+    await page.getByRole('dialog').getByRole('button', { name: 'OK', exact: true }).click();
+    assert.match(await page.getByRole('dialog').innerText(), /ανθρώπινος έλεγχος.*χειροκίνητο merge/);
+    await page.getByRole('dialog').getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    await page.waitForFunction(() => !document.getElementById('gen-result').hidden);
+    const pr = calls.find(call => call.suffix === '/pulls' && call.method === 'POST').body;
+    assert.match(pr.head, /^editorial\/review\/\d{8}[A-Z]?-\d{14}-[a-z0-9]+$/);
+    assert.equal(pr.draft, false); assert.match(pr.title, /^editorial\(review\): /);
+    assert.match(pr.body, /ανθρώπινος έλεγχος/);
+    assert.match(await page.locator('#gen-result').innerText(), /ανθρώπινο έλεγχο.*χειροκίνητο merge/);
+    assert.ok(!JSON.stringify(calls).includes(canary));
+    for (const call of calls.filter(value => value.suffix === '/git/blobs' && value.body?.encoding === 'base64')) assert.ok(!Buffer.from(call.body.content, 'base64').includes(Buffer.from(canary)));
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].needsEditorialReview), true);
+});
+
+test('review discovery reads every page and stops on incomplete discovery', async t => {
+    const page = await pageFor(t), pages = [];
+    await setText(page, 'Δημόσιος τίτλος', 'Δημόσιο κείμενο.');
+    await step(page, 0); await setExcerpt(page, 'Δημόσια περιγραφή άρθρου για τον αγώνα.');
+    await step(page, 4); await page.locator('#gen-editorial-review').check();
+    await page.route('https://api.github.com/**', async route => {
+        const url = new URL(route.request().url());
+        if (url.pathname.endsWith('/pulls')) {
+            pages.push(url.searchParams.get('page') || '1');
+            if (pages.length === 1) return route.fulfill({ json: Array.from({ length: 100 }, () => ({ base: { ref: 'main' }, head: { ref: 'malformed' } })) });
+            return route.fulfill({ status: 500, json: {} });
+        }
+        throw new Error('Unexpected GitHub request: ' + url.pathname);
+    });
+    await page.locator('#gen-publish-btn').click();
+    await page.getByRole('dialog').getByRole('textbox').fill('dummy-token-only-for-tests');
+    await page.getByRole('dialog').getByRole('button', { name: 'OK', exact: true }).click();
+    assert.match(await page.getByRole('dialog').innerText(), /πλήρης έλεγχος ανοικτών PR/);
+    assert.deepEqual(pages, ['1', '2']);
+    assert.equal(await page.locator('#gen-editorial-review').isChecked(), true);
+});
+
 test('the description field counts, validates, blocks publishing and survives drafts, ZIP export/import and preview', async t => {
     const page = await pageFor(t);
     await setText(page, 'Άρθρο με περιγραφή', 'Πρώτη παράγραφος του κειμένου.\n\nΔεύτερη παράγραφος.');
@@ -885,4 +950,54 @@ test('step 5 keeps required checks separate from advisory evidence', async t => 
     await step(page, 4);
     assert.equal(await page.locator('#gen-publish-btn').isDisabled(), false);
     assert.match(await page.locator('#gen-preflight-advisories').textContent(), /Δεν έχουν καταγραφεί ισχυρισμοί/);
+});
+
+
+test('opening unchecked and legacy drafts clears the previous review choice', async t => {
+    const page = await pageFor(t);
+    await page.evaluate(async () => {
+        const unchecked = await window.F1S_LOCAL_DRAFTS.save({ title: 'Unchecked B' });
+        await window.F1S_LOCAL_DRAFTS.save({ title: 'Legacy C' });
+        await new Promise((resolve, reject) => {
+            const request = indexedDB.open('f1stories-author-drafts', 1);
+            request.onsuccess = () => {
+                const db = request.result, tx = db.transaction('drafts', 'readwrite');
+                tx.objectStore('drafts').put({ ...unchecked, needsEditorialReview: false });
+                tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = reject;
+            };
+            request.onerror = reject;
+        });
+    });
+    await setText(page, 'Checked A', 'Κείμενο.');
+    await step(page, 4); await page.locator('#gen-editorial-review').check();
+    await page.locator('#gen-save-draft').click(); await saved(page);
+    for (const title of ['Unchecked B', 'Checked A', 'Legacy C']) {
+        await page.locator('#gen-show-drafts').click();
+        await page.locator('#gen-draft-list li', { hasText: title }).getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+        await page.waitForFunction(value => document.getElementById('gen-title').value === value, title);
+        await step(page, 4); assert.equal(await page.locator('#gen-editorial-review').isChecked(), title === 'Checked A');
+    }
+});
+
+test('failed ZIP image extraction preserves the editorial review choice', async t => {
+    const page = await pageFor(t);
+    await setText(page, 'Πρόχειρο', 'Κείμενο.');
+    await step(page, 4); await page.locator('#gen-editorial-review').check();
+    await page.evaluate(async () => {
+        await window.F1S_AUTHOR_DOM_TOOLS.loadJSZip();
+        const load = JSZip.loadAsync.bind(JSZip);
+        JSZip.loadAsync = async (...args) => {
+            const zip = await load(...args);
+            zip.files['test/1.png'].async = async () => { throw new Error('synthetic corrupt image'); };
+            return zip;
+        };
+    });
+    const archive = new JSZip();
+    archive.file('test/source.txt', '---\ntitle: Από ZIP\ncategory: Analysis\ntags: test\n---\n\nΚείμενο ZIP.');
+    archive.file('test/1.png', 'synthetic image');
+    await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await archive.generateAsync({ type: 'nodebuffer' }) });
+    await page.getByRole('dialog').getByRole('button', { name: /Συνέχεια|OK/ }).click();
+    assert.match(await page.getByRole('dialog').innerText(), /synthetic corrupt image/);
+    assert.equal(await page.locator('#gen-editorial-review').isChecked(), true);
 });

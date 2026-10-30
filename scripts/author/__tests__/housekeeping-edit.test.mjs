@@ -8,6 +8,7 @@ import http from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { Launcher } from 'chrome-launcher';
+import JSZip from 'jszip';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const ENTRIES = 'blog-module/blog-entries';
@@ -87,6 +88,42 @@ async function save(page) {
     await dialog(page).filter({ hasText: 'Pull Request ανοιχτό' }).getByRole('button', { name: 'OK', exact: true }).click();
 }
 const writes = calls => calls.filter(call => call.method !== 'GET');
+
+test('open PR lane lists author and review branches across pages without writes', async t => {
+    const { page, calls } = await pageFor(t), requests = [];
+    const pr = (number, ref, title, base = 'main') => ({ number, title, head: { ref }, base: { ref: base },
+        user: { login: 'synthetic-editor' }, html_url: `https://github.com/example/dummy/pull/${number}`, draft: false });
+    const author = pr(1, 'author/blog/20261029g-20261029120000-abcd', 'Author PR');
+    const review = { ...pr(2, 'editorial/review/20261029-2Τ-20261029120000-efgh', 'Review PR'), syntheticReview: 'CHANGES_REQUESTED' };
+    const draft = { ...pr(3, 'editorial/review/20261030G-20261030120000-ijkl', 'Draft review'), draft: true };
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), url = new URL(request.url());
+        requests.push({ method: request.method(), page: url.searchParams.get('page') || '1', path: url.pathname });
+        if (request.method() !== 'GET' || !url.pathname.endsWith('/pulls')) return route.abort();
+        const data = url.searchParams.get('page') === '2' ? [review, draft, pr(4, 'editorial/review/bad-ref', 'Malformed'), pr(5, review.head.ref, 'Wrong base', 'other')] :
+            [author, ...Array.from({ length: 49 }, (_, i) => pr(100 + i, `feature/${i}`, 'Other'))];
+        await route.fulfill({ json: data });
+    });
+    await page.locator('#hk-lane-list').getByRole('button', { name: /Ανοιχτά PR συντακτών/ }).click();
+    await page.getByRole('button', { name: 'Ορισμός token' }).click();
+    await dialog(page).locator('input').fill('dummy-token-only-for-tests');
+    await dialog(page).getByRole('button', { name: 'OK', exact: true }).click();
+    const items = page.locator('#hk-list .hk-item-pr');
+    await items.nth(2).waitFor();
+    assert.equal(await items.count(), 3);
+    assert.match(await items.nth(0).innerText(), /Author PR/);
+    assert.doesNotMatch(await items.nth(0).innerText(), /Αναμένει ανθρώπινο έλεγχο/);
+    assert.match(await items.nth(1).innerText(), /Review PR[\s\S]*20261029-2Τ[\s\S]*Αναμένει ανθρώπινο έλεγχο[\s\S]*CI δεν αποτελεί έγκριση/);
+    assert.equal(await items.nth(1).getByRole('link', { name: 'Άνοιγμα στο GitHub' }).getAttribute('href'), review.html_url);
+    assert.match(await items.nth(2).innerText(), /πρόχειρο[\s\S]*Draft review/);
+    assert.deepEqual(requests.map(call => call.page), ['1', '2']);
+    await page.getByRole('button', { name: 'Ανανέωση λίστας PR' }).click();
+    await page.waitForFunction(() => document.querySelectorAll('#hk-list .hk-item-pr').length === 3);
+    assert.deepEqual(requests.map(call => call.page), ['1', '2', '1', '2']);
+    assert.ok(requests.every(call => call.method === 'GET'));
+    assert.equal(writes(calls).length, 0);
+    assert.equal(await items.getByRole('button').count(), 0);
+});
 // The single edit PR the last save opened: its tree, decoded uploads, commit and PR request.
 function pullRequest({ calls, blobs }) {
     const trees = calls.filter(call => call.suffix === '/git/trees');
@@ -181,4 +218,48 @@ test('a changed author or date is refused at save even when the page was altered
     await save(page);
     const { tree } = pullRequest(session);
     assert.deepEqual(tree.map(entry => entry.path), [`${ENTRIES}/${post.id}/source.txt`]);
+});
+
+
+test('a review reservation on a later page blocks housekeeping edits before writes', async t => {
+    const session = await pageFor(t), { page, calls } = session;
+    await openEditor(session, POSTS[0]);
+    const pages = [];
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), url = new URL(request.url());
+        if (request.method() !== 'GET' || !url.pathname.endsWith('/pulls')) return route.abort();
+        const number = url.searchParams.get('page') || '1'; pages.push(number);
+        await route.fulfill({ json: number === '1' ? Array.from({ length: 50 }, () => ({ head: { ref: 'feature/other' } })) : [
+            { base: { ref: 'main' }, head: { ref: 'editorial/review/20260416G-20261029120000-abcd' } }
+        ] });
+    });
+    await page.locator('#hk-edit-title-input').fill('Νέος τίτλος');
+    await page.locator('#hk-edit-save').click();
+    await dialog(page).getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('hk-edit-status').textContent.includes('αναμένει ήδη συντακτικό έλεγχο'));
+    assert.deepEqual(pages, ['1', '2']);
+    assert.equal(writes(calls).length, 0);
+});
+
+
+test('ZIP replacement refuses a folder awaiting editorial review', async t => {
+    const session = await pageFor(t), { page, calls } = session;
+    const archive = new JSZip();
+    archive.file(POSTS[0].id + '/source.txt', source(POSTS[0].id));
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), url = new URL(request.url());
+        if (request.method() === 'GET' && url.pathname.endsWith('/pulls')) return route.fulfill({ json: [
+            { base: { ref: 'main' }, head: { ref: 'editorial/review/20260416G-20261029120000-abcd' } }
+        ] });
+        return route.fallback();
+    });
+    await page.locator('#hk-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await archive.generateAsync({ type: 'nodebuffer' }) });
+    await dialog(page).locator('input').fill('dummy-token-only-for-tests');
+    await dialog(page).getByRole('button', { name: 'OK', exact: true }).click();
+    await dialog(page).locator('input[value="replace"]').check();
+    await dialog(page).getByRole('button', { name: 'Συνέχεια', exact: true }).click();
+    await dialog(page).getByRole('button', { name: 'Αντικατάσταση', exact: true }).click();
+    await dialog(page).getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    assert.match(await dialog(page).innerText(), /αναμένει ήδη συντακτικό έλεγχο/);
+    assert.equal(writes(calls).length, 0);
 });
