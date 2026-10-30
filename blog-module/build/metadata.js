@@ -40,11 +40,11 @@ function extractMetadata(filename, content) {
             if (separator !== -1) {
                 const key = line.slice(0, separator).trim();
                 const value = line.slice(separator + 1).trim();
-                if (key === 'corrections' && Object.prototype.hasOwnProperty.call(metadata, key)) throw new Error('Duplicate corrections field');
+                if (key === 'corrections' && Object.hasOwn(metadata, key)) throw new Error('Duplicate corrections field');
                 if (key && (value || key === 'corrections')) metadata[key] = value;
             }
         });
-        if (Object.prototype.hasOwnProperty.call(metadata, 'corrections')) metadata.corrections = corrections.parse(metadata.corrections);
+        if (Object.hasOwn(metadata, 'corrections')) metadata.corrections = corrections.parse(metadata.corrections);
         // Explicit front matter is the current authoring contract. A selected
         // public category is authoritative; detailed tags cannot override it.
         const categories = metadata.categories
