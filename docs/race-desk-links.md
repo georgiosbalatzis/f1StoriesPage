@@ -1,6 +1,6 @@
 # Race Desk link adapters
 
-R-02 adds a pure link builder for the existing tools. No separate R-02 brief was found; this bounded step follows the R-01 context contract and the request to continue after PR 392. Race identity remains in the existing registry. This does not add pages, navigation, child-application changes, source-pin changes, or a new registry schema.
+R-02A adds a pure, strict outbound link builder for the existing tools. This independently useful substep predates the complete Race Desk 2.0 master brief; it does not complete R-02. Reverse URL parsing, structured loss reports, truthful generic fallback notices and navigation integration remain separate work. Race identity stays in the existing registry. This substep adds no pages, navigation, child-application changes, source-pin changes or new registry schema.
 
 ## Decision and API
 

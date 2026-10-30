@@ -1,5 +1,13 @@
 # R-02 validation record
 
+This is the original outbound-builder validation record, now scoped as **R-02A**. Its statements about the absence of a separate R-02 brief describe the earlier execution. The subsequently supplied master brief requires additional reverse parsing, loss reporting, generic fallbacks, UI integration and browser/history acceptance before R-02 is complete.
+
+## Integration after master-brief R-01 approval
+
+The owner explicitly authorized necessary PR merges and automatic production deployments on 2026-10-30. R-01 follow-up #394 merged as `b462a27746c9e6dac04b8865510b6ae8a4e1044e`. That main revision was merged into this branch without conflicts; the strict builder and its tests were unchanged. A fresh Node 22.23.4 focused run passed all **30 tests** (18 foundation and 12 builder tests). Independent Sol review and fresh CI for the integrated head are recorded in PR #393, rather than substituted with the historical runs below. No child code pins changed.
+
+## Original implementation record
+
 PR 392 was merged by the owner. R-02 starts from `ee48967a312a3242a155d950bdd6e560eb8b9b00` on branch `feat/race-desk-r02` in a separate worktree; the owner's original checkout remains untouched. The PR head is the commit containing this report.
 
 No separate R-02 brief was found in the repository, Downloads, or GitHub issues. Following the owner's request to continue, this step implements the next capability named by R-01: safe cross-tool link adapters. It adds a pure builder and its tests and documentation. It does not invent requirements for subsequent roadmap items.
