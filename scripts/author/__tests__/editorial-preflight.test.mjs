@@ -51,3 +51,14 @@ test('independent mechanical issues coexist and numbers outside the ledger are i
     const claim = { id: 'x', text: '', anchor: null, status: 'unreviewed', sources: [], scope: { event: '', season: '', round: '', session: '', period: { start: '', end: '' } }, numeric: null, review: null };
     assert.deepEqual(clone(api.claimIssues({ claims: [claim] }, '')).map(x => x.code), ['claim-incomplete', 'claim-anchor', 'scope-missing', 'evidence-unresolved']);
 });
+
+test('calculated claims remain numeric without a record and invalid scope is flagged', () => {
+    const text = 'Synthetic claim';
+    const claim = { id: 'x', text, anchor: { quote: text, prefix: '', suffix: '', start: 0, end: text.length }, claimType: 'calculated-statistic', status: 'unreviewed', sources: [], scope: { event: 'Race', season: '2026', round: '1', session: 'race', period: { start: '', end: '' } }, numeric: null, review: null };
+    assert.deepEqual(clone(api.claimIssues({ claims: [claim] }, text)).map(x => x.code), ['numeric-invalid', 'unsupported-number']);
+    claim.claimType = 'official-fact';
+    for (const [field, value] of [['season', '202'], ['season', '1949'], ['round', '31'], ['session', 'invalid']]) {
+        const invalid = clone(claim); invalid.scope[field] = value;
+        assert.deepEqual(clone(api.claimIssues({ claims: [invalid] }, text)).map(x => x.code), ['scope-missing', 'evidence-unresolved'], field + ': ' + value);
+    }
+});

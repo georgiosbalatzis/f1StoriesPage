@@ -713,11 +713,18 @@ test('step 5 advisories locate claims and fall back to their card across layouts
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
     const locate = advisories.getByRole('button', { name: 'Εντοπισμός' }).first();
+    await page.locator('#gen-content').evaluate(node => node.setSelectionRange(0, 0));
     await locate.focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#gen-content').isVisible(), true);
+    assert.equal(await page.locator('#gen-content').evaluate(node => document.activeElement === node), true);
     assert.equal(await page.locator('#gen-content').evaluate(node => node.value.slice(node.selectionStart, node.selectionEnd)), 'Συνθετικός ισχυρισμός');
     await page.locator('#gen-content').fill('Άλλο κείμενο');
+    await page.locator('details[id^="research-claim-"]').evaluate(node => { node.open = false; });
     await page.locator('.gb-step[data-step="4"]').click();
-    await advisories.getByRole('button', { name: 'Εντοπισμός' }).first().click();
-    assert.equal(await page.locator('details[id^="research-claim-"]').evaluate(node => node.open), true);
+    await advisories.getByRole('button', { name: 'Εντοπισμός' }).first().focus(); await page.keyboard.press('Enter');
+    const card = page.locator('details[id^="research-claim-"]');
+    assert.equal(await card.isVisible(), true);
+    assert.equal(await card.evaluate(node => node.open), true);
+    assert.equal(await card.locator('textarea').first().evaluate(node => document.activeElement === node), true);
     assert.deepEqual(external, []);
 });

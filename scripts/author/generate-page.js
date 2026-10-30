@@ -531,7 +531,7 @@
             var jump = el('button', 'gb-btn gb-btn-sm gb-btn-ghost', 'Βήμα ' + (issue.step + 1)); jump.type = 'button';
             jump.addEventListener('click', function () { goToStep(issue.step); }); row.appendChild(jump); list.appendChild(row);
         });
-        if (!claims.length) list.appendChild(el('li', 'gb-review-row', 'Δεν έχουν καταγραφεί ισχυρισμοί· δεν έγινε έλεγχος τεκμηρίων.'));
+        if (!claims.length) list.appendChild(el('li', 'gb-review-text', 'Δεν έχουν καταγραφεί ισχυρισμοί· δεν έγινε έλεγχος τεκμηρίων.'));
         if (!window.F1S_RESEARCH) return;
         window.F1S_RESEARCH.claimIssues(workspace, contentArea.value).forEach(function (issue) {
             var claim = claims.find(function (item) { return item.id === issue.claimId; });
