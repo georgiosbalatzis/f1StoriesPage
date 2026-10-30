@@ -21,7 +21,7 @@ const CONFIG = {
 };
 const escapeHtmlAttribute = value => String(value ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const fs = {
-    existsSync: file => file.endsWith('/media-metadata.json') || files.has(file),
+    existsSync: file => file.endsWith('/media-metadata.json') || files.has(file) || [...files.keys()].some(entry => path.dirname(entry) === file),
     readFileSync: file => {
         if (file === '/template') return PREVIEW_TEMPLATE;
         if (file.endsWith('/media-metadata.json')) return JSON.stringify({ images: media });
@@ -35,6 +35,7 @@ const fs = {
 };
 const utils = {
     ensureDirectory: () => {},
+    findSourceDocument: entries => entries.includes('source.txt') ? 'source.txt' : null,
     findImageByBaseName: (dir, name) => files.has(path.join(dir, name + '.webp')) ? name + '.webp' : null
 };
 const getImageDimensions = async file => dimensions.get(file) || null;
@@ -42,7 +43,8 @@ const getImageDimensionsForPublicPath = file => getImageDimensions(files.has(fil
 
 async function configure(state) {
     files = new Map(); dimensions = new Map(); limitations = []; media = {};
-    files.set('/draft/local/source.txt', 'F1 News\n' + state.text);
+    const fields = ['publishedAtISO', 'updatedDateISO', 'corrections'].filter(key => Object.prototype.hasOwnProperty.call(state.metadata || {}, key));
+    files.set('/draft/local/source.txt', '---\n' + fields.map(key => key + ': ' + state.metadata[key]).join('\n') + '\n---\n\n' + state.text);
     // Reuse verified presentation metadata only when the original bytes match.
     const image = async (value, slot) => {
         if (!value) return;

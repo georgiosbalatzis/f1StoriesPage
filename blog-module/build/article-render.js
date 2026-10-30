@@ -269,10 +269,14 @@ function renderArticleTrust(post, category) {
     const author = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const authorHref = escapeHtmlAttribute(authorProfileHref(post.author));
 
-    return `<details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
+    const corrections = post.corrections || [];
+    const notice = corrections.length ? ' · Διορθώσεις / ενημερώσεις' : '';
+    const correctionList = corrections.length ? '<ul>' + corrections.map(item => `<li><strong>${item.type === 'factual-correction' ? 'Διόρθωση' : 'Ουσιαστική ενημέρωση'}</strong> · <time datetime="${escapeHtmlAttribute(item.date)}">${escapeHtmlText(item.date)}</time> · ${escapeHtmlText(item.section)} · ${escapeHtmlText(item.reason)} · Έγκριση: ${escapeHtmlText(item.approvedBy)}, ${escapeHtmlText(item.approvedOn)}</li>`).join('') + '</ul>' : '';
+
+    return `<details class="article-trust"${corrections.length ? ' open' : ''} aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές${notice}</summary><div class="article-trust-grid">
                         <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="${authorHref}">${author}</a></strong><span>Δημοσίευση: <time datetime="${escapeHtmlAttribute(post.publishedAtISO || post.dateISO || post.date || '')}">${escapeHtmlText(articleDate)}</time></span>${renderArticleUpdateStatus(post)}</div>
                         <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span>${renderArticleSources(post.sources, profile)}</div>
-                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span>${correctionList}<span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
                     </div></details>`;
 }
 
@@ -446,7 +450,8 @@ function sourceEditorialMetadata(entryPath) {
     return {
         categories: Array.isArray(metadata.categories) ? metadata.categories : [],
         publishedAtISO: metadata.publishedAtISO,
-        updatedDateISO: metadata.updatedDateISO
+        updatedDateISO: metadata.updatedDateISO,
+        corrections: metadata.corrections || []
     };
 }
 
@@ -465,9 +470,16 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         publishedAtISO: editorial.publishedAtISO || postData.publishedAtISO,
         updatedDateISO: editorial.updatedDateISO || postData.updatedDateISO
     });
+    const corrections = editorial.corrections || [];
+    if (corrections.length) {
+        const newest = corrections.reduce((latest, item) => item.date > latest ? item.date : latest, '');
+        if (corrections.some(item => item.date < dates.published.day) || !editorial.updatedDateISO || !dates.modified || dates.modified.day !== newest) {
+            throw new Error(`${folderName}: correction dates must follow publication and match updatedDateISO`);
+        }
+    }
     // Without a recorded update the page keeps its date-only publication value for dateModified, as before.
     const modified = dates.modified || dates.published;
-    const datedPost = { ...postData, publishedAtISO: dates.published.iso, updatedDateISO: dates.modified ? dates.modified.iso : undefined };
+    const datedPost = { ...postData, corrections, publishedAtISO: dates.published.iso, updatedDateISO: dates.modified ? dates.modified.iso : undefined };
     const editorialProfile = getEditorialProfile(taxonomy.category);
     const headerImage = postData.backgroundImage || postData.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const bgImageFilename = headerImage.includes('/')

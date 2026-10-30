@@ -373,6 +373,56 @@ test('review choice persists and mocked review submission keeps private notebook
     assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].needsEditorialReview), true);
 });
 
+test('corrections survive ZIP and draft round trips and force review on replacement', async t => {
+    const page = await pageFor(t), calls = [];
+    // Preview publishes on today's Athens date, and a correction may not predate publication.
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens' }).format(new Date());
+    const corrections = JSON.stringify([{ type: 'factual-correction', date: today, section: 'Αρχή «αγώνα»', reason: 'Συνθετική διόρθωση, με "εισαγωγικά".', decision: 'approved', approvedBy: 'Synthetic Editor', approvedOn: today }]);
+    const zip = new JSZip();
+    zip.file('20261029J/source.txt', `---\ncategory: Analysis\ntags: Ferrari\ntitle: Διορθωμένο άρθρο\nexcerpt: Συνθετική περιγραφή άρθρου.\nupdatedDateISO: ${today}\ncorrections: ${corrections}\n---\n\nΣυνθετικό κείμενο.\n`);
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles({ name: 'article.zip', mimeType: 'application/zip', buffer: await zip.generateAsync({ type: 'nodebuffer' }) });
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'Διορθωμένο άρθρο');
+    await step(page, 3);
+    await page.waitForFunction(() => document.getElementById('gen-article-preview').contentDocument?.querySelector('.article-trust__corrections')?.textContent.includes('Συνθετική διόρθωση'));
+    await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
+    assert.equal(await page.evaluate(async () => (await window.F1S_LOCAL_DRAFTS.list())[0].metadata.corrections), corrections);
+    await page.reload(); await page.locator('#gen-show-drafts').click();
+    await page.getByRole('button', { name: 'Άνοιγμα', exact: true }).click();
+    await page.waitForFunction(() => document.getElementById('gen-draft-status').textContent.startsWith('Ανοιχτό'));
+    await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    assert.match(await page.locator('#gen-publish-btn').innerText(), /συντακτικό έλεγχο/);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gen-export-btn').click()]);
+    const exported = await JSZip.loadAsync(fs.readFileSync(await download.path()));
+    assert.equal((await exported.file(/source\.txt$/)[0].async('string')).match(/^corrections: (.*)$/m)[1], corrections);
+    await page.reload(); await step(page, 4); await page.locator('.gb-zip-utility summary').click();
+    await page.locator('#gen-import-input').setInputFiles({ name: 'export.zip', mimeType: 'application/zip', buffer: await exported.generateAsync({ type: 'nodebuffer' }) });
+    await page.waitForFunction(() => document.getElementById('gen-title').value === 'Διορθωμένο άρθρο');
+    await page.route('https://api.github.com/**', async route => {
+        const request = route.request(), suffix = new URL(request.url()).pathname.replace('/repos/georgiosbalatzis/f1StoriesPage', '');
+        calls.push({ suffix, method: request.method(), body: request.postDataJSON() });
+        let data = { sha: 'mock' };
+        if (suffix === '/pulls' && request.method() === 'GET') data = [];
+        else if (suffix.startsWith('/contents/')) data = [{ type: 'file', name: 'source.txt' }];
+        else if (suffix === '/git/ref/heads/main') data = { object: { sha: 'base' } };
+        else if (suffix === '/git/commits/base') data = { tree: { sha: 'tree' } };
+        else if (suffix === '/pulls') data = { number: 1 };
+        await route.fulfill({ json: data });
+    });
+    await step(page, 4); assert.equal(await page.locator('#gen-editorial-review').isChecked(), false);
+    await page.locator('#gen-publish-btn').click();
+    await page.getByRole('dialog').getByRole('textbox').fill('dummy-token-only-for-tests');
+    await page.getByRole('dialog').getByRole('button', { name: 'OK', exact: true }).click();
+    await page.getByRole('dialog').locator('input[value="replace"]').check();
+    await page.getByRole('dialog').getByRole('button', { name: 'Συνέχεια', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Αντικατάσταση', exact: true }).click();
+    assert.match(await page.getByRole('dialog').innerText(), /ανθρώπινος έλεγχος/);
+    await page.getByRole('dialog').getByRole('button', { name: 'Άνοιγμα PR', exact: true }).click();
+    await page.waitForFunction(() => !document.getElementById('gen-result').hidden);
+    assert.match(calls.find(call => call.suffix === '/git/refs').body.ref, /^refs\/heads\/editorial\/review\//);
+    assert.match(calls.find(call => call.suffix === '/pulls' && call.method === 'POST').body.body, /ανθρώπινος έλεγχος/);
+});
+
 test('review discovery reads every page and stops on incomplete discovery', async t => {
     const page = await pageFor(t), pages = [];
     await setText(page, 'Δημόσιος τίτλος', 'Δημόσιο κείμενο.');

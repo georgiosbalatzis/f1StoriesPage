@@ -3,6 +3,8 @@ const { convertTxtToHtml } = require('../../blog-module/build/parse-txt');
 const { stripLeadingArticleBoilerplate } = require('../../blog-module/build/metadata');
 const { processImageInsertTags, mergeConsecutiveFigures, appendOrphanContentImagesGallery } = require('../../blog-module/build/media');
 const { renderArticleHtml } = require('../../blog-module/build/article-render');
+const { parseInstant, isCalendarDay } = require('../../blog-module/build/article-dates');
+const corrections = require('./article-corrections');
 const { loadMediaRegister } = require('../../blog-module/build/media-meta');
 const styles = require('./preview-styles');
 
@@ -43,7 +45,14 @@ async function renderNow(state) {
     content = await mergeConsecutiveFigures(content, 'local', metadata.title);
     content = await appendOrphanContentImagesGallery(content, 'local', metadata.title);
     const today = new Date();
-    const dateISO = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+    let dateISO = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+    const records = metadata.corrections ? corrections.parse(metadata.corrections) : [];
+    if (metadata.publishedAtISO) dateISO = parseInstant(metadata.publishedAtISO, 'publishedAtISO').day;
+    else if (records.length) dateISO = records[0].date;
+    else if (metadata.updatedDateISO) {
+        const updated = isCalendarDay(metadata.updatedDateISO) ? metadata.updatedDateISO : parseInstant(metadata.updatedDateISO, 'updatedDateISO').day;
+        if (updated < dateISO) dateISO = updated;
+    }
     const image = state.banner ? '/blog-module/blog-entries/local/2.webp' : state.hero ? '/blog-module/blog-entries/local/1.webp' : environment.CONFIG.DEFAULT_BLOG_IMAGE;
     const html = await renderArticleHtml({ ...metadata, content, image, dateISO }, '/draft/local', 'local');
     const document = new DOMParser().parseFromString(html, 'text/html');

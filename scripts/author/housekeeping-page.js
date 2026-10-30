@@ -8,6 +8,7 @@
     var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
     var authorDialogs = window.F1S_AUTHOR_DIALOGS;
     var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
+    var corrections = window.F1S_ARTICLE_CORRECTIONS;
     var articleIndex = window.F1S_AUTHOR_ARTICLE_INDEX;
     var taxonomy = window.F1S_TAXONOMY;
     var sessionTokens = window.F1S_AUTHOR_SESSION_TOKEN;
@@ -159,7 +160,7 @@
         } while (data.length === 50);
     }
 
-    function createAuthorPullRequest(token, kind, identifier, tree, commitMessage, prTitle, prBody, progress) {
+    function createAuthorPullRequest(token, kind, identifier, tree, commitMessage, prTitle, prBody, progress, needsEditorialReview) {
         var github = window.F1S_AUTHOR_GITHUB.createClient({
             owner: REPO_OWNER,
             repo: REPO_NAME,
@@ -180,7 +181,8 @@
             commitMessage,
             prTitle || commitMessage,
             prBody || '',
-            progress
+            progress,
+            needsEditorialReview
         );
     }
 
@@ -282,6 +284,15 @@
     var editExcerptCount = byId('hk-edit-excerpt-count');
     var editExcerptWarn = byId('hk-edit-excerpt-warnings');
     var editBodyEl    = byId('hk-edit-body');
+    var correctionType = byId('hk-correction-type');
+    var correctionFields = byId('hk-correction-fields');
+    var correctionDate = byId('hk-correction-date');
+    var correctionSection = byId('hk-correction-section');
+    var correctionReason = byId('hk-correction-reason');
+    var correctionApprover = byId('hk-correction-approver');
+    var correctionApprovedOn = byId('hk-correction-approved-on');
+    var correctionConfirm = byId('hk-correction-confirm');
+    correctionType.addEventListener('change', function () { correctionFields.hidden = !correctionType.value; });
     var editImagesEl  = byId('hk-edit-images');
     var editHeroIn    = byId('hk-edit-hero-input');
     var editContIn    = byId('hk-edit-content-input');
@@ -717,7 +728,7 @@
         button.type = 'button';
         if (!editable(post)) {
             button.disabled = true;
-            button.title = 'Χωρίς source.txt — δεν επεξεργάζεται από εδώ';
+            button.title = 'Χρειάζεται χειροκίνητη ανάκτηση πηγής';
         } else if (pending[post.id]) {
             button.disabled = true;
             button.title = 'Υπάρχει PR σε αναμονή για αυτό το άρθρο';
@@ -777,7 +788,7 @@
         var details = el('details', 'hk-legacy');
         var summary = el('summary', 'hk-legacy-summary', plural(items.length, 'παλιό άρθρο', 'παλιά άρθρα') + ' χωρίς source.txt — μόνο ανάγνωση');
         details.appendChild(summary);
-        details.appendChild(el('p', 'hk-hint', 'Τα στοιχεία τους ζουν στο cache του build, όχι σε source.txt, οπότε το εργαλείο δεν τα αλλάζει. Διόρθωση μόνο χειροκίνητα στο repo.'));
+        details.appendChild(el('p', 'hk-hint', 'Χρειάζεται χειροκίνητη ανάκτηση πηγής. Χωρίς source.txt το άρθρο παραμένει μόνο για ανάγνωση και δεν προστίθενται διορθώσεις.'));
         var list = el('ul', 'hk-legacy-list');
         items.forEach(function (post) {
             var li = el('li', 'hk-legacy-item');
@@ -998,7 +1009,7 @@
         var issues = articleSource.titleIssues(post.title, '');
         if (issues.length) flags.appendChild(el('span', 'hk-badge hk-badge-warn', articleSource.titleWarnings(post.title, '')[0]));
         if (!(post.tags || []).length) flags.appendChild(el('span', 'hk-badge hk-badge-warn', 'Χωρίς ετικέτες'));
-        if (!editable(post)) flags.appendChild(el('span', 'hk-badge', 'Χωρίς source.txt'));
+        if (!editable(post)) flags.appendChild(el('span', 'hk-badge', 'Χρειάζεται χειροκίνητη ανάκτηση πηγής'));
         if (flags.childNodes.length) body.appendChild(flags);
         item.appendChild(body);
         var actions = el('div', 'hk-item-actions');
@@ -1196,6 +1207,7 @@
         var replaceExisting = false;
         var parsedParts = folderParts(pkg.folderName);
         var title = pkg.meta && pkg.meta.title ? pkg.meta.title : pkg.folderName;
+        var needsReview = Object.prototype.hasOwnProperty.call(pkg.meta.metadata, 'corrections') && corrections.parse(pkg.meta.metadata.corrections).length > 0;
 
         if (await folderExists(token, targetFolder)) {
             var choice = await authorDialogs.choose(
@@ -1221,6 +1233,7 @@
         if (pkg.images.length) {
             confirmMsg += '\n\n' + plural(pkg.images.length, 'εικόνα', 'εικόνες') + ' θα μετατραπούν σε .webp.';
         }
+        if (needsReview) confirmMsg += '\n\nΑπαιτείται ανθρώπινος έλεγχος και χειροκίνητο merge μετά την έγκριση του τελικού commit.';
         if (!(await showConfirm(confirmMsg, { title: 'Εισαγωγή ZIP', okLabel: 'Άνοιγμα PR' }))) return;
 
         importBtn.disabled = true;
@@ -1275,17 +1288,22 @@
             });
 
             var commitMessage = 'import(blog): ' + title + ' (' + targetFolder + ')';
+            var review = needsReview ? window.F1S_AUTHOR_GITHUB.reviewPullRequest(targetFolder, title, replaceExisting) : null;
             var prResult = await createAuthorPullRequest(
                 token,
                 'import',
                 targetFolder,
                 tree,
                 commitMessage,
-                commitMessage,
-                'Author tool import for `' + ENTRIES_PATH + '/' + targetFolder + '`.',
-                function (msg) { authorDom.setBusyText(importBtn, msg); }
+                review ? review.title : commitMessage,
+                review ? review.body : 'Author tool import for `' + ENTRIES_PATH + '/' + targetFolder + '`.',
+                function (msg) { authorDom.setBusyText(importBtn, msg); },
+                needsReview
             );
-            await announcePullRequest('import', title, prResult);
+            if (needsReview) {
+                logPullRequest('import', title, prResult);
+                await showAlert('Άνοιξε Pull Request για ανθρώπινο συντακτικό έλεγχο. Η επιτυχία των τεχνικών ελέγχων δεν αποτελεί έγκριση.\n\nBranch: ' + prResult.branchName, { title: 'Pull Request ανοιχτό' });
+            } else await announcePullRequest('import', title, prResult);
         } finally {
             setImportReady();
         }
@@ -1382,7 +1400,7 @@
 
     async function openEdit(post) {
         if (!editable(post)) {
-            await showAlert('Το άρθρο ' + post.id + ' δεν έχει source.txt, οπότε δεν επεξεργάζεται από εδώ.');
+            await showAlert('Χρειάζεται χειροκίνητη ανάκτηση πηγής. Το άρθρο ' + post.id + ' παραμένει μόνο για ανάγνωση.');
             return;
         }
         if (pending[post.id]) {
@@ -1400,6 +1418,10 @@
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
         editExcerptEl.value = '';
+        correctionType.value = '';
+        correctionFields.hidden = true;
+        [correctionDate, correctionSection, correctionReason, correctionApprover, correctionApprovedOn].forEach(function (field) { field.value = ''; });
+        correctionConfirm.checked = false;
         renderEditTitleWarnings();
         renderEditExcerpt();
         editImagesEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση…'));
@@ -1420,7 +1442,7 @@
             var files = await listFolder(token, post.id);
             var srcFile = files.find(function (f) { return f.type === 'file' && f.name === 'source.txt'; });
             if (!srcFile) {
-                throw new Error('Ο φάκελος δεν έχει source.txt· επεξεργασία μόνο στο GitHub.');
+                throw new Error('Χρειάζεται χειροκίνητη ανάκτηση πηγής. Το άρθρο παραμένει μόνο για ανάγνωση.');
             }
 
             // 2. Load source content (GitHub returns base64 for files via /contents)
@@ -1448,6 +1470,7 @@
                 identity: identity,
                 srcName: srcFile.name,
                 sourceMetadata: parsed.metadata,
+                original: { tag: editTagEl.value.trim(), category: editCatEl.value, title: editTitleEl.value.trim(), body: editBodyEl.value.trim(), excerpt: editExcerptEl.value },
                 slotMap: slotMap,      // slot → [{ name, sha, ... }]
                 imageOps: {},          // slot → { op, file }
                 addContent: []         // File[] to append at slot 3/4/… beyond current max
@@ -1629,11 +1652,37 @@
             editExcerptEl.focus();
             return;
         }
-        if (excerpt) editState.sourceMetadata.excerpt = excerpt;
-        else delete editState.sourceMetadata.excerpt;
+        var metadata = Object.assign({}, editState.sourceMetadata);
+        if (excerpt) metadata.excerpt = excerpt;
+        else delete metadata.excerpt;
+        var material = Boolean(correctionType.value);
+        var record;
+        if (material) {
+            record = { type: correctionType.value, date: correctionDate.value, section: correctionSection.value.trim(), reason: correctionReason.value.trim(), decision: 'approved', approvedBy: correctionApprover.value.trim(), approvedOn: correctionApprovedOn.value };
+            try {
+                if (!correctionConfirm.checked) throw new Error('Χρειάζεται ρητή επιβεβαίωση ανθρώπινης απόφασης.');
+                var records = metadata.corrections ? corrections.parse(metadata.corrections) : [];
+                records.push(record);
+                corrections.validate(records);
+                var previousUpdate = metadata.updatedDateISO || '';
+                var previousDay = /^\d{4}-\d{2}-\d{2}$/.test(previousUpdate) ? previousUpdate : previousUpdate && !isNaN(Date.parse(previousUpdate)) ? taxonomy.athensDay(new Date(previousUpdate)) : '';
+                if (record.date < editState.identity.date || (previousUpdate && (!previousDay || record.date < previousDay))) throw new Error('Η ημερομηνία αλλαγής δεν μπορεί να προηγείται της δημοσίευσης ή της τελευταίας ενημέρωσης.');
+                metadata.corrections = corrections.serialize(records);
+                metadata.updatedDateISO = previousDay === record.date && previousUpdate.indexOf('T') !== -1 ? previousUpdate : record.date;
+            } catch (error) {
+                await showAlert('Δεν είναι έγκυρη η διόρθωση: ' + error.message);
+                return;
+            }
+        }
+        var original = editState.original;
+        var imageChanges = editState.addContent.length || Object.keys(editState.imageOps).some(function (slot) { return editState.imageOps[slot].op !== 'keep'; });
+        if (!material && !imageChanges && tag === original.tag && category === original.category && title === original.title && body === original.body && editExcerptEl.value === original.excerpt) {
+            await showAlert('Δεν υπάρχουν αλλαγές για αποθήκευση.');
+            return;
+        }
 
         // Plan: deletes are full folder-relative paths, additions carry a File (new upload) or text.
-        var newSource = buildSourceTxt(tag, category, title, body, editState.sourceMetadata);
+        var newSource = buildSourceTxt(tag, category, title, body, metadata);
         var deletes = [];
         var additions = [];
 
@@ -1667,6 +1716,7 @@
                '• ' + plural(deletes.length, 'αρχείο', 'αρχεία') + ' για διαγραφή\n' +
                '• ' + plural(newUploadCount - 1, 'ανέβασμα εικόνας', 'ανεβάσματα εικόνων') +
                (editState.addContent.length ? ' (' + editState.addContent.length + ' νέες)' : '');
+        if (material) summary += '\n\nΔημόσια καταχώριση:\n' + (record.type === 'factual-correction' ? 'Διόρθωση' : 'Ουσιαστική ενημέρωση') + ' · ' + record.date + '\nΕνότητα: ' + record.section + '\nΛόγος: ' + record.reason + '\nΈγκριση: ' + record.approvedBy + ' · ' + record.approvedOn + '\n\nΤο PR απαιτεί ανθρώπινο συντακτικό έλεγχο.';
         if (!(await showConfirm(summary, { title: 'Άνοιγμα PR επεξεργασίας', okLabel: 'Άνοιγμα PR' }))) return;
 
         editSaveBtn.disabled = true;
@@ -1704,22 +1754,27 @@
 
             var commitMsg = 'edit(blog): ' + title + ' (' + folder + ')';
             var post = editState.post;
+            var review = material ? window.F1S_AUTHOR_GITHUB.reviewPullRequest(folder, title, true) : null;
             var prResult = await createAuthorPullRequest(
                 token,
                 'edit',
                 folder,
                 tree,
                 commitMsg,
-                commitMsg,
-                'Author tool edit for `' + ENTRIES_PATH + '/' + folder + '`.',
-                function (msg) { editStatusEl.textContent = msg; }
+                review ? review.title : commitMsg,
+                review ? review.body : 'Author tool edit for `' + ENTRIES_PATH + '/' + folder + '`.',
+                function (msg) { editStatusEl.textContent = msg; },
+                material
             );
 
             pending[post.id] = true;
             closeEdit();
             renderLanes();
             renderLane();
-            await announcePullRequest('edit', title, prResult);
+            if (material) {
+                logPullRequest('edit', title, prResult);
+                await showAlert('Άνοιξε Pull Request για ανθρώπινο συντακτικό έλεγχο. Η επιτυχία των τεχνικών ελέγχων δεν αποτελεί έγκριση.\n\nBranch: ' + prResult.branchName, { title: 'Pull Request ανοιχτό' });
+            } else await announcePullRequest('edit', title, prResult);
         } catch (e) {
             console.error('Save failed', e);
             editStatusEl.classList.add('err');

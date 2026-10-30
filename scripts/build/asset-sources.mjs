@@ -57,6 +57,7 @@ export const JS_INPUTS = [
     'scripts/author/dom-tools.js',
     'scripts/author/dialogs.js',
     'scripts/author/image-tools.js',
+    'scripts/author/article-corrections.js',
     'scripts/author/article-source.js',
     'scripts/author/article-index.js',
     'scripts/author/research-assistant.js',

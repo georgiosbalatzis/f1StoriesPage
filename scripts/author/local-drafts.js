@@ -3,7 +3,7 @@
 
     var DB_NAME = 'f1stories-author-drafts';
     var STORE = 'drafts';
-    var metadataFields = ['author', 'category', 'categories', 'tags', 'title', 'excerpt', 'sources', 'updatedDateISO', 'debriefSeason', 'debriefRound', 'debriefLocation', 'homeImage'];
+    var metadataFields = ['author', 'category', 'categories', 'tags', 'title', 'excerpt', 'sources', 'corrections', 'updatedDateISO', 'debriefSeason', 'debriefRound', 'debriefLocation', 'homeImage'];
 
     function failure(code, message, cause) {
         var error = new Error(message);

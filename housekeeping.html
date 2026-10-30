@@ -183,10 +183,27 @@
                     <small id="hk-edit-tag-hint">Με κόμμα. Για αναζήτηση, όχι δημόσιες κατηγορίες.</small>
                 </div>
             </div>
-            <p class="hk-hint">Συντάκτης και ημερομηνία ορίζουν τον φάκελο· αν αλλάξουν, ο φάκελος μετονομάζεται στο ίδιο PR.</p>
+
             <div class="hk-field">
                 <label for="hk-edit-body">Κείμενο (source.txt) — κενή γραμμή = παράγραφος · <code>[img-instert-tag]</code> = θέση εικόνας</label>
                 <textarea class="hk-input hk-textarea" id="hk-edit-body" spellcheck="false"></textarea>
+            </div>
+            <div class="hk-field">
+                <label for="hk-correction-type">Διόρθωση</label>
+                <select class="hk-input" id="hk-correction-type">
+                    <option value="">Μη ουσιώδης γλωσσική αλλαγή</option>
+                    <option value="factual-correction">Διόρθωση πραγματικού στοιχείου</option>
+                    <option value="substantial-update">Ουσιαστική ενημέρωση</option>
+                </select>
+                <div id="hk-correction-fields" hidden>
+                    <p class="hk-hint">Τα στοιχεία εμφανίζονται δημόσια στο άρθρο. Η αλλαγή χρειάζεται συντακτικό έλεγχο.</p>
+                    <div class="hk-field"><label for="hk-correction-date">Ημερομηνία αλλαγής</label><input class="hk-input" type="date" id="hk-correction-date"></div>
+                    <div class="hk-field"><label for="hk-correction-section">Ενότητα που επηρεάζεται</label><input class="hk-input" id="hk-correction-section" maxlength="200"></div>
+                    <div class="hk-field"><label for="hk-correction-reason">Δημόσιος λόγος</label><textarea class="hk-input" id="hk-correction-reason" maxlength="1000" rows="3"></textarea></div>
+                    <div class="hk-field"><label for="hk-correction-approver">Εγκρίθηκε από</label><input class="hk-input" id="hk-correction-approver" maxlength="100"></div>
+                    <div class="hk-field"><label for="hk-correction-approved-on">Ημερομηνία απόφασης</label><input class="hk-input" type="date" id="hk-correction-approved-on"></div>
+                    <label><input type="checkbox" id="hk-correction-confirm"> Επιβεβαιώνω ότι άνθρωπος έλαβε και ενέκρινε αυτή την απόφαση.</label>
+                </div>
             </div>
             <div class="hk-field">
                 <span class="hk-field-label">Εικόνες φακέλου</span>
@@ -215,8 +232,9 @@
 
 <script defer src="/scripts/shared-nav.min.js?v=46457253"></script>
 <script defer src="/blog-module/taxonomy.min.js?v=f4881ac5"></script>
-<script defer src="/scripts/author/article-source.min.js?v=6afb4522"></script>
+<script defer src="/scripts/author/article-corrections.min.js?v=50595844"></script>
+<script defer src="/scripts/author/article-source.min.js?v=cf1adeff"></script>
 <script defer src="/scripts/author/article-index.min.js?v=e9372717"></script>
-<script defer src="/scripts/author/housekeeping-page.min.js?v=8963bc89"></script>
+<script defer src="/scripts/author/housekeeping-page.min.js?v=027aaba7"></script>
 </body>
 </html>

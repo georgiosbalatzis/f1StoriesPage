@@ -146,12 +146,19 @@
     function getAuthor() { return checkedValue('gen-author', DEFAULT_AUTHOR); }
     function getCategory() { return checkedValue('gen-category', DEFAULT_CATEGORY); }
 
+    function needsEditorialReview() {
+        if (editorialReview.checked) return true;
+        if (!Object.prototype.hasOwnProperty.call(sourceMetadata, 'corrections')) return false;
+        try { return window.F1S_ARTICLE_CORRECTIONS.parse(sourceMetadata.corrections).length > 0; }
+        catch (_) { return true; }
+    }
+
     function setExportReady() {
         authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP');
     }
 
     function setPublishReady() {
-        authorDom.setIconText(publishBtn, 'fa-rocket', editorialReview.checked ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
+        authorDom.setIconText(publishBtn, 'fa-rocket', needsEditorialReview() ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
     }
 
     var restoredHeroFile = null;
@@ -486,7 +493,7 @@
             authorDom.setIconText(nextBtn, 'fa-check', 'Τέλος');
             nextBtn.classList.add('gb-nav-publish');
         } else if (currentStep === panels.length - 1) {
-            authorDom.setIconText(nextBtn, 'fa-rocket', editorialReview.checked ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
+            authorDom.setIconText(nextBtn, 'fa-rocket', needsEditorialReview() ? 'Αποστολή για συντακτικό έλεγχο' : 'Δημοσίευση τώρα');
             nextBtn.classList.add('gb-nav-publish');
         } else {
             nextBtn.replaceChildren(document.createTextNode('Επόμενο: ' + STEP_TITLES[currentStep + 1] + ' '), authorDom.createSvgIcon('fa-arrow-right'));
@@ -771,6 +778,7 @@
             tagInput.value = meta.tags.join(', ');
             setChecked('gen-category', meta.category);
             sourceMetadata = meta.metadata;
+            setPublishReady();
             loadExcerpt();
             contentArea.value = meta.body || '';
 
@@ -1263,7 +1271,7 @@
         var heroFile = getHeroFile();
         var headerFile = getHeaderFile();
         var replaceExisting = false;
-        var needsReview = editorialReview.checked;
+        var needsReview = needsEditorialReview();
 
         publishing = true;
         panels.forEach(function (panel) { panel.inert = true; });
@@ -1385,7 +1393,7 @@
             disposePreview = result.dispose;
             frame.onload = function () { window.F1S_ARTICLE_PREVIEW.hydrate(frame.contentDocument); };
             frame.srcdoc = result.html;
-            notice.textContent = 'Τοπική προεπισκόπηση προχείρου · δημοσίευση σήμερα. Δεν είναι δημοσιευμένο άρθρο.' +
+            notice.textContent = 'Τοπική προεπισκόπηση προχείρου. Δεν είναι δημοσιευμένο άρθρο.' +
                 (result.limitations.length ? ' ' + result.limitations.join(' ') : '');
         } catch (error) {
             if (revision === previewRevision) notice.textContent = 'Η προεπισκόπηση απέτυχε: ' + error.message;
@@ -1437,6 +1445,7 @@
             setChecked('gen-author', value.author);
             setChecked('gen-category', value.category);
             sourceMetadata = Object.assign({}, value.metadata);
+            setPublishReady();
             loadExcerpt();
             contentArea.value = value.text;
             contentArea.setSelectionRange(value.editor.selectionStart || 0, value.editor.selectionEnd || 0);
