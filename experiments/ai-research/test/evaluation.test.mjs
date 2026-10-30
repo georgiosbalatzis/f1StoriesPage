@@ -79,6 +79,7 @@ test('fixture dates, scope limitation and contradiction retention are distinct f
     assert.equal(out.contradictions.length, 1);
     assert.equal(out.contradictions[0].verification, 'unverified');
     assert.match(out.contradictions[0].text, /12.*13/);
+    assert.deepEqual(out.contradictions[0].sourceIds, ['S1', 'S2']);
     const undiscovered = rawFor(cases[2]);
     assert.equal(validateEvidence(undiscovered, evidence(envelope(undiscovered))).contradictions.length, 0);
 });
