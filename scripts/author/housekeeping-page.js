@@ -145,6 +145,20 @@
         return '';
     }
 
+    async function checkReviewReservation(token, folder) {
+        var data, page = 1;
+        do {
+            data = await ghFetch('/pulls?state=open&per_page=50' + (page > 1 ? '&page=' + page : ''), token);
+            if (!Array.isArray(data)) throw new Error('Δεν ήταν δυνατός ο πλήρης έλεγχος ανοικτών PR.');
+            if (data.some(function (pr) {
+                var ref = pr && pr.head && pr.head.ref || '';
+                return pr && pr.base && pr.base.ref === 'main' && ref.indexOf('editorial/review/') === 0 &&
+                    window.F1S_AUTHOR_GITHUB.folderFromAuthorBranch(ref) === folder.toLowerCase();
+            })) throw new Error('Ο φάκελος αναμένει ήδη συντακτικό έλεγχο σε ανοικτό PR. Ολοκλήρωσε πρώτα τον έλεγχο.');
+            page++;
+        } while (data.length === 50);
+    }
+
     function createAuthorPullRequest(token, kind, identifier, tree, commitMessage, prTitle, prBody, progress) {
         var github = window.F1S_AUTHOR_GITHUB.createClient({
             owner: REPO_OWNER,
@@ -387,7 +401,7 @@
         { key: 'duplicate', group: 'Τίτλοι', title: 'Επαναλαμβανόμενος τίτλος', desc: 'Ίδιος τίτλος σε πάνω από ένα άρθρο. Αν είναι στήλη, δεν χρειάζεται αλλαγή.' },
         { key: 'tags', group: 'Μεταδεδομένα', title: 'Χωρίς εσωτερικές ετικέτες', desc: 'Δεν εμφανίζονται στην αναζήτηση ετικετών.', fix: 'tags' },
         { key: 'folder', group: 'Μεταδεδομένα', title: 'Μη τυπικό όνομα φακέλου', desc: 'Δεν ταιριάζει στο YYYYMMDD[-N][Κωδικός]. Η επεξεργασία κρατά τον φάκελο ίδιο· αλλαγή συντάκτη ή ημερομηνίας δεν επιτρέπεται εδώ.' },
-        { key: 'prs', group: 'Δημοσίευση', title: 'Ανοιχτά PR συντακτών', desc: 'Pull requests από branches author/* που περιμένουν ελέγχους ή merge. Χρειάζεται token.' },
+        { key: 'prs', group: 'Δημοσίευση', title: 'Ανοιχτά PR συντακτών', desc: 'Pull requests συντακτών και συντακτικού ελέγχου. Χρειάζεται token.' },
         { key: 'all', group: 'Αρχείο', title: 'Όλα τα άρθρα', desc: 'Αναζήτηση, επεξεργασία, προβολή και διαγραφή σε όλο το αρχείο.' }
     ];
     function laneDef(key) { return LANES.filter(function (lane) { return lane.key === key; })[0] || LANES[0]; }
@@ -827,6 +841,7 @@
                 ? 'Τίτλος:\n«' + parsed.title + '»\n→ «' + nextTitle + '»'
                 : 'Ετικέτες → ' + nextTags;
             if (!(await showConfirm(summary + '\n\nΑλλάζει μόνο το source.txt του ' + post.id + '. Εικόνες και φάκελος μένουν ίδια.', { title: 'Άνοιγμα PR διόρθωσης', okLabel: 'Άνοιγμα PR' }))) return;
+            await checkReviewReservation(token, post.id);
             var newSource = buildSourceTxt(nextTags, parsed.category, nextTitle, parsed.body, parsed.metadata);
             authorDom.setBusyText(button, 'Ανέβασμα…');
             var upload = await ghFetch('/git/blobs', token, {
@@ -859,7 +874,7 @@
         }
     }
 
-    // ─── Open author PRs (read-only) ────────────────────
+    // ─── Open PRs (read-only) ───────────────────────────
     var openPulls = null;
     var pullsError = '';
     async function loadOpenPulls(force) {
@@ -868,9 +883,16 @@
         if (!token) { openPulls = null; pullsError = ''; renderPulls(); return; }
         listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση pull requests…'));
         try {
-            var data = await ghFetch('/pulls?state=open&per_page=50', token);
-            openPulls = (Array.isArray(data) ? data : []).filter(function (pr) {
-                return pr && pr.head && /^author\//.test(pr.head.ref || '');
+            var data, page = 1, pulls = [];
+            do {
+                data = await ghFetch('/pulls?state=open&per_page=50' + (page > 1 ? '&page=' + page : ''), token);
+                if (!Array.isArray(data)) throw new Error('Μη έγκυρη λίστα pull requests');
+                pulls = pulls.concat(data);
+                page++;
+            } while (data.length === 50);
+            openPulls = pulls.filter(function (pr) {
+                var ref = pr && pr.head && pr.head.ref || '';
+                return /^author\//.test(ref) || (pr && pr.base && pr.base.ref === 'main' && /^editorial\/review\/[\p{L}\p{N}_-]+-\d{14}-[a-z0-9]+$/u.test(ref));
             });
             pullsError = '';
         } catch (e) {
@@ -907,6 +929,11 @@
                 body.appendChild(meta);
                 body.appendChild(el('h3', 'hk-item-title', pr.title || ''));
                 body.appendChild(el('code', 'hk-log-branch', pr.head.ref));
+                var review = pr.head.ref.match(/^editorial\/review\/([\p{L}\p{N}_-]+)-\d{14}-[a-z0-9]+$/u);
+                if (review) {
+                    body.appendChild(el('p', 'hk-fix-text', 'Φάκελος: ' + review[1]));
+                    body.appendChild(el('p', 'hk-fix-text', 'Αναμένει ανθρώπινο έλεγχο. Η έγκριση γίνεται με review στο GitHub· το CI δεν αποτελεί έγκριση.'));
+                }
                 var link = el('a', 'hk-btn hk-btn-sm', 'Άνοιγμα στο GitHub');
                 link.href = pr.html_url;
                 link.target = '_blank';
@@ -1199,6 +1226,7 @@
         importBtn.disabled = true;
 
         try {
+            await checkReviewReservation(token, targetFolder);
             var additions = [{
                 path: targetFolder + '/' + (pkg.sourceName || 'source.txt'),
                 text: pkg.sourceText
@@ -1291,6 +1319,7 @@
         btn.disabled = true;
         authorDom.setBusyText(btn, 'Διαγραφή…');
         try {
+            await checkReviewReservation(token, post.id);
             var files = await listFolder(token, post.id);
             if (!files.length) throw new Error('Ο φάκελος είναι κενός ή λείπει.');
 
@@ -1644,6 +1673,7 @@
         editStatusEl.classList.remove('err');
 
         try {
+            await checkReviewReservation(token, folder);
             // Phase 1: upload blobs once. These are global by SHA, so we can
             // reuse them if a retry is needed below.
             authorDom.setBusyText(editSaveBtn, 'Ανέβασμα…');

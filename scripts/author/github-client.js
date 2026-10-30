@@ -53,10 +53,28 @@
         return 'author/' + kind + '/' + slugForBranch(identifier) + '-' + timestampForBranch();
     }
 
+    function reviewBranchName(identifier) {
+        if (!/^[\p{L}\p{N}_-]+$/u.test(identifier)) throw new Error('Invalid article folder');
+        return 'editorial/review/' + identifier + '-' + timestampForBranch();
+    }
+
+    function reviewPullRequest(folder, title, replaceExisting) {
+        if (!/^[\p{L}\p{N}_-]+$/u.test(folder)) throw new Error('Invalid article folder');
+        function escapeMarkdown(value) { return String(value).replace(/([\\`*_{}\[\]()#+.!|>~\-])/g, '\\$1'); }
+        var safeTitle = escapeMarkdown(String(title).replace(/[\r\n]+/g, ' '));
+        return { title: 'editorial(review): ' + escapeMarkdown(folder) + ' — ' + safeTitle,
+            body: 'Συντακτικός έλεγχος για `blog-module/blog-entries/' + folder + '`.\n\n' +
+                'Ενέργεια: ' + (replaceExisting ? 'επεξεργασία υπάρχοντος άρθρου' : 'νέα δημοσίευση') + '.\n' +
+                'Ζητείται ανθρώπινος έλεγχος του δημόσιου diff.\n' +
+                'Οι επιτυχείς τεχνικοί έλεγχοι δεν αποτελούν συντακτική έγκριση.\n' +
+                'Merge από αρμόδιο άνθρωπο μετά την έγκριση του τελικού commit.' };
+    }
+
     // Inverse of authorBranchName: the (lowercased) folder an author/* branch writes to.
     function folderFromAuthorBranch(ref) {
-        var match = String(ref || '').match(/^author\/[^/]+\/(.+)-\d{14}-[a-z0-9]+$/);
-        return match ? match[1] : '';
+        var match = String(ref || '').match(/^editorial\/review\/([\p{L}\p{N}_-]+)-\d{14}-[a-z0-9]+$/u) ||
+            String(ref || '').match(/^author\/[^/]+\/(.+)-\d{14}-[a-z0-9]+$/);
+        return match ? match[1].toLowerCase() : '';
     }
 
     function createClient(options) {
@@ -93,14 +111,14 @@
             return resp.json();
         }
 
-        async function createPullRequestFromTree(token, kind, identifier, treeEntries, commitMessage, prTitle, prBody, progress) {
+        async function createPullRequestFromTree(token, kind, identifier, treeEntries, commitMessage, prTitle, prBody, progress, needsEditorialReview) {
             function tick(message) { if (progress) progress(message); }
 
             tick(messages.readBase);
             var ref = await fetchRepo('/git/ref/heads/' + baseBranch, token);
             var latestCommitSha = ref.object.sha;
 
-            var branchName = authorBranchName(kind, identifier);
+            var branchName = needsEditorialReview ? reviewBranchName(identifier) : authorBranchName(kind, identifier);
             tick(messages.createBranch);
             await fetchRepo('/git/refs', token, {
                 method: 'POST',
@@ -127,15 +145,13 @@
             });
 
             tick(messages.openPullRequest);
+            var prPayload = {
+                title: prTitle, head: branchName, base: baseBranch, body: prBody, maintainer_can_modify: true
+            };
+            if (needsEditorialReview) prPayload.draft = false;
             var pr = await fetchRepo('/pulls', token, {
                 method: 'POST',
-                body: {
-                    title: prTitle,
-                    head: branchName,
-                    base: baseBranch,
-                    body: prBody,
-                    maintainer_can_modify: true
-                }
+                body: prPayload
             });
 
             return { branchName: branchName, commitSha: newCommit.sha, pullRequest: pr };
@@ -158,6 +174,8 @@
         blobToBase64: blobToBase64,
         createClient: createClient,
         folderFromAuthorBranch: folderFromAuthorBranch,
+        reviewBranchName: reviewBranchName,
+        reviewPullRequest: reviewPullRequest,
         slugForBranch: slugForBranch,
         timestampForBranch: timestampForBranch,
         utf8ToBase64: utf8ToBase64

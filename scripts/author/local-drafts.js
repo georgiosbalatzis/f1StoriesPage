@@ -31,6 +31,9 @@
 
     // Explicit fields keep credentials and unrelated editor/session objects out of IndexedDB.
     function record(input, previous) {
+        if (input.needsEditorialReview !== undefined && typeof input.needsEditorialReview !== 'boolean') {
+            throw failure('corrupt', 'Το πρόχειρο περιέχει μη έγκυρη επιλογή συντακτικού ελέγχου.');
+        }
         var now = new Date().toISOString();
         var metadata = {};
         metadataFields.forEach(function (key) {
@@ -42,7 +45,7 @@
             return { blob: value.blob, name: String(value.name || 'image.webp'), type: value.blob.type,
                 width: Number(value.width) || 0, height: Number(value.height) || 0 };
         }
-        return {
+        var result = {
             version: 1, id: previous ? previous.id : global.crypto.randomUUID(),
             createdAt: previous ? previous.createdAt : now, updatedAt: now,
             title: String(input.title || ''), author: String(input.author || ''), category: String(input.category || ''),
@@ -54,6 +57,8 @@
                 selectionStart: Number(input.editor && input.editor.selectionStart) || 0,
                 selectionEnd: Number(input.editor && input.editor.selectionEnd) || 0 }
         };
+        if (input.needsEditorialReview) result.needsEditorialReview = true;
+        return result;
     }
 
     function validate(value) {
