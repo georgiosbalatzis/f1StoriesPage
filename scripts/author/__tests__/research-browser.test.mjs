@@ -693,4 +693,6 @@ test('evidence controls keep keyboard focus through additions and removals', asy
     assert.equal(await card.getByRole('button', { name: 'Προσθήκη αρχικής τιμής' }).evaluate(node => node === document.activeElement), true);
     await card.getByRole('button', { name: 'Αφαίρεση αριθμητικών στοιχείων' }).focus(); await page.keyboard.press('Enter');
     assert.equal(await card.getByRole('button', { name: 'Προσθήκη αριθμητικών στοιχείων' }).evaluate(node => node === document.activeElement), true);
+    await card.getByRole('button', { name: 'Αφαίρεση', exact: true }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#research-new-claim').evaluate(node => node === document.activeElement), true);
 });

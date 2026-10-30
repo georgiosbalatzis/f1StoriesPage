@@ -728,7 +728,12 @@
                 function delegated(label, action) { var node = button(label, function () {}); node.dataset.claimAction = action; node.dataset.claimId = item.id; return node; }
                 card.append(delegated('Εντοπισμός', 'locate'), delegated('Σύνδεση με τρέχουσα επιλογή', 'recapture'),
                     button('Αντιγραφή κειμένου', function () { copy(item.text, 'Η αντιγραφή δεν αποτελεί επαλήθευση. Έλεγξε το πλαίσιο πριν την επικόλληση.', hint); }),
-                    button('Αφαίρεση', function () { state.claims = state.claims.filter(function (claim) { return claim !== item; }); renderClaims(); changed(); }), hint);
+                    button('Αφαίρεση', function () {
+                        var index = state.claims.indexOf(item); state.claims = state.claims.filter(function (claim) { return claim !== item; }); renderClaims(); changed();
+                        // Keep keyboard focus: the claim now in this place, else the previous one, else «Νέος ισχυρισμός».
+                        var next = claimList.children[Math.min(index, claimList.children.length - 1)];
+                        (next ? next.querySelector('summary') : document.getElementById('research-new-claim')).focus();
+                    }), hint);
                 card.querySelectorAll('button').forEach(function (node) { node.style.whiteSpace = 'normal'; node.style.maxWidth = '100%'; });
                 claimList.appendChild(card);
             });
@@ -860,7 +865,8 @@
             dataDetails.appendChild(button('Επανάληψη καταλόγου', loadCatalog)); standings = el('div'); dataDetails.appendChild(standings);
             claimDetails = detail('Ισχυρισμοί & τεκμήρια');
             var captureClaim = button('Από την επιλογή του άρθρου', function () {}); captureClaim.dataset.claimAction = 'capture';
-            claimDetails.append(captureClaim, button('Νέος ισχυρισμός', function () { addClaim(null); }));
+            var newClaim = button('Νέος ισχυρισμός', function () { addClaim(null); }); newClaim.id = 'research-new-claim';
+            claimDetails.append(captureClaim, newClaim);
             claimList = el('div'); claimDetails.appendChild(claimList);
             var toolDetails = detail('Εργαλεία F1 Stories'); tools = el('div', null, 'gb-hint'); toolDetails.appendChild(tools);
             var addDetails = detail('Προσθήκη ευρήματος / πηγής');
