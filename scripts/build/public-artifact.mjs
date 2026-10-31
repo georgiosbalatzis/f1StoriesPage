@@ -92,7 +92,8 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings-editorial.min.css',
     'standings/standings-polish.min.css',
     'standings/standings-polish.min.js',
-    'standings/standings.min.js'
+    'standings/standings.min.js',
+    'standings/race-desk-navigation.min.js'
 ]);
 
 const ENTITY_PUBLIC_FILES = hubs.publicHubFiles();

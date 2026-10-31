@@ -59,6 +59,18 @@ jobs:
       - name: Run static source guard
         run: npm run quality:static
 
+      - name: Verify Race Desk navigation and offline URL compatibility
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:race-desk:browser -- --site dist --reports .build/race-desk-r02c
+
+      - name: Upload Race Desk navigation diagnostics
+        if: ${{ !cancelled() && steps.changes.outputs.content_only != 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: race-desk-navigation-reports
+          path: .build/race-desk-r02c/
+          if-no-files-found: warn
+
       - name: Verify asset size budgets
         run: npm run perf:budget
 

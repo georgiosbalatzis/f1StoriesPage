@@ -1,0 +1,7 @@
+{
+  "description": "Synthetic standings, shaped like the existing per-round snapshots. Names, points and positions are test data, not a real classification.",
+  "generatedAt": "2026-01-01T00:00:00Z",
+  "raceName": "Synthetic Test Race",
+  "driverStandings": { "MRData": { "StandingsTable": { "season": "2026", "round": "3", "StandingsLists": [{ "season": "2026", "round": "3", "DriverStandings": [{ "position": "1", "points": "25", "wins": "1", "Driver": { "driverId": "test_driver", "code": "TST", "givenName": "Test", "familyName": "Driver" }, "Constructors": [{ "constructorId": "test_team", "name": "Test Team" }] }] }] } } },
+  "constructorStandings": { "MRData": { "StandingsTable": { "season": "2026", "round": "16", "StandingsLists": [{ "season": "2026", "round": "16", "ConstructorStandings": [{ "position": "1", "points": "25", "wins": "1", "Constructor": { "constructorId": "test_team", "name": "Test Team" } }] }] } } }
+}
