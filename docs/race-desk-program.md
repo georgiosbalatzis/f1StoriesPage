@@ -12,7 +12,7 @@ Initial observed main was `ee48967a312a3242a155d950bdd6e560eb8b9b00`. [R-01 PR #
 
 R-02A subsequently merged as `c7140fd284beda526c1c909b7803d416f00dbac9` after fresh Site Quality and ecosystem rehearsal passed at `9e049303c8993375d661f4abbd923cdd891d4e87`. R-02B merged as `3608327e824b22b5d0e24436f7c2a8a948e0d476` after independent review, latest-main integration and successful fresh Site Quality at `3c2d578e`. Its normal production workflow also succeeded. The original dirty checkout remains untouched. [R-02B validation](race-desk-r02b-validation.md) distinguishes its historical artifact baseline from later editorial updates.
 
-R-02C connects the existing Grid navigation to actual accepted driver/constructor standings, with a compact projection and deferred optional enhancement. Its local code/browser/performance evidence is in [R-02C validation](race-desk-r02c-validation.md). Actual assembled child-route acceptance and exact-head CI remain required before merge and before declaring R-02 complete. R-03/R-09 reconnaissance was read-only; no dependent feature was implemented during that audit.
+R-02C connects the existing Grid navigation to actual accepted driver/constructor standings, with a compact projection and deferred optional enhancement. Its local code/browser/performance evidence is in [R-02C validation](race-desk-r02c-validation.md). Actual assembled child-route acceptance and exact-head CI remain required before merge and before declaring R-02 complete. That initial R-03/R-09 reconnaissance was read-only. R-03 has subsequently advanced as an isolated local draft stacked on R-02C; it remains dependent on R-02C acceptance and fresh CI.
 
 Sol's initial independent architecture review identified three R-01 gaps: name ambiguity results, ordered-session chronology and shared type declarations. This follow-up addresses only those foundation gaps. The registry, source mappings, public output, application code and deployment pins remain outside its write scope.
 
@@ -22,7 +22,7 @@ Sol's initial independent architecture review identified three R-01 gaps: name a
 | --- | --- | --- |
 | R-01 | Existing merged foundation | Contract follow-up #394 merged |
 | R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C awaits assembled acceptance |
-| R-03 | R-01 and R-02 | Not started; no public GP routes generated |
+| R-03 | R-01 and R-02 | Local six-page draft stacked on R-02C; publication evidence gate and local QA implemented; not released |
 | R-04 | R-01/R-03 and R-02 links where used | Not started |
 | R-05 | R-01/R-03 and editorial ownership clearance | Not started; independent of R-04 when files permit |
 | R-06 | R-01/R-03, R-04 for results | Not started |

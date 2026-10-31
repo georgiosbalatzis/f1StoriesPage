@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { build } from 'esbuild';
 import { CSS_INPUTS, CSS_DEPENDENCIES, JS_INPUTS, STANDINGS_TAB_ENTRIES } from './asset-sources.mjs';
+import { hubFiles } from '../race-desk/hub-files.mjs';
 
 // Product shells/templates, generated discovery pages and final article bodies.
 // Runtime dependencies come from the same entry points as the asset build;
@@ -15,6 +16,9 @@ const HTML_INPUTS = [
 
 export async function productionIconSources(root) {
     const files = new Set([...HTML_INPUTS, ...CSS_INPUTS, ...CSS_DEPENDENCIES]);
+    if (fs.existsSync(path.join(root, 'data/race-desk/registry.v1.json'))) {
+        for (const file of hubFiles(root)) files.add(file);
+    }
     // Its browser adapter bundles build-time modules; their rendered icons are
     // already covered by the article template and published bodies above.
     files.add('scripts/author/article-preview.js');

@@ -34,6 +34,7 @@ import { fileURLToPath } from 'node:url';
 import { applyArticleEditorial } from './article-editorial.mjs';
 import { removeRetiredComments } from './remove-retired-comments.mjs';
 import { resolveArticleScope } from './article-scope.mjs';
+import { hubFiles } from '../race-desk/hub-files.mjs';
 
 const { replaceYouTubeIframes } = createRequire(import.meta.url)('../../blog-module/build/youtube-facade.js');
 
@@ -209,6 +210,13 @@ const authorPages = fs.existsSync(AUTHORS_ROOT) ? fs.readdirSync(AUTHORS_ROOT, {
     .filter(entry => entry.isDirectory() && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.name) && fs.existsSync(path.join(AUTHORS_ROOT, entry.name, 'index.html')))
     .map(entry => `authors/${entry.name}/index.html`).sort() : [];
 for (const rel of authorPages) {
+    TARGET_HTML.push(rel);
+    SPRITE_TARGETS.add(rel);
+    EDITORIAL_TARGETS.add(rel);
+    ROUTE_FONTS_SOURCES[rel] = ROUTE_FONTS_SOURCES['authors/index.html'];
+    FONT_PRELOADS[rel] = FONT_PRELOADS['authors/index.html'];
+}
+for (const rel of hubFiles(REPO_ROOT).filter(file => fs.existsSync(path.join(REPO_ROOT, file)))) {
     TARGET_HTML.push(rel);
     SPRITE_TARGETS.add(rel);
     EDITORIAL_TARGETS.add(rel);
