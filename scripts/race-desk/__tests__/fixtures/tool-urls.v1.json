@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "tyres": "50e5f50be89e038257cbe3426b366810e0c1f59a:src/domain/urlState.ts",
+    "ghostcar": "4d7a783d9866bce917f61ae6546e48bc0d38b622:src/helpers.js",
+    "telemetry": "38c3dd2018b810a5dce1add1f7663bcb199c845a:src/embeds/links.ts",
+    "grid": "9e049303c8993375d661f4abbd923cdd891d4e87:standings/standings.js",
+    "tyresSchema": "50e5f50be89e038257cbe3426b366810e0c1f59a:src/domain/schema.ts",
+    "ghostcarFigure": "4d7a783d9866bce917f61ae6546e48bc0d38b622:src/domain/figureAnalysis.js",
+    "telemetryFilters": "38c3dd2018b810a5dce1add1f7663bcb199c845a:src/hooks/useDashboardFilters.ts",
+    "telemetryPublication": "38c3dd2018b810a5dce1add1f7663bcb199c845a:src/embeds/contract.ts",
+    "gridRoundPin": "9e049303c8993375d661f4abbd923cdd891d4e87:standings/core/rounds.js",
+    "tyresSelection": "50e5f50be89e038257cbe3426b366810e0c1f59a:src/domain/selection.ts",
+    "ghostcarSelectors": "4d7a783d9866bce917f61ae6546e48bc0d38b622:src/hooks/useComparisonSelectors.js"
+  },
+  "realSeed": [
+    {
+      "raceId": "2026-japanese-gp",
+      "tyres": "https://f1-stories.gr/tyres/2026/suzuka/",
+      "grid": "https://f1-stories.gr/standings/?tab=drivers&embed=1&season=2026&round=3"
+    },
+    {
+      "raceId": "2026-bahrain-gp",
+      "tyres": "https://f1-stories.gr/tyres/2026/sepang/",
+      "grid": "https://f1-stories.gr/standings/?tab=drivers&embed=1&season=2026&round=16"
+    }
+  ],
+  "syntheticOpenF1": {
+    "description": "Synthetic identifiers and circuit name for offline tests only; not provider facts.",
+    "meetingKey": 1234,
+    "sessionKey": 5678,
+    "circuit": "Suzuka Test",
+    "ghostcar": "https://f1-stories.gr/ghostcar/?y=2026&mk=1234&sk=5678&d1=44&d2=1&l1=12&l2=12&v=2",
+    "telemetry": "https://f1-stories.gr/telemetry/?year=2026&circuit=Suzuka+Test&session=5678&drivers=44%2C1&lap=12&tab=telemetry"
+  },
+  "legacy": {
+    "tyres": "https://georgiosbalatzis.github.io/Tyres/2026/suzuka/",
+    "ghostcar": "https://georgiosbalatzis.github.io/ghostcar/?y=2026&mk=1234&sk=5678&d1=44&d2=1&l1=12&l2=12&v=2"
+  }
+}
