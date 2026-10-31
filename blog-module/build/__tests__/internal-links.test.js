@@ -262,7 +262,7 @@ const published = new Map([['20261001G', { id: '20261001G', date: '2026-10-01' }
 test('only validated deployed child roots count as pages, including the BetCast fallback', () => {
     const { root } = linkSite();
     const project = path.resolve(__dirname, '../../..');
-    const lock = JSON.parse(fs.readFileSync(path.join(project, 'scripts/deployment/sources.json'), 'utf8'));
+    const lock = { ...JSON.parse(fs.readFileSync(path.join(project, 'scripts/deployment/sources.json'), 'utf8')), enabled: true, releaseReady: true };
     const lockPath = 'scripts/deployment/sources.json';
     const html = '<a href="https://f1-stories.gr/betcast/?viz=dataTable&amp;week=19">BetCast</a> <a href="https://www.f1-stories.gr/betcast/index.html">alias</a> <a href="/betcast/subpath/">subpath</a> <a href="/unknown/">unknown</a> <a href="//evil.example/betcast/">external</a>';
     const analyze = () => analyzeBody({ id: '20261031J', date: '2026-10-31' }, html, published, root);
