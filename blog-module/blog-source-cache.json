@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261031J",
+      "title": "BetCast #278: Μεξικάνικη αποστολή... και Checo στους βαθμούς!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-31",
+      "dateISO": "2026-10-31",
+      "displayDate": "31 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261031J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261031J/1.webp",
+      "excerpt": "BetCast #278: Mexico με Μεξικανό στους βαθμούς... Με 4 σημεία για αγώνα και κατατακτήριες.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261031J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "Mexico",
+        "Betcast"
+      ],
+      "wordCount": 226,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "4f1283275f4b16a0fc0a279c690ad6656287a0ca60745861641de73243051a4e"
+    },
+    {
       "id": "20261031W",
       "title": "McLaren Mcl40: Γρήγορη αλλά ασταθής.",
       "author": "Themis Charvalis",
@@ -11346,5 +11376,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-30T23:07:34.359Z"
+  "lastUpdated": "2026-10-31T18:25:47.377Z"
 }
