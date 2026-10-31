@@ -278,7 +278,8 @@ try {
     }
     if (assembled) {
         for (const item of [
-            { tab: 'drivers', path: '/tyres/2026/suzuka/', id: '2026-jp', title: 'Japanese Grand Prix', venue: 'Suzuka International Racing Course' },
+            // Pinned TYRES data/overrides/2026/2026-jp.json overrides its generated circuit label.
+            { tab: 'drivers', path: '/tyres/2026/suzuka/', id: '2026-jp', title: 'Japanese Grand Prix', venue: 'Suzuka Circuit' },
             { tab: 'constructors', path: '/tyres/2026/sepang/', id: '2026-bh', title: 'Bahrain Grand Prix', venue: 'Sepang International Circuit' }
         ]) {
             const run = await open({ failLive: true });
