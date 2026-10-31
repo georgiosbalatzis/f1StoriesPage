@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Thu, 29 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 30 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>McLaren Mcl40: Γρήγορη αλλά ασταθής.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261031W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261031W/article.html</guid>
+      <pubDate>Fri, 30 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Η McLaren MCL40 διαθέτει ταχύτητα για βάθρα, αλλά η αστάθεια στην απόδοσή της δυσκολεύει τη μάχη με τους κορυφαίους αντιπάλους.</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Oταν ο Rosberg άντεξε την  πίεση του Ricciardo</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261030W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Γύρος δεκαεφτά και η καρό σημαία για το πρωτάθλημα του 2026 ετοιμάζεται να πέσει. Η ζυγαριά έγειρε λίγο ακόμα προς το μικρό Kimi από την Μπολόνια.</description>
       <category>Ανάλυση</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Takuma Sato:Ήρθε και έφυγε με τις αναμνήσεις μιας ωραίας εποχής.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261008W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261008W/article.html</guid>
-      <pubDate>Wed, 07 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Να βλέπεις τον Takuma Sato να φοράει τα χρώματα της BAR Honda, να κατεβαίνει στην Eau Rouge, να στρίβει την πρώτη στροφή του Suzuka με εκείνη…</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
