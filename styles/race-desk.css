@@ -8,6 +8,7 @@
 .race-desk-edition { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-size: .7rem; font-weight: 700; letter-spacing: .12em; }
 .race-desk-kicker { margin: 0 0 1.25rem; color: var(--accent-readable); font-size: .72rem; font-weight: 700; letter-spacing: .13em; }
 .race-desk-hero .race-desk-kicker { margin-top: 4rem; }
+.race-desk-attribution { margin: 0 0 1.25rem; max-width: 45rem; color: var(--text-secondary); font-size: .85rem; line-height: 1.5; }
 .race-desk-hero h1 { max-width: 1050px; margin: 0; font-family: var(--font-brand); font-size: clamp(3.5rem, 9vw, 8rem); line-height: .93; letter-spacing: -.035em; overflow-wrap: anywhere; }
 .race-desk-hero h1 span { white-space: nowrap; }
 .race-desk-hero h1 b { color: var(--signal); }
@@ -38,6 +39,12 @@
 .race-desk-tools a, .race-desk-sources a { text-decoration-thickness: 1px; text-underline-offset: .2em; }
 .race-desk-page a:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
 .race-desk-tools p { max-width: 32rem; margin: 0; color: var(--text-secondary); line-height: 1.55; }
+.race-desk-source-group { margin-top: 2.5rem; }
+.race-desk-source-group h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+.race-desk-source-group > p, .race-desk-source-group > details { color: var(--text-secondary); font-size: .85rem; line-height: 1.6; }
+.race-desk-source-group > details { margin-bottom: 1rem; }
+.race-desk-source-group > details summary { cursor: pointer; }
+.race-desk-source-group > details span { display: block; overflow-wrap: anywhere; }
 .race-desk-sources li div { display: grid; gap: .35rem; }
 .race-desk-sources span, .race-desk-sources a { color: var(--text-secondary); font-size: .85rem; overflow-wrap: anywhere; }
 .race-desk-sources a { color: var(--text-primary); }

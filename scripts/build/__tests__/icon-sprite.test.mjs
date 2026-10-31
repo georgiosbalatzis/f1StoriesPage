@@ -19,11 +19,11 @@ test('production sprite keeps runtime dependencies, articles and templates; loca
     for (const file of ['asset-sources.mjs', 'icon-sources.mjs', 'build-icon-sprite.mjs']) {
         write(`scripts/build/${file}`, fs.readFileSync(new URL(`../${file}`, import.meta.url)));
     }
-    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(`scripts/race-desk/${file}`, fs.readFileSync(path.join(ROOT, 'scripts/race-desk', file)));
     }
     write('scripts/deployment/release.mjs', fs.readFileSync(path.join(ROOT, 'scripts/deployment/release.mjs')));
-    write('data/race-desk/registry.v1.json', JSON.stringify({ schemaVersion: 1, sources: [], races: [] }));
+    for (const file of ['registry.v1.json', 'hub-evidence.v1.json']) write(`data/race-desk/${file}`, fs.readFileSync(path.join(ROOT, 'data/race-desk', file)));
     fs.symlinkSync(path.join(ROOT, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     for (const file of [...JS_INPUTS, 'standings/standings.js', 'standings/standings-polish.js',
         ...STANDINGS_TAB_ENTRIES.map(name => `standings/tabs/${name}.js`)]) write(file, '');

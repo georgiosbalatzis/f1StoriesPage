@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHubModels } from '../hub-model.mjs';
+import { createPublicationModels } from '../hub-publication.mjs';
 import { renderHub } from '../hub-render.mjs';
 
 const registry = JSON.parse(readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
@@ -68,4 +69,30 @@ test('preserves recorded sprint order, null times and unavailable selections', (
   const empty = renderHub(race);
   assert.match(empty, /Δεν υπάρχουν καταγεγραμμένες περίοδοι διαθέσιμες/);
   assert.match(empty, /Δεν υπάρχουν διαθέσιμες πηγές/);
+});
+
+
+test('gated official capture and local registry retain distinct attribution and dates', () => {
+  const evidence = JSON.parse(readFileSync(new URL('../../../data/race-desk/hub-evidence.v1.json', import.meta.url)));
+  const race = createPublicationModels(registry, lock, evidence, { currentYear: 2026 }).find(item => item.raceId === '2026-japanese-gp');
+  const html = renderHub(race);
+  assert.match(html, /<h1>Japanese Grand Prix/);
+  assert.match(html, /Suzuka Circuit/);
+  assert.ok(html.includes(`href="${race.scheduleEvidence.url}"`));
+  assert.ok(html.indexOf('Πρόγραμμα και ονομασία από') < html.indexOf('<h1>'));
+  assert.ok(html.includes(`datetime="${race.scheduleEvidence.observedAt}"`));
+  assert.match(html, /Ανάγνωση πηγής:/);
+  assert.match(html, /Έλεγχος πηγής:/);
+  assert.match(html, /Επίσημη πηγή προγράμματος και ονομασίας/);
+  assert.match(html, /Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας/);
+  assert.ok(html.includes(race.localIdentity.venue.name));
+  assert.ok(html.includes(race.scheduleEvidence.sha256));
+  assert.match(html, /ελέγχθηκε μόνο η συμφωνία της απόκλισης ώρας/);
+  assert.match(html, /Καταγεγραμμένο πρόγραμμα Formula 1/);
+  assert.doesNotMatch(html, /dateModified|lastmod/i);
+  race.scheduleEvidence.title = '<unsafe & title>';
+  race.localIdentity.eventName = '<unsafe alias>';
+  const hostile = renderHub(race);
+  assert.match(hostile, /&lt;unsafe &amp; title&gt;/);
+  assert.match(hostile, /&lt;unsafe alias&gt;/);
 });

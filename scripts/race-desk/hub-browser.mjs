@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { Launcher } from 'chrome-launcher';
-import { createHubModels } from './hub-model.mjs';
+import { createPublicationModels } from './hub-publication.mjs';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
@@ -17,7 +17,8 @@ const reports = path.resolve(option('--reports', '.build/race-desk-r03'));
 const assembled = args.includes('--assembled');
 const registry = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/registry.v1.json')));
 const lock = JSON.parse(fs.readFileSync(path.join(repo, 'scripts/deployment/sources.json')));
-const models = createHubModels(registry, lock, { currentYear: new Date().getUTCFullYear() });
+const evidence = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/hub-evidence.v1.json')));
+const models = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
 const races = new Map(registry.races.map(race => [race.raceId, race]));
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -29,7 +30,7 @@ const nativeTyres = {
   '2025-singapore-gp': ['Marina Bay Street Circuit', 'a26affb3980cb9c7f383f9c73373d43e9370185e'],
   '2026-mexican-gp': ['Autódromo Hermanos Rodríguez', 'be59dff04cae56bcd7966c16df20d70ac59d6673'],
 };
-const report = { site, assembled, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), nativeTyresEvidence: { revision: '50e5f50be89e038257cbe3426b366810e0c1f59a', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
+const report = { site, assembled, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), officialCaptures: models.map(({ raceId, scheduleEvidence }) => ({ raceId, url: scheduleEvidence.url, observedAt: scheduleEvidence.observedAt, sha256: scheduleEvidence.sha256, bytes: scheduleEvidence.bytes })), nativeTyresEvidence: { revision: '50e5f50be89e038257cbe3426b366810e0c1f59a', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
 fs.mkdirSync(reports, { recursive: true });
 let server, browser;
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif', '.jpg': 'image/jpeg' };
@@ -86,7 +87,7 @@ try {
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), canonical);
     assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'), canonical);
     assert.equal(await page.locator('h1').count(), 1);
-    assert.ok((await page.locator('h1').innerText()).includes(race.displayName), `h1 must contain ${race.displayName}`);
+    assert.ok((await page.locator('h1').innerText()).includes(model.displayName), `h1 must contain ${model.displayName}`);
     const fonts = await page.evaluate(() => ({
       title: getComputedStyle(document.querySelector('h1')).fontFamily,
       body: getComputedStyle(document.querySelector('body')).fontFamily,
@@ -97,7 +98,7 @@ try {
     assert.match(fonts.title, /Barlow Condensed/i); assert.match(fonts.body, /IBM Plex Sans/i);
     assert.ok(fonts.greekReady && fonts.faces.some(face => /IBM Plex Sans/i.test(face.family) && /370/i.test(face.unicodeRange) && face.status === 'loaded'), `Greek font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok(fonts.brandReady && fonts.faces.some(face => /Barlow Condensed/i.test(face.family) && face.status === 'loaded'), `brand font must be naturally loaded: ${JSON.stringify(fonts)}`);
-    assert.ok((await page.locator('main').innerText()).includes(race.venue.name));
+    assert.ok((await page.locator('main').innerText()).includes(model.venue.name));
     const table = page.locator('main table');
     assert.equal(await table.count(), 1);
     assert.deepEqual(await table.locator('tbody time').evaluateAll(nodes => nodes.map(node => node.getAttribute('datetime'))), race.sessions.filter(s => s.startUtc).map(s => s.startUtc));
@@ -115,10 +116,33 @@ try {
       }
       assert.match(text, /μη συνδεδεμένα/i);
     }
+    const officialGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Επίσημη πηγή προγράμματος και ονομασίας' }) });
+    const localGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας' }) });
+    assert.equal(await officialGroup.count(), 1); assert.equal(await localGroup.count(), 1);
+    const attribution = page.locator('.race-desk-attribution');
+    assert.ok(await attribution.isVisible()); assert.match(await attribution.innerText(), /ανάγνωση πηγής/i);
+    assert.equal(await attribution.locator('a').getAttribute('href'), model.scheduleEvidence.url);
+    assert.equal(await attribution.locator('time').getAttribute('datetime'), model.scheduleEvidence.observedAt);
+    assert.doesNotMatch(await page.locator('main').innerText(), /\bLIVE\b|Ολοκληρώθηκε|Τελική κατάταξη/i);
+    const officialLink = officialGroup.locator('a'); assert.equal(await officialLink.count(), 1);
+    assert.equal(await officialLink.getAttribute('href'), model.scheduleEvidence.url); assert.ok(await officialLink.isVisible());
+    const officialTime = officialGroup.locator('time'); assert.equal(await officialTime.getAttribute('datetime'), model.scheduleEvidence.observedAt);
+    assert.ok(await officialTime.isVisible()); assert.match(await officialGroup.innerText(), /Ανάγνωση πηγής/);
+    const officialDetails = officialGroup.locator('details');
+    assert.equal(await officialDetails.locator('span').first().isVisible(), false);
+    await officialDetails.locator('summary').focus(); await page.keyboard.press('Enter');
+    const proofText = await officialDetails.innerText();
+    for (const value of [model.scheduleEvidence.title, model.scheduleEvidence.sha256, String(model.scheduleEvidence.bytes), model.scheduleEvidence.titleReference, model.scheduleEvidence.meetingReference, model.scheduleEvidence.circuitReference]) assert.ok(proofText.includes(value));
+    const aliases = localGroup.locator('details').filter({ has: page.getByText('Ονομασίες στο τοπικό μητρώο', { exact: true }) });
+    assert.equal(await aliases.count(), 1); assert.equal(await aliases.locator('span').first().isVisible(), false);
+    await aliases.locator('summary').focus(); await page.keyboard.press('Enter');
+    const aliasText = await aliases.innerText();
+    for (const value of [model.localIdentity.eventName, model.localIdentity.displayName, model.localIdentity.venue.name, model.localIdentity.venue.timeZone]) assert.ok(aliasText.includes(value));
     for (const source of model.sources) {
       const sourceItem = page.locator('.race-desk-sources li').filter({ has: page.locator('details span', { hasText: source.id }) });
       assert.equal(await sourceItem.count(), 1); assert.ok(await sourceItem.isVisible());
       assert.equal(await sourceItem.locator('time').getAttribute('datetime'), source.reviewedAt);
+      assert.match(await sourceItem.innerText(), /Έλεγχος πηγής/);
       assert.ok(await sourceItem.locator('time').isVisible());
       const details = sourceItem.locator('details'), summary = details.locator('summary');
       const id = details.locator('span').filter({ hasText: source.id });
@@ -144,7 +168,7 @@ try {
     assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl] : [], 'only the shared navigation calendar request is allowed');
     assert.deepEqual(run.errors, []);
     const reload = await page.reload({ waitUntil: 'domcontentloaded' }); assert.equal(reload.status(), 200);
-    assert.ok((await page.locator('h1').innerText()).includes(race.displayName));
+    assert.ok((await page.locator('h1').innerText()).includes(model.displayName));
     await ready(page);
     assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl, calendarUrl] : [], 'reload must only repeat the shared navigation calendar request');
     assert.deepEqual(run.errors, []);
@@ -186,7 +210,7 @@ try {
       const file = `${model.raceId}-${width}-${theme}.png`; await run.page.screenshot({ path: path.join(reports, file), fullPage: true });
       report.captures.push(file);
       const bodies = (await Promise.all(run.bodies)).filter(Boolean);
-      report.observations.push({ raceId: model.raceId, width, theme, requests: run.requests.length, providerRequests: providerRequests(run.requests), decodedResponseBytes: bodies.reduce((sum, body) => sum + body.bytes, 0), decodedHtmlJsBytes: bodies.filter(body => /(?:\.html|\.js|\/)$/i.test(body.path)).reduce((sum, body) => sum + body.bytes, 0), bodies, layout });
+      report.observations.push({ raceId: model.raceId, width, theme, requests: run.requests.length, localRequests: run.requests.filter(url => new URL(url).origin === origin).length, providerRequests: providerRequests(run.requests), decodedResponseBytes: bodies.reduce((sum, body) => sum + body.bytes, 0), decodedHtmlJsBytes: bodies.filter(body => /(?:\.html|\.js|\/)$/i.test(body.path)).reduce((sum, body) => sum + body.bytes, 0), bodies, layout });
       assert.ok(layout.scrollWidth <= layout.viewport + 2, JSON.stringify(layout));
       assert.ok(layout.main.left >= -2 && layout.main.right <= layout.viewport + 2, JSON.stringify(layout));
       assert.deepEqual(layout.overflow, [], JSON.stringify(layout.overflow));

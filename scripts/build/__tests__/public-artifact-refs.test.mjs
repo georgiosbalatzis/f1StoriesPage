@@ -10,6 +10,7 @@ import { validateHtmlRefs, validateJsRefs, validateSearchDestinations } from '..
 import { injectSecurityMeta, securityHeadersText } from '../security-policy.mjs';
 import taxonomy from '../../../blog-module/taxonomy.js';
 import { sealSnapshot } from '../../intelligence/snapshot.mjs';
+import { createPublicationModels } from '../../race-desk/hub-publication.mjs';
 
 const validator = fileURLToPath(new URL('../validate-public-artifact.mjs', import.meta.url));
 
@@ -181,12 +182,12 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
-    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-validation.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
     }
     write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));
     write(root, 'scripts/deployment/sources.json', fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
-    write(root, 'data/race-desk/registry.v1.json', JSON.stringify({ schemaVersion: 1, sources: [], races: [] }));
+    for (const file of ['registry.v1.json', 'hub-evidence.v1.json']) write(root, `data/race-desk/${file}`, fs.readFileSync(new URL(`../../../data/race-desk/${file}`, import.meta.url)));
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));
@@ -198,6 +199,10 @@ function cliFixture(t) {
     write(root, 'blog-module/retired-articles.json', '{ "retired": [] }');
     write(root, 'blog-module/taxonomy.js', fs.readFileSync(new URL('../../../blog-module/taxonomy.js', import.meta.url)));
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');
+    const registry = JSON.parse(fs.readFileSync(path.join(root, 'data/race-desk/registry.v1.json')));
+    const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json')));
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'data/race-desk/hub-evidence.v1.json')));
+    const gpModels = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
         'index.html': [...common, 'home.css'],
@@ -207,6 +212,7 @@ function cliFixture(t) {
         '404.html': [], 'generate.html': [], 'housekeeping.html': [], 'dashboard/index.html': [],
         'blog-module/blog-entries/story/article.html': [...common, 'blog-module/blog/article-editorial.css']
     };
+    for (const model of gpModels) pages[model.path.slice(1) + 'index.html'] = [];
     for (const route of ['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/']) {
         pages[`blog-module/blog/${route}index.html`] = pages['blog-module/blog/index.html'];
     }
@@ -228,14 +234,17 @@ function cliFixture(t) {
         <nav>${Object.keys(pages).map(file => `<a href="/${file.replace(/index\.html$/, '')}">${file}</a>`).join('')}</nav>`;
     for (const [file, css] of Object.entries(pages)) {
         const links = css.map(key => `<link rel="stylesheet" href="/${manifest.files[key].min}?v=12345678">`).join('\n');
-        const canonical = file.startsWith('blog-module/blog/')
+        const gp = gpModels.find(model => file === model.path.slice(1) + 'index.html');
+        const canonical = gp ? `<link rel="canonical" href="${lock.origin}${gp.path}"><meta property="og:url" content="${lock.origin}${gp.path}">` : file.startsWith('blog-module/blog/')
             ? `<link rel="canonical" href="https://f1-stories.gr/${file.replace(/index\.html$/, '')}">` : '';
         // As in the real shells: public pages share the head-meta policy, the author tools and dashboard keep their noindex.
         const robots = ['generate.html', 'housekeeping.html', 'dashboard/index.html'].includes(file)
             ? '<meta name="robots" content="noindex, nofollow">'
             : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
+        const escape = value => value.replaceAll('&', '&amp;').replaceAll('\"', '&quot;');
+        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}` : '';
         write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
-            <body class="editorial-page home-page archive-page article-page standings-page authors-page">${markers}
+            <body class="editorial-page home-page archive-page article-page standings-page authors-page${gp ? ' race-desk-page' : ''}">${markers}${gpContent}
             <script src="/blog-module/taxonomy.min.js"></script><script src="/blog-module/blog-index.min.js"></script>
             <script type="module" src="/entry.js"></script></body>`, file));
     }

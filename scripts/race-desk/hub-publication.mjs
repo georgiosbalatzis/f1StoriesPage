@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import { createHash } from 'node:crypto';
 import { createHubModels, formatHubTime, hubPath } from './hub-model.mjs';
 
 const approved = {
@@ -9,6 +10,16 @@ const approved = {
   '2026-mexican-gp': ['2026/mexico', 'Mexico City Grand Prix', 'Autódromo Hermanos Rodríguez', '7e', "FORMULA 1 GRAN PREMIO DE LA CIUDAD DE MÉXICO 2026", "6f9e4cc0d4c6104b96e5173d6a37b11b69f22952402755299c172edfc8f57d4a", 532152],
   '2026-singapore-gp': ['2026/singapore', 'Singapore Grand Prix', 'Marina Bay Street Circuit', '81', "FORMULA 1 SINGAPORE AIRLINES SINGAPORE GRAND PRIX 2026", "8be83beaa8cad5c4a2d2edd7cae994a9c6acaa3334c41ff9dc4013aa47e5dcda", 565014],
 };
+// Digests pin the complete reviewed approval, independently of the source capture hash.
+const approvalDigests = {
+  '2025-singapore-gp': '345f74b3e6cb557359b3342510bc09b24cce3c2b15d67ac6d9ca6f451eef1dab',
+  '2026-azerbaijan-gp': '3ccaae88110236803d068c928531bda8e882527ebb64b8d0bcb224acd7df78f1',
+  '2026-bahrain-gp': 'cc26cc9abe2736c0357e01f4d6f484c24aeb7d9d851fe39d04c9d0f3ea607a45',
+  '2026-japanese-gp': 'aa7a5859a85975c6910aa9b10c72da285e4dd5e66960a8fce047ca758ced6edb',
+  '2026-mexican-gp': 'b3488cc10a4754d1faa7fcf687cbfc7f1ac05d0b4b39c2306e0047072684b8d6',
+  '2026-singapore-gp': '28643718dbc6f608918717234d9a0b583aca7d4f192fe5554c2b0929976e4a87',
+};
+const canonical = value => value === null || typeof value !== 'object' ? JSON.stringify(value) : Array.isArray(value) ? `[${value.map(canonical).join(',')}]` : `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`;
 export const PUBLIC_RACE_IDS = Object.freeze(Object.keys(approved).sort());
 const fail = message => { throw new TypeError(`Invalid hub publication evidence: ${message}`); };
 const utc = value => typeof value === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString() === value;
@@ -38,6 +49,7 @@ export function createPublicationModels(registry, sourceLock, evidence, options)
       if (!proof || proof.kind !== session.kind || proof.startUtc !== session.startUtc || !utc(proof.startUtc) || proof.name !== `${names[session.kind]} - ${displayName.replace(' in Malaysia', '')}` || proof.nameReference !== `application/ld+json[0]/subEvent/${i}/name` || proof.startReference !== `application/ld+json[0]/subEvent/${i}/startDate`) fail(`session order or UTC start for ${entry.raceId}`);
       if (formatHubTime(session.startUtc, race.venue.timeZone)?.offset !== `UTC${official.gmtOffset}`) fail(`venue offset for ${entry.raceId}`);
     });
+    if (createHash('sha256').update(canonical(entry)).digest('hex') !== approvalDigests[entry.raceId]) fail(`unreviewed approval for ${entry.raceId}`);
   }
   return PUBLIC_RACE_IDS.map(raceId => {
     const entry = evidence.approvals.find(a => a.raceId === raceId);

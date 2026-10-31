@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHubModels } from '../race-desk/hub-model.mjs';
-import { readHubRegistry } from '../race-desk/hub-files.mjs';
+import { createPublicationModels } from '../race-desk/hub-publication.mjs';
+import { readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
 import { renderHub } from '../race-desk/hub-render.mjs';
 import { expandPageIncludes } from './include.mjs';
 
@@ -22,7 +22,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   if (fs.lstatSync(root).isSymbolicLink()) throw new Error('Refusing symlinked repository root');
   const registry = readHubRegistry(root);
   const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json'), 'utf8'));
-  const models = createHubModels(registry, lock, { currentYear });
+  const models = createPublicationModels(registry, lock, readHubEvidence(root), { currentYear });
   const homePath = safeDestination(root, 'index.html');
   const home = fs.readFileSync(homePath, 'utf8');
   const marker = /<!-- f1s:gp-discovery:begin -->[\s\S]*?<!-- f1s:gp-discovery:end -->/;

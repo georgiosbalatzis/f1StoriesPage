@@ -76,3 +76,15 @@ test('changed local timezone fails even when registry evidence is internally con
   r.races[0].evidence.find(c => c.field === 'venue.timeZone').value = 'Asia/Seoul';
   assert.throws(() => make(r), /registry drift/);
 });
+test('coordinated registry and approval session drift fails with unchanged capture proof', () => {
+  const r = structuredClone(registry);
+  const e = structuredClone(evidence);
+  const race = r.races.find(item => item.raceId === '2025-singapore-gp');
+  const approval = e.approvals.find(item => item.raceId === race.raceId);
+  const changed = '2025-10-03T09:31:00.000Z';
+  race.sessions[0].startUtc = changed;
+  race.sessions[0].evidence.find(claim => claim.field === 'startUtc').value = changed;
+  approval.localIdentity.sessions[0].startUtc = changed;
+  approval.official.sessions[0].startUtc = changed;
+  assert.throws(() => make(r, e), /unreviewed approval/);
+});

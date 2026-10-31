@@ -16,7 +16,7 @@ const writeJson = (file, value) => fs.writeFileSync(file, JSON.stringify(value))
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-hubs-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const rel of [registryPath, lockPath, 'partials']) {
+  for (const rel of [registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }
@@ -26,10 +26,8 @@ function fixture(t) {
 const files = root => fs.existsSync(path.join(root, 'race-desk/gp')) ? fs.readdirSync(path.join(root, 'race-desk/gp')) : [];
 const page = (root, item) => fs.readFileSync(path.join(root, item.file), 'utf8');
 
-test('generates six exact pages, escaped discovery and stable bytes without touching unknown files', async t => {
+test('generates six exact pages, discovery and stable bytes without touching unknown files', async t => {
   const root = fixture(t), registryFile = path.join(root, registryPath), registry = readJson(registryFile);
-  registry.races[0].displayName = '<Unsafe & "name">';
-  writeJson(registryFile, registry);
   const unknown = path.join(root, 'race-desk/gp/unrelated/index.html');
   fs.mkdirSync(path.dirname(unknown), { recursive: true }); fs.writeFileSync(unknown, 'leave alone');
   const result = await writeRaceDeskHubs(root, 2026);
@@ -39,7 +37,7 @@ test('generates six exact pages, escaped discovery and stable bytes without touc
   assert.ok(!result.some(p => p.file.includes('unrelated')));
   assert.equal(fs.readFileSync(unknown, 'utf8'), 'leave alone');
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  assert.match(home, /&lt;Unsafe &amp; &quot;name&quot;&gt;/);
+  assert.match(home, /Japanese Grand Prix/);
   assert.ok(home.startsWith('<p>before</p>') && home.endsWith('<p>after</p>'));
   const before = result.map(p => page(root, p));
   assert.ok(before.every(html => html.includes('<!-- @include:begin partials/nav.html -->')));
@@ -143,4 +141,18 @@ test('a broken shared partial aborts generation before writes', async t => {
   await assert.rejects(writeRaceDeskHubs(root, 2026), /Missing include variable/);
   assert.deepEqual(files(root), []);
   assert.equal(fs.readFileSync(home, 'utf8'), original);
+});
+
+
+test('missing or invalid publication proof and registry drift fail before writes', async t => {
+  for (const failure of ['missing', 'invalid', 'drift']) {
+    const root = fixture(t), proof = path.join(root, 'data/race-desk/hub-evidence.v1.json');
+    const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    if (failure === 'missing') fs.unlinkSync(proof);
+    if (failure === 'invalid') { const data = readJson(proof); data.approvals[0].source.sha256 = '0'.repeat(64); writeJson(proof, data); }
+    if (failure === 'drift') { const file = path.join(root, registryPath), data = readJson(file); data.races[0].displayName = '<Unsafe & "name">'; writeJson(file, data); }
+    await assert.rejects(writeRaceDeskHubs(root, 2026));
+    assert.deepEqual(files(root), []);
+    assert.equal(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), home);
+  }
 });

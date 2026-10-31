@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createHubModels } from '../hub-model.mjs';
+import { createPublicationModels } from '../hub-publication.mjs';
 import { validateHubOutput } from '../hub-validation.mjs';
 
 const registry = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
 const lock = JSON.parse(fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
-const models = createHubModels(registry, lock, { currentYear: 2026 });
+const evidence = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/hub-evidence.v1.json', import.meta.url)));
+const models = createPublicationModels(registry, lock, evidence, { currentYear: 2026 });
 const esc = value => value.replaceAll('&', '&amp;');
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'gp-validation-'));
@@ -16,9 +17,9 @@ function fixture(t) {
   const write = (file, value) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), value); };
   write('index.html', models.map(model => `<a href="${model.path}">GP</a>`).join(''));
   write('sitemap.xml', `<urlset>${models.map(model => `<url><loc>${lock.origin}${model.path}</loc></url>`).join('')}</urlset>`);
-  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page">${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}</body>`);
+  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page"><a href="${model.scheduleEvidence.url}">Official</a>${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}</body>`);
   const change = (file, replace) => write(file, replace(fs.readFileSync(path.join(root, file), 'utf8')));
-  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026) };
+  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026, evidence) };
 }
 
 test('all selected GP pages require static discovery, exact canonical links and recorded starts', t => {
@@ -44,4 +45,12 @@ test('wrong tool scope and missing recorded session start fail closed', t => {
   change(first.path.slice(1) + 'index.html', html => html.replace(`href="${esc(first.tools.find(tool => tool.target === 'tyres').url)}"`, 'href="https://f1-stories.gr/tyres/"').replace(`<time datetime="${first.sessions[0].startUtc}">`, '<time>'));
   assert.match(validate().join('\n'), /tyres plan is missing or changed/);
   assert.match(validate().join('\n'), /missing recorded/);
+});
+
+
+test('missing official schedule citation is rejected', t => {
+  const { change, validate } = fixture(t);
+  const model = models[0];
+  change(model.path.slice(1) + 'index.html', html => html.replace(model.scheduleEvidence.url, 'https://example.com/'));
+  assert.match(validate().join('\n'), /missing official schedule citation/);
 });

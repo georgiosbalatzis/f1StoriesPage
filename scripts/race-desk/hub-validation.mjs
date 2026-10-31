@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createHubModels } from './hub-model.mjs';
+import { createPublicationModels } from './hub-publication.mjs';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
 // Validate source or packaged HTML; the browser gate independently checks layout and native links.
-export function validateHubOutput(root, registry, lock, currentYear) {
+export function validateHubOutput(root, registry, lock, currentYear, evidence) {
   const errors = [];
-  const models = createHubModels(registry, lock, { currentYear });
+  const models = createPublicationModels(registry, lock, evidence, { currentYear });
   const read = file => {
     try { return fs.readFileSync(path.join(root, file), 'utf8'); }
     catch { errors.push(`missing GP output: ${file}`); return ''; }
@@ -27,6 +27,7 @@ export function validateHubOutput(root, registry, lock, currentYear) {
     if (entries.length !== 1) errors.push(`${file}: GP sitemap entry missing or duplicated`);
     if (entries.some(([entry]) => entry.includes('<lastmod>'))) errors.push(`${file}: GP has no evidenced lastmod`);
     if (!html.includes('class="race-desk-page') && !html.includes('race-desk-page"')) errors.push(`${file}: missing GP shell`);
+    if (!html.includes(`href="${model.scheduleEvidence.url}"`)) errors.push(`${file}: missing official schedule citation`);
     for (const tool of model.tools) {
       if (!html.includes(`href="${escape(tool.url)}"`)) errors.push(`${file}: ${tool.target} plan is missing or changed`);
     }

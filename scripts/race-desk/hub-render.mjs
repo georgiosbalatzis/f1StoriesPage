@@ -29,7 +29,15 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   const canonical = new URL(model.path, base).href;
   const name = model.displayName ?? model.eventName;
   const title = `${name} ${model.season} | F1 Stories`;
-  const description = `Πρόγραμμα, ζώνες ώρας και σύνδεσμοι εργαλείων για το ${name} ${model.season}.`;
+  const description = model.scheduleEvidence ? `Καταγεγραμμένο πρόγραμμα Formula 1, ζώνες ώρας και σύνδεσμοι εργαλείων για το ${name} ${model.season}.` : `Μη επιβεβαιωμένο πρόγραμμα, ζώνες ώρας και σύνδεσμοι εργαλείων για το ${name} ${model.season}.`;
+  const evidence = model.scheduleEvidence;
+  const officialUrl = safeUrl(evidence?.url);
+  const officialLink = officialUrl ? `<a href="${escape(officialUrl)}">Formula 1 / Επίσημη σελίδα αγώνα</a>` : 'Επίσημη πηγή μη διαθέσιμη';
+  const officialDate = evidence?.observedAt ? `<time datetime="${escape(evidence.observedAt)}">${escape(evidence.observedAt.slice(0, 10))} UTC</time>` : 'Μη διαθέσιμη';
+  const attribution = evidence ? `Πρόγραμμα και ονομασία από ${officialLink} · ανάγνωση πηγής: ${officialDate}.` : 'Δεν υπάρχει επιβεβαιωμένη επίσημη πηγή σε αυτή την προβολή.';
+  const officialDetails = evidence ? `<details><summary>Στοιχεία επίσημου τεκμηρίου</summary><span>Τίτλος: ${escape(evidence.title)}</span><span>SHA-256: ${escape(evidence.sha256)} · ${escape(evidence.bytes)} bytes</span><span>Αναφορές ταυτότητας: ${escape(evidence.titleReference)} · ${escape(evidence.meetingReference)} · ${escape(evidence.circuitReference)}</span><span>Απόκλιση ώρας πηγής: UTC${escape(evidence.gmtOffset)}</span>${(evidence.sessions ?? []).map(session => `<span>${escape(session.kind)}: ${escape(session.nameReference)} · ${escape(session.startReference)}</span>`).join('')}</details>` : '';
+  const local = model.localIdentity;
+  const localDetails = local ? `<details><summary>Ονομασίες στο τοπικό μητρώο</summary><span>Αγώνας: ${escape(local.eventName)}</span><span>Ονομασία προβολής: ${escape(local.displayName)}</span><span>Πίστα: ${escape(local.venue?.name)}</span><span>Ζώνη: ${escape(local.venue?.timeZone)}</span></details>` : '';
   const sessions = model.sessions.length ? model.sessions.map(sessionRow).join('\n') : '<tr><td colspan="4">Δεν υπάρχουν καταγεγραμμένες περίοδοι διαθέσιμες σε αυτή τη σελίδα.</td></tr>';
   return `<!doctype html>
 <html lang="el">
@@ -59,11 +67,12 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
       <header class="race-desk-hero">
         <div class="race-desk-edition"><span>F1 STORIES / RACE DESK</span><span>SEASON ${escape(model.season)}</span></div>
         <p class="race-desk-kicker">Ο ΦΑΚΕΛΟΣ ΤΟΥ GRAND PRIX</p>
+        <p class="race-desk-attribution">${attribution}</p>
         <h1>${escape(name)} <span>${escape(model.season)}</span><b aria-hidden="true">.</b></h1>
-        <div class="race-desk-hero-foot"><p>${escape(model.venue.name)}</p><p>Τοπική ζώνη ώρας <strong>${escape(model.venue.timeZone)}</strong></p></div>
+        <div class="race-desk-hero-foot"><p>${escape(model.venue.name)}</p><p>Ζώνη ώρας τοπικού μητρώου <strong>${escape(model.venue.timeZone)}</strong></p></div>
       </header>
       <section class="race-desk-section" aria-labelledby="schedule-title">
-        <div class="race-desk-section-head"><div><p class="race-desk-kicker">01 / ΠΡΟΓΡΑΜΜΑ</p><h2 id="schedule-title">Οι περίοδοι</h2></div><p>Προγραμματισμένες ώρες έναρξης από τα διαθέσιμα καταγεγραμμένα στοιχεία. Η λίστα μπορεί να είναι ελλιπής. Η ώρα Ελλάδας εμφανίζεται στη ζώνη Europe/Athens.</p></div>
+        <div class="race-desk-section-head"><div><p class="race-desk-kicker">01 / ΠΡΟΓΡΑΜΜΑ</p><h2 id="schedule-title">Οι περίοδοι</h2></div><p>Προγραμματισμένες ώρες έναρξης από τα διαθέσιμα καταγεγραμμένα στοιχεία. Η λίστα μπορεί να είναι ελλιπής. Η ζώνη IANA της πίστας προέρχεται από το τοπικό μητρώο· ελέγχθηκε μόνο η συμφωνία της απόκλισης ώρας με την επίσημη πηγή. Η ώρα Ελλάδας εμφανίζεται στη ζώνη Europe/Athens.</p></div>
         <p id="schedule-scroll-hint" class="race-desk-scroll-hint">Κύλησε οριζόντια για όλες τις ώρες · με πληκτρολόγιο, χρησιμοποίησε τα βέλη.</p>
         <div class="race-desk-table-wrap" role="region" tabindex="0" aria-label="Πίνακας προγράμματος" aria-describedby="schedule-scroll-hint"><table><caption>Καταγεγραμμένες προγραμματισμένες ενάρξεις σε UTC, τοπική ώρα και ώρα Ελλάδας</caption><thead><tr><th scope="col">Περίοδος</th><th scope="col">UTC</th><th scope="col">Τοπική ώρα</th><th scope="col">Ώρα Ελλάδας</th></tr></thead><tbody>${sessions}</tbody></table></div>
       </section>
@@ -72,7 +81,7 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
         <ul class="race-desk-tools">${model.tools.map(toolRow).join('\n')}</ul>
       </section>
       <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div><p class="race-desk-kicker">03 / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>Δεν υπάρχουν διαθέσιμες επιμελημένες συνδέσεις άρθρων για αυτό το Grand Prix.</p></section>
-      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">04 / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Οι ημερομηνίες αφορούν τον έλεγχο των πηγών, όχι την τελευταία ενημέρωση των δεδομένων τους.</p></div><ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></section>
+      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">04 / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
     </div>
   </main>
   <!-- @include partials/cookie-banner.html -->
