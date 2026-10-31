@@ -181,6 +181,12 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
+    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-validation.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+        write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
+    }
+    write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));
+    write(root, 'scripts/deployment/sources.json', fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
+    write(root, 'data/race-desk/registry.v1.json', JSON.stringify({ schemaVersion: 1, sources: [], races: [] }));
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));

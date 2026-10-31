@@ -73,6 +73,10 @@ test('the real stamper cleans source-less historical HTML without a comments man
         fs.copyFileSync(path.join(ROOT, rel), path.join(root, rel));
     };
     for (const rel of ['stamp-html.mjs', 'article-editorial.mjs', 'article-scope.mjs', 'remove-retired-comments.mjs', 'asset-manifest.json']) copy(`scripts/build/${rel}`);
+    for (const rel of ['hub-files.mjs', 'hub-model.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) copy(`scripts/race-desk/${rel}`);
+    copy('scripts/deployment/release.mjs');
+    fs.mkdirSync(path.join(root, 'data/race-desk'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'data/race-desk/registry.v1.json'), JSON.stringify({ schemaVersion: 1, sources: [], races: [] }));
     copy('blog-module/build/youtube-facade.js');
     copy('images/icons/sprite.svg');
     const manifest = JSON.parse(fs.readFileSync(path.join(root, 'scripts/build/asset-manifest.json')));

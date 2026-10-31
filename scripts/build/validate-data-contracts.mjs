@@ -10,6 +10,7 @@ import feed from '../../blog-module/build/feed.js';
 import search from '../../blog-module/search-destinations.js';
 import { validateRegistry } from '../race-desk/core/index.mjs';
 import { createRaceDeskProjection } from '../race-desk/projection.mjs';
+import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import raceDeskLinks from '../../standings/core/race-desk-links.generated.js';
 
 const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
@@ -653,6 +654,7 @@ function main() {
                 const sourceLock = JSON.parse(fs.readFileSync(relAbs('scripts/deployment/sources.json'), 'utf8'));
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
+                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear()).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);
             }
