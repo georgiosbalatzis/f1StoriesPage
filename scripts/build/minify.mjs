@@ -19,6 +19,7 @@
 import { CSS_INPUTS, CSS_DEPENDENCIES, JS_INPUTS, STANDINGS_TAB_ENTRIES } from './asset-sources.mjs';
 import { buildAuthorPreview } from './author-preview.mjs';
 import { buildResearchCatalog } from './author-research.mjs';
+import { ensureRaceDeskLinks } from './race-desk-links.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -37,6 +38,7 @@ const CSS_BUNDLE_INPUTS = new Set([
 function standingsEntryPoints() {
     return Object.fromEntries([
         ['standings', path.join(REPO_ROOT, 'standings', 'standings.js')],
+        ['race-desk-navigation', path.join(REPO_ROOT, 'standings', 'race-desk-navigation.js')],
         ...STANDINGS_TAB_ENTRIES.map(name => [
             `tabs/${name}`, path.join(REPO_ROOT, 'standings', 'tabs', `${name}.js`)
         ])
@@ -206,6 +208,7 @@ async function minifyJs(rel) {
 }
 
 async function buildOnce() {
+    ensureRaceDeskLinks(REPO_ROOT);
     buildResearchCatalog(REPO_ROOT);
     const manifest = {};
     const rows = [];
@@ -276,7 +279,7 @@ async function buildOnce() {
 async function watch() {
     console.log('watching…');
     await buildOnce();
-    const srcs = [...CSS_INPUTS, ...CSS_DEPENDENCIES, ...JS_INPUTS]
+    const srcs = [...CSS_INPUTS, ...CSS_DEPENDENCIES, ...JS_INPUTS, 'data/race-desk/registry.v1.json', 'scripts/deployment/sources.json']
         .map(r => path.join(REPO_ROOT, r))
         .filter(fs.existsSync);
     for (const s of srcs) {

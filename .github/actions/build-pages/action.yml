@@ -75,6 +75,10 @@ runs:
       shell: bash
       run: npm run test:integration -- --site dist --reports .build/priority6/reports
 
+    - name: Verify Race Desk navigation before publication
+      shell: bash
+      run: npm run test:race-desk:browser -- --site dist ${{ steps.assembly.outputs.enabled == 'true' && '--assembled' || '' }} --reports .build/race-desk-r02c
+
     - name: Configure Pages
       uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
