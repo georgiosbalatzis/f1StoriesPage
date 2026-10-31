@@ -259,6 +259,35 @@ function linkSite() {
 
 const published = new Map([['20261001G', { id: '20261001G', date: '2026-10-01' }], ['20261026G', { id: '20261026G', date: '2026-10-26' }], ['20261028G', { id: '20261028G', date: '2026-10-28' }]]);
 
+test('only validated deployed child roots count as pages, including the BetCast fallback', () => {
+    const { root } = linkSite();
+    const project = path.resolve(__dirname, '../../..');
+    const lock = JSON.parse(fs.readFileSync(path.join(project, 'scripts/deployment/sources.json'), 'utf8'));
+    const lockPath = 'scripts/deployment/sources.json';
+    const html = '<a href="https://f1-stories.gr/betcast/?viz=dataTable&amp;week=19">BetCast</a> <a href="https://www.f1-stories.gr/betcast/index.html">alias</a> <a href="/betcast/subpath/">subpath</a> <a href="/unknown/">unknown</a> <a href="//evil.example/betcast/">external</a>';
+    const analyze = () => analyzeBody({ id: '20261031J', date: '2026-10-31' }, html, published, root);
+    try {
+        write(root, lockPath, JSON.stringify(lock));
+        const report = analyze();
+        assert.deepEqual(report.links.map(link => link.kind), ['page', 'page', 'broken', 'broken']);
+        assert.equal(report.contextual, 0);
+        for (const invalid of [
+            { ...lock, enabled: false }, { ...lock, releaseReady: false },
+            { ...lock, applications: lock.applications.map(app => app.application === 'betcast' ? { ...app, sha: 'invalid' } : app) },
+            { ...lock, applications: lock.applications.map(app => app.application === 'betcast' ? { ...app, path: '/unknown/' } : app) }
+        ]) {
+            write(root, lockPath, JSON.stringify(invalid));
+            assert.equal(analyze().links[0].kind, 'broken');
+        }
+        write(root, lockPath, '{malformed');
+        assert.equal(analyze().links[0].kind, 'broken');
+        fs.rmSync(path.join(root, lockPath));
+        assert.equal(analyze().links[0].kind, 'broken');
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+});
+
 test('only distinct, existing, earlier F1 Stories destinations in the body count', () => {
     const { root } = linkSite();
     try {
