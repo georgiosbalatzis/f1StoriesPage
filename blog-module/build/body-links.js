@@ -39,7 +39,18 @@ function pageExists(sitePath, root) {
     return file.startsWith(root + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile();
 }
 
-function classify(sitePath, post, published, root) {
+function deployedRoots(root) {
+    try {
+        const config = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json'), 'utf8'));
+        if (config.enabled !== true || config.releaseReady !== true) return new Set();
+        require('../../scripts/deployment/release.mjs').checkLock(config);
+        return new Set(config.applications.filter(app => app.path !== '/').map(app => app.path));
+    } catch (_) {
+        return new Set();
+    }
+}
+
+function classify(sitePath, post, published, root, roots) {
     const article = /^\/blog-module\/blog-entries\/([^/]+)\/article\.html$/.exec(sitePath);
     if (article) {
         if (article[1] === post.id) return 'self';
@@ -47,20 +58,20 @@ function classify(sitePath, post, published, root) {
         if (!target) return pageExists(sitePath, root) ? 'unpublished' : 'broken';
         return target.date <= post.date ? 'article' : 'later';
     }
-    if (!pageExists(sitePath, root)) return 'broken';
+    if (!pageExists(sitePath, root) && !roots.has(sitePath)) return 'broken';
     if (sitePath.startsWith('/blog-module/blog/entities/')) return 'hub';
     if (sitePath.startsWith('/blog-module/blog/section/')) return 'section';
     return 'page';
 }
 
 // One article: every internal body link with its kind, and the distinct destinations that count.
-function analyzeBody(post, bodyHtml, published, root = ROOT) {
+function analyzeBody(post, bodyHtml, published, root = ROOT, roots = deployedRoots(root)) {
     const pageUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(post.id)}/article.html`;
     const links = [];
     for (const match of String(bodyHtml || '').matchAll(/<a\b[^>]*?\shref\s*=\s*(["'])(.*?)\1[^>]*>/gi)) {
         const href = match[2].replace(/&amp;/g, '&');
         const sitePath = internalPath(href, pageUrl);
-        if (sitePath) links.push({ href, path: sitePath, kind: classify(sitePath, post, published, root) });
+        if (sitePath) links.push({ href, path: sitePath, kind: classify(sitePath, post, published, root, roots) });
     }
     const contextual = new Set(links.filter(link => COUNTED.has(link.kind)).map(link => link.path)).size;
     return { id: post.id, date: post.date, isNew: post.date >= CONTEXT_LINKS_SINCE, links, contextual };
@@ -69,9 +80,10 @@ function analyzeBody(post, bodyHtml, published, root = ROOT) {
 function analyzeArticles(posts, { today = athensDay(), root = ROOT, isPublic } = {}) {
     const visible = posts.filter(post => isPublishedArticle(post, today, isPublic));
     const published = new Map(visible.map(post => [post.id, post]));
+    const roots = deployedRoots(root);
     return visible.map(post => {
         const file = path.join(root, 'blog-module/blog-entries', post.id, 'article.html');
-        return analyzeBody(post, fs.existsSync(file) ? articleBodyHtml(fs.readFileSync(file, 'utf8')) : '', published, root);
+        return analyzeBody(post, fs.existsSync(file) ? articleBodyHtml(fs.readFileSync(file, 'utf8')) : '', published, root, roots);
     });
 }
 
