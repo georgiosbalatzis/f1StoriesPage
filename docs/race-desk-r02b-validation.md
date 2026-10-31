@@ -2,6 +2,8 @@
 
 Base: `c7140fd284beda526c1c909b7803d416f00dbac9`, containing merged R-02A #393 and R-01 follow-up #394. Branch: `feat/race-desk-r02-context`, isolated from the owner's dirty original checkout. Work began as an explicitly stacked branch at `9e049303c8993375d661f4abbd923cdd891d4e87`; after #393 merged it fast-forwarded to the main merge commit, whose tree is identical. No contract was copied to bypass a prerequisite.
 
+On 2026-10-31, main advanced to `50c5e8021eb6b9d8a0611ae0a8caad543806fcf4` through an unrelated published article and scheduled snapshot updates. That main revision was merged without conflicts, preserving all incoming content. Registry, parser/planner, source pins, application code and workflow inputs were unchanged; a fresh Node 22.23.4 focused run again passed all 50 tests. The artifact sizes and manifests below describe the original isolated baseline comparison, not a fresh comparison of the later editorial data. CI for the integrated head is recorded separately in PR #395.
+
 ## Scope and design
 
 [URL context and planning](race-desk-url-context.md) documents exact APIs, capability matrix, source semantics, trust boundaries, migration and remaining R-02C acceptance. This substep adds pure `parseToolUrl` and `planToolLink` APIs with explicit `preserved`, `dropped`, `unresolved` and `ambiguous` reports. It keeps `buildToolLink` unchanged. Unknown selections produce notices and fixed generic app destinations; differing Ghost Car laps never become a fabricated shared Telemetry lap.
