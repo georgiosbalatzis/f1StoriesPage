@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRaceDeskNavigation } from '../../../standings/core/race-desk-nav.js';
-import projection from '../../../standings/core/race-desk-links.generated.js';
+import generatedProjection from '../../../standings/core/race-desk-links.generated.js';
+
+// Exercise enabled behavior independently of the current release mode and year.
+const projection = { ...generatedProjection, enabled: true, buildYear: 2026 };
 
 function fixture(data = projection) {
     const links = Object.fromEntries(['tyres', 'telemetry', 'ghostcar'].map(name => {

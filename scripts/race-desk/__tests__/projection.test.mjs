@@ -14,7 +14,7 @@ test('projection contains only verified rounds and compact canonical plans', () 
   const original = structuredClone(registry);
   const projection = createRaceDeskProjection(registry, lock, 2026);
   assert.deepEqual(registry, original);
-  assert.equal(projection.enabled, true);
+  assert.equal(projection.enabled, lock.enabled);
   assert.deepEqual(projection.rounds.map(r => [r.season, r.round]), [[2026,3],[2026,15],[2026,16],[2026,17]]);
   assert.equal(projection.rounds[0].plans.tyres.url, 'https://f1-stories.gr/tyres/2026/suzuka/');
   assert.equal(projection.rounds[2].plans.tyres.url, 'https://f1-stories.gr/tyres/2026/sepang/');
@@ -81,7 +81,9 @@ test('generator writes deterministic bytes only when changed', () => {
 
 
 test('deployment enabled flag is required, boolean, and faithfully projected', () => {
-  assert.equal(createRaceDeskProjection(registry, { ...lock, enabled: false }, 2026).enabled, false);
+  for (const enabled of [true, false]) {
+    assert.equal(createRaceDeskProjection(registry, { ...lock, enabled }, 2026).enabled, enabled);
+  }
   for (const enabled of [undefined, null, 'false', 0, 1]) {
     assert.throws(() => createRaceDeskProjection(registry, { ...lock, enabled }, 2026), TypeError);
   }
