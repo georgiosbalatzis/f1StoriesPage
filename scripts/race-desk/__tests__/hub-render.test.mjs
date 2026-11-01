@@ -106,6 +106,9 @@ test('session rows distinguish captured empty, unmapped and uncaptured results',
   assert.match(html, /Αγώνας<small>Δεν υπάρχει αντιστοίχιση/);
   assert.match(html, /Κατατακτήριες<small>Δεν υπάρχει καταγεγραμμένη απόκριση/);
   assert.match(html, /Sprint<small>Η καταγεγραμμένη απόκριση της πηγής δεν περιέχει αποτελέσματα/);
-  assert.match(html, /02 \/ ΑΠΟΤΕΛΕΣΜΑΤΑ/);
+  for (const heading of ['02 / ΑΠΟΤΕΛΕΣΜΑΤΑ', '03 / ΕΡΓΑΛΕΙΑ', '04 / ΙΣΤΟΡΙΕΣ', '05 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(html.includes(heading));
+  race.results = null;
+  const withoutResults = renderHub(race);
+  for (const heading of ['02 / ΕΡΓΑΛΕΙΑ', '03 / ΙΣΤΟΡΙΕΣ', '04 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(withoutResults.includes(heading));
   assert.doesNotMatch(html, /δεν (?:διεξήχθη|υπήρξε) sprint/i);
 });

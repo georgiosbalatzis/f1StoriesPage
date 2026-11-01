@@ -233,6 +233,19 @@ try {
     });
     await run.context.close();
   }
+  for (const width of [991, 992]) for (const javascriptEnabled of [false, true]) {
+    const run = await open({ width, javascriptEnabled });
+    await check(`results fit or expose scrolling at ${width}, JS ${javascriptEnabled}`, async () => {
+      await run.page.goto(origin + models.find(model => model.raceId === '2026-singapore-gp').path, { waitUntil: 'domcontentloaded' }); await ready(run.page);
+      for (const region of await run.page.locator('.gp-results-table-wrap').all()) {
+        const dimensions = await region.evaluate(el => ({ width: el.clientWidth, scrollWidth: el.scrollWidth }));
+        const hint = run.page.locator(`#${await region.getAttribute('aria-describedby')}`);
+        assert.equal(await hint.isVisible(), width < 992);
+        if (width >= 992) assert.ok(dimensions.scrollWidth <= dimensions.width, JSON.stringify(dimensions));
+      }
+    });
+    await run.context.close();
+  }
   const nav = await open({ width: 390, theme: 'light' });
   await check('mobile navigation, keyboard focus and theme toggle', async () => {
     await nav.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(nav.page);

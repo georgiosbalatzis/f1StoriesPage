@@ -80,3 +80,7 @@
 .race-desk-page .gp-results-table-wrap :is(th, td) { min-width: 7rem; }
 .race-desk-page .gp-results-table-wrap tbody th { min-width: 11rem; }
 .gp-results-table-wrap table { font-variant-numeric: tabular-nums; }
+@media (min-width: 992px) {
+  .gp-results-table-wrap table { table-layout: fixed; }
+  .race-desk-page .gp-results-table-wrap :is(th, td, tbody th) { min-width: 0; overflow-wrap: anywhere; }
+}
