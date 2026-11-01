@@ -44,8 +44,10 @@ try {
     await open('?tab=drivers&season=2026&round=16', '2026-16');
     await page.locator('[data-tab="constructors"]').first().click();
     assert.equal(new URL(page.url()).searchParams.get('round'), '16');
+    assert.match(await page.locator('#standings-report-meta-status').innerText(), /Γύρος 16/);
     await page.locator('[data-tab="pit-stops"]').first().click();
     assert.equal(new URL(page.url()).searchParams.get('round'), '16');
+    assert.doesNotMatch(await page.locator('#standings-report-meta-status').innerText(), /Γύρος 16/);
     await open('?tab=constructors&round=3', '2026-3');
     await open('?tab=drivers&embed=1&season=2026&round=16&focus=drivers-chart', '2026-16');
     assert.equal(new URL(await page.locator('#embed-footer-link').getAttribute('href')).searchParams.has('round'), false);

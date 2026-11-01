@@ -438,8 +438,9 @@ function updateStandingsReportContext(tabName) {
     if (!standingsReportMetaStatus) return;
     const seasonEl = document.getElementById('season-year');
     const roundEl = document.getElementById('round-num');
-    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
-    const round = roundEl && roundEl.textContent ? roundEl.textContent : '';
+    const championship = !pinnedRound || LIGHTWEIGHT_TABS.includes(tabName);
+    const season = championship && seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const round = championship && roundEl && roundEl.textContent ? roundEl.textContent : '';
     standingsReportMetaStatus.textContent = detail.note + ' · Σεζόν ' + season + (round ? ' · Γύρος ' + round : '');
 }
 
