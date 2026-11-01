@@ -124,7 +124,9 @@ try {
         const offset = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'longOffset' }).formatToParts(new Date(session.startUtc)).find(part => part.type === 'timeZoneName').value.replace('GMT', 'UTC');
         assert.ok(text.includes(offset));
       }
-      assert.match(text, resultsContexts.get(race.raceId)?.classifications?.[session.kind]?.status === 'available' ? /Καταγεγραμμένη κατάταξη Jolpica/i : /μη συνδεδεμένα/i);
+      const result = resultsContexts.get(race.raceId)?.classifications?.[session.kind];
+      const note = result?.status === 'available' ? /Καταγεγραμμένη κατάταξη Jolpica/i : ({ 'unmapped-race': /Δεν υπάρχει αντιστοίχιση/, 'uncaptured-session': /Δεν υπάρχει καταγεγραμμένη απόκριση/, 'provider-empty': /δεν περιέχει αποτελέσματα/ }[result?.reason] ?? /μη συνδεδεμένα/i);
+      assert.match(text, note);
     }
     const officialGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Επίσημη πηγή προγράμματος και ονομασίας' }) });
     const localGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας' }) });
@@ -248,7 +250,7 @@ try {
   await nav.context.close();
   const schedule = await open({ width: 390, theme: 'light' });
   await check('mobile schedule can be reached and scrolled with keyboard', async () => {
-    await schedule.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(schedule.page);
+    await schedule.page.goto(origin + models.find(model => model.raceId === '2026-japanese-gp').path, { waitUntil: 'domcontentloaded' }); await ready(schedule.page);
     const region = schedule.page.locator('.race-desk-table-wrap');
     assert.equal(await region.getAttribute('role'), 'region'); assert.equal(await region.getAttribute('tabindex'), '0');
     assert.ok(await region.getAttribute('aria-label'));
