@@ -519,7 +519,7 @@ test('full text loads only after explicit search, reports a failed shard and ret
     await page.locator('#research-question').fill('minisectors ακορντεόν');
     await page.locator('#research-question').press('Enter');
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
-    assert.match(await page.locator('#research-status').textContent(), /16\/17/);
+    assert.match(await page.locator('#research-status').textContent(), /17\/18/);
     assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 1);
     await page.unroute('**/research-content/2026-10.json');
     await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
