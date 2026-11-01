@@ -86,6 +86,7 @@ const failures = {
     'missing social image': [{ betcast: { 'og.png': null } }, /missing social image/],
     'unsafe service-worker scope': [{ telemetry: { 'assets/app.js': 'navigator.serviceWorker.register("/sw.js", { scope: "/" })' } }, /telemetry: unsafe service-worker scope \//],
     'stale required data': [{ tyres: tyresData('2026-10-23T00:00:00.000Z') }, /tyres: stale data snapshot/],
+    'missing required data manifest': [{ tyres: { 'data/manifest.json': null } }, /manifest\.json/],
     'production source map': [{ betcast: { 'assets/app.js.map': '{}' } }, /source map/],
     'internal documentation': [{ ghostcar: { 'README.md': '# notes' } }, /Internal documentation/],
     'development credentials': [{ tyres: { '.env': 'TOKEN=x' } }, /Credential-like file/],
@@ -105,6 +106,11 @@ for (const [name, [overrides, error]] of Object.entries(failures)) test(`${name}
 test('an old forecast is reported, not hidden; TYRES itself labels it stale', t => {
     const { run } = site(t, { tyres: tyresData(builtAt, '2026-10-22T08:27:26.810Z') });
     assert.deepEqual(run().freshness.warnings, ['2026-us: forecast 76 h old; TYRES labels it stale']);
+});
+
+test('a missing current forecast is reported in the release metadata', t => {
+    const { run } = site(t, { tyres: { 'data/weekends/2026-us.json': JSON.stringify({ raceId: '2026-us', dates: ['2026-10-23', '2026-10-24', '2026-10-25'] }) } });
+    assert.deepEqual(run().freshness.warnings, ['2026-us: forecast missing; TYRES labels it stale']);
 });
 
 test('a missing tool root fails validation', t => {
@@ -243,6 +249,7 @@ test('the dry run reports every endpoint the tools read at runtime, from the new
     assert.equal(readable(200, '*'), true);
     assert.equal(readable(200, 'https://f1-stories.gr'), true);
     assert.equal(readable(200, 'https://f1stories.gr'), false);
+    assert.equal(readable(429, '*'), false);
     assert.equal(readable(500, '*'), false);
 });
 
