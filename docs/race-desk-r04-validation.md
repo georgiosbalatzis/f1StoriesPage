@@ -1,10 +1,8 @@
-# R-04 results and championship context — draft contract
+# R-04 results and championship context — validation
 
 ## Dependency and current scope
 
-This isolated branch starts from R-03 `7b0ca4fa4b0641665e9a0d39b8e71c375f60158d` (draft #400). R-02C is merged as `f78ff614`. R-03 acceptance remains required before public hub integration. This commit stages independently useful pure adapters, source archives and numerical fixtures; it does not complete R-04 or publish a result section.
-
-Sol approved the bounded contract after independently checking the actual source responses and all Japanese GP reference calculations. Three Terra 6.1 High owners held disjoint archive/docs, pure domain, and independent test surfaces. Lead owns shared integration; Sol 6.1 Extra High remains the independent reviewer.
+R-03 is merged. The R-04 candidate integrates the archived adapter and six existing GP hubs on top of main `2fe5679c`; its implementation was tested at integrated commit `ad8086970d552ed6279d34cb4e126b82c6260caa`. Japan, Azerbaijan, Bahrain at Sepang and Singapore 2026 show validated classifications and championship comparisons. The 2025 Singapore and 2026 Mexico hubs show explicit unavailable states. The result sections are pre-rendered and make no runtime provider requests. This is a candidate for review, not a deployment or a claim of final sporting classification.
 
 ## Source contract
 
@@ -36,7 +34,9 @@ Sol independently validated all archive bytes/receipts and existing snapshot pin
 
 Reviewed SHA-256 values: domain `847d5be6fce75e1bb458e2c4c3e263b8205d2bb634155720cdacd3577b3c2ac4`; tests `c68fd82117d08ec89b4426279eeb6d4110636d65270049bdda8a2db63768004e`; manifest `8db4eb4808f99864ffa255ada5d507646e6ee92e8a039787210894380b72e604`.
 
-No R-04 public integration, assembled browser test, artifact leak build, fresh CI, merge or deployment is claimed. Remaining work is the limited hub section with source labels/unavailable states, static/mobile/theme/accessibility QA, preservation of existing Grid calculations and article embeds, full applicable build/test gates and Sol final integration review.
+On the integrated candidate, `npm run test:race-desk` passed 138 tests, `npm run test:standings` passed 21 tests, and `npm run test:blog` passed 437 tests with matching goldens. `npm run quality:static`, `npm run build:public` (including public-artifact validation, 4,276 files) and `npm run build:check` passed. The first blog attempt ran concurrently before its generated asset manifest existed and failed; the post-build rerun passed.
+
+The standalone GP hub browser suite passed 64 checks with 48 captures, covering the six pages across viewport sizes and themes; the Race Desk navigation browser smoke also passed. These checks use the local public artifact, not a deployed site. The pinned ecosystem rehearsal and independent integrated review are separate gates; their outcomes are not claimed here. No fresh CI, merge or deployment is claimed.
 
 ## No-go claims
 
