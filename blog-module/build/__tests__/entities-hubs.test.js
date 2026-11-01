@@ -333,6 +333,9 @@ function stampingFixture(t) {
         fs.copyFileSync(path.join(ROOT, rel), path.join(dir, rel));
     };
     for (const file of ['stamp-html.mjs', 'article-editorial.mjs', 'article-scope.mjs', 'remove-retired-comments.mjs', 'asset-manifest.json']) copy(`scripts/build/${file}`);
+    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) copy(`scripts/race-desk/${file}`);
+    copy('scripts/deployment/release.mjs');
+    copy('data/race-desk/registry.v1.json');
     copy('blog-module/build/youtube-facade.js');
     copy('images/icons/sprite.svg');
     const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/build/asset-manifest.json'), 'utf8'));

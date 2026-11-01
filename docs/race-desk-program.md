@@ -21,8 +21,8 @@ Sol's initial independent architecture review identified three R-01 gaps: name a
 | Milestone | Prerequisites | Current gate |
 | --- | --- | --- |
 | R-01 | Existing merged foundation | Contract follow-up #394 merged |
-| R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C awaits assembled acceptance |
-| R-03 | R-01 and R-02 | Local six-page draft stacked on R-02C; publication evidence gate and local QA implemented; not released |
+| R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C #397 merged after exact-head quality and assembled acceptance |
+| R-03 | R-01 and R-02 | Draft #400, retargeted to main after R-02C merge; corrected-candidate CI required; not released |
 | R-04 | R-01/R-03 and R-02 links where used | Not started |
 | R-05 | R-01/R-03 and editorial ownership clearance | Not started; independent of R-04 when files permit |
 | R-06 | R-01/R-03, R-04 for results | Not started |
@@ -37,3 +37,5 @@ The owner's merge/deployment authorization is recorded above and need not be req
 Requested models were selectable: Terra 6.1 High for two parallel read-only evidence/test audits and Sol 6.1 Extra High for architecture and a separate final review. Both Terra invocations failed before delivering findings with a usage-limit error. No Terra implementation or successful audit is claimed. The lead took evidence, implementation, fixtures, integration and verification ownership in the isolated `feat/race-desk-r01-contract` worktree; Sol retained independent read-only review. The original checkout's uncommitted changes were preserved.
 
 Terra availability recovered for R-02B. One Terra 6.1 High owner implemented only the parser/planner module and declarations; another independently owned only URL fixtures/tests. Sol 6.1 Extra High retained separate architecture/final review, and the lead owned integration/docs/build evidence. No overlapping writes occurred. This supersedes the initial R-01 availability limitation for the later work; it does not change that historical record.
+
+R-02C #397 merged on 2026-11-01 as `f78ff61403069fcae5926196409b47661861a032` after Site Quality 41232164420 and Ecosystem 41232164450 passed, including 15 actual assembled navigation groups and independent Sol final approval. Its normal production run is tracked separately; merge is not proof of deployment. R-03 #400 is now based on main and retains its own final gate.

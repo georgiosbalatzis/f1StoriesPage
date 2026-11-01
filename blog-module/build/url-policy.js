@@ -7,7 +7,7 @@ const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED = new Set([
     '404', 'archive', 'assets', 'authors', 'betcast', 'blog', 'blog-module', 'cname', 'dashboard', 'entities', 'f1telemetry',
     'feed', 'generate', 'ghostcar', 'housekeeping', 'images', 'index', 'node_modules', 'page', 'privacy',
-    'robots', 'scripts', 'search', 'section', 'sitemap', 'standings', 'stories', 'styles', 'sw', 'telemetry', 'tyres'
+    'race-desk', 'robots', 'scripts', 'search', 'section', 'sitemap', 'standings', 'stories', 'styles', 'sw', 'telemetry', 'tyres'
 ]);
 
 // The historical URL: the folder id, percent-encoded (Greek ids such as 20260227Τ stay readable on disk).
