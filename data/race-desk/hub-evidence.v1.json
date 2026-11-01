@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "scope": "Reviewed official identity labels and scheduled UTC starts only; no provider bindings, result/completion claims, official IANA verification, or changes to local source statuses.",
+  "approvals": [
+    {
+      "raceId": "2025-singapore-gp",
+      "localIdentity": {
+        "raceId": "2025-singapore-gp",
+        "season": 2025,
+        "eventName": "Singapore Grand Prix",
+        "displayName": "Singapore Grand Prix",
+        "venue": {
+          "venueId": "marina-bay",
+          "name": "Marina Bay Street Circuit",
+          "timeZone": "Asia/Singapore"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2025-10-03T09:30:00.000Z"
+          },
+          {
+            "kind": "fp2",
+            "startUtc": "2025-10-03T13:00:00.000Z"
+          },
+          {
+            "kind": "fp3",
+            "startUtc": "2025-10-04T09:30:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2025-10-04T13:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2025-10-05T12:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Singapore Grand Prix",
+        "venueName": "Marina Bay Street Circuit"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2025/singapore",
+        "finalUrl": "https://www.formula1.com/en/racing/2025/singapore",
+        "observedAt": "2026-10-31T18:14:55.087Z",
+        "sha256": "93917a792de0ad9038207a83b465e57e245a0326057dcf60db7a73b1482e683c",
+        "bytes": 556602
+      },
+      "official": {
+        "title": "FORMULA 1 SINGAPORE AIRLINES SINGAPORE GRAND PRIX 2025",
+        "meetingOfficialName": "FORMULA 1 SINGAPORE AIRLINES SINGAPORE GRAND PRIX 2025",
+        "circuitOfficialName": "Marina Bay Street Circuit",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/7b/meetingOfficialName",
+        "circuitReference": "Flight/7b/circuitOfficialName",
+        "gmtOffset": "+08:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Singapore Grand Prix",
+            "startUtc": "2025-10-03T09:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "fp2",
+            "name": "Practice 2 - Singapore Grand Prix",
+            "startUtc": "2025-10-03T13:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "fp3",
+            "name": "Practice 3 - Singapore Grand Prix",
+            "startUtc": "2025-10-04T09:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Singapore Grand Prix",
+            "startUtc": "2025-10-04T13:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Singapore Grand Prix",
+            "startUtc": "2025-10-05T12:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": []
+    },
+    {
+      "raceId": "2026-azerbaijan-gp",
+      "localIdentity": {
+        "raceId": "2026-azerbaijan-gp",
+        "season": 2026,
+        "eventName": "Azerbaijan Grand Prix",
+        "displayName": "Azerbaijan Grand Prix",
+        "venue": {
+          "venueId": "baku",
+          "name": "Baku City Circuit",
+          "timeZone": "Asia/Baku"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2026-09-24T08:30:00.000Z"
+          },
+          {
+            "kind": "fp2",
+            "startUtc": "2026-09-24T12:00:00.000Z"
+          },
+          {
+            "kind": "fp3",
+            "startUtc": "2026-09-25T08:30:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2026-09-25T12:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2026-09-26T11:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Azerbaijan Grand Prix",
+        "venueName": "Baku City Circuit"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2026/azerbaijan",
+        "finalUrl": "https://www.formula1.com/en/racing/2026/azerbaijan",
+        "observedAt": "2026-10-31T18:14:53.073Z",
+        "sha256": "6e8c7953b9e92361a3efcce7b1022d65d89f74414320a2095b5168c7a0380206",
+        "bytes": 566502
+      },
+      "official": {
+        "title": "FORMULA 1 QATAR AIRWAYS AZERBAIJAN GRAND PRIX 2026",
+        "meetingOfficialName": "FORMULA 1 QATAR AIRWAYS AZERBAIJAN GRAND PRIX 2026",
+        "circuitOfficialName": "Baku City Circuit",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/81/meetingOfficialName",
+        "circuitReference": "Flight/81/circuitOfficialName",
+        "gmtOffset": "+04:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Azerbaijan Grand Prix",
+            "startUtc": "2026-09-24T08:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "fp2",
+            "name": "Practice 2 - Azerbaijan Grand Prix",
+            "startUtc": "2026-09-24T12:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "fp3",
+            "name": "Practice 3 - Azerbaijan Grand Prix",
+            "startUtc": "2026-09-25T08:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Azerbaijan Grand Prix",
+            "startUtc": "2026-09-25T12:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Azerbaijan Grand Prix",
+            "startUtc": "2026-09-26T11:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": []
+    },
+    {
+      "raceId": "2026-bahrain-gp",
+      "localIdentity": {
+        "raceId": "2026-bahrain-gp",
+        "season": 2026,
+        "eventName": "Bahrain Grand Prix",
+        "displayName": "Bahrain Grand Prix in Malaysia",
+        "venue": {
+          "venueId": "sepang",
+          "name": "Sepang International Circuit",
+          "timeZone": "Asia/Kuala_Lumpur"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2026-10-02T04:30:00.000Z"
+          },
+          {
+            "kind": "fp2",
+            "startUtc": "2026-10-02T08:00:00.000Z"
+          },
+          {
+            "kind": "fp3",
+            "startUtc": "2026-10-03T04:30:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2026-10-03T08:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2026-10-04T07:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Bahrain Grand Prix in Malaysia",
+        "venueName": "Sepang International Circuit"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2026/bahrain",
+        "finalUrl": "https://www.formula1.com/en/racing/2026/bahrain",
+        "observedAt": "2026-10-31T18:14:53.044Z",
+        "sha256": "d15dcec7e33750d3a764a38c7f355ac7e1ae6146057618a43e75ea895980afe1",
+        "bytes": 548148
+      },
+      "official": {
+        "title": "FORMULA 1 GULF AIR BAHRAIN GRAND PRIX IN MALAYSIA 2026",
+        "meetingOfficialName": "FORMULA 1 GULF AIR BAHRAIN GRAND PRIX IN MALAYSIA 2026",
+        "circuitOfficialName": "Sepang International Circuit",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/81/meetingOfficialName",
+        "circuitReference": "Flight/81/circuitOfficialName",
+        "gmtOffset": "+08:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Bahrain Grand Prix",
+            "startUtc": "2026-10-02T04:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "fp2",
+            "name": "Practice 2 - Bahrain Grand Prix",
+            "startUtc": "2026-10-02T08:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "fp3",
+            "name": "Practice 3 - Bahrain Grand Prix",
+            "startUtc": "2026-10-03T04:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Bahrain Grand Prix",
+            "startUtc": "2026-10-03T08:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Bahrain Grand Prix",
+            "startUtc": "2026-10-04T07:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": [
+        "JSON-LD location address is inconsistent; no country claim derived."
+      ]
+    },
+    {
+      "raceId": "2026-japanese-gp",
+      "localIdentity": {
+        "raceId": "2026-japanese-gp",
+        "season": 2026,
+        "eventName": "Japanese Grand Prix",
+        "displayName": "Japanese Grand Prix",
+        "venue": {
+          "venueId": "suzuka",
+          "name": "Suzuka International Racing Course",
+          "timeZone": "Asia/Tokyo"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2026-03-27T02:30:00.000Z"
+          },
+          {
+            "kind": "fp2",
+            "startUtc": "2026-03-27T06:00:00.000Z"
+          },
+          {
+            "kind": "fp3",
+            "startUtc": "2026-03-28T02:30:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2026-03-28T06:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2026-03-29T05:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Japanese Grand Prix",
+        "venueName": "Suzuka Circuit"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2026/japan",
+        "finalUrl": "https://www.formula1.com/en/racing/2026/japan",
+        "observedAt": "2026-10-31T18:14:52.946Z",
+        "sha256": "d17142cbb09e6e944084c3a5a70460811521c0c070695c1a84084d4ccba466e2",
+        "bytes": 559724
+      },
+      "official": {
+        "title": "FORMULA 1 ARAMCO JAPANESE GRAND PRIX 2026",
+        "meetingOfficialName": "FORMULA 1 ARAMCO JAPANESE GRAND PRIX 2026",
+        "circuitOfficialName": "Suzuka Circuit",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/81/meetingOfficialName",
+        "circuitReference": "Flight/81/circuitOfficialName",
+        "gmtOffset": "+09:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Japanese Grand Prix",
+            "startUtc": "2026-03-27T02:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "fp2",
+            "name": "Practice 2 - Japanese Grand Prix",
+            "startUtc": "2026-03-27T06:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "fp3",
+            "name": "Practice 3 - Japanese Grand Prix",
+            "startUtc": "2026-03-28T02:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Japanese Grand Prix",
+            "startUtc": "2026-03-28T06:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Japanese Grand Prix",
+            "startUtc": "2026-03-29T05:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": []
+    },
+    {
+      "raceId": "2026-mexican-gp",
+      "localIdentity": {
+        "raceId": "2026-mexican-gp",
+        "season": 2026,
+        "eventName": "Mexican Grand Prix",
+        "displayName": "Mexican Grand Prix",
+        "venue": {
+          "venueId": "mexico-city",
+          "name": "Autódromo Hermanos Rodríguez",
+          "timeZone": "America/Mexico_City"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2026-10-30T18:30:00.000Z"
+          },
+          {
+            "kind": "fp2",
+            "startUtc": "2026-10-30T22:00:00.000Z"
+          },
+          {
+            "kind": "fp3",
+            "startUtc": "2026-10-31T17:30:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2026-10-31T21:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2026-11-01T20:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Mexico City Grand Prix",
+        "venueName": "Autódromo Hermanos Rodríguez"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2026/mexico",
+        "finalUrl": "https://www.formula1.com/en/racing/2026/mexico",
+        "observedAt": "2026-10-31T18:14:53.096Z",
+        "sha256": "6f9e4cc0d4c6104b96e5173d6a37b11b69f22952402755299c172edfc8f57d4a",
+        "bytes": 532152
+      },
+      "official": {
+        "title": "FORMULA 1 GRAN PREMIO DE LA CIUDAD DE MÉXICO 2026",
+        "meetingOfficialName": "FORMULA 1 GRAN PREMIO DE LA CIUDAD DE MÉXICO 2026",
+        "circuitOfficialName": "Autódromo Hermanos Rodríguez",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/7e/meetingOfficialName",
+        "circuitReference": "Flight/7e/circuitOfficialName",
+        "gmtOffset": "-06:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Mexico City Grand Prix",
+            "startUtc": "2026-10-30T18:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "fp2",
+            "name": "Practice 2 - Mexico City Grand Prix",
+            "startUtc": "2026-10-30T22:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "fp3",
+            "name": "Practice 3 - Mexico City Grand Prix",
+            "startUtc": "2026-10-31T17:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Mexico City Grand Prix",
+            "startUtc": "2026-10-31T21:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Mexico City Grand Prix",
+            "startUtc": "2026-11-01T20:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": []
+    },
+    {
+      "raceId": "2026-singapore-gp",
+      "localIdentity": {
+        "raceId": "2026-singapore-gp",
+        "season": 2026,
+        "eventName": "Singapore Grand Prix",
+        "displayName": "Singapore Grand Prix",
+        "venue": {
+          "venueId": "marina-bay",
+          "name": "Marina Bay Street Circuit",
+          "timeZone": "Asia/Singapore"
+        },
+        "sessions": [
+          {
+            "kind": "fp1",
+            "startUtc": "2026-10-09T08:30:00.000Z"
+          },
+          {
+            "kind": "sprint-qualifying",
+            "startUtc": "2026-10-09T12:30:00.000Z"
+          },
+          {
+            "kind": "sprint",
+            "startUtc": "2026-10-10T09:00:00.000Z"
+          },
+          {
+            "kind": "qualifying",
+            "startUtc": "2026-10-10T13:00:00.000Z"
+          },
+          {
+            "kind": "race",
+            "startUtc": "2026-10-11T12:00:00.000Z"
+          }
+        ]
+      },
+      "publicLabels": {
+        "displayName": "Singapore Grand Prix",
+        "venueName": "Marina Bay Street Circuit"
+      },
+      "source": {
+        "url": "https://www.formula1.com/en/racing/2026/singapore",
+        "finalUrl": "https://www.formula1.com/en/racing/2026/singapore",
+        "observedAt": "2026-10-31T18:14:53.152Z",
+        "sha256": "8be83beaa8cad5c4a2d2edd7cae994a9c6acaa3334c41ff9dc4013aa47e5dcda",
+        "bytes": 565014
+      },
+      "official": {
+        "title": "FORMULA 1 SINGAPORE AIRLINES SINGAPORE GRAND PRIX 2026",
+        "meetingOfficialName": "FORMULA 1 SINGAPORE AIRLINES SINGAPORE GRAND PRIX 2026",
+        "circuitOfficialName": "Marina Bay Street Circuit",
+        "titleReference": "application/ld+json[0]/name",
+        "meetingReference": "Flight/81/meetingOfficialName",
+        "circuitReference": "Flight/81/circuitOfficialName",
+        "gmtOffset": "+08:00",
+        "timeZoneBasis": "Registry IANA identifier; official session offset consistency only",
+        "sessions": [
+          {
+            "kind": "fp1",
+            "name": "Practice 1 - Singapore Grand Prix",
+            "startUtc": "2026-10-09T08:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/0/name",
+            "startReference": "application/ld+json[0]/subEvent/0/startDate"
+          },
+          {
+            "kind": "sprint-qualifying",
+            "name": "Sprint Qualifying - Singapore Grand Prix",
+            "startUtc": "2026-10-09T12:30:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/1/name",
+            "startReference": "application/ld+json[0]/subEvent/1/startDate"
+          },
+          {
+            "kind": "sprint",
+            "name": "Sprint - Singapore Grand Prix",
+            "startUtc": "2026-10-10T09:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/2/name",
+            "startReference": "application/ld+json[0]/subEvent/2/startDate"
+          },
+          {
+            "kind": "qualifying",
+            "name": "Qualifying - Singapore Grand Prix",
+            "startUtc": "2026-10-10T13:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/3/name",
+            "startReference": "application/ld+json[0]/subEvent/3/startDate"
+          },
+          {
+            "kind": "race",
+            "name": "Race - Singapore Grand Prix",
+            "startUtc": "2026-10-11T12:00:00.000Z",
+            "nameReference": "application/ld+json[0]/subEvent/4/name",
+            "startReference": "application/ld+json[0]/subEvent/4/startDate"
+          }
+        ]
+      },
+      "exclusions": []
+    }
+  ]
+}

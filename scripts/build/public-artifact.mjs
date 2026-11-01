@@ -16,6 +16,7 @@ import { inlineHeadStylesheets } from './inline-head-css.mjs';
 import { optimizePublicArticleImage } from './public-article-images.mjs';
 import { preservedPublicMedia, assertPreservedPublicMedia, rewriteOptimizedImageWidths } from './public-media-integrity.mjs';
 import { buildSocialCards } from './social-cards.mjs';
+import { hubFiles } from '../race-desk/hub-files.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -97,6 +98,7 @@ const STANDINGS_ROOT_FILES = new Set([
 ]);
 
 const ENTITY_PUBLIC_FILES = hubs.publicHubFiles();
+const GP_PUBLIC_FILES = new Set(hubFiles(REPO_ROOT));
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
 const PUBLIC_IMAGE_REFS = collectPublicImageRefs();
@@ -386,6 +388,7 @@ function shouldCopy(relPath) {
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (ENTITY_PUBLIC_FILES.has(relPath)) return true;
+    if (GP_PUBLIC_FILES.has(relPath)) return true;
     // The Edition Index's static section and month pages (blog-module/build/discovery.js).
     if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;

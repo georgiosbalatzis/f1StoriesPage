@@ -1201,7 +1201,9 @@ async function processBlogEntries(options = {}) {
     // After the article pages: an author page lists a story only once its page is public.
     checkBodyLinks(blogPosts, { today });
     const authorPages = writeAuthorPages(blogPosts, { today });
-    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages], authorPages);
+    const { writeRaceDeskHubs } = await import('../../scripts/build/race-desk-hubs.mjs');
+    const raceDeskPages = await writeRaceDeskHubs(REPO_ROOT);
+    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...raceDeskPages], authorPages);
     buildResearchContent(REPO_ROOT, fs.readFileSync(indexPath));
 
     // Standings caches are refreshed only by `npm run build:standings-data`.

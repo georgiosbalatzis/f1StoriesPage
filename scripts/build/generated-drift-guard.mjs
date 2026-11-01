@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { hubFiles } from '../race-desk/hub-files.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -38,6 +39,7 @@ const GENERATED_EXACT = new Set([
     'sw.js',
     'theme-overrides.min.css'
 ]);
+for (const file of hubFiles(REPO_ROOT)) GENERATED_EXACT.add(file);
 
 function toPosix(relPath) {
     return relPath.split(path.sep).join('/');

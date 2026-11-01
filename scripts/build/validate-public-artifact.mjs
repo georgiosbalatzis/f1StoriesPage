@@ -11,6 +11,8 @@ import hubs from '../../blog-module/build/entities/hubs.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
+import { hubFiles, readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
+import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import { SNAPSHOT_PATH, assertEnvelope } from '../intelligence/snapshot.mjs';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
 
@@ -19,6 +21,7 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 const BUILD_MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 const SITE_ORIGIN = 'https://f1-stories.gr';
+const GP_PUBLIC_FILES = new Set(hubFiles(REPO_ROOT));
 const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 * 1024);
 
 const FORBIDDEN_EXACT = new Set([
@@ -64,6 +67,7 @@ const REQUIRED_EXACT = [
     'standings/index.html',
     'authors/index.html',
     ...taxonomy.AUTHORS.map(author => taxonomy.authorPath(author).slice(1) + 'index.html'),
+    ...GP_PUBLIC_FILES,
     'standings/debrief-cache.json',
     'standings/dirty-air/index.json',
     'standings/standings-cache.json',
@@ -129,6 +133,8 @@ function forbiddenReason(relPath) {
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';
+    if (/^(?:scripts|data)\/race-desk\//.test(relPath)) return 'Race Desk source';
+    if (relPath.startsWith('race-desk/') && !GP_PUBLIC_FILES.has(relPath)) return 'unapproved GP output';
     if (/^blog-module\/build\//.test(relPath)) return 'blog build script';
     if (/\.min\.(?:css|js)\.map$/i.test(relPath)) return 'source map';
     if (/^images\/bg\/bg(?:6|7|8|9)(?:-|\.|$)/i.test(relPath)) return 'unapproved hero background';
@@ -1082,6 +1088,10 @@ function main() {
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
+    errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT)));
+    for (const file of GP_PUBLIC_FILES) {
+        if (!discovery.anchors.has(file)) errors.push(`${file}: GP absent from static discovery graph`);
+    }
     validateJsRefs(errors, files);
 
     if (errors.length) {

@@ -241,6 +241,36 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2025-singapore-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2026-azerbaijan-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2026-bahrain-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2026-japanese-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2026-mexican-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/race-desk/gp/2026-singapore-gp/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://f1-stories.gr/standings/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

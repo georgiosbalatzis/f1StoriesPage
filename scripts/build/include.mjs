@@ -3,6 +3,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = process.cwd();
 
@@ -76,11 +77,11 @@ function adoptCookiePartial(html) {
 const INCLUDE_RE =
   /^([ \t]*)<!--\s*@include\s+([^\s]+)\s*-->[ \t]*\n?(?:\1<!--\s*@include:begin\s+\2\s*-->[\s\S]*?\1<!--\s*@include:end\s+\2\s*-->[ \t]*\n?)?/gm;
 
-function resolveIncludePath(includePath, currentDir) {
+function resolveIncludePath(includePath, currentDir, root) {
   if (includePath.startsWith('./') || includePath.startsWith('../')) {
     return path.resolve(currentDir, includePath);
   }
-  return path.join(ROOT, includePath);
+  return path.join(root, includePath);
 }
 
 function indentBlock(source, indent) {
@@ -100,11 +101,11 @@ function renderTemplate(source, context, includePath) {
   });
 }
 
-async function loadPartial(includePath, currentDir, context, stack) {
-  const resolvedPath = resolveIncludePath(includePath, currentDir);
-  const relativePath = path.relative(ROOT, resolvedPath);
+async function loadPartial(includePath, currentDir, context, stack, root) {
+  const resolvedPath = resolveIncludePath(includePath, currentDir, root);
+  const relativePath = path.relative(root, resolvedPath);
 
-  if (!resolvedPath.startsWith(ROOT + path.sep)) {
+  if (!resolvedPath.startsWith(root + path.sep)) {
     throw new Error(`Refusing to include path outside repository: ${includePath}`);
   }
 
@@ -117,13 +118,14 @@ async function loadPartial(includePath, currentDir, context, stack) {
     partialSource,
     path.dirname(resolvedPath),
     context,
-    [...stack, resolvedPath]
+    [...stack, resolvedPath],
+    root
   );
 
   return renderTemplate(expanded, context, relativePath);
 }
 
-async function expandIncludes(source, currentDir, context, stack = []) {
+async function expandIncludes(source, currentDir, context, stack = [], root = ROOT) {
   const matches = [...source.matchAll(INCLUDE_RE)];
   if (!matches.length) return source;
 
@@ -133,7 +135,7 @@ async function expandIncludes(source, currentDir, context, stack = []) {
   for (const match of matches) {
     const [fullMatch, indent, includePath] = match;
     const start = match.index ?? 0;
-    const renderedPartial = await loadPartial(includePath, currentDir, context, stack);
+    const renderedPartial = await loadPartial(includePath, currentDir, context, stack, root);
     const generatedBlock = renderedPartial
       ? `${indent}<!-- @include ${includePath} -->\n${indent}<!-- @include:begin ${includePath} -->\n${indentBlock(renderedPartial, indent)}\n${indent}<!-- @include:end ${includePath} -->`
       : `${indent}<!-- @include ${includePath} -->\n${indent}<!-- @include:begin ${includePath} -->\n${indent}<!-- @include:end ${includePath} -->`;
@@ -145,6 +147,12 @@ async function expandIncludes(source, currentDir, context, stack = []) {
 
   output += source.slice(cursor);
   return output;
+}
+
+export async function expandPageIncludes(source, { root = ROOT, relativePath, context = {} }) {
+  const absolutePath = path.resolve(root, relativePath);
+  if (!absolutePath.startsWith(root + path.sep)) throw new Error('Page outside repository');
+  return expandIncludes(source, path.dirname(absolutePath), { ...DEFAULT_CONTEXT, ...context }, [absolutePath], root);
 }
 
 // Rendered articles carry the same @include markers (from template.html), so
@@ -189,7 +197,7 @@ async function main() {
   console.log(`Expanded HTML includes in ${changedFiles} file${changedFiles === 1 ? '' : 's'}.`);
 }
 
-main().catch((error) => {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 });

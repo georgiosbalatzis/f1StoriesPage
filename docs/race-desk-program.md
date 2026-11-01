@@ -12,7 +12,7 @@ Initial observed main was `ee48967a312a3242a155d950bdd6e560eb8b9b00`. [R-01 PR #
 
 R-02A subsequently merged as `c7140fd284beda526c1c909b7803d416f00dbac9` after fresh Site Quality and ecosystem rehearsal passed at `9e049303c8993375d661f4abbd923cdd891d4e87`. R-02B merged as `3608327e824b22b5d0e24436f7c2a8a948e0d476` after independent review, latest-main integration and successful fresh Site Quality at `3c2d578e`. Its normal production workflow also succeeded. The original dirty checkout remains untouched. [R-02B validation](race-desk-r02b-validation.md) distinguishes its historical artifact baseline from later editorial updates.
 
-R-02C connects the existing Grid navigation to actual accepted driver/constructor standings, with a compact projection and deferred optional enhancement. Its local code/browser/performance evidence is in [R-02C validation](race-desk-r02c-validation.md). Actual assembled child-route acceptance and exact-head CI remain required before merge and before declaring R-02 complete. R-03/R-09 reconnaissance was read-only; no dependent feature was implemented during that audit.
+R-02C connects the existing Grid navigation to actual accepted driver/constructor standings, with a compact projection and deferred optional enhancement. Its local code/browser/performance evidence is in [R-02C validation](race-desk-r02c-validation.md). Actual assembled child-route acceptance and exact-head CI remain required before merge and before declaring R-02 complete. That initial R-03/R-09 reconnaissance was read-only. R-03 has subsequently advanced as an isolated local draft stacked on R-02C; it remains dependent on R-02C acceptance and fresh CI.
 
 Sol's initial independent architecture review identified three R-01 gaps: name ambiguity results, ordered-session chronology and shared type declarations. This follow-up addresses only those foundation gaps. The registry, source mappings, public output, application code and deployment pins remain outside its write scope.
 
@@ -21,8 +21,8 @@ Sol's initial independent architecture review identified three R-01 gaps: name a
 | Milestone | Prerequisites | Current gate |
 | --- | --- | --- |
 | R-01 | Existing merged foundation | Contract follow-up #394 merged |
-| R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C awaits assembled acceptance |
-| R-03 | R-01 and R-02 | Not started; no public GP routes generated |
+| R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C #397 merged after exact-head quality and assembled acceptance |
+| R-03 | R-01 and R-02 | Draft #400, retargeted to main after R-02C merge; corrected-candidate CI required; not released |
 | R-04 | R-01/R-03 and R-02 links where used | Not started |
 | R-05 | R-01/R-03 and editorial ownership clearance | Not started; independent of R-04 when files permit |
 | R-06 | R-01/R-03, R-04 for results | Not started |
@@ -37,3 +37,5 @@ The owner's merge/deployment authorization is recorded above and need not be req
 Requested models were selectable: Terra 6.1 High for two parallel read-only evidence/test audits and Sol 6.1 Extra High for architecture and a separate final review. Both Terra invocations failed before delivering findings with a usage-limit error. No Terra implementation or successful audit is claimed. The lead took evidence, implementation, fixtures, integration and verification ownership in the isolated `feat/race-desk-r01-contract` worktree; Sol retained independent read-only review. The original checkout's uncommitted changes were preserved.
 
 Terra availability recovered for R-02B. One Terra 6.1 High owner implemented only the parser/planner module and declarations; another independently owned only URL fixtures/tests. Sol 6.1 Extra High retained separate architecture/final review, and the lead owned integration/docs/build evidence. No overlapping writes occurred. This supersedes the initial R-01 availability limitation for the later work; it does not change that historical record.
+
+R-02C #397 merged on 2026-11-01 as `f78ff61403069fcae5926196409b47661861a032` after Site Quality 41232164420 and Ecosystem 41232164450 passed, including 15 actual assembled navigation groups and independent Sol final approval. Its normal production run is tracked separately; merge is not proof of deployment. R-03 #400 is now based on main and retains its own final gate.
