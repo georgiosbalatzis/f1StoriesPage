@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Fri, 30 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 31 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Sete Gibernau: Πλησιάζοντας τον (prime), Rossi</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</guid>
+      <pubDate>Sat, 31 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Ένας αναβάτης που έφτασε δύο φορές στη θέση του αντιπάλου που μπορούσε πραγματικά να πιέσει τον Valentino Rossi.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>BetCast #278: Μεξικάνικη αποστολή... και Checo στους βαθμούς!</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261031J/article.html</link>
@@ -267,15 +276,6 @@
       <description>Με το δεξί έγινε η αρχή για το GP της Σιγκαπούρης. Με ένα ελεύθερο δοκιμαστικό είχαμε, όπως προβλέψαμε, «χάος».</description>
       <category>Στοίχημα</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Grand prix Σιγκαπούρης: Η νύχτα, η ιστορία και η απόλυτη δοκιμασία της Formula 1</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261009W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261009W/article.html</guid>
-      <pubDate>Thu, 08 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Από τους επικίνδυνους δρόμους του Thomson Road μέχρι τη φουτουριστική Marina Bay, το Grand Prix της Σιγκαπούρης εξελίχθηκε σε έναν από τους πιο…</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

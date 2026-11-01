@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261101W",
+      "title": "Sete Gibernau: Πλησιάζοντας τον (prime), Rossi",
+      "author": "Themis Charvalis",
+      "date": "2026-11-01",
+      "dateISO": "2026-11-01",
+      "displayDate": "1 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261101W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261101W/2.webp",
+      "excerpt": "Ένας αναβάτης που έφτασε δύο φορές στη θέση του αντιπάλου που μπορούσε πραγματικά να πιέσει τον Valentino Rossi.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261101W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Sete Gibernau",
+        "Honda",
+        "Ducati"
+      ],
+      "wordCount": 966,
+      "readingTime": "5 min",
+      "imageWidth": 1200,
+      "imageHeight": 1200,
+      "backgroundImageWidth": 450,
+      "backgroundImageHeight": 253,
+      "inputDigest": "bdcd924699299182d54958342406f86a908c9ba3882dd1059973bdb238167f0d"
+    },
+    {
       "id": "20261031J",
       "title": "BetCast #278: Μεξικάνικη αποστολή... και Checo στους βαθμούς!",
       "author": "Giannis Poulikidis",
@@ -11376,5 +11408,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-31T18:25:47.377Z"
+  "lastUpdated": "2026-11-01T10:27:36.279Z"
 }
