@@ -519,11 +519,11 @@ test('full text loads only after explicit search, reports a failed shard and ret
     await page.locator('#research-question').fill('minisectors ακορντεόν');
     await page.locator('#research-question').press('Enter');
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
-    assert.match(await page.locator('#research-status').textContent(), /16\/17/);
+    assert.match(await page.locator('#research-status').textContent(), /17\/18/);
     assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 1);
     await page.unroute('**/research-content/2026-10.json');
     await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
-    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('18/18'));
     await page.waitForSelector('.gb-research-results li'); assert.match(await page.locator('.gb-research-results').textContent(), /minisectors/);
     assert.ok(await page.locator('.gb-research-results .gb-research-passage').count() > 0);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -555,7 +555,7 @@ test('retry refreshes metadata after a manifest arrives from a newer deployment'
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
     await page.unroute('**/blog-index-data.json');
     await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
-    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('18/18'));
     await page.waitForSelector('.gb-research-results .gb-research-passage');
     assert.equal(requests.filter(url => url.endsWith('/blog-index-data.json')).length, 2);
 });
@@ -570,7 +570,7 @@ test('retry refreshes a stale manifest after a shard arrives from a newer deploy
     await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('Μερική κάλυψη'));
     await page.unroute('**/research-content/manifest.json');
     await page.getByRole('button', { name: 'Εύρεση αναφορών', exact: true }).click();
-    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('18/18'));
     await page.waitForSelector('.gb-research-results .gb-research-passage');
     assert.equal(requests.filter(url => url.endsWith('/research-content/manifest.json')).length, 2);
 });
@@ -579,7 +579,7 @@ test('full-text scoring yields and an edited query cancels the in-progress scan'
     const { page } = await pageFor(t); await open(page);
     await page.locator('#research-question').fill('minisectors ακορντεόν');
     await page.locator('#research-question').press('Enter');
-    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('17/17'));
+    await page.waitForFunction(() => document.getElementById('research-status').textContent.includes('18/18'));
     await page.evaluate(() => {
         const realNow = performance.now.bind(performance), realTimeout = window.setTimeout;
         let ticks = 0;
