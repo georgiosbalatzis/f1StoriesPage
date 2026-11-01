@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20261101-2W",
+      "title": "Marc Marquez: Σπουδαία νίκη στην Μαλαισία",
+      "author": "Themis Charvalis",
+      "date": "2026-11-01",
+      "dateISO": "2026-11-01",
+      "displayDate": "1 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261101-2W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261101-2W/2.webp",
+      "excerpt": "Ο Marc Márquez θριαμβεύει στη Μαλαισία, αποδεικνύοντας πως η κλάση, το ταλέντο και η δίψα για νίκες δεν χάνονται ποτέ.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261101-2W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Marc Marquez",
+        "Ducati",
+        "Malaysia gp",
+        "Legend",
+        "Champion"
+      ],
+      "wordCount": 280,
+      "readingTime": "2 min",
+      "imageWidth": 629,
+      "imageHeight": 487,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452,
+      "inputDigest": "907fa7c1009a7803b6526ba14fe72b8829d4ecb3bcb58540dbc5e89dc72db708"
+    },
+    {
       "id": "20261101W",
       "title": "Sete Gibernau: Πλησιάζοντας τον (prime), Rossi",
       "author": "Themis Charvalis",
@@ -11408,5 +11441,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-01T10:27:36.279Z"
+  "lastUpdated": "2026-11-01T18:36:46.816Z"
 }

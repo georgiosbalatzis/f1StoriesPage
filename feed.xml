@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sat, 31 Oct 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Marc Marquez: Σπουδαία νίκη στην Μαλαισία</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261101-2W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261101-2W/article.html</guid>
+      <pubDate>Sat, 31 Oct 2026 22:00:00 GMT</pubDate>
+      <description>Ο Marc Márquez θριαμβεύει στη Μαλαισία, αποδεικνύοντας πως η κλάση, το ταλέντο και η δίψα για νίκες δεν χάνονται ποτέ.</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
+    <item>
       <title>Sete Gibernau: Πλησιάζοντας τον (prime), Rossi</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Ο Βραζιλιάνος δεν ήταν ένας «τυχαίος» οδηγός της εποχής. Πρωταθλητής Formula Vauxhall Junior το 1997, τρίτος στη βρετανική Formula 3 το 1998 και δεύτερος…</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Betcast #276 - Singapore GP</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261010J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261010J/article.html</guid>
-      <pubDate>Fri, 09 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Με το δεξί έγινε η αρχή για το GP της Σιγκαπούρης. Με ένα ελεύθερο δοκιμαστικό είχαμε, όπως προβλέψαμε, «χάος».</description>
-      <category>Στοίχημα</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>
