@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "associations": [
+    {
+      "articleId": "20261008J",
+      "raceId": "2026-singapore-gp",
+      "publishedDay": "2026-10-08",
+      "sessions": null,
+      "evidence": {
+        "path": "blog-module/blog-entries/20261008J/source.txt",
+        "basis": "source-bytes",
+        "sha256": "bd03d063cfd74598a1e589aa27dc3d9645c50fb31400319200d51ac795fb12e8",
+        "reviewedRevision": "bceff750ed0431cc151d3677d77b3fd5519bada3",
+        "references": [
+          { "line": 7, "quote": "πρωτάθλημα του 2026" },
+          { "line": 13, "quote": "αυτό το τριήμερο θα έχουμε αγώνα Sprint" },
+          { "line": 15, "quote": "Singapore Grand Prix 2026" }
+        ],
+        "note": "The body identifies the 2026 championship and upcoming Singapore weekend; historical comparisons do not add editions."
+      }
+    },
+    {
+      "articleId": "20261012W",
+      "raceId": "2026-singapore-gp",
+      "publishedDay": "2026-10-12",
+      "sessions": null,
+      "evidence": {
+        "path": "blog-module/blog-entries/20261012W/source.txt",
+        "basis": "source-bytes",
+        "sha256": "ec5249b073424bce72161e48e9ef9e7c7d1e013190eee1432db3226ef35ef136",
+        "reviewedRevision": "bceff750ed0431cc151d3677d77b3fd5519bada3",
+        "references": [
+          { "line": 7, "quote": "τη νίκη στο Sprint του Σαββάτου" },
+          { "line": 13, "quote": "Η Σιγκαπούρη ήταν μια πίστα" },
+          { "line": 17, "quote": "στη Marina Bay και η δεύτερη νίκη του στη φετινή σεζόν" }
+        ],
+        "note": "The Singapore weekend and current-season context are read with the reviewed publication day and registry race date; the article's claims are not independently verified here."
+      }
+    },
+    {
+      "articleId": "20261031J",
+      "raceId": "2026-mexican-gp",
+      "publishedDay": "2026-10-31",
+      "sessions": null,
+      "evidence": {
+        "path": "blog-module/blog-entries/20261031J/source.txt",
+        "basis": "source-bytes",
+        "sha256": "04187725765a10c57e5b662a12059d13284715e4b5128e24a1a48b9a4aee84d9",
+        "reviewedRevision": "bceff750ed0431cc151d3677d77b3fd5519bada3",
+        "references": [
+          { "line": 8, "quote": "Τα πρώτα δύο ελεύθερα δοκιμαστικά" },
+          { "line": 10, "quote": "Η πίστα του Μεξικού" },
+          { "line": 12, "quote": "Θα περιμένουμε να δούμε και το FP3" },
+          { "line": 14, "quote": "4 σημεία για κατατακτήριες και αγώνα" }
+        ],
+        "note": "Mexico practice and upcoming qualifying and race are read with the publication day in the registry weekend; this is a betting preview, not a result or verified prediction."
+      }
+    }
+  ]
+}
