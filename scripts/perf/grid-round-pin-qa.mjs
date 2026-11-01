@@ -51,6 +51,10 @@ try {
     await open('?tab=constructors&round=3', '2026-3');
     await open('?tab=drivers&embed=1&season=2026&round=16&focus=drivers-chart', '2026-16');
     assert.equal(new URL(await page.locator('#embed-footer-link').getAttribute('href')).searchParams.has('round'), false);
+    for (const tab of ['quali-gaps', 'lap1-gains']) {
+        await open(`?tab=${tab}&embed=1&season=2026&round=3&focus=panel-${tab}`, '2026-3');
+        assert.doesNotMatch(await page.locator('#embed-footer-meta').innerText(), /Γύρο 3/);
+    }
     await open('?round=0', null);
     await open('?tab=pit-stops&season=2026&round=3', '2026-3');
     // A valid different season must be requested rather than silently using this year.

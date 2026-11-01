@@ -692,7 +692,7 @@ function refreshEmbedFooter() {
     const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
     const round = roundEl && roundEl.textContent ? roundEl.textContent.trim() : '';
     const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
-    const isStandingsTarget = SHARE_TARGETS[target] && ['drivers', 'constructors'].indexOf(SHARE_TARGETS[target].tab) !== -1;
+    const isStandingsTarget = SHARE_TARGETS[target] && LIGHTWEIGHT_TABS.includes(SHARE_TARGETS[target].tab);
 
     // Season-cumulative views are "as of round N". Session-scoped tabs (tyre pace, dirty air, track
     // dominance, pit stops, debrief) already name their own race in the embed, so no round is claimed.
@@ -701,8 +701,8 @@ function refreshEmbedFooter() {
 
     const parts = ['F1 Stories'];
     if (isStandingsTarget) parts.push(String(latestStandingsMeta.source || 'Jolpica F1').split(' · ')[0]);
-    parts.push('Σεζόν ' + season);
-    if (isSeasonView && round) {
+    parts.push('Σεζόν ' + (pinnedRound && !isStandingsTarget ? YEAR : season));
+    if (isSeasonView && round && (!pinnedRound || isStandingsTarget)) {
         const raceName = isStandingsTarget && latestStandingsMeta.raceName
             ? ' · ' + String(latestStandingsMeta.raceName).replace(/ Grand Prix/, ' GP')
             : '';
