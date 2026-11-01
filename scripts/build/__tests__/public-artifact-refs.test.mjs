@@ -10,6 +10,8 @@ import { validateHtmlRefs, validateJsRefs, validateSearchDestinations } from '..
 import { injectSecurityMeta, securityHeadersText } from '../security-policy.mjs';
 import taxonomy from '../../../blog-module/taxonomy.js';
 import { sealSnapshot } from '../../intelligence/snapshot.mjs';
+import { readResultsContexts } from '../../race-desk/results-files.mjs';
+import { renderResultsSection } from '../../race-desk/results-render.mjs';
 import { createPublicationModels } from '../../race-desk/hub-publication.mjs';
 
 const validator = fileURLToPath(new URL('../validate-public-artifact.mjs', import.meta.url));
@@ -182,12 +184,14 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
-    for (const file of ['hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
     }
     write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));
     write(root, 'scripts/deployment/sources.json', fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
-    for (const file of ['registry.v1.json', 'hub-evidence.v1.json']) write(root, `data/race-desk/${file}`, fs.readFileSync(new URL(`../../../data/race-desk/${file}`, import.meta.url)));
+    for (const file of ['registry.v1.json', 'hub-evidence.v1.json', 'results.v1.json']) write(root, `data/race-desk/${file}`, fs.readFileSync(new URL(`../../../data/race-desk/${file}`, import.meta.url)));
+    fs.cpSync(new URL('../../../data/race-desk/captures', import.meta.url), path.join(root, 'data/race-desk/captures'), { recursive: true });
+    for (const round of [2, 3, 14, 15, 16, 17]) write(root, `standings/rounds/2026-${round}.json`, fs.readFileSync(new URL(`../../../standings/rounds/2026-${round}.json`, import.meta.url)));
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));
@@ -203,6 +207,7 @@ function cliFixture(t) {
     const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json')));
     const evidence = JSON.parse(fs.readFileSync(path.join(root, 'data/race-desk/hub-evidence.v1.json')));
     const gpModels = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
+    const resultsContexts = readResultsContexts(root, registry);
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
         'index.html': [...common, 'home.css'],
@@ -242,7 +247,7 @@ function cliFixture(t) {
             ? '<meta name="robots" content="noindex, nofollow">'
             : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
         const escape = value => value.replaceAll('&', '&amp;').replaceAll('\"', '&quot;');
-        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}` : '';
+        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderResultsSection(resultsContexts.get(gp.raceId))}` : '';
         write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
             <body class="editorial-page home-page archive-page article-page standings-page authors-page${gp ? ' race-desk-page' : ''}">${markers}${gpContent}
             <script src="/blog-module/taxonomy.min.js"></script><script src="/blog-module/blog-index.min.js"></script>

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { readResultsContexts } from '../race-desk/results-files.mjs';
+import { validateResultsOutput } from '../race-desk/results-validation.mjs';
 // validate-data-contracts.mjs - fail builds when generated JSON/XML contracts drift.
 
 import fs from 'node:fs';
@@ -655,6 +657,7 @@ function main() {
                 const sourceLock = JSON.parse(fs.readFileSync(relAbs('scripts/deployment/sources.json'), 'utf8'));
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
+                validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/results', error));
                 validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT)).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);

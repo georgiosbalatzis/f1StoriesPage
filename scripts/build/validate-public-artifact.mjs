@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { readResultsContexts } from '../race-desk/results-files.mjs';
+import { validateResultsOutput } from '../race-desk/results-validation.mjs';
 // validate-public-artifact.mjs — fail if dist/ contains private/source clutter.
 
 import fs from 'node:fs';
@@ -1088,6 +1090,7 @@ function main() {
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
+    errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT)));
     for (const file of GP_PUBLIC_FILES) {
         if (!discovery.anchors.has(file)) errors.push(`${file}: GP absent from static discovery graph`);

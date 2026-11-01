@@ -16,7 +16,7 @@ const writeJson = (file, value) => fs.writeFileSync(file, JSON.stringify(value))
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-hubs-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const rel of [registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
+  for (const rel of ['data/race-desk/results.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }

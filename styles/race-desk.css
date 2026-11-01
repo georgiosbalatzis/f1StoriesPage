@@ -62,3 +62,20 @@
   .race-desk-section-head, .race-desk-related { grid-template-columns: 1fr; gap: 1rem; }
   .race-desk-tools { grid-template-columns: 1fr; }
 }
+
+/* Captured results remain readable as complete tables at narrow widths. */
+.gp-results-group { margin-top: 3rem; }
+.gp-results-group h3 { margin: 0 0 .75rem; font-family: var(--font-brand); font-size: clamp(1.8rem, 3vw, 2.5rem); }
+.gp-results-group h4 { margin: 2rem 0 1rem; font-size: 1.15rem; }
+.gp-results-group > p, .gp-results-snapshots { max-width: 65ch; color: var(--text-secondary); line-height: 1.6; }
+.gp-results-source, .gp-results-snapshots { font-size: .85rem; overflow-wrap: anywhere; }
+.gp-results-snapshots { display: grid; gap: .5rem; margin: 1.5rem 0; }
+.gp-results-snapshots p { margin: 0 0 .25rem; }
+.gp-results-snapshots summary { cursor: pointer; }
+.gp-results-snapshots ul { padding-left: 1.25rem; }
+.gp-results-hint { margin: 1.25rem 0 .5rem; font-size: .85rem; }
+.gp-results-table-wrap { overflow-x: auto; }
+.gp-results-table-wrap:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+.race-desk-page .gp-results-table-wrap :is(th, td) { min-width: 7rem; }
+.race-desk-page .gp-results-table-wrap tbody th { min-width: 11rem; }
+.gp-results-table-wrap table { font-variant-numeric: tabular-nums; }

@@ -7,6 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { Launcher } from 'chrome-launcher';
+import { assertResultsPage } from './results-browser.mjs';
+import { readResultsContexts } from './results-files.mjs';
 import { createPublicationModels } from './hub-publication.mjs';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -19,6 +21,7 @@ const registry = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/regi
 const lock = JSON.parse(fs.readFileSync(path.join(repo, 'scripts/deployment/sources.json')));
 const evidence = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/hub-evidence.v1.json')));
 const models = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
+const resultsContexts = readResultsContexts(repo, registry);
 const races = new Map(registry.races.map(race => [race.raceId, race]));
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -83,6 +86,7 @@ try {
     const response = await page.goto(origin + model.path, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200);
     await ready(page);
+    await assertResultsPage(page, resultsContexts.get(model.raceId));
     const canonical = `https://f1-stories.gr${model.path}`;
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), canonical);
     assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'), canonical);
@@ -99,7 +103,7 @@ try {
     assert.ok(fonts.greekReady && fonts.faces.some(face => /IBM Plex Sans/i.test(face.family) && /370/i.test(face.unicodeRange) && face.status === 'loaded'), `Greek font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok(fonts.brandReady && fonts.faces.some(face => /Barlow Condensed/i.test(face.family) && face.status === 'loaded'), `brand font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok((await page.locator('main').innerText()).includes(model.venue.name));
-    const table = page.locator('main table');
+    const table = page.locator('.race-desk-table-wrap[aria-label="Πίνακας προγράμματος"] table');
     assert.equal(await table.count(), 1);
     assert.deepEqual(await table.locator('tbody time').evaluateAll(nodes => nodes.map(node => node.getAttribute('datetime'))), race.sessions.filter(s => s.startUtc).map(s => s.startUtc));
     const tableText = await table.innerText();
@@ -114,7 +118,7 @@ try {
         const offset = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'longOffset' }).formatToParts(new Date(session.startUtc)).find(part => part.type === 'timeZoneName').value.replace('GMT', 'UTC');
         assert.ok(text.includes(offset));
       }
-      assert.match(text, /μη συνδεδεμένα/i);
+      assert.match(text, resultsContexts.get(race.raceId)?.classifications?.[session.kind]?.status === 'available' ? /Καταγεγραμμένη κατάταξη Jolpica/i : /μη συνδεδεμένα/i);
     }
     const officialGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Επίσημη πηγή προγράμματος και ονομασίας' }) });
     const localGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας' }) });
@@ -193,6 +197,7 @@ try {
     await check(`${model.raceId}: ${width} ${theme} visual and keyboard`, async () => {
       assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(run.page);
       assert.equal((await run.page.locator('html').getAttribute('data-theme')) || 'dark', theme);
+      await assertResultsPage(run.page, resultsContexts.get(model.raceId));
       const layout = await run.page.evaluate(() => {
         const viewport = document.documentElement.clientWidth, main = document.querySelector('main');
         const rect = main.getBoundingClientRect();
