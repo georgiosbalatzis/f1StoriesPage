@@ -68,6 +68,29 @@ test('shared imports cannot hide an initial graph over the unchanged 68 KiB ceil
     assert.match(result.stderr, /standings initial graph/);
 });
 
+test('the optional navigation entry obeys the existing lazy entry cap', t => {
+    const { write, run } = fixture(t);
+    write('standings/standings.min.js', 'x');
+    write('standings/race-desk-navigation.min.js', 'x'.repeat(34 * 1024));
+    assert.equal(run().status, 0);
+    write('standings/race-desk-navigation.min.js', 'x'.repeat(34 * 1024 + 1));
+    const result = run();
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /standings\/race-desk-navigation\.min\.js/);
+});
+
+test('the optional navigation entry cannot evade the combined lazy total', t => {
+    const { write, run } = fixture(t);
+    write('standings/standings.min.js', 'x');
+    for (let index = 0; index < 5; index++) write(`standings/tabs/test-${index}.min.js`, 'x'.repeat(32 * 1024));
+    write('standings/race-desk-navigation.min.js', 'x'.repeat(30 * 1024));
+    assert.equal(run().status, 0);
+    write('standings/race-desk-navigation.min.js', 'x'.repeat(30 * 1024 + 1));
+    const result = run();
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /standings lazy total/);
+});
+
 const RELATED = 'blog-module/build/related.js', SCORE = 'blog-module/build/related-score.js', GROUP = 'NEXT UP (related.js + related-score.js)';
 const withGroup = (write, group, files = {}) => write('perf/size-budget.json', JSON.stringify({ thresholdPercent: 10,
     files: { 'scripts/shared-nav.js': 100, [RELATED]: 1000, [SCORE]: 1000, ...files }, ...(group == null ? {} : { groups: { [GROUP]: group } }) }));

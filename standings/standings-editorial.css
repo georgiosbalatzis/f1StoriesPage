@@ -30,7 +30,7 @@ body.standings-page {
 .standings-page .standings-header .container { max-width: 1476px; width: 100%; }
 .standings-page .standings-header { padding: 0; color: var(--text-primary); background: var(--bg-surface); }
 .standings-page .standings-masthead { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 0 7%; padding-top: 24px; padding-bottom: 32px; }
-.standings-page .standings-edition { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-top: 11px; margin-bottom: 24px; border-top: 1px solid var(--border); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
+.standings-page .standings-edition { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 20px; padding-top: 11px; margin-bottom: 24px; border-top: 1px solid var(--border); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
 /* Race Desk product switcher: hangs off the edition rule (the report tabs below underline instead). */
 .standings-page .race-desk-nav { display: flex; gap: 24px; margin-top: -11px; }
 .standings-page .race-desk-nav a { position: relative; display: flex; align-items: center; min-height: 44px; font: 700 .9375rem/1 var(--font-brand); letter-spacing: .06em; white-space: nowrap; color: var(--text-secondary); text-decoration: none; }
@@ -39,6 +39,7 @@ body.standings-page {
 .standings-page .race-desk-nav a[aria-current="page"] { color: var(--text-primary); }
 .standings-page .race-desk-nav a[aria-current="page"]::before { transform: scaleX(1); }
 .standings-page .race-desk-nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.standings-page .race-desk-context-note { flex-basis: 100%; min-block-size: 3em; margin: 0; color: var(--text-secondary); font: 400 .75rem/1.5 var(--font-body); letter-spacing: normal; }
 .standings-page .standings-title { margin: 0; color: var(--text-primary); font-weight: 400; letter-spacing: -.025em; min-width: 0; }
 .standings-page .standings-title-display { display: block; margin-left: -4px; font: 700 clamp(5.5rem, 10vw, 9rem)/.9 var(--font-brand); white-space: nowrap; letter-spacing: -.025em; }
 .standings-page .standings-title-display > span { color: var(--signal); }
@@ -350,6 +351,7 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
     .standings-page .race-desk-nav { flex: 1 0 100%; margin-top: 0; border-top: 1px solid var(--border); }
     /* Four products (THE GRID, TELEMETRY, GHOST CAR, TYRES) must fit 320px without wrapping or clipping. */
     .standings-page .race-desk-nav { justify-content: space-between; }
+    .standings-page .race-desk-context-note { min-block-size: 4.5em; }
     @media (max-width: 400px) { .standings-page .race-desk-nav { gap: 8px; } .standings-page .race-desk-nav a { letter-spacing: .03em; } }
     .standings-page .standings-title-display { font-size: clamp(3.5rem, 16vw, 4.5rem); margin-left: -2px; }
     .standings-page .standings-title-greek { margin-top: 10px; max-width: none; font-size: 1.125rem; }

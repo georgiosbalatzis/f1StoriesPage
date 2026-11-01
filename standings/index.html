@@ -29,11 +29,12 @@
 
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=a32ae21c">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=17dcf739">
     <!-- f1s:modulepreload:begin -->
     <link rel="modulepreload" href="/standings/chunks/chunk-LMW46ZBV.min.js">
     <link rel="modulepreload" href="/standings/chunks/chunk-PSADLYIK.min.js">
     <link rel="modulepreload" href="/standings/chunks/chunk-TCJI3BYJ.min.js">
+    <link rel="modulepreload" href="/standings/chunks/chunk-VE4432OG.min.js">
     <!-- f1s:modulepreload:end -->
     <link rel="preload" href="/standings/standings-cache.json" as="fetch" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
@@ -52,7 +53,7 @@
     <link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
     <noscript><link rel="stylesheet" href="standings.min.css?v=77770b92"></noscript>
     <link rel="stylesheet" href="/styles/editorial.min.css?v=82958c06">
-    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=7efb8f0c">
+    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=196df3c4">
     <script src="/scripts/theme-init.min.js?v=d8c05277"></script>
 </head>
 <body class="editorial-page standings-page">
@@ -124,10 +125,14 @@
                 <span>F1 STORIES / RACE DESK</span>
                 <nav class="race-desk-nav" aria-label="Race Desk" lang="en">
                     <a href="/standings/" aria-current="page">THE GRID</a>
-                    <a href="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/">TELEMETRY</a>
-                    <a href="https://georgiosbalatzis.github.io/ghostcar/">GHOST CAR</a>
-                    <a href="https://georgiosbalatzis.github.io/Tyres/">TYRES</a>
+                    <a href="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/" data-race-desk-tool="telemetry" aria-describedby="race-desk-openf1-context">TELEMETRY</a>
+                    <a href="https://georgiosbalatzis.github.io/ghostcar/" data-race-desk-tool="ghostcar" aria-describedby="race-desk-openf1-context">GHOST CAR</a>
+                    <a href="https://georgiosbalatzis.github.io/Tyres/" data-race-desk-tool="tyres" aria-describedby="race-desk-tyres-context">TYRES</a>
                 </nav>
+                <p class="race-desk-context-note" aria-live="polite">
+                    <span id="race-desk-tyres-context">Στο TYRES θα επιλέξεις αγώνα μέσα στο εργαλείο.</span>
+                    <span id="race-desk-openf1-context">Στα TELEMETRY / GHOST CAR θα επιλέξεις αγώνα μέσα στο εργαλείο.</span>
+                </p>
             </div>
             <h1 class="standings-title">
                 <span class="standings-title-display" lang="en">THE GRID<span>.</span></span>
@@ -458,7 +463,7 @@
 <script defer src="/scripts/shared-nav.min.js?v=46457253"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 
-<script type="module" src="standings.min.js?v=a32ae21c"></script>
+<script type="module" src="standings.min.js?v=17dcf739"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d00bcfb3"></script>
 </body>
 </html>

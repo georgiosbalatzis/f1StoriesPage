@@ -9,6 +9,8 @@ import taxonomy from '../../blog-module/taxonomy.js';
 import feed from '../../blog-module/build/feed.js';
 import search from '../../blog-module/search-destinations.js';
 import { validateRegistry } from '../race-desk/core/index.mjs';
+import { createRaceDeskProjection } from '../race-desk/projection.mjs';
+import raceDeskLinks from '../../standings/core/race-desk-links.generated.js';
 
 const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
@@ -646,6 +648,15 @@ function main() {
     if (errors.length === previousErrors) {
         const result = validateRegistry(registry);
         result.errors.forEach(error => addError(`${raceDeskPath}${error.path ? `:${error.path}` : ''}`, error.message));
+        if (result.valid) {
+            try {
+                const sourceLock = JSON.parse(fs.readFileSync(relAbs('scripts/deployment/sources.json'), 'utf8'));
+                const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
+                assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
+            } catch (error) {
+                addError('standings/core/race-desk-links.generated.js', error.message);
+            }
+        }
     }
     validateCompactBlogIndex();
     try { search.validateIndex(readJson('blog-module/search-destinations.json')); }

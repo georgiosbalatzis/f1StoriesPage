@@ -20,6 +20,7 @@ import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
 import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, embedIframeHTML, wireEmbedCapLinks } from './core/embed.js';
 import { loadPinnedStandings, parseRoundPin } from './core/rounds.js';
+import { acceptRaceDeskScopes, clearRaceDeskScopes, setRaceDeskYear } from './core/race-desk-bridge.js';
 import {
     renderMessage,
     renderTrustedHtml
@@ -1179,7 +1180,10 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     const source = meta && meta.source ? meta.source : 'Jolpica F1';
 
     const sameStandings = signature && signature === latestStandingsSignature;
-    if (sameStandings && source === latestStandingsMeta.source) return false;
+    if (sameStandings && source === latestStandingsMeta.source) {
+        acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
+        return false;
+    }
     latestStandingsSignature = signature;
     // The snapshot names the race; the live API payload doesn't, so keep the name while the round is unchanged.
     const raceName = meta && meta.raceName ? meta.raceName : (latestStandingsRound === String(round) ? latestStandingsMeta.raceName : '');
@@ -1198,6 +1202,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
         const seasonText = document.getElementById('season-year').textContent || YEAR;
         renderDriverStandingsPolish(dStandings, latestStandingsMeta, seasonText);
         if (cStandings.length) renderConstructorStandingsPolish(cStandings, teamDriverCodes(dStandings), latestStandingsMeta, seasonText);
+        acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
         return true;
     }
 
@@ -1209,8 +1214,10 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     updateStandingsReportContext(activeStandingsTab);
     refreshEmbedFooter();
 
+    clearRaceDeskScopes();
     renderDrivers(dStandings, {});
     renderConstructors(cStandings, dStandings);
+    acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
     return true;
 }
 
@@ -1312,6 +1319,7 @@ function loadStandings() {
 }
 
 function loadFromOpenF1Fallback() {
+    clearRaceDeskScopes();
     return fetchJSON(OPENF1 + '/sessions?session_type=Race&year=' + YEAR)
         .then(function(sessions) {
             validateOpenF1ArrayPayload(sessions, 'OpenF1 race sessions');
@@ -1787,6 +1795,8 @@ function init() {
         });
     }
 
+    setRaceDeskYear(YEAR);
+
     // Keep the first viewport useful while the tracked snapshot is fetched;
     // only the rows currently affected by the refresh need a placeholder.
     if (driversTable) renderTrustedHtml(driversTable, skelRows(3), 'loading driver standings rows');
@@ -1816,7 +1826,9 @@ function init() {
 
     // Always hydrate drivers/constructors in the background so adjacent
     // panels don't sit empty on the first tab switch.
-    loadStandings();
+    loadStandings().then(() => {
+        if (!isEmbedMode) import('./race-desk-navigation.js').catch(() => {});
+    });
 }
 
 init();

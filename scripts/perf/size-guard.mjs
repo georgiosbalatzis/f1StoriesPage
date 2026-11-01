@@ -186,6 +186,8 @@ function checkStandingsBundleBudgets() {
     const files = fs.readdirSync(path.join(standingsDir, 'tabs'), { withFileTypes: true })
         .filter(entry => entry.isFile() && entry.name.endsWith('.min.js'))
         .map(entry => `standings/tabs/${entry.name}`);
+    const optionalNavigation = 'standings/race-desk-navigation.min.js';
+    if (fileSize(optionalNavigation) != null) files.push(optionalNavigation);
     const chunksDir = path.join(standingsDir, 'chunks');
     const chunks = fs.existsSync(chunksDir)
         ? fs.readdirSync(chunksDir, { withFileTypes: true })

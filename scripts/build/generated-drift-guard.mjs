@@ -32,6 +32,7 @@ const GENERATED_EXACT = new Set([
     'privacy/terms.html',
     'scripts/build/asset-manifest.json',
     'standings/index.html',
+    'standings/core/race-desk-links.generated.js',
     'styles.min.css',
     'styles/vendor/bootstrap.slim.css',
     'sw.js',

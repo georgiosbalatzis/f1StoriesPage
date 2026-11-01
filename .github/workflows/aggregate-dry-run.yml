@@ -50,6 +50,8 @@ jobs:
         run: node scripts/deployment/verify-public.mjs --site "$SITE" | tee "$REPORTS/public-integrity.json"
       - name: Browser integration suite
         run: npm run test:integration -- --site "$SITE" --reports "$REPORTS"
+      - name: Race Desk navigation on the assembled artifact
+        run: npm run test:race-desk:browser -- --site "$SITE" --assembled --reports "$REPORTS/race-desk"
       # The gates build-pages runs on dist once aggregation is enabled, on this aggregate; kept in step by a test.
       - name: Publisher gates on the aggregate
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
