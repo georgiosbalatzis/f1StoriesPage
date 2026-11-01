@@ -122,8 +122,8 @@ test('save/reopen/edit/delete restores every editor image and never makes GitHub
     await page.reload();
     assert.match(await page.locator('#gen-token-state').textContent(), /ενεργό/);
     await setText(page, 'Πρόχειρο με εικόνες', '# Ενότητα\n\n[img-instert-tag]\n\n[img-instert-tag]\n\nΤέλος.');
-    await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
-    await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
+    await page.locator('label').filter({ has: page.locator('[name="gen-author"][value="Giannis Poulikidis"]') }).click();
+    await page.locator('label').filter({ has: page.locator('[name="gen-category"][value="Analysis"]') }).click();
     await page.locator('#gen-hero-input').setInputFiles(path.join(root, 'blog-module/blog-entries/20261010J/1.webp'));
     await page.locator('#gen-header-input').setInputFiles(path.join(root, 'blog-module/blog-entries/20261020W/1.webp'));
     await page.locator('#gen-content-input').setInputFiles(['3', '4'].map(slot => path.join(root, `blog-module/blog-entries/20261020W/${slot}.webp`)));
@@ -282,8 +282,8 @@ test('only explicit publish from a saved draft retains author/blog PR behavior a
     assert.ok((await page.evaluate(() => window.__events.length)) > 0);
     await setText(page, 'Άρθρο από πρόχειρο', 'Κείμενο για άμεση δημοσίευση.');
     await step(page, 0); await setExcerpt(page, 'Η ανάλυση του αγώνα: γιατί η McLaren & η Mercedes «χάνουν» χρόνο στα φρένα;');
-    await page.locator('[name="gen-author"][value="Giannis Poulikidis"]').check({ force: true });
-    await page.locator('[name="gen-category"][value="Analysis"]').check({ force: true });
+    await page.locator('label').filter({ has: page.locator('[name="gen-author"][value="Giannis Poulikidis"]') }).click();
+    await page.locator('label').filter({ has: page.locator('[name="gen-category"][value="Analysis"]') }).click();
     await step(page, 3); await page.waitForFunction(() => Boolean(window.F1S_ARTICLE_PREVIEW));
     await page.evaluate(() => { const original = window.F1S_ARTICLE_PREVIEW.render; window.F1S_ARTICLE_PREVIEW.render = async state => { window.__previewInput = JSON.stringify(state); return original(state); }; });
     await step(page, 4); await page.locator('#gen-save-draft').click(); await saved(page);
