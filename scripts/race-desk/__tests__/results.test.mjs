@@ -290,3 +290,31 @@ test('race grid and laps reject malformed values while preserving zero and unava
   assert.equal(result.entries[0].grid, '0'); assert.equal(result.entries[0].laps, '0');
   assert.equal(result.entries[1].grid, null); assert.equal(result.entries[1].laps, null);
 });
+
+test('canonical provider ranks, points and integer fields reject hostile representations', () => {
+  const race = raceFor('2026-japanese-gp'), capture = captureFor(race, 'race'), raw = read(capture.path);
+  const adapt = mutate => adaptJolpicaClassification({ race, sessionKind: 'race', ...mutateInput(capture, raw, mutate) });
+  const row = d => d.MRData.RaceTable.Races[0].Results[0];
+  for (const value of ['+1', '-1', '01', '1e2', ' 1', '1.', '.5']) invalid(adapt(d => { row(d).points = value; }));
+  for (const value of ['01', '+1', '1e2', '9007199254740992']) invalid(adapt(d => { row(d).grid = value; }));
+  for (const value of ['2', '01', '-']) invalid(adapt(d => { row(d).positionText = value; }));
+  for (const value of ['0', '0.5', '123.00']) assert.equal(adapt(d => { row(d).points = value; }).status, 'available');
+  const result = classify(race, 'race');
+  const retired = result.entries.filter(e => e.positionText === 'R');
+  assert.ok(retired.length); assert.ok(retired.every(e => e.position === null));
+  const standingCapture = archive.standings.find(c => c.round === 2), standingRaw = read(standingCapture.path);
+  for (const text of ['-', 'R', 'D', 'W', 'E', 'F', 'N']) {
+    const input = mutateInput(standingCapture, standingRaw, d => { const r = d.driverStandings.MRData.StandingsTable.StandingsLists[0].DriverStandings[0]; r.position = null; r.positionText = text; });
+    assert.equal(adaptChampionshipSnapshot({ season: 2026, round: 2, ...input }).drivers[0].position, null);
+    const forged = mutateInput(standingCapture, standingRaw, d => { d.driverStandings.MRData.StandingsTable.StandingsLists[0].DriverStandings[0].positionText = text; });
+    invalid(adaptChampionshipSnapshot({ season: 2026, round: 2, ...forged }));
+  }
+  for (const season of [1949, 2101, 2026.5, Number.MAX_SAFE_INTEGER + 1]) invalid(adaptChampionshipSnapshot({ season, round: 2, capture: standingCapture, raw: standingRaw }));
+});
+
+
+test('comparison rejects forged rank text and seasons', () => {
+  const before = snap(2), after = snap(3);
+  for (const text of ['2', 'R', '01']) { const forged = structuredClone(before); forged.drivers[0].positionText = text; invalid(compareChampionshipSnapshots({ before: forged, after })); }
+  for (const season of [1949, 2101]) { const a = structuredClone(before), b = structuredClone(after); a.season = b.season = season; invalid(compareChampionshipSnapshots({ before: a, after: b })); }
+});

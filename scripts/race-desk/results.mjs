@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 const kinds = { race: ['results', 'Results'], qualifying: ['qualifying', 'QualifyingResults'], sprint: ['sprint', 'SprintResults'] };
 const present = value => typeof value === 'string' && value.trim().length > 0;
-const decimal = value => typeof value === 'string' && /^[+-]?\d+(?:\.\d+)?$/.test(value);
+const decimal = value => typeof value === 'string' && /^(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value);
 const integer = value => typeof value === 'string' && /^(?:0|[1-9]\d*)$/.test(value) && Number.isSafeInteger(Number(value));
 const positive = value => integer(value) && Number(value) > 0;
 const utc = value => {
@@ -13,7 +13,9 @@ const utc = value => {
 const invalid = (errors, source) => ({ status: 'invalid', errors, source: source ?? null });
 const unavailable = (reason, source) => ({ status: 'unavailable', reason, source: source ?? null });
 const error = (errors, code, path) => errors.push({ code, path });
-const same = (a, b) => String(a) === String(b);
+const canonicalInteger = value => (typeof value === 'string' || typeof value === 'number') && integer(String(value));
+const same = (a, b) => canonicalInteger(a) && canonicalInteger(b) && String(a) === String(b);
+const validSeason = value => canonicalInteger(value) && Number(value) >= 1950 && Number(value) <= 2100;
 
 function urlMatches(value, pathname, allowQuery = true) {
   try {
@@ -33,10 +35,11 @@ function bytesAndJson(raw, capture, errors) {
 function pagination(mr, count, errors, path) {
   if (!integer(mr?.offset) || mr.offset !== '0' || !integer(mr?.total) || !integer(mr?.limit) || Number(mr.total) !== count || Number(mr.limit) < count) error(errors, 'incomplete-pagination', path);
 }
-function rank(row, errors, path) {
+function rank(row, errors, path, providerOrder = false) {
   if (!present(row?.positionText)) { error(errors, 'invalid-rank', `${path}.positionText`); return null; }
-  if (row.position == null && row.positionText === '-') return null;
-  if (!positive(row.position)) { error(errors, 'invalid-rank', `${path}.position`); return null; }
+  // Jolpica classification rows retain source order for unranked finishers.
+  if (['-', 'R', 'D', 'W', 'E', 'F', 'N'].includes(row.positionText) && (row.position == null || (providerOrder && row.positionText !== '-' && positive(row.position)))) return null;
+  if (!positive(row.position) || row.positionText !== row.position) { error(errors, 'invalid-rank', `${path}.position`); return null; }
   return Number(row.position);
 }
 function driver(d, errors, path) {
@@ -53,7 +56,7 @@ function unique(id, ids, errors, path) {
 }
 function optionalUnsignedInteger(value, errors, path) {
   if (value == null) return null;
-  if (typeof value !== 'string' || !/^\d+$/.test(value)) error(errors, 'invalid-field', path);
+  if (!integer(value)) error(errors, 'invalid-field', path);
   return value;
 }
 function optionalString(value, errors, path) {
@@ -68,7 +71,7 @@ export function adaptJolpicaClassification({ race, sessionKind, capture, raw } =
   if (!capture) return unavailable('uncaptured-session', null);
   const errors = [], mapping = race.sourceKeys.jolpica, binding = race.resultsBinding, kind = kinds[sessionKind];
   if (!kind) return invalid([{ code: 'session-mismatch', path: 'sessionKind' }], source);
-  if (!binding || binding.raceId !== race.raceId || !same(binding.season, mapping.season) || !same(binding.round, mapping.round) || !same(race.season, mapping.season) || binding.captures?.[sessionKind] !== capture.captureId) error(errors, 'identity-mismatch', 'race.resultsBinding');
+  if (!validSeason(mapping.season) || !(canonicalInteger(mapping.round) && Number(mapping.round) > 0) || !binding || binding.raceId !== race.raceId || !same(binding.season, mapping.season) || !same(binding.round, mapping.round) || !same(race.season, mapping.season) || binding.captures?.[sessionKind] !== capture.captureId) error(errors, 'identity-mismatch', 'race.resultsBinding');
   if (capture.provider !== 'jolpica' || !present(capture.captureId) || !present(capture.path) || !utc(capture.observedAt) || capture.httpStatus !== 200 || !Number.isSafeInteger(capture.rowCount) || capture.rowCount < 0) error(errors, 'invalid-provenance', 'capture');
   if (capture.raceId !== race.raceId || !same(capture.season, mapping.season) || !same(capture.round, mapping.round)) error(errors, 'identity-mismatch', 'capture');
   if (capture.sessionKind !== sessionKind) error(errors, 'session-mismatch', 'capture.sessionKind');
@@ -100,7 +103,7 @@ export function adaptJolpicaClassification({ race, sessionKind, capture, raw } =
     const path = `entries[${i}]`, d = driver(row?.Driver, errors, `${path}.Driver`), c = constructor(row?.Constructor, errors, `${path}.Constructor`);
     unique(d.driverId, ids, errors, `${path}.Driver.driverId`);
     const ranked = sessionKind === 'qualifying' && row?.positionText == null ? { ...row, positionText: row?.position } : row;
-    const result = { sourceIndex: i, ...d, ...c, position: rank(ranked, errors, path), positionText: ranked?.positionText };
+    const result = { sourceIndex: i, ...d, ...c, position: rank(ranked, errors, path, true), positionText: ranked?.positionText };
     if (sessionKind === 'qualifying') {
       for (const q of ['q1', 'q2', 'q3']) result[q] = optionalString(row?.[q.toUpperCase()] === '' ? null : row?.[q.toUpperCase()], errors, `${path}.${q}`);
     } else {
@@ -116,7 +119,7 @@ export function adaptJolpicaClassification({ race, sessionKind, capture, raw } =
 export function adaptChampionshipSnapshot({ season, round, capture, raw } = {}) {
   if (!capture) return unavailable(round === 0 ? 'missing-baseline' : 'missing-snapshot', null);
   const source = capture, errors = [];
-  if (!Number.isSafeInteger(season) || season < 1 || !Number.isSafeInteger(round) || round < 1 || capture.provider !== 'jolpica' || !present(capture.captureId) || !same(capture.season, season) || !same(capture.round, round) || capture.path !== `standings/rounds/${season}-${round}.json` || !/^[a-f0-9]{40}$/.test(capture.revision ?? '') || !utc(capture.generatedAt)) error(errors, 'invalid-provenance', 'capture');
+  if (!Number.isSafeInteger(season) || !validSeason(season) || !Number.isSafeInteger(round) || round < 1 || capture.provider !== 'jolpica' || !present(capture.captureId) || !same(capture.season, season) || !same(capture.round, round) || capture.path !== `standings/rounds/${season}-${round}.json` || !/^[a-f0-9]{40}$/.test(capture.revision ?? '') || !utc(capture.generatedAt)) error(errors, 'invalid-provenance', 'capture');
   const data = bytesAndJson(raw, capture, errors);
   if (data?.generatedAt !== capture.generatedAt || !utc(data?.generatedAt)) error(errors, 'invalid-provenance', 'generatedAt');
   const output = {};
@@ -178,7 +181,7 @@ export function compareChampionshipSnapshots({ before, after } = {}) {
   if (!before || before.status === 'unavailable') return unavailable(before?.reason === 'missing-baseline' ? 'missing-baseline' : 'missing-snapshot', before?.source);
   if (!after || after.status === 'unavailable') return unavailable('missing-snapshot', after?.source);
   const errors = [];
-  if (before.status !== 'available' || after.status !== 'available' || !Number.isSafeInteger(before.season) || before.season !== after.season || !Number.isSafeInteger(before.round) || after.round !== before.round + 1) error(errors, 'identity-mismatch', 'snapshots');
+  if (before.status !== 'available' || after.status !== 'available' || !Number.isSafeInteger(before.season) || !validSeason(before.season) || before.season !== after.season || !Number.isSafeInteger(before.round) || before.round < 1 || !Number.isSafeInteger(after.round) || after.round !== before.round + 1) error(errors, 'identity-mismatch', 'snapshots');
   for (const [label, snapshot] of [['before', before], ['after', after]]) {
     for (const group of ['drivers', 'constructors']) {
       if (!Array.isArray(snapshot[group]) || snapshot[group].length === 0) { error(errors, 'incomplete-pagination', `${label}.${group}`); continue; }
@@ -187,7 +190,7 @@ export function compareChampionshipSnapshots({ before, after } = {}) {
         if (!present(row?.entityId)) error(errors, 'invalid-identity', `${label}.${group}[${i}].entityId`);
         unique(row?.entityId, ids, errors, `${label}.${group}[${i}].entityId`);
         if (!decimal(row?.points)) error(errors, 'invalid-points', `${label}.${group}[${i}].points`);
-        if (!(row?.position === null || (Number.isSafeInteger(row?.position) && row.position > 0))) error(errors, 'invalid-rank', `${label}.${group}[${i}].position`);
+        if (!((row?.position === null && ['-', 'R', 'D', 'W', 'E', 'F', 'N'].includes(row?.positionText)) || (Number.isSafeInteger(row?.position) && row.position > 0 && row.positionText === String(row.position)))) error(errors, 'invalid-rank', `${label}.${group}[${i}].position`);
       }
     }
   }

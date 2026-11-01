@@ -96,3 +96,16 @@ test('gated official capture and local registry retain distinct attribution and 
   assert.match(hostile, /&lt;unsafe &amp; title&gt;/);
   assert.match(hostile, /&lt;unsafe alias&gt;/);
 });
+
+test('session rows distinguish captured empty, unmapped and uncaptured results', () => {
+  const race = model();
+  race.sessions = ['race', 'qualifying', 'sprint'].map(kind => ({ kind }));
+  const unavailable = reason => ({ status: 'unavailable', reason, source: null });
+  race.results = { classifications: { race: unavailable('unmapped-race'), qualifying: unavailable('uncaptured-session'), sprint: unavailable('provider-empty') }, comparison: unavailable('missing-snapshot') };
+  const html = renderHub(race);
+  assert.match(html, /Αγώνας<small>Δεν υπάρχει αντιστοίχιση/);
+  assert.match(html, /Κατατακτήριες<small>Δεν υπάρχει καταγεγραμμένη απόκριση/);
+  assert.match(html, /Sprint<small>Η καταγεγραμμένη απόκριση της πηγής δεν περιέχει αποτελέσματα/);
+  assert.match(html, /02 \/ ΑΠΟΤΕΛΕΣΜΑΤΑ/);
+  assert.doesNotMatch(html, /δεν (?:διεξήχθη|υπήρξε) sprint/i);
+});

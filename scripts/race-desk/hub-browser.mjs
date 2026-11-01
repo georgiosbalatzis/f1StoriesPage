@@ -87,6 +87,12 @@ try {
     assert.equal(response.status(), 200);
     await ready(page);
     await assertResultsPage(page, resultsContexts.get(model.raceId));
+    const resultRegion = page.locator('.gp-results-table-wrap').first();
+    if (await resultRegion.count()) {
+      assert.ok(await page.locator('.gp-results-hint').first().isVisible());
+      await resultRegion.focus(); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(250);
+      assert.ok(await resultRegion.evaluate(el => el.scrollLeft > 0), 'results scroll by keyboard with or without JavaScript');
+    }
     const canonical = `https://f1-stories.gr${model.path}`;
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), canonical);
     assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'), canonical);
@@ -198,6 +204,7 @@ try {
       assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(run.page);
       assert.equal((await run.page.locator('html').getAttribute('data-theme')) || 'dark', theme);
       await assertResultsPage(run.page, resultsContexts.get(model.raceId));
+      if (await run.page.locator('.gp-results-hint').count()) assert.equal(await run.page.locator('.gp-results-hint').first().isVisible(), width < 992);
       const layout = await run.page.evaluate(() => {
         const viewport = document.documentElement.clientWidth, main = document.querySelector('main');
         const rect = main.getBoundingClientRect();
@@ -262,6 +269,11 @@ try {
     assert.ok(focused, 'schedule region must be reachable by Tab');
     await schedule.page.keyboard.press('ArrowRight'); await schedule.page.waitForTimeout(250);
     assert.ok(await region.evaluate(el => el.scrollLeft > 0), 'ArrowRight must scroll the schedule');
+    const resultsRegion = schedule.page.locator('.gp-results-table-wrap').first();
+    assert.ok(await schedule.page.locator('.gp-results-hint').first().isVisible());
+    assert.equal(await resultsRegion.getAttribute('tabindex'), '0');
+    await resultsRegion.focus(); await schedule.page.keyboard.press('ArrowRight'); await schedule.page.waitForTimeout(250);
+    assert.ok(await resultsRegion.evaluate(el => el.scrollLeft > 0), 'ArrowRight must scroll results');
     assert.deepEqual(schedule.errors, []);
   });
   await schedule.context.close();
