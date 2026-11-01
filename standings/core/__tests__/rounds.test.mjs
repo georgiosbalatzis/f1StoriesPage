@@ -58,3 +58,11 @@ function makeIo(handlers) {
     const io = makeIo({ snapshot: () => Promise.reject(new Error('nope')), live: () => Promise.reject(new Error('down')) });
     await assert.rejects(() => loadPinnedStandings({ season: '2026', round: '4' }, io), /down/);
 }
+
+// Never label a different round's constructor or fallback standings as the requested round.
+{
+    const wrong = standings('2026', '3');
+    const io = makeIo({ snapshot: async () => ({ ...snapshot, constructorStandings: wrong }), live: async () => wrong });
+    await assert.rejects(() => loadPinnedStandings({ season: '2026', round: '4' }, io), /do not match/);
+    assert.ok(io.calls.some(call => call.startsWith('live:')));
+}
