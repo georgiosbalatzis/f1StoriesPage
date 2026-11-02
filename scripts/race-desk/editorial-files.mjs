@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import taxonomy from '../../blog-module/taxonomy.js';
 import { selectEditorialAssociations } from './editorial.mjs';
 
-export function readEditorialSelection(root, registry, { posts, today, publicRoot = root } = {}) {
-  if (today === undefined) throw new Error('today is required');
+export function readEditorialSelection(root, registry, { posts, today = taxonomy.athensDay(), publicRoot = root } = {}) {
   const read = file => fs.readFileSync(path.join(root, file));
   const manifest = JSON.parse(read('data/race-desk/editorial.v1.json'));
   const articles = posts ?? JSON.parse(read('blog-module/blog-source-cache.json')).posts;

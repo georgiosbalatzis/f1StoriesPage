@@ -9,7 +9,7 @@ const section = html => html.match(/<section class="race-desk-section race-desk-
 test('renders a story with a heading, link and Greek long date', () => {
   const html = section(renderHub(model([story()])));
   assert.match(html, /aria-labelledby="related-title"/);
-  assert.match(html, /<h2 id="related-title">Σχετικά άρθρα<\/h2>[\s\S]*<ol class="race-desk-stories"><li><h3><a href="https:\/\/f1-stories\.gr\/blog-module\/blog-entries\/first\/article\.html">Τίτλος first<\/a><\/h3><time datetime="2026-10-08">8 Οκτωβρίου 2026<\/time><\/li><\/ol>/);
+  assert.match(html, /<h2 id="related-title">Σχετικά άρθρα<\/h2>[\s\S]*<ol class="race-desk-stories" role="list"><li><h3><a href="https:\/\/f1-stories\.gr\/blog-module\/blog-entries\/first\/article\.html">Τίτλος first<\/a><\/h3><time datetime="2026-10-08">8 Οκτωβρίου 2026<\/time><\/li><\/ol>/);
   assert.match(html, /επιλογή δημοσιευμένων άρθρων/);
   assert.match(html, /δεν επαληθεύει κάθε ισχυρισμό/);
 });
