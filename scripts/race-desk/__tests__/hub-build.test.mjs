@@ -198,3 +198,29 @@ test('timeline capture drift leaves existing pages and home byte-identical', asy
   assert.deepEqual(result.map(item => fs.readFileSync(path.join(root, item.file))), before);
   assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
 });
+
+test('pace capture drift or a stale timeline pin leaves pages and home byte-identical; Singapore shows the receipted pace debrief', async t => {
+  const root = fixture(t), result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
+  const before = result.map(item => fs.readFileSync(path.join(root, item.file))), home = fs.readFileSync(path.join(root, 'index.html'));
+  for (const [item, html] of result.map((item, i) => [item, before[i].toString()])) {
+    const pace = html.match(/<section class="race-desk-section gp-pace"[\s\S]*?<\/section>/)[0];
+    if (item.path.includes('2026-singapore-gp')) {
+      // 22 drivers: one closed lap disclosure each; 47 reported stints in the overview (+1 header row) and 1,240 lap rows (+22 header rows).
+      assert.equal((pace.match(/<details class="gp-pace-details">/g) || []).length, 22);
+      assert.equal((pace.match(/<tr>/g) || []).length, 48 + 1240 + 22);
+      assert.match(pace, /επιλέξιμοι: 0/);
+      // #1 stint 1, laps 1–32: hand-checked from the receipted laps response (n=32, median 98.327 s, min 97.558 s).
+      assert.match(pace, /<th scope="row">#1 Lando NORRIS<\/th><td>1<\/td><td>SOFT<\/td><td>0<\/td><td>1–32<\/td><td>32<\/td><td>32 \/ 32<\/td><td>98,327 s \(n=32\)<\/td><td>97,558 s \(n=32\)<\/td>/);
+    } else assert.match(pace, /Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα\./);
+  }
+  const check = async mutate => {
+    const file = path.join(root, mutate.file), original = fs.readFileSync(file);
+    mutate.run(file);
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
+    assert.deepEqual(result.map(item => fs.readFileSync(path.join(root, item.file))), before);
+    assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
+    fs.writeFileSync(file, original);
+  };
+  await check({ file: 'data/race-desk/captures/openf1/11388-stints.response', run: file => fs.appendFileSync(file, ' ') });
+  await check({ file: 'data/race-desk/pace.v1.json', run: file => fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/("endpoint": "pit",\s*"captureId": "openf1-11388-pit",\s*"sha256": ")[0-9a-f]/, '$1z')) });
+});

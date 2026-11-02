@@ -19,8 +19,8 @@ test('accessible tables, caveats, attribution, escaping and formatting', () => {
   assert.match(html, /99,187 s/); assert.match(html, /100,050 s/); assert.match(html, /Μη διαθέσιμος/); assert.match(html, /Μη διαθέσιμη/); assert.match(html, /<td>0<\/td>/);
   assert.match(html, /&lt;script&gt;&quot;&amp;/); assert.doesNotMatch(html, /<script|secret-path|secret-capture|undefined|null|<svg|<img|\son\w+=/);
   assert.match(html, /https:\/\/openf1\.org\//); assert.match(html, /CC BY-NC-SA 4\.0/); assert.match(html, /<time datetime="2026-01-02">/); assert.match(html, /<time datetime="2026-01-03">/);
-  // 1 section, 1 h2, 1 closed driver disclosure and 3 captioned tables.
-  assert.equal((html.match(/<section\b/g) || []).length, 1); assert.equal((html.match(/<h2\b/g) || []).length, 1); assert.equal((html.match(/<details\b/g) || []).length, 1); assert.doesNotMatch(html, /<details[^>]*\bopen\b/); assert.equal((html.match(/<caption>/g) || []).length, 3);
+  // 1 section, 1 h2, 1 closed driver disclosure and 2 captioned tables (overview + the driver lap table).
+  assert.equal((html.match(/<section\b/g) || []).length, 1); assert.equal((html.match(/<h2\b/g) || []).length, 1); assert.equal((html.match(/<details\b/g) || []).length, 1); assert.doesNotMatch(html, /<details[^>]*\bopen\b/); assert.equal((html.match(/<caption>/g) || []).length, 2);
   assert.doesNotMatch(html, /<th\b(?! scope="(?:col|row)")/);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]); assert.equal(ids.length, new Set(ids).size);
 });
