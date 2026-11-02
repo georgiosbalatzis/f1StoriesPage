@@ -96,7 +96,9 @@ async function createPage(os = 'light', width = 1440) {
     return { context, page };
 }
 
-async function open(page, pathname) {
+// settle: keep the old fixed 900 ms for checks that follow asynchronous work after the ready selector
+// (lazy chunks, Standings' late link enhancement, the worker cleanup); other loads skip it unless controlled.
+async function open(page, pathname, { settle = false } = {}) {
     const response = await page.goto(origin + pathname, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200, pathname);
     await page.locator(readySelector(pathname)).first().waitFor();
@@ -104,7 +106,7 @@ async function open(page, pathname) {
     // Main's retired-worker cleanup (scripts/sw-cleanup.js) can intentionally reload this document once, but only
     // when a service worker controls it. Uncontrolled pages cannot reload, so only controlled ones wait it out.
     // A context destroyed mid-check means that reload has started.
-    if (await page.evaluate(() => !!navigator.serviceWorker?.controller).catch(() => true)) {
+    if (settle || await page.evaluate(() => !!navigator.serviceWorker?.controller).catch(() => true)) {
         await page.waitForTimeout(900);
         await page.locator(readySelector(pathname)).first().waitFor();
     }
@@ -196,7 +198,7 @@ try {
     const edges = [['/', '/standings/'], ['/', '/telemetry/'], ['/', '/ghostcar/'], ['/', '/tyres/'], ['/', '/betcast/'], ['/standings/', '/telemetry/'], ['/standings/', '/ghostcar/'], ['/standings/', '/tyres/'], ['/telemetry/', '/standings/'], ['/telemetry/', '/ghostcar/'], ['/telemetry/', '/tyres/'], ['/ghostcar/', '/standings/'], ['/ghostcar/', '/telemetry/'], ['/ghostcar/', '/tyres/'], ['/tyres/', '/standings/'], ['/tyres/', '/telemetry/'], ['/tyres/', '/ghostcar/'], ['/tyres/', '/betcast/'], ['/tyres/', '/'], ['/betcast/', '/']];
     for (const [from, to] of edges) {
         console.log('Navigation', from, to);
-        await open(page, from);
+        await open(page, from, { settle: true });
         const legacy = await page.locator('a[href*="georgiosbalatzis.github.io"], a[href^="https://f1stories.gr"], a[href^="https://www.f1stories.gr"]').count();
         assert.equal(legacy, 0, `${from}: legacy navigation`);
         let link = page.locator(`a[href="${to}"]`).filter({ visible: true }).first();
@@ -215,7 +217,7 @@ try {
         results.navigation.push({ from, via, to, href, actual: page.url() });
     }
     for (const pathname of ['/standings/', '/telemetry/', '/ghostcar/', '/tyres/']) {
-        await open(page, pathname);
+        await open(page, pathname, { settle: true });
         const desk = page.getByRole('navigation', { name: 'Race Desk' });
         assert.deepEqual((await desk.locator('a').allTextContents()).map(text => text.trim()), ['THE GRID', 'TELEMETRY', 'GHOST CAR', 'TYRES']);
         assert.equal(await desk.locator('[aria-current="page"]').count(), 1);
@@ -231,7 +233,7 @@ try {
     results.flows.push({ compatibilityRedirect: 'query/hash preserved', invalidNestedPaths: 'root 404' });
 
     for (const tab of ['telemetry', 'energy', 'trackmap', 'positions', 'intervals', 'tires', 'radio', 'incidents', 'weather', 'broadcast']) {
-        await open(page, '/telemetry/' + telemetryQuery.replace('tab=telemetry', 'tab=' + tab));
+        await open(page, '/telemetry/' + telemetryQuery.replace('tab=telemetry', 'tab=' + tab), { settle: true });
         results.flows.push({ lazyTelemetryTab: tab, loaded: true });
     }
     await open(page, '/telemetry/' + telemetryQuery + '#telemetry-speed-trace');
@@ -332,15 +334,17 @@ try {
     }
 
     // Main cleanup removes only its retired root registration/cache; hypothetical child state survives.
-    await open(page, '/');
+    await open(page, '/', { settle: true });
     await page.evaluate(async () => {
         await navigator.serviceWorker.register('/__p6-sw-root.js', { scope: '/' });
         await navigator.serviceWorker.register('/telemetry/__p6-sw.js', { scope: '/telemetry/' });
         await caches.open('f1s-shell-v40');
         await caches.open('f1s-ghostcar-local-test');
     });
-    await open(page, '/');
-    await page.waitForFunction(async () => (await navigator.serviceWorker.getRegistrations()).every(registration => registration.scope.endsWith('/telemetry/')));
+    await open(page, '/', { settle: true });
+    // Cleanup unregisters first and deletes caches after; wait for both before reading the state.
+    await page.waitForFunction(async () => (await navigator.serviceWorker.getRegistrations()).every(registration => registration.scope.endsWith('/telemetry/'))
+        && !(await caches.keys()).includes('f1s-shell-v40'));
     const workerState = await page.evaluate(async () => ({ scopes: (await navigator.serviceWorker.getRegistrations()).map(registration => new URL(registration.scope).pathname), caches: await caches.keys() }));
     assert.deepEqual(workerState.scopes, ['/telemetry/']);
     assert.ok(workerState.caches.includes('f1s-ghostcar-local-test'));
