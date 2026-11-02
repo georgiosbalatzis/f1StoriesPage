@@ -13,6 +13,8 @@ import { sealSnapshot } from '../../intelligence/snapshot.mjs';
 import { readResultsContexts } from '../../race-desk/results-files.mjs';
 import { readTimelineContexts } from '../../race-desk/timeline-files.mjs';
 import { renderTimelineSection } from '../../race-desk/timeline-render.mjs';
+import { readPaceContexts } from '../../race-desk/pace-files.mjs';
+import { renderPaceSection } from '../../race-desk/pace-render.mjs';
 import { renderResultsSection } from '../../race-desk/results-render.mjs';
 import { createPublicationModels } from '../../race-desk/hub-publication.mjs';
 
@@ -186,12 +188,12 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
-    for (const file of ['capture.mjs', 'capture-files.mjs', 'timeline-files.mjs', 'timeline.mjs', 'timeline-render.mjs', 'results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['capture.mjs', 'capture-files.mjs', 'timeline-files.mjs', 'timeline.mjs', 'timeline-render.mjs', 'pace-files.mjs', 'pace.mjs', 'pace-render.mjs', 'results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
     }
     write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));
     write(root, 'scripts/deployment/sources.json', fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
-    for (const file of ['registry.v1.json', 'hub-evidence.v1.json', 'results.v1.json', 'timeline.v1.json', 'publication-rights.v1.json']) write(root, `data/race-desk/${file}`, fs.readFileSync(new URL(`../../../data/race-desk/${file}`, import.meta.url)));
+    for (const file of ['registry.v1.json', 'hub-evidence.v1.json', 'results.v1.json', 'timeline.v1.json', 'pace.v1.json', 'publication-rights.v1.json']) write(root, `data/race-desk/${file}`, fs.readFileSync(new URL(`../../../data/race-desk/${file}`, import.meta.url)));
     fs.cpSync(new URL('../../../data/race-desk/captures', import.meta.url), path.join(root, 'data/race-desk/captures'), { recursive: true });
     // Zero recorded associations: a valid selection, so every GP page carries an empty stories section.
     write(root, 'data/race-desk/editorial.v1.json', '{ "schemaVersion": 1, "associations": [] }');
@@ -215,6 +217,7 @@ function cliFixture(t) {
     const gpModels = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
     const resultsContexts = readResultsContexts(root, registry);
     const timelines = readTimelineContexts(root, registry);
+    const paces = readPaceContexts(root, registry);
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
         'index.html': [...common, 'home.css'],
@@ -254,7 +257,7 @@ function cliFixture(t) {
             ? '<meta name="robots" content="noindex, nofollow">'
             : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
         const escape = value => value.replaceAll('&', '&amp;').replaceAll('\"', '&quot;');
-        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderResultsSection(resultsContexts.get(gp.raceId))}${renderTimelineSection(timelines.get(gp.raceId), { number: '03' })}<section class="race-desk-section race-desk-related" aria-labelledby="related-title"><h2 id="related-title">Σχετικά άρθρα</h2></section>` : '';
+        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderResultsSection(resultsContexts.get(gp.raceId))}${renderTimelineSection(timelines.get(gp.raceId), { number: '03' })}${renderPaceSection(paces.get(gp.raceId), { number: '04' })}<section class="race-desk-section race-desk-related" aria-labelledby="related-title"><h2 id="related-title">Σχετικά άρθρα</h2></section>` : '';
         write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
             <body class="editorial-page home-page archive-page article-page standings-page authors-page${gp ? ' race-desk-page' : ''}">${markers}${gpContent}
             <script src="/blog-module/taxonomy.min.js"></script><script src="/blog-module/blog-index.min.js"></script>
@@ -316,4 +319,20 @@ test('actual validator CLI accepts valid artifacts and exits nonzero for missing
     const missingScript = run();
     assert.equal(missingScript.status, 1, missingScript.stderr);
     assert.match(missingScript.stderr, /index\.html: missing local reference \/entry\.js/);
+});
+
+test('validator CLI rejects R-07 pace provenance in dist and a tampered pace section', t => {
+    const { dist, run } = cliFixture(t);
+    assert.equal(run().status, 0);
+    for (const relPath of ['data/race-desk/pace.v1.json', 'data/race-desk/captures/openf1/11388-laps.response', 'scripts/race-desk/pace.mjs']) {
+        write(dist, relPath, '[]');
+        const result = run();
+        assert.equal(result.status, 1, relPath);
+        fs.rmSync(path.join(dist, relPath.split('/')[0]), { recursive: true });
+    }
+    const page = path.join(dist, 'race-desk/gp/2026-singapore-gp/index.html'), html = fs.readFileSync(page, 'utf8');
+    write(dist, 'race-desk/gp/2026-singapore-gp/index.html', html.replace('Ρυθμός αγώνα &amp; stints</h2>', 'Ρυθμός αγώνα &amp; stints</h2><p>tampered</p>'));
+    const tampered = run();
+    assert.equal(tampered.status, 1);
+    assert.match(tampered.stderr, /pace section differs from the validated captures/);
 });

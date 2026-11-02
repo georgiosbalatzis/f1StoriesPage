@@ -16,7 +16,7 @@ const writeJson = (file, value) => fs.writeFileSync(file, JSON.stringify(value))
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-hubs-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const rel of ['data/race-desk/editorial.v1.json', 'blog-module/blog-source-cache.json', ...['20261012W', '20261008J', '20261031J'].flatMap(id => [`blog-module/blog-entries/${id}/source.txt`, `blog-module/blog-entries/${id}/article.html`]), 'data/race-desk/results.v1.json', 'data/race-desk/timeline.v1.json', 'data/race-desk/publication-rights.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
+  for (const rel of ['data/race-desk/editorial.v1.json', 'blog-module/blog-source-cache.json', ...['20261012W', '20261008J', '20261031J'].flatMap(id => [`blog-module/blog-entries/${id}/source.txt`, `blog-module/blog-entries/${id}/article.html`]), 'data/race-desk/results.v1.json', 'data/race-desk/timeline.v1.json', 'data/race-desk/pace.v1.json', 'data/race-desk/publication-rights.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }
@@ -54,7 +54,8 @@ test('generates six exact pages, discovery and stable bytes without touching unk
       assert.match(timeline, /href="https:\/\/creativecommons\.org\/licenses\/by-nc-sa\/4\.0\/"/);
     } else assert.match(timeline, /Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα\./);
     const numbers = [...html.matchAll(/<p class="race-desk-kicker">(\d\d) \/ /g)].map(match => Number(match[1]));
-    assert.equal(numbers.length, html.includes('02 / ΑΠΟΤΕΛΕΣΜΑΤΑ') ? 6 : 5);
+    assert.equal(numbers.length, html.includes('02 / ΑΠΟΤΕΛΕΣΜΑΤΑ') ? 7 : 6);
+    assert.equal((html.match(/<section class="race-desk-section gp-pace"/g) || []).length, 1);
     assert.deepEqual(numbers, numbers.map((_, i) => i + 1));
     const allIds = [...html.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(allIds).size, allIds.length);
@@ -196,4 +197,30 @@ test('timeline capture drift leaves existing pages and home byte-identical', asy
   await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
   assert.deepEqual(result.map(item => fs.readFileSync(path.join(root, item.file))), before);
   assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
+});
+
+test('pace capture drift or a stale timeline pin leaves pages and home byte-identical; Singapore shows the receipted pace debrief', async t => {
+  const root = fixture(t), result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
+  const before = result.map(item => fs.readFileSync(path.join(root, item.file))), home = fs.readFileSync(path.join(root, 'index.html'));
+  for (const [item, html] of result.map((item, i) => [item, before[i].toString()])) {
+    const pace = html.match(/<section class="race-desk-section gp-pace"[\s\S]*?<\/section>/)[0];
+    if (item.path.includes('2026-singapore-gp')) {
+      // 22 drivers: one closed lap disclosure each; 47 reported stints in the overview (+1 header row) and 1,240 lap rows (+22 header rows).
+      assert.equal((pace.match(/<details class="gp-pace-details">/g) || []).length, 22);
+      assert.equal((pace.match(/<tr>/g) || []).length, 48 + 1240 + 22);
+      assert.match(pace, /επιλέξιμοι: 0/);
+      // #1 stint 1, laps 1–32: hand-checked from the receipted laps response (n=32, median 98.327 s, min 97.558 s).
+      assert.match(pace, /<tbody><tr><th scope="rowgroup" rowspan="2">#1 Lando NORRIS<\/th><td>1<\/td><td>SOFT<\/td><td>0<\/td><td>1–32<\/td><td>32<\/td><td>32 \/ 32<\/td><td>98,327 s \(n=32\)<\/td><td>97,558 s \(n=32\)<\/td>/);
+    } else assert.match(pace, /Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα\./);
+  }
+  const check = async mutate => {
+    const file = path.join(root, mutate.file), original = fs.readFileSync(file);
+    mutate.run(file);
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
+    assert.deepEqual(result.map(item => fs.readFileSync(path.join(root, item.file))), before);
+    assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
+    fs.writeFileSync(file, original);
+  };
+  await check({ file: 'data/race-desk/captures/openf1/11388-stints.response', run: file => fs.appendFileSync(file, ' ') });
+  await check({ file: 'data/race-desk/pace.v1.json', run: file => fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/("endpoint": "pit",\s*"captureId": "openf1-11388-pit",\s*"sha256": ")[0-9a-f]/, '$1z')) });
 });

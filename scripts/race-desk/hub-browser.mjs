@@ -2,6 +2,7 @@
 // Browser acceptance of an existing public or assembled artifact. No build or provider data is fetched.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -55,7 +56,24 @@ const timelineCount = ['race_control', 'pit'].reduce((total, endpoint) => {
   return total + unique.size;
 }, 0);
 assert.ok(timelineCount > 0, 'Singapore pilot must contain observations');
-const timelinePrivate = ['timeline.v1.json', 'data/race-desk/captures', ...timelineInventory.captures.map(item => item.sha256)];
+const timelinePrivate = ['timeline.v1.json', 'data/race-desk/captures', ...timelineInventory.captures.flatMap(item => [item.sha256, item.captureId, item.requestUrl])];
+const paceInventory = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/pace.v1.json')));
+const pacePrivate = ['pace.v1.json', 'timelineBindings', 'reasonCodes', ...paceInventory.captures.flatMap(item => [item.sha256, item.captureId, item.requestUrl])];
+// Read and pin the actual receipt bytes independently of the pace implementation.
+const pacePayload = endpoint => {
+  const receipts = paceInventory.captures.filter(item => item.raceId === '2026-singapore-gp' && item.endpoint === endpoint);
+  assert.equal(receipts.length, 1, `one Singapore ${endpoint} capture`);
+  const receipt = receipts[0], bytes = fs.readFileSync(path.join(repo, receipt.path));
+  assert.equal(bytes.length, receipt.bytes);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), receipt.sha256);
+  const rows = JSON.parse(bytes); assert.equal(rows.length, receipt.rowCount); return rows;
+};
+const paceLaps = pacePayload('laps'), paceStints = pacePayload('stints');
+const paceDrivers = [...new Set(paceLaps.map(row => row.driver_number))].sort((a, b) => a - b);
+const uncertainDrivers = [...new Set(timelinePayload('pit').filter(pit => !paceStints.some(stint => stint.driver_number === pit.driver_number && stint.lap_end === pit.lap_number) || !paceStints.some(stint => stint.driver_number === pit.driver_number && stint.lap_start === pit.lap_number + 1)).map(pit => pit.driver_number))].sort((a, b) => a - b);
+// The three observed pit visits without a stint boundary belong to #6, #14 and #18.
+assert.deepEqual(uncertainDrivers, [6, 14, 18]);
+const formatTime = seconds => `${new Intl.NumberFormat('el-GR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(Math.floor(seconds * 1000 + 0.5 + 1e-9) / 1000)} s`;
 const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -123,9 +141,9 @@ try {
     await ready(page);
     await assertResultsPage(page, resultsContexts.get(model.raceId));
     const sections = page.locator('main section.race-desk-section');
-    assert.equal(await sections.count(), 6);
+    assert.equal(await sections.count(), 7);
     assert.deepEqual(await sections.evaluateAll(nodes => nodes.map(node => ({ id: node.getAttribute('aria-labelledby'), headings: [...node.querySelectorAll('h2')].map(h => h.id), kicker: node.querySelector('.race-desk-kicker')?.textContent.trim() }))), [
-      ['schedule-title', '01 / ΠΡΟΓΡΑΜΜΑ'], ['gp-results-title', '02 / ΑΠΟΤΕΛΕΣΜΑΤΑ'], ['gp-timeline-title', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ'], ['tools-title', '04 / ΕΡΓΑΛΕΙΑ'], ['related-title', '05 / ΙΣΤΟΡΙΕΣ'], ['sources-title', '06 / ΤΕΚΜΗΡΙΩΣΗ']
+      ['schedule-title', '01 / ΠΡΟΓΡΑΜΜΑ'], ['gp-results-title', '02 / ΑΠΟΤΕΛΕΣΜΑΤΑ'], ['gp-timeline-title', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ'], ['gp-pace-title', '04 / ΡΥΘΜΟΣ ΑΓΩΝΑ & STINTS'], ['tools-title', '05 / ΕΡΓΑΛΕΙΑ'], ['related-title', '06 / ΙΣΤΟΡΙΕΣ'], ['sources-title', '07 / ΤΕΚΜΗΡΙΩΣΗ']
     ].map(([id, kicker]) => ({ id, headings: [id], kicker })));
     const allIds = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));
     assert.equal(new Set(allIds).size, allIds.length, 'document IDs must be unique');
@@ -169,11 +187,66 @@ try {
       assert.equal(await timeline.locator('details, ol, .gp-timeline-list').count(), 0);
     }
     assert.doesNotMatch(await timeline.textContent(), /\b(?:null|undefined)\b/i);
+    const pace = page.locator('section.gp-pace[aria-labelledby="gp-pace-title"]');
+    assert.equal(await page.locator('section.gp-pace').count(), 1); assert.equal(await pace.count(), 1);
+    assert.equal(await pace.locator('h2').innerText(), 'Ρυθμός αγώνα & stints');
+    assert.doesNotMatch(await pace.textContent(), /\b(?:null|undefined|NaN|Infinity)\b/i);
+    assert.equal(await pace.locator('script, svg, img, canvas, [onclick]').count(), 0);
+    if (model.raceId === '2026-singapore-gp') {
+      const paceDetails = pace.locator('details.gp-pace-details');
+      assert.equal(await paceDetails.count(), paceDrivers.length);
+      assert.deepEqual(await paceDetails.evaluateAll(nodes => nodes.map(node => node.open)), paceDrivers.map(() => false), 'pace disclosures start closed');
+      assert.deepEqual(await paceDetails.evaluateAll(nodes => nodes.map(node => Number(node.querySelector('summary').textContent.match(/#(\d+)/)[1]))), paceDrivers);
+      const tables = pace.locator('table');
+      assert.equal(await tables.count(), 1 + paceDrivers.length);
+      assert.ok(await tables.evaluateAll(nodes => nodes.every(table => table.querySelector(':scope > caption')?.textContent.trim() && [...table.querySelectorAll('th')].every(th => ['col', 'row', 'rowgroup'].includes(th.getAttribute('scope'))))), 'pace tables need captions and scoped headers');
+      assert.equal(await pace.locator('details.gp-pace-details tbody tr').count(), paceLaps.length);
+      assert.ok(await pace.locator('.gp-pace-table-wrap[role="region"][tabindex="0"][aria-label]').count() === 1 + paceDrivers.length);
+      const labels = await pace.locator('.gp-pace-table-wrap').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')));
+      assert.ok(labels.every(Boolean) && new Set(labels).size === labels.length, 'pace region labels must be unique');
+      const summaries = await paceDetails.locator('summary').allTextContents();
+      assert.ok(summaries.every(text => text.trim()) && new Set(summaries).size === summaries.length, 'pace summary labels must be unique');
+      for (const [index, driver] of paceDrivers.entries()) {
+        const expected = paceLaps.filter(lap => lap.driver_number === driver).sort((a, b) => a.lap_number - b.lap_number);
+        const actual = await paceDetails.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.children].map(cell => cell.textContent.trim())));
+        assert.deepEqual(actual.map(row => [row[0], row[2]]), expected.map(lap => [String(lap.lap_number), lap.lap_duration === null ? 'Μη διαθέσιμος' : formatTime(lap.lap_duration)]), `driver #${driver} lap times`);
+      }
+      // The driver header spans that driver's stint rows (scope=rowgroup): carry it onto every row.
+      const overview = await tables.first().locator('tbody tr').evaluateAll(rows => { let driver = ''; return rows.map(row => { const cells = [...row.children].map(cell => cell.textContent.trim()); if (row.firstElementChild.tagName === 'TH') driver = cells.shift(); return [driver, ...cells]; }); });
+      const sortedStints = [...paceStints].sort((a, b) => a.driver_number - b.driver_number || a.stint_number - b.stint_number);
+      assert.equal(overview.length, sortedStints.length);
+      for (const [index, stint] of sortedStints.entries()) {
+        const row = overview[index], driver = stint.driver_number;
+        assert.match(row[0], new RegExp(`^#${driver}\\b`));
+        assert.deepEqual(row.slice(1, 5), [String(stint.stint_number), stint.compound, String(stint.tyre_age_at_start), `${stint.lap_start}–${stint.lap_end}`], `driver #${driver} stint metadata`);
+        const laps = paceLaps.filter(lap => lap.driver_number === driver && lap.lap_number >= stint.lap_start && lap.lap_number <= stint.lap_end);
+        const times = laps.map(lap => lap.lap_duration).filter(value => typeof value === 'number' && Number.isFinite(value) && value > 0).sort((a, b) => a - b);
+        assert.equal(row[6], `${laps.length} / ${times.length}`, `driver #${driver} stint counts`);
+        if (uncertainDrivers.includes(driver)) {
+          assert.deepEqual(row.slice(7, 9), ['Μη διαθέσιμος', 'Μη διαθέσιμος'], `driver #${driver} uncertain stint`);
+        } else {
+          assert.ok(times.length, `driver #${driver} stint has timed laps`);
+          const middle = Math.floor(times.length / 2), median = times.length % 2 ? times[middle] : (times[middle - 1] + times[middle]) / 2;
+          assert.deepEqual(row.slice(7, 9), [`${formatTime(median)} (n=${times.length})`, `${formatTime(times[0])} (n=${times.length})`], `driver #${driver} stint summary`);
+        }
+      }
+      const paceText = await pace.innerText();
+      for (const phrase of ['Δεν αποτελούν σύγκριση οδηγών ή γομών.', 'Δεν παρουσιάζεται δείγμα επιβεβαιωμένων καθαρών γύρων.', 'επιλέξιμοι: 0', 'Ανεπίσημη πηγή, χωρίς σύνδεση με τη Formula 1.']) assert.ok(paceText.includes(phrase), phrase);
+      const source = pace.locator('p.gp-pace-source');
+      assert.equal(await source.locator('a[href="https://openf1.org/"]').count(), 1); assert.equal(await source.locator('a[href="https://creativecommons.org/licenses/by-nc-sa/4.0/"]').count(), 1);
+      const first = paceDetails.first(), summary = first.locator('summary');
+      await summary.focus(); await page.keyboard.press('Enter'); assert.equal(await first.evaluate(node => node.open), true);
+      assert.ok(await first.locator('tbody tr').first().isVisible(), 'opened lap table is visible');
+      await page.keyboard.press('Space'); assert.equal(await first.evaluate(node => node.open), false);
+    } else {
+      assert.ok((await pace.innerText()).includes('Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα.'));
+      assert.equal(await pace.locator('details, table').count(), 0);
+    }
     const related = page.locator('section.race-desk-related[aria-labelledby="related-title"]');
     assert.equal(await page.locator('section.race-desk-related').count(), 1);
     assert.equal(await related.count(), 1);
     assert.equal(await related.locator('h2#related-title').innerText(), 'Σχετικά άρθρα');
-    assert.equal(await related.locator('.race-desk-kicker').innerText(), '05 / ΙΣΤΟΡΙΕΣ');
+    assert.equal(await related.locator('.race-desk-kicker').innerText(), '06 / ΙΣΤΟΡΙΕΣ');
     const ids = storyIds[model.raceId] || [], items = related.locator('ol.race-desk-stories > li');
     assert.equal(await related.locator('ol.race-desk-stories').count(), ids.length ? 1 : 0);
     assert.equal(await items.count(), ids.length);
@@ -195,6 +268,9 @@ try {
     const html = await response.text();
     for (const value of privateEvidence) assert.ok(!html.includes(value), 'editorial evidence must not appear in page source');
     for (const value of timelinePrivate) assert.ok(!html.includes(value), 'timeline provenance must not appear in page source');
+    for (const value of pacePrivate) assert.ok(!html.includes(value), 'pace provenance must not appear in page source');
+    // The Sources section intentionally cites the official schedule capture digest; the pace section must carry none.
+    assert.doesNotMatch(await pace.evaluate(node => node.outerHTML), /\b[a-f0-9]{64}\b|openf1-\d+-(?:laps|stints|drivers|pit|race_control|sessions)|https?:\/\/api\.openf1\.org\/v1\//i, 'provider provenance must not appear in the pace section');
     const resultRegion = page.locator('.gp-results-table-wrap').first();
     if (await resultRegion.count()) {
       assert.ok(await page.locator('.gp-results-hint').first().isVisible());
@@ -323,6 +399,17 @@ try {
         assert.ok(await summary.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'timeline summary focus must have a visible outline');
         assert.ok(await summary.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused timeline summary must not be covered');
         await run.page.keyboard.press('Enter'); assert.notEqual(await timelineDetails.getAttribute('open'), null);
+      }
+      const paceDetails = run.page.locator('.gp-pace-details');
+      if (await paceDetails.count()) {
+        const summary = paceDetails.first().locator('summary');
+        await summary.focus(); await run.page.keyboard.press('Tab'); await run.page.keyboard.press('Shift+Tab');
+        assert.ok(await summary.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'pace summary focus must have a visible outline');
+        assert.ok(await summary.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused pace summary must not be covered');
+        const region = run.page.locator('.gp-pace-table-wrap').first();
+        if (await region.evaluate(el => el.scrollWidth > el.clientWidth + 2)) { await region.evaluate(el => { el.scrollLeft = 0; }); await region.focus(); await run.page.keyboard.press('ArrowRight'); await run.page.waitForTimeout(250); assert.ok(await region.evaluate(el => el.scrollLeft > 0), 'pace overview scrolls by keyboard'); }
+        // Measure the expanded state: every driver disclosure open.
+        await paceDetails.evaluateAll(nodes => nodes.forEach(node => { node.open = true; }));
       }
       const layout = await run.page.evaluate(() => {
         const viewport = document.documentElement.clientWidth, main = document.querySelector('main');

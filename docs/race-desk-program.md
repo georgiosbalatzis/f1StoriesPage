@@ -27,10 +27,10 @@ Sol's initial independent architecture review identified three R-01 gaps: name a
 | R-01 | Existing merged foundation | Contract follow-up #394 merged |
 | R-02 | Merged R-01 contract | R-02A #393 and R-02B #395 merged; R-02C #397 merged after exact-head quality and assembled acceptance |
 | R-03 | R-01 and R-02 | Draft #400, retargeted to main after R-02C merge; corrected-candidate CI required; not released |
-| R-04 | R-01/R-03 and R-02 links where used | Not started |
-| R-05 | R-01/R-03 and editorial ownership clearance | Not started; independent of R-04 when files permit |
-| R-06 | R-01/R-03, R-04 for results | Not started |
-| R-07 | R-01/R-03/R-04 | Not started; may parallel R-06 with disjoint ownership |
+| R-04 | R-01/R-03 and R-02 links where used | Results and standings #402 merged and deployed |
+| R-05 | R-01/R-03 and editorial ownership clearance | GP Hub editorial stories #418 merged and deployed |
+| R-06 | R-01/R-03, R-04 for results | Race timeline R-06A #419 and R-06B #421 merged and deployed; Singapore 2026 race only |
+| R-07 | R-01/R-03/R-04 | Pace & stint debrief: R-07A #424 merged; R-07B adds the Singapore 2026 race section. Descriptive only, zero eligible clean-lap sample by policy |
 | R-08 | Actual evidence from R-04/R-06/R-07 | No GO decision; no predictive feature or backfill authorized |
 | R-09 | Implemented scope for final integration | No new gates claimed; fixture research may precede integration |
 

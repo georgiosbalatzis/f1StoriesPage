@@ -29,6 +29,6 @@ Coverage (`full`, `partial`, `empty`) describes the captured observations, never
 
 ## Page
 
-R-07A adds the rights scope, evidence contract, capture CLI, reader and model with synthetic tests. The production pace inventory is empty, so no public page changes. R-07B adds the first capture and the page section described here.
+R-07A (#424) added the rights scope, evidence contract, capture CLI, reader and model. R-07B adds the Singapore 2026 race capture (laps, stints and drivers retrieved 2026-11-02) and the page section. It is the only race with pace data; the other five hubs show that no source mapping is approved.
 
 The section «Ρυθμός αγώνα & stints» follows the race timeline. It contains a stint overview table and a closed disclosure per driver with the lap-by-lap table, including exclusion and uncertainty reasons and missing laps. It carries both caveats and the attribution. It is static HTML with no chart and no runtime JavaScript. Races without an approved mapping, capture or rights show one sentence saying so. Receipts, captures, hashes and inventories never reach visitor HTML or `dist`.

@@ -14,6 +14,7 @@ import { validateRegistry } from '../race-desk/core/index.mjs';
 import { createRaceDeskProjection } from '../race-desk/projection.mjs';
 import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
 import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
+import { readPaceContexts } from '../race-desk/pace-files.mjs';
 import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import { readHubEvidence } from '../race-desk/hub-files.mjs';
 import raceDeskLinks from '../../standings/core/race-desk-links.generated.js';
@@ -635,11 +636,12 @@ function main() {
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
                 validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/results', error));
-                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, registry, { today: taxonomy.athensDay() }), readTimelineContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/gp', error));
+                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, registry, { today: taxonomy.athensDay() }), readTimelineContexts(REPO_ROOT, registry), readPaceContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);
             }
             try { readTimelineContexts(REPO_ROOT, registry); } catch (error) { addError('data/race-desk/timeline.v1.json', error.message); }
+            try { readPaceContexts(REPO_ROOT, registry); } catch (error) { addError('data/race-desk/pace.v1.json', error.message); }
         }
     }
     validateCompactBlogIndex();

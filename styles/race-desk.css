@@ -132,3 +132,18 @@ body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16
 .gp-timeline-meta { color: var(--text-secondary); font-size: .85rem; font-variant-numeric: tabular-nums; }
 .gp-timeline-label { font-weight: 600; }
 .gp-timeline-detail { line-height: 1.6; }
+
+.gp-pace .gp-pace-hint { display: block; margin: 1.25rem 0 .5rem; }
+.gp-pace .gp-pace-table-wrap { max-width: 100%; }
+.gp-pace .gp-pace-table-wrap table { min-width: 760px; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.gp-pace .gp-pace-table-wrap caption { text-align: left; font-weight: 700; margin-bottom: .5rem; }
+/* Dense data rows: override the schedule table cell minimums; only the last (status/reason) column wraps. */
+.race-desk-page .gp-pace-table-wrap :is(th, td) { min-width: 0; padding: .5rem 1rem .5rem 0; line-height: 1.4; white-space: nowrap; text-align: left; vertical-align: top; }
+.race-desk-page .gp-pace-table-wrap :is(thead th, td:last-child) { white-space: normal; }
+.race-desk-page .gp-pace-table-wrap td:last-child { min-width: 15rem; }
+.gp-pace .gp-pace-table-wrap tbody + tbody { border-top: 2px solid var(--border); }
+.race-desk-page .gp-pace-status small { margin-top: .15rem; }
+.gp-pace .gp-pace-details { border-top: 1px solid var(--border); padding: 1rem 0; }
+.gp-pace .gp-pace-details summary { cursor: pointer; overflow-wrap: anywhere; }
+.gp-pace .gp-pace-details summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+.gp-pace .gp-pace-source { color: var(--text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
