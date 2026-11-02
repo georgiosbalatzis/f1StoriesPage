@@ -16,7 +16,7 @@ const writeJson = (file, value) => fs.writeFileSync(file, JSON.stringify(value))
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-hubs-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const rel of ['data/race-desk/results.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
+  for (const rel of ['data/race-desk/editorial.v1.json', 'blog-module/blog-source-cache.json', ...['20261012W', '20261008J', '20261031J'].flatMap(id => [`blog-module/blog-entries/${id}/source.txt`, `blog-module/blog-entries/${id}/article.html`]), 'data/race-desk/results.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }
@@ -30,7 +30,7 @@ test('generates six exact pages, discovery and stable bytes without touching unk
   const root = fixture(t), registryFile = path.join(root, registryPath), registry = readJson(registryFile);
   const unknown = path.join(root, 'race-desk/gp/unrelated/index.html');
   fs.mkdirSync(path.dirname(unknown), { recursive: true }); fs.writeFileSync(unknown, 'leave alone');
-  const result = await writeRaceDeskHubs(root, 2026);
+  const result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
   assert.equal(result.length, 6);
   assert.deepEqual(result.map(p => p.file), registry.races.map(r => `race-desk/gp/${r.raceId}/index.html`).sort());
   assert.ok(result.every(p => p.path === '/' + p.file.slice(0, -'index.html'.length)));
@@ -40,9 +40,15 @@ test('generates six exact pages, discovery and stable bytes without touching unk
   assert.match(home, /Japanese Grand Prix/);
   assert.ok(home.startsWith('<p>before</p>') && home.endsWith('<p>after</p>'));
   const before = result.map(p => page(root, p));
+  for (const item of result) {
+    const html = page(root, item), section = html.match(/<section class="race-desk-section race-desk-related"[\s\S]*?<\/section>/)[0];
+    const ids = [...section.matchAll(/blog-entries\/(\d+[A-Z])\/article.html/g)].map(match => match[1]);
+    assert.deepEqual(ids, item.path.includes('2026-singapore-gp') ? ['20261012W', '20261008J'] : item.path.includes('2026-mexican-gp') ? ['20261031J'] : []);
+    if (!ids.length) assert.doesNotMatch(section, /<ol class="race-desk-stories"/);
+  }
   assert.ok(before.every(html => html.includes('<!-- @include:begin partials/nav.html -->')));
   registry.races.reverse(); registry.sources.reverse(); writeJson(registryFile, registry);
-  assert.deepEqual(await writeRaceDeskHubs(root, 2026), result);
+  assert.deepEqual(await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }), result);
   assert.deepEqual(result.map(p => page(root, p)), before);
   assert.equal(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), home);
 });
@@ -50,16 +56,16 @@ test('generates six exact pages, discovery and stable bytes without touching unk
 test('deployment mode and supplied year control links', async t => {
   const root = fixture(t), lockFile = path.join(root, lockPath), lock = readJson(lockFile);
   lock.enabled = false; writeJson(lockFile, lock);
-  let result = await writeRaceDeskHubs(root, 2026);
+  let result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
   let html = page(root, result.find(p => p.path.includes('2026-japanese-gp')));
   for (const url of ['https://georgiosbalatzis.github.io/Tyres/', 'https://georgiosbalatzis.github.io/ghostcar/', 'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/', 'https://f1-stories.gr/standings/']) assert.ok(html.includes(url));
   assert.ok(!html.includes('https://f1-stories.gr/tyres/2026/'));
   lock.enabled = true; writeJson(lockFile, lock);
-  result = await writeRaceDeskHubs(root, 2024);
+  result = await writeRaceDeskHubs(root, 2024, { today: '2026-11-02' });
   html = page(root, result.find(p => p.path.includes('2026-japanese-gp')));
   assert.ok(html.includes('https://f1-stories.gr/standings/'));
   assert.ok(!html.includes('embed=1&amp;season=2026'));
-  result = await writeRaceDeskHubs(root, 2026);
+  result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
   html = page(root, result.find(p => p.path.includes('2026-japanese-gp')));
   assert.ok(html.includes('embed=1&amp;season=2026'));
 });
@@ -71,7 +77,7 @@ test('invalid registry and missing home marker fail before writing pages', async
       const file = path.join(root, registryPath), registry = readJson(file);
       registry.races[0].venue.timeZone = 'Invalid/Zone'; writeJson(file, registry);
     } else fs.writeFileSync(path.join(root, 'index.html'), '<p>no marker</p>');
-    await assert.rejects(writeRaceDeskHubs(root, 2026));
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
     assert.deepEqual(files(root), []);
   }
 });
@@ -91,7 +97,7 @@ test('refuses destination ancestor, file and dangling symlinks without writing o
       if (kind === 'file') fs.writeFileSync(target, 'outside');
       fs.symlinkSync(target, path.join(dir, 'index.html'));
     }
-    await assert.rejects(writeRaceDeskHubs(root, 2026));
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
     if (kind === 'file') assert.equal(fs.readFileSync(target, 'utf8'), 'outside');
     if (kind === 'home') assert.equal(fs.readFileSync(target, 'utf8'), marker);
     if (kind === 'dangling') assert.equal(fs.existsSync(target), false);
@@ -113,7 +119,7 @@ test('shared include expander reports missing variables, cycles and outside path
 test('ambiguous duplicate home markers fail before any page is written', async t => {
   const root = fixture(t), home = path.join(root, 'index.html');
   fs.writeFileSync(home, marker + marker);
-  await assert.rejects(writeRaceDeskHubs(root, 2026));
+  await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
   assert.equal(fs.readFileSync(home, 'utf8'), marker + marker);
   assert.deepEqual(files(root), []);
 });
@@ -123,12 +129,12 @@ test('refuses a symlinked root and leaves unrelated symlink directories alone', 
   t.after(() => fs.rmSync(outside, { recursive: true, force: true }));
   const rootAlias = path.join(outside, 'root-link');
   fs.symlinkSync(root, rootAlias);
-  await assert.rejects(writeRaceDeskHubs(rootAlias, 2026));
+  await assert.rejects(writeRaceDeskHubs(rootAlias, 2026, { today: '2026-11-02' }));
   assert.deepEqual(files(root), []);
   const unknown = path.join(root, 'race-desk/gp/unrelated');
   fs.mkdirSync(path.dirname(unknown), { recursive: true });
   fs.symlinkSync(outside, unknown);
-  const descriptors = await writeRaceDeskHubs(root, 2026);
+  const descriptors = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
   assert.ok(fs.lstatSync(unknown).isSymbolicLink());
   assert.ok(!descriptors.some(p => p.file.includes('unrelated')));
   assert.deepEqual(fs.readdirSync(outside), ['root-link']);
@@ -138,7 +144,7 @@ test('a broken shared partial aborts generation before writes', async t => {
   const root = fixture(t), home = path.join(root, 'index.html');
   fs.writeFileSync(path.join(root, 'partials/nav.html'), '{{missingHubVariable}}');
   const original = fs.readFileSync(home, 'utf8');
-  await assert.rejects(writeRaceDeskHubs(root, 2026), /Missing include variable/);
+  await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }), /Missing include variable/);
   assert.deepEqual(files(root), []);
   assert.equal(fs.readFileSync(home, 'utf8'), original);
 });
@@ -151,8 +157,20 @@ test('missing or invalid publication proof and registry drift fail before writes
     if (failure === 'missing') fs.unlinkSync(proof);
     if (failure === 'invalid') { const data = readJson(proof); data.approvals[0].source.sha256 = '0'.repeat(64); writeJson(proof, data); }
     if (failure === 'drift') { const file = path.join(root, registryPath), data = readJson(file); data.races[0].displayName = '<Unsafe & "name">'; writeJson(file, data); }
-    await assert.rejects(writeRaceDeskHubs(root, 2026));
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
     assert.deepEqual(files(root), []);
     assert.equal(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), home);
+  }
+});
+
+test('invalid editorial selection leaves existing pages and home unchanged', async t => {
+  for (const failure of ['drift', 'missing', 'future']) {
+    const root = fixture(t), result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
+    const before = result.map(item => page(root, item)), home = fs.readFileSync(path.join(root, 'index.html'));
+    if (failure === 'drift') fs.appendFileSync(path.join(root, 'blog-module/blog-entries/20261012W/source.txt'), 'x');
+    if (failure === 'missing') fs.unlinkSync(path.join(root, 'blog-module/blog-entries/20261012W/article.html'));
+    await assert.rejects(writeRaceDeskHubs(root, 2026, { today: failure === 'future' ? '2026-10-30' : '2026-11-02' }));
+    assert.deepEqual(result.map(item => page(root, item)), before);
+    assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
   }
 });

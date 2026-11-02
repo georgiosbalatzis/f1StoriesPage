@@ -23,6 +23,11 @@ const evidence = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/hub-
 const models = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
 const resultsContexts = readResultsContexts(repo, registry);
 const races = new Map(registry.races.map(race => [race.raceId, race]));
+const storyIds = { '2026-singapore-gp': ['20261012W', '20261008J'], '2026-mexican-gp': ['20261031J'] };
+const posts = new Map(JSON.parse(fs.readFileSync(path.join(repo, 'blog-module/blog-source-cache.json'))).posts.map(post => [post.id, post]));
+const editorial = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/editorial.v1.json')));
+const privateEvidence = ['source.txt', 'editorial.v1.json', ...editorial.associations.flatMap(({ evidence }) => [evidence.sha256, evidence.reviewedRevision])];
+const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
 const nativeTyres = {
@@ -76,7 +81,8 @@ try {
     });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
-    page.on('console', message => { if (message.type() === 'error' && /content security policy|refused to (?:load|execute|frame|connect|apply)/i.test(message.text())) errors.push(`CSP: ${message.text()}`); });
+    // Story pages also fail on any console error, except the "Failed to load resource" noise from this harness aborting off-origin requests.
+    page.on('console', message => { if (message.type() === 'error' && (/content security policy|refused to (?:load|execute|frame|connect|apply)/i.test(message.text()) || (!/^Failed to load resource: net::ERR_FAILED$/.test(message.text()) && Object.keys(storyIds).some(id => page.url().includes(`/race-desk/gp/${id}/`))))) errors.push(`console: ${message.text()}`); });
     page.on('response', response => { const url = new URL(response.url()); if (url.origin === origin) bodies.push(response.body().then(body => ({ path: url.pathname, bytes: body.length })).catch(() => null)); });
     return { context, page, requests, bodies, errors };
   }
@@ -87,6 +93,31 @@ try {
     assert.equal(response.status(), 200);
     await ready(page);
     await assertResultsPage(page, resultsContexts.get(model.raceId));
+    const related = page.locator('section.race-desk-related[aria-labelledby="related-title"]');
+    assert.equal(await page.locator('section.race-desk-related').count(), 1);
+    assert.equal(await related.count(), 1);
+    assert.equal(await related.locator('h2#related-title').innerText(), 'Σχετικά άρθρα');
+    assert.equal(await related.locator('.race-desk-kicker').innerText(), '04 / ΙΣΤΟΡΙΕΣ');
+    const ids = storyIds[model.raceId] || [], items = related.locator('ol.race-desk-stories > li');
+    assert.equal(await related.locator('ol.race-desk-stories').count(), ids.length ? 1 : 0);
+    assert.equal(await items.count(), ids.length);
+    assert.equal(await related.locator('a').count(), ids.length);
+    for (const [index, id] of ids.entries()) {
+      const post = posts.get(id); assert.ok(post, `cached article ${id}`);
+      const item = items.nth(index), link = item.locator('h3 > a[href]'), time = item.locator('time[datetime]');
+      assert.equal(await link.count(), 1); assert.equal(new URL(await link.getAttribute('href'), 'https://f1-stories.gr').href, storyHref(id));
+      assert.equal(await link.textContent(), post.title);
+      assert.equal(await time.count(), 1); assert.equal(await time.getAttribute('datetime'), post.date);
+      assert.equal(await time.innerText(), new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${post.date}T00:00:00Z`)));
+    }
+    if (!ids.length) assert.doesNotMatch(await related.innerText(), /δεν υπάρχουν(?:\s+\S+){0,3}\s+σχετικά άρθρα|κανένα σχετικό άρθρο δεν υπάρχει/i);
+    const headings = await page.locator('main h2, main h3').evaluateAll(nodes => nodes.map(node => ({ id: node.id, story: !!node.closest('.race-desk-stories') })));
+    const relatedIndex = headings.findIndex(heading => heading.id === 'related-title'), sourcesIndex = headings.findIndex(heading => heading.id === 'sources-title');
+    assert.ok(relatedIndex >= 0 && sourcesIndex > relatedIndex);
+    assert.equal(headings.filter(heading => heading.story).length, ids.length);
+    assert.ok(headings.every((heading, index) => !heading.story || (index > relatedIndex && index < sourcesIndex)));
+    const html = await response.text();
+    for (const value of privateEvidence) assert.ok(!html.includes(value), 'editorial evidence must not appear in page source');
     const resultRegion = page.locator('.gp-results-table-wrap').first();
     if (await resultRegion.count()) {
       assert.ok(await page.locator('.gp-results-hint').first().isVisible());
@@ -200,7 +231,7 @@ try {
   const missing = await open();
   await check('unknown route returns 404', async () => { assert.equal((await missing.page.goto(origin + '/race-desk/gp/2026-unknown-gp/')).status(), 404); });
   await missing.context.close();
-  for (const model of models) for (const theme of ['light', 'dark']) for (const width of [390, 576, 768, 1440]) {
+  for (const model of models) for (const theme of ['light', 'dark']) for (const width of (storyIds[model.raceId] ? [390, 576, 768, 992, 1280, 1440] : [390, 576, 768, 1440])) {
     const run = await open({ width, theme });
     await check(`${model.raceId}: ${width} ${theme} visual and keyboard`, async () => {
       assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(run.page);
@@ -246,6 +277,29 @@ try {
     });
     await run.context.close();
   }
+  const stories = await open({ width: 390, theme: 'light' });
+  await check('Singapore stories keyboard focus and article navigation', async () => {
+    const model = models.find(item => item.raceId === '2026-singapore-gp');
+    assert.equal((await stories.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(stories.page);
+    const link = stories.page.locator('.race-desk-stories li h3 > a').first();
+    await stories.page.locator('.race-desk-skip').focus();
+    let focused = false;
+    for (let i = 0; i < 100; i++) {
+      await stories.page.keyboard.press('Tab');
+      if (await link.evaluate(el => document.activeElement === el)) { focused = true; break; }
+    }
+    assert.ok(focused, 'first story must be reachable by Tab');
+    assert.ok(await link.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'story focus must have a visible outline');
+    assert.ok(await link.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused story link must not be covered');
+    const href = new URL(await link.getAttribute('href'), 'https://f1-stories.gr').href; assert.equal(href, storyHref(storyIds[model.raceId][0]));
+    const response = await stories.page.goto(origin + new URL(href).pathname, { waitUntil: 'domcontentloaded' });
+    assert.equal(response.status(), 200);
+    assert.equal(await stories.page.locator('link[rel="canonical"]').getAttribute('href'), href);
+    await stories.page.goBack({ waitUntil: 'domcontentloaded' });
+    assert.deepEqual(await stories.page.locator('.race-desk-stories li h3 > a').evaluateAll(nodes => nodes.map(node => new URL(node.getAttribute('href'), 'https://f1-stories.gr').href)), storyIds[model.raceId].map(storyHref));
+    assert.deepEqual(stories.errors, []);
+  });
+  await stories.context.close();
   const nav = await open({ width: 390, theme: 'light' });
   await check('mobile navigation, keyboard focus and theme toggle', async () => {
     await nav.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(nav.page);

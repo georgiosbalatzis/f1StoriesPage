@@ -4,11 +4,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createPublicationModels } from '../hub-publication.mjs';
+import { readEditorialSelection } from '../editorial-files.mjs';
 import { validateHubOutput } from '../hub-validation.mjs';
 
 const registry = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
 const lock = JSON.parse(fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
 const evidence = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/hub-evidence.v1.json', import.meta.url)));
+const sourceRoot = new URL('../../..', import.meta.url).pathname;
+const stories = readEditorialSelection(sourceRoot, registry, { today: '2026-11-02' });
+const manifest = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/editorial.v1.json', import.meta.url)));
 const models = createPublicationModels(registry, lock, evidence, { currentYear: 2026 });
 const esc = value => value.replaceAll('&', '&amp;');
 function fixture(t) {
@@ -17,9 +21,9 @@ function fixture(t) {
   const write = (file, value) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), value); };
   write('index.html', models.map(model => `<a href="${model.path}">GP</a>`).join(''));
   write('sitemap.xml', `<urlset>${models.map(model => `<url><loc>${lock.origin}${model.path}</loc></url>`).join('')}</urlset>`);
-  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page"><a href="${model.scheduleEvidence.url}">Official</a>${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}</body>`);
+  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page"><a href="${model.scheduleEvidence.url}">Official</a>${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}<section class="race-desk-section race-desk-related">${stories.get(model.raceId).length ? `<ol class="race-desk-stories">${stories.get(model.raceId).map(story => `<li><a href="${esc(story.url)}">${esc(story.title)}</a><time datetime="${story.date}">Date</time></li>`).join('')}</ol>` : ''}</section></body>`);
   const change = (file, replace) => write(file, replace(fs.readFileSync(path.join(root, file), 'utf8')));
-  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026, evidence) };
+  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026, evidence, stories) };
 }
 
 test('all selected GP pages require static discovery, exact canonical links and recorded starts', t => {
@@ -53,4 +57,27 @@ test('missing official schedule citation is rejected', t => {
   const model = models[0];
   change(model.path.slice(1) + 'index.html', html => html.replace(model.scheduleEvidence.url, 'https://example.com/'));
   assert.match(validate().join('\n'), /missing official schedule citation/);
+});
+
+test('related section enforces selected links, dates and private evidence', t => {
+  const target = models.find(model => model.raceId === '2026-singapore-gp').path.slice(1) + 'index.html';
+  const mutations = [
+    html => html.replace(/<section class="race-desk-section race-desk-related"[\s\S]*?<\/section>/, ''),
+    html => html.replace(/(<section class="race-desk-section race-desk-related"[\s\S]*?<\/section>)/, '$1$1'),
+    html => html.replace(/(<li>.*?<\/li>)(<li>.*?<\/li>)/, '$2$1'),
+    html => html.replace('</section>', '<a href="/extra">Extra</a></section>'),
+    html => html.replace(esc(stories.get('2026-singapore-gp')[0].title), 'Changed title'),
+    html => html.replace(`datetime="${stories.get('2026-singapore-gp')[0].date}"`, 'datetime="2020-01-01"'),
+    html => html.replace('</body>', `${manifest.associations[0].evidence.sha256}</body>`),
+    html => html.replace('</body>', `${manifest.associations[0].evidence.reviewedRevision}</body>`),
+    html => html.replace('</body>', 'blog-module/blog-entries/20261008J/source.txt</body>')
+  ];
+  const { change: titled, validate: titledValidate } = fixture(t);
+  titled(target, html => html.replace('<head>', `<head><title>${manifest.associations[0].evidence.references[2].quote} | F1 Stories</title>`));
+  assert.deepEqual(titledValidate(), [], 'a public quote in the hub title is not evidence leakage');
+  for (const mutate of mutations) {
+    const { change, validate } = fixture(t);
+    change(target, mutate);
+    assert.notDeepEqual(validate(), []);
+  }
 });

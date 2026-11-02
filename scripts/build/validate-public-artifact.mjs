@@ -14,6 +14,7 @@ import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
 import { hubFiles, readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
+import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
 import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import { SNAPSHOT_PATH, assertEnvelope } from '../intelligence/snapshot.mjs';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
@@ -36,6 +37,7 @@ const FORBIDDEN_EXACT = new Set([
     'test.sql',
     'blog-module/blog/template.html',
     'blog-module/blog-data.json',
+    'blog-module/blog-source-cache.json',
     'scripts/build/asset-manifest.json'
 ]);
 
@@ -1090,7 +1092,7 @@ function main() {
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
     errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
-    errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT)));
+    errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, readHubRegistry(REPO_ROOT), { today: taxonomy.athensDay(), publicRoot: DIST_ROOT })));
     for (const file of GP_PUBLIC_FILES) {
         if (!discovery.anchors.has(file)) errors.push(`${file}: GP absent from static discovery graph`);
     }

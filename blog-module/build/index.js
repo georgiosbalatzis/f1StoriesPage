@@ -1202,7 +1202,7 @@ async function processBlogEntries(options = {}) {
     checkBodyLinks(blogPosts, { today });
     const authorPages = writeAuthorPages(blogPosts, { today });
     const { writeRaceDeskHubs } = await import('../../scripts/build/race-desk-hubs.mjs');
-    const raceDeskPages = await writeRaceDeskHubs(REPO_ROOT);
+    const raceDeskPages = await writeRaceDeskHubs(REPO_ROOT, undefined, { posts: blogPosts, today });
     generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...raceDeskPages], authorPages);
     buildResearchContent(REPO_ROOT, fs.readFileSync(indexPath));
 

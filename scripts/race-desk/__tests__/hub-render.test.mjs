@@ -8,7 +8,7 @@ import { renderHub } from '../hub-render.mjs';
 const registry = JSON.parse(readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
 const lock = JSON.parse(readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
 const models = createHubModels(registry, lock, { currentYear: 2026 });
-const model = () => structuredClone(models.find(item => item.raceId === '2026-singapore-gp'));
+const model = () => ({ ...structuredClone(models.find(item => item.raceId === '2026-singapore-gp')), stories: [] });
 
 test('renders static schedule, canonical metadata, includes and tool destinations', () => {
   const race = model(), html = renderHub(race);
@@ -75,6 +75,7 @@ test('preserves recorded sprint order, null times and unavailable selections', (
 test('gated official capture and local registry retain distinct attribution and dates', () => {
   const evidence = JSON.parse(readFileSync(new URL('../../../data/race-desk/hub-evidence.v1.json', import.meta.url)));
   const race = createPublicationModels(registry, lock, evidence, { currentYear: 2026 }).find(item => item.raceId === '2026-japanese-gp');
+  race.stories = [];
   const html = renderHub(race);
   assert.match(html, /<h1>Japanese Grand Prix/);
   assert.match(html, /Suzuka Circuit/);

@@ -84,6 +84,42 @@ test('evidence pins complete bytes, body line, quote and owned article path', ()
   ]) { const opts = options(); mutate(opts); invalid(opts); }
 });
 
+test('unchanged quoted lines do not conceal source drift', () => {
+  const opts = options(), row = opts.manifest.associations[0], path = row.evidence.path;
+  const source = Buffer.from(opts.evidenceByPath[path]).toString('utf8');
+  const changed = source.replace('category: Analysis', 'category: Changed');
+  assert.notEqual(changed, source);
+  for (const ref of row.evidence.references) assert.ok(changed.split('\n')[ref.line - 1].includes(ref.quote));
+  opts.evidenceByPath[path] = Buffer.from(changed);
+  assert.ok(select(opts).errors.some(error => error.code === 'evidence-drift'));
+});
+
+test('removed articles, malformed evidence and publication day drift fail closed', () => {
+  for (const mutate of [
+    o => { o.articles.posts = o.articles.posts.filter(p => p.id !== o.manifest.associations[0].articleId); },
+    o => { o.manifest.associations[0].extra = true; },
+    o => { o.manifest.associations[0].evidence.sha256 = 'A'.repeat(64); },
+    o => { o.manifest.associations[0].evidence.sha256 = 'a'.repeat(63); },
+    o => { o.manifest.associations[0].evidence.reviewedRevision = 'g'.repeat(40); },
+    o => { o.manifest.associations[0].evidence.reviewedRevision = 'a'.repeat(39); },
+    o => { o.manifest.associations[0].publishedDay = '2026-10-09'; },
+    o => { o.today = '2026-10-07'; },
+  ]) { const opts = options(); mutate(opts); invalid(opts); }
+});
+
+test('titles are preserved verbatim and a non-canonical post URL rejects the whole selection', () => {
+  const opts = options(), row = opts.manifest.associations[0];
+  const post = opts.articles.posts.find(p => p.id === row.articleId);
+  post.title = '<script>alert("title")</script>';
+  assert.equal(race(valid(opts), row.raceId).articles.find(a => a.articleId === row.articleId).title, post.title);
+  for (const url of ['javascript:alert(1)', 'https://evil.example/article.html', '/other/article.html']) {
+    post.url = url;
+    const result = select(opts);
+    assert.equal(result.status, 'invalid');
+    assert.deepEqual(result.errors.map(e => [e.code, e.articleId]), [['invalid-article-metadata', row.articleId]]);
+  }
+});
+
 test('explicit records must be published, public, date-pinned and have valid Athens instants', () => {
   for (const mutate of [
     (o, a) => { a.draft = true; }, (o, a) => { a.published = false; }, (o, a) => { a.status = 'scheduled'; },
