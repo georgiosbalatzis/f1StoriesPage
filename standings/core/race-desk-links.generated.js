@@ -104,12 +104,12 @@ export default {
         "telemetry": {
           "url": "https://f1-stories.gr/telemetry/",
           "kind": "generic",
-          "notice": "openf1-meeting-unmapped"
+          "notice": "session-unmapped"
         },
         "ghostcar": {
           "url": "https://f1-stories.gr/ghostcar/",
           "kind": "generic",
-          "notice": "openf1-meeting-unmapped"
+          "notice": "session-unmapped"
         }
       }
     }
