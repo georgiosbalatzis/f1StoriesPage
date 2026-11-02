@@ -8,6 +8,16 @@ Evidence labels: **LOCAL** (coordinator machine), **CI** (Site Quality / Ecosyst
 
 **Conditionally certified.** No P0/P1 defect was reproduced. The P2 defects found were fixed. The conditions are the documented limitations below; none is concealed by a passing gate.
 
+## Tested revisions
+
+| Revision | Evidence |
+| --- | --- |
+| `4c262bda` (#426 head) | CI Site Quality [41526363305](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363305) success; Ecosystem dry run [41526363418](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363418) success |
+| `68292154` (#427 head) | CI Site Quality [41526370404](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370404) success; Ecosystem dry run [41526370150](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370150) success; LOCAL `test:race-desk:hubs`, `test:consent` pass |
+| `3327974d` (main + #426 + #427 + this document) | LOCAL `build:public`, `build:check`, `test:race-desk` 245/245, `test:deployment` 66/66, `test:security` 33/33, `test:standings` 21/21, `test:blog` 437/437, `test:author` 125/125, `validate:race-desk`, `quality:static`, `perf:budget` (budgets unchanged), `test:consent` 15/15, `test:race-desk:hubs`, `test:race-desk:browser`, `qa:edition`. Independent Codex Sol (xhigh) review: GO WITH EXPLICIT NONBLOCKING LIMITATIONS; its four documentation corrections are applied here. |
+
+Production verification after the merges is recorded in the release PRs, not in this file.
+
 ## Findings and disposition
 
 | ID | Sev | Finding | Evidence | Disposition |
@@ -37,7 +47,7 @@ Checked and sound (no defect reproduced): workflow trust boundaries (no `pull_re
 ## Limitations (not certified)
 
 - Jolpica publication rights: unresolved (A-01).
-- Rollback by retained artifact: unrehearsed, 24 h window (ARCH-02).
+- Rollback by retained artifact: unrehearsed; possible only within 1 day of the last good run (ARCH-02).
 - Provider failure UX of child tools: not injected (D-03).
 - Performance: no throttled-mobile or low-end-device measurement; Lighthouse was not part of this audit.
 - Accessibility: automated probes plus keyboard/consent flows; no screen-reader or full WCAG audit.
@@ -48,24 +58,25 @@ Checked and sound (no defect reproduced): workflow trust boundaries (no `pull_re
 ## Release runbook
 
 ### Every Race Desk / deployment PR
-1. Site Quality "Quality gates" green on the exact head (source, built, artifact and browser jobs).
+1. Site Quality "Quality gates" green on the exact head (modules, built, artifact and browser jobs).
 2. Ecosystem dry run green when `scripts/deployment/**`, the Pages actions or workflows change, or when generated hubs change (dispatch with `gh workflow run aggregate-dry-run.yml --ref <branch>`).
 3. Locally, when hubs change: `npm run build:public` (stamped output; never commit unstamped `node scripts/build/race-desk-hubs.mjs` output), `npm run build:check`, `npm run test:race-desk`, `npm run test:race-desk:hubs`.
 4. Never run `perf:budget:update`; budget changes need an explicit owner decision.
 
 ### Data refresh policy
-- R-04 results, R-05 associations, R-06 timeline and R-07 pace are receipted captures. Recapture only through the capture scripts, review the receipt diff, and keep OpenF1 to the approved SIN26 race session 11388 scope in `publication-rights.v1.json`. Provider bytes change after release (SIN26 stints changed between 2026-10-15 and 2026-11-02), so the publication stays tied to the receipted bytes.
-- Standings snapshots: Site Maintenance cron (Fri 23:59 and Mon/Sat 07:01 UTC; Athens DST handled by the workflow).
-- TYRES data: refreshed on every Deploy Pages build from the `main` ref (cron every 6 h Thu–Mon, daily Tue–Wed). The manifest records sha, digest and refresh time.
+- R-04 results, R-06 timeline and R-07 pace are receipted captures. Recapture only through the capture scripts, review the receipt diff, and keep OpenF1 to the approved SIN26 race session 11388 scope in `publication-rights.v1.json`. Provider bytes change after release (SIN26 stints changed between 2026-10-15 and 2026-11-02), so the publication stays tied to the receipted bytes.
+- R-05 story associations are curated, not captured: follow "Associating a new article" in `docs/race-desk-editorial.md` (allowlist, evidence review, manifest PR, editorial-owner approval).
+- Standings snapshots: Site Maintenance cron, Fri 23:59 and Mon/Sat 07:01 `Europe/Athens` (the workflow declares the timezone, so DST is handled).
+- TYRES data: refreshed on every Deploy Pages build from the `main` ref (UTC cron `41 */6 * * 0,1,4,5,6` and `41 6 * * 2,3`). The manifest records sha, digest and refresh time.
 
 ### After every merge to main
 1. `gh run list --workflow publish-blog.yml --limit 3`: the Site Maintenance push run must finish *Build Pages artifact* and *Deploy Pages artifact*.
-2. `curl -s https://f1-stories.gr/deployment-manifest.json`: `applications[0].sourceSha` equals the merge commit, `dirty: false`, and child SHAs equal `sources.json`.
+2. `curl -s https://f1-stories.gr/deployment-manifest.json`: `applications[0].sourceSha` is the main commit the successful build checked out. That is the merge commit or a later main commit, because the build checks out fresh `main` when it starts. Also confirm `dirty: false` and that child SHAs equal `sources.json`.
 3. Smoke test: the six `/race-desk/gp/<id>/` pages return 200 with kickers 01–07; SIN26 has 22 pace disclosures; an unknown GP returns 404; `/standings/?tab=drivers&embed=1&season=2026&round=17` shows round 17; a clean-profile consent check shows no GA before a choice.
 
 ### Rollback
 - **Normal path:** a reviewed revert PR on main, merged, then the standard deploy. This restores code, not TYRES data (moving ref).
-- **Within 24 h of a bad deploy only:** re-run just the *Deploy Pages artifact* job of the last good run while its `github-pages` artifact is unexpired (`gh api repos/georgiosbalatzis/f1StoriesPage/actions/runs/<id>/artifacts`). The next push or scheduled deploy republishes current main, so revert main as well. Unrehearsed.
+- **Only while the last good run's `github-pages` artifact is unexpired** (default retention 1 day from *that* run, not from the bad deploy; check `expires_at` with `gh api repos/georgiosbalatzis/f1StoriesPage/actions/runs/<id>/artifacts`): re-run just its *Deploy Pages artifact* job. With frequent deploys the last good artifact may already have expired. The next push or scheduled deploy republishes current main, so revert main as well. Unrehearsed.
 - Never force-push main. Do not roll back automatically for noncritical issues.
 
 ### Periodic, not per PR
