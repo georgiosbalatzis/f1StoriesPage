@@ -126,8 +126,9 @@ body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16
 .gp-timeline-details summary { cursor: pointer; overflow-wrap: anywhere; }
 .gp-timeline-details summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
 .gp-timeline-list { margin: 1rem 0 0; padding: 0; list-style: none; }
-.gp-timeline-list li { padding: 1.4rem 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
-.gp-timeline-list p { margin: 0 0 .35rem; }
+.gp-timeline-list li { padding: .75rem 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+.gp-timeline-list p { margin: 0 0 .15rem; }
+.gp-timeline-source a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; }
 .gp-timeline-meta { color: var(--text-secondary); font-size: .85rem; font-variant-numeric: tabular-nums; }
 .gp-timeline-label { font-weight: 600; }
 .gp-timeline-detail { line-height: 1.6; }
