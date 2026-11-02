@@ -1,6 +1,6 @@
-// Round pinning for embeds: ?season=2026&round=4 shows the standings as of that round.
+// Round pinning: ?season=2026&round=4 shows the standings as of that round.
 //
-// A pinned embed never refreshes live, so an article keeps saying what it said when it was written.
+// A pinned view never refreshes live, so an article keeps saying what it said when it was written.
 // Source order: the committed per-round snapshot (standings/rounds/<season>-<round>.json, written by
 // scripts/build/refresh-standings-data.mjs), then Jolpica's per-round endpoints. Pure logic only; the
 // shell passes in the fetch and validation functions.
@@ -12,14 +12,14 @@ function toInt(value) {
     return /^\d{1,4}$/.test(String(value == null ? '' : value).trim()) ? parseInt(value, 10) : NaN;
 }
 
-// -> { season, round } as strings when `round` is a usable number, otherwise null (not pinned).
+// -> { season, round } as strings when `round` and any explicit `season` are usable, otherwise null (not pinned).
+// An unusable explicit season is not pinned: showing another season's round would mislabel it.
 export function parseRoundPin(search, currentYear) {
     const params = new URLSearchParams(search || '');
     const round = toInt(params.get('round'));
-    if (!(round >= 1 && round <= MAX_ROUND)) return null;
-    const season = toInt(params.get('season'));
-    const validSeason = season >= FIRST_SEASON && season <= currentYear + 1 ? season : currentYear;
-    return { season: String(validSeason), round: String(round) };
+    const season = toInt(params.has('season') ? params.get('season') : currentYear);
+    if (!(round >= 1 && round <= MAX_ROUND && season >= FIRST_SEASON && season <= currentYear + 1)) return null;
+    return { season: String(season), round: String(round) };
 }
 
 export function roundSnapshotUrl(season, round) {
@@ -35,10 +35,11 @@ export function jolpicaRoundUrls(base, season, round) {
     };
 }
 
-function snapshotMatches(snapshot, season, round) {
-    const lists = snapshot && snapshot.driverStandings && snapshot.driverStandings.MRData
-        && snapshot.driverStandings.MRData.StandingsTable;
-    return !!lists && String(lists.season) === String(season) && String(lists.round) === String(round);
+function requireRound(driver, constructor, pin) {
+    if (![driver, constructor].every(function(payload) {
+        const list = payload && payload.MRData && payload.MRData.StandingsTable && payload.MRData.StandingsTable.StandingsLists[0];
+        return list && String(list.season) === pin.season && String(list.round) === pin.round;
+    })) throw new Error('standings do not match the requested round');
 }
 
 function raceNameOf(payload) {
@@ -51,7 +52,7 @@ function raceNameOf(payload) {
 export function loadPinnedStandings(pin, io) {
     return io.fetchSnapshot(roundSnapshotUrl(pin.season, pin.round)).then(function(snapshot) {
         io.validateSnapshot(snapshot);
-        if (!snapshotMatches(snapshot, pin.season, pin.round)) throw new Error('round snapshot does not match the requested round');
+        requireRound(snapshot.driverStandings, snapshot.constructorStandings, pin);
         return {
             driverStandings: snapshot.driverStandings,
             constructorStandings: snapshot.constructorStandings,
@@ -65,6 +66,7 @@ export function loadPinnedStandings(pin, io) {
             io.fetchLive(urls.constructors).then(function(p) { return io.validateStandings(p, 'constructor standings for round ' + pin.round); }),
             io.fetchLive(urls.race).then(raceNameOf, function() { return ''; })
         ]).then(function(results) {
+            requireRound(results[0], results[1], pin);
             return { driverStandings: results[0], constructorStandings: results[1], raceName: results[2], source: 'jolpica' };
         });
     });
