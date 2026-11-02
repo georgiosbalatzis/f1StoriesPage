@@ -246,6 +246,11 @@ export function assemble(inputs, destination, metadata, reportDirectory) {
     }
     const sitemapAdded = extendSitemap(destination, inputs);
     const result = { ...validateSite(destination, inputs, metadata), sitemapAdded };
+    const sitemap = fs.readFileSync(path.join(destination, 'sitemap.xml'));
+    const sitemapEntry = report.entries.find(entry => entry.application === 'main' && entry.path === 'sitemap.xml');
+    report.bytes += sitemap.length - sitemapEntry.bytes;
+    sitemapEntry.bytes = sitemap.length;
+    sitemapEntry.sha256 = createHash('sha256').update(sitemap).digest('hex');
     const outputDigest = createHash('sha256').update(JSON.stringify(report.entries)).digest('hex');
     const manifest = { schemaVersion: 1, origin: ORIGIN, ...metadata, outputDigest, freshness: result.freshness, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, nodeVersion: app.nodeVersion, data: app.data, files: report.entries.filter(entry => entry.application === app.application).length, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
     const manifestText = JSON.stringify(manifest, null, 2) + '\n';
