@@ -22,3 +22,5 @@ Results and timeline are independent: a race may have results and no timeline. A
 ## Status
 
 R-06A adds the contract, provenance, reader, domain model, renderer and synthetic tests. The production inventory is empty and every registry key is null, so no public page changes. R-06B wires the section into the hubs and adds the first reviewed race.
+
+The capture CLI validates a complete batch before writing, stages the response files, writes the inventory last and rolls back on a failed write. A process crash during the final renames can still leave a mixed archive; captures and the inventory are tracked in Git, so restore them with `git checkout -- data/race-desk` and capture again.
