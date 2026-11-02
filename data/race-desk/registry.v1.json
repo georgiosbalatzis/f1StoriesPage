@@ -144,6 +144,15 @@
       "gitBlob": "8ac4f1abb36d1b40ef30581ca2ee41f29c130877",
       "reviewedAt": "2026-10-30T09:05:16.000Z",
       "url": "https://github.com/georgiosbalatzis/Tyres/blob/50e5f50be89e038257cbe3426b366810e0c1f59a/data/weekends/2026-mx.json"
+    },
+    {
+      "id": "openf1-2026-singapore-identity",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "revision": "ad7136988291cfca0c55cc1f3fc2ede2fea3d853",
+      "path": "docs/race-desk-r06-openf1-identity.md",
+      "gitBlob": "23d34490bf2de200c0a86ef1494a98c1dcf79446",
+      "reviewedAt": "2026-11-02T16:45:51.923Z",
+      "url": "https://github.com/georgiosbalatzis/f1StoriesPage/blob/ad7136988291cfca0c55cc1f3fc2ede2fea3d853/docs/race-desk-r06-openf1-identity.md"
     }
   ],
   "races": [
@@ -722,7 +731,7 @@
         "timeZone": "Asia/Singapore"
       },
       "sourceKeys": {
-        "openf1MeetingKey": null,
+        "openf1MeetingKey": 1296,
         "jolpica": {
           "season": 2026,
           "round": 17
@@ -775,7 +784,7 @@
         },
         {
           "kind": "sprint",
-          "openf1SessionKey": null,
+          "openf1SessionKey": 11383,
           "startUtc": "2026-10-10T09:00:00.000Z",
           "evidence": [
             {
@@ -790,6 +799,13 @@
               "value": "2026-10-10T09:00:00.000Z",
               "sourceId": "tyres-2026-sg-weekend",
               "reference": "/sessions/2/start",
+              "status": "verified"
+            },
+            {
+              "field": "openf1SessionKey",
+              "value": 11383,
+              "sourceId": "openf1-2026-singapore-identity",
+              "reference": "#2026-singapore-gp-sprint",
               "status": "verified"
             }
           ]
@@ -817,7 +833,7 @@
         },
         {
           "kind": "race",
-          "openf1SessionKey": null,
+          "openf1SessionKey": 11388,
           "startUtc": "2026-10-11T12:00:00.000Z",
           "evidence": [
             {
@@ -832,6 +848,13 @@
               "value": "2026-10-11T12:00:00.000Z",
               "sourceId": "tyres-2026-sg-weekend",
               "reference": "/sessions/4/start",
+              "status": "verified"
+            },
+            {
+              "field": "openf1SessionKey",
+              "value": 11388,
+              "sourceId": "openf1-2026-singapore-identity",
+              "reference": "#2026-singapore-gp-race",
               "status": "verified"
             }
           ]
@@ -895,6 +918,13 @@
           },
           "sourceId": "grid-2026-17",
           "reference": "/driverStandings/MRData/StandingsTable season and round; /raceName",
+          "status": "verified"
+        },
+        {
+          "field": "sourceKeys.openf1MeetingKey",
+          "value": 1296,
+          "sourceId": "openf1-2026-singapore-identity",
+          "reference": "#2026-singapore-gp-meeting",
           "status": "verified"
         }
       ]

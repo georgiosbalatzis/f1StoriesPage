@@ -241,10 +241,20 @@ test("session coverage follows canonical order independent of input ordering", (
       "2026-singapore-gp/fp1",
       "2026-singapore-gp/qualifying",
       "2026-singapore-gp/sprint-qualifying",
-      "2026-singapore-gp/sprint",
-      "2026-singapore-gp/race",
     ],
   );
+  const singapore = data.races.find(race => race.raceId === "2026-singapore-gp");
+  assert.equal(singapore.sourceKeys.openf1MeetingKey, 1296);
+  for (const [kind, key] of [["sprint", 11383], ["race", 11388]]) {
+    const session = singapore.sessions.find(item => item.kind === kind);
+    assert.equal(session.openf1SessionKey, key);
+    assert.ok(session.evidence.some(c => c.field === "openf1SessionKey" && c.value === key && c.sourceId === "openf1-2026-singapore-identity" && c.status === "verified"));
+  }
+  assert.ok(singapore.evidence.some(c => c.field === "sourceKeys.openf1MeetingKey" && c.value === 1296 && c.sourceId === "openf1-2026-singapore-identity" && c.status === "verified"));
+  for (const race of data.races.filter(item => item !== singapore)) {
+    assert.equal(race.sourceKeys.openf1MeetingKey, null);
+    assert.ok(race.sessions.every(session => session.openf1SessionKey === null));
+  }
   for (const key of ["__proto__", "constructor", "toString"])
     assert.equal(normalizeSessionKind(key), null);
   data.races[0].raceId = "wrong-season";

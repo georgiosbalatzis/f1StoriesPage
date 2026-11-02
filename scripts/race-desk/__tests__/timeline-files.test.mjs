@@ -57,7 +57,7 @@ test('rejects unmapped race before fetch and rejects symlinked capture', async t
   assert.throws(() => readTimelineInventory(root, registry), /unsafe path/);
 });
 
-test('readTimelineContexts builds a synthetic context end to end and the production inventory is unmapped', async t => {
+test('readTimelineContexts builds a synthetic context end to end and the production inventory contains the Singapore pilot', async t => {
   const root = fixture(t);
   // Synthetic rows only: a session window and one row per endpoint, plus one race-control row before the window.
   const rows = {
@@ -73,7 +73,12 @@ test('readTimelineContexts builds a synthetic context end to end and the product
   assert.deepEqual(context.counts, { raceControl: 2, pit: 1, outOfWindow: 1, duplicates: 0 });
   assert.deepEqual(context.events.map(e => [e.eventType, e.timestampUtc]), [['race-control-observation', '2026-01-01T12:30:00.000000Z'], ['pit-lane-visit', '2026-01-01T12:31:00.250000Z']]);
   const real = JSON.parse(fs.readFileSync('data/race-desk/registry.v1.json'));
-  assert.ok([...readTimelineContexts(process.cwd(), real).values()].every(c => c.status === 'unavailable' && c.reason === 'unmapped'));
+  const contexts = readTimelineContexts(process.cwd(), real);
+  assert.equal(contexts.get('2026-singapore-gp').status, 'available');
+  assert.equal(contexts.get('2026-singapore-gp').events.length, 172);
+  assert.equal(contexts.get('2026-singapore-gp').events.filter(event => event.eventType === 'race-control-observation').length, 147);
+  assert.ok([...contexts].filter(([id]) => id !== '2026-singapore-gp').every(([, c]) => c.status === 'unavailable' && c.reason === 'unmapped'));
+  assert.equal(contexts.size, 6);
 });
 
 test('failed staging and replacement preserve the previous archive', async t => {

@@ -635,7 +635,7 @@ function main() {
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
                 validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/results', error));
-                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, registry, { today: taxonomy.athensDay() })).forEach(error => addError('race-desk/gp', error));
+                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, registry, { today: taxonomy.athensDay() }), readTimelineContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);
             }
