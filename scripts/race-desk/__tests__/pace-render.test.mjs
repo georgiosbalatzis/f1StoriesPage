@@ -57,4 +57,8 @@ test('synthetic 22-driver by 62-lap size', t => {
   // 22 × 62 = 1,364 observed, timed and unknown laps.
   c.counts = { observed: 1364, timed: 1364, excluded: 0, unknown: 1364, eligible: 0 };
   const html = render(c); t.diagnostic(`synthetic HTML: ${Buffer.byteLength(html)} bytes raw, ${gzipSync(html).length} bytes gzip`);
+  // Every observed lap is published: 22 disclosures × 62 lap rows = 1,364.
+  const disclosures = html.split('<details class="gp-pace-details">').slice(1).map(part => part.split('</details>')[0]);
+  assert.equal(disclosures.length, 22);
+  for (const part of disclosures) assert.equal((part.match(/<tr><th scope="row">/g) ?? []).length, 62);
 });
