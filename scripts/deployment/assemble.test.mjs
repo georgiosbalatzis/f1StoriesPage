@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
@@ -70,6 +71,31 @@ test('a complete four-tool site assembles; tool roots and indexable race pages j
     assert.deepEqual(result.freshness.warnings, []);
     const manifest = JSON.parse(fs.readFileSync(path.join(destination, 'deployment-manifest.json')));
     assert.deepEqual(manifest.applications.map(app => app.canonicalPath), ['/', '/telemetry/', '/ghostcar/', '/tyres/', '/betcast/']);
+});
+
+test('manifest accounting describes the assembled files', t => {
+    const { run, destination } = site(t);
+    const result = run();
+    const manifestData = fs.readFileSync(path.join(destination, 'deployment-manifest.json'));
+    const manifest = JSON.parse(manifestData);
+    const children = ['telemetry', 'ghostcar', 'tyres', 'betcast'];
+    const walk = (prefix = '') => fs.readdirSync(path.join(destination, prefix), { withFileTypes: true })
+        .sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
+            const rel = path.posix.join(prefix, entry.name);
+            return entry.isDirectory() ? walk(rel) : [rel];
+        });
+    const entries = walk().filter(rel => rel !== 'deployment-manifest.json').map(rel => {
+        const data = fs.readFileSync(path.join(destination, rel));
+        return { application: children.find(name => rel.startsWith(`${name}/`)) || 'main', path: rel, bytes: data.length, sha256: createHash('sha256').update(data).digest('hex') };
+    });
+    const ordered = ['main', ...children].flatMap(application => entries.filter(entry => entry.application === application));
+    assert.equal(manifest.outputDigest, createHash('sha256').update(JSON.stringify(ordered)).digest('hex'));
+    for (const app of manifest.applications) {
+        const own = entries.filter(entry => entry.application === app.application);
+        assert.equal(app.files, own.length, app.application);
+        assert.equal(app.bytes, own.reduce((sum, entry) => sum + entry.bytes, 0), app.application);
+    }
+    assert.equal(result.bytes, entries.reduce((sum, entry) => sum + entry.bytes, 0) + manifestData.length);
 });
 
 const failures = {
