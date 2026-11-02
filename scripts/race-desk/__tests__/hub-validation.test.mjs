@@ -85,11 +85,15 @@ test('related section enforces selected links, dates and private evidence', t =>
   }
 });
 
+const inventory = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/timeline.v1.json', import.meta.url)));
 test('rejects a tampered timeline row and exposed capture paths', t => {
   const target = models.find(model => model.raceId === '2026-singapore-gp').path.slice(1) + 'index.html';
   for (const [mutate, error] of [
     [html => html.replace('class="gp-timeline-label">', 'class="gp-timeline-label">Tampered '), /timeline section differs/],
-    [html => html.replace('</body>', 'data/race-desk/captures</body>'), /timeline provenance exposed/]
+    [html => html.replace('</body>', 'data/race-desk/captures</body>'), /timeline provenance exposed/],
+    [html => html.replace('</body>', `${inventory.captures[0].sha256}</body>`), /timeline provenance exposed/],
+    [html => html.replace('</body>', '<script type="application/json">{"sourceRefs":[{"recordIndex":0}]}</script></body>'), /timeline provenance exposed/],
+    [html => html.replace('</body>', `<pre>${JSON.stringify({ ...inventory.captures[0], path: undefined })}</pre></body>`), /timeline provenance exposed/]
   ]) {
     const { change, validate } = fixture(t);
     change(target, mutate);
