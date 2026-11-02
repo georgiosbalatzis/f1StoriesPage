@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createPublicationModels } from './hub-publication.mjs';
+import { renderTimelineSection } from './timeline-render.mjs';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
 // Validate source or packaged HTML; the browser gate independently checks layout and native links.
-export function validateHubOutput(root, registry, lock, currentYear, evidence, stories) {
+export function validateHubOutput(root, registry, lock, currentYear, evidence, stories, timelines) {
   const errors = [];
   const manifest = JSON.parse(fs.readFileSync(new URL('../../data/race-desk/editorial.v1.json', import.meta.url), 'utf8'));
   // Quotes are excerpts of public articles (one equals a hub title), so only private markers are checked.
@@ -32,6 +33,11 @@ export function validateHubOutput(root, registry, lock, currentYear, evidence, s
       if (!expected.length && /<ol class="race-desk-stories"/.test(section)) errors.push(`${file}: empty related list`);
     }
     if (privateValues.some(value => value && (html.includes(value) || html.includes(escape(value))))) errors.push(`${file}: editorial evidence exposed`);
+    // The published timeline must be exactly the rendering of the validated captures (section number aside).
+    const timeline = timelines?.get(model.raceId), timelineSections = [...html.matchAll(/<section class="race-desk-section gp-timeline"[\s\S]*?<\/section>/g)];
+    if (!timeline || timelineSections.length !== 1) errors.push(`${file}: timeline section missing or duplicated`);
+    else if (timelineSections[0][0].replace(/(<p class="race-desk-kicker">)\d\d( \/ ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ)/, '$100$2') !== renderTimelineSection(timeline, { number: '00' })) errors.push(`${file}: timeline section differs from the validated captures`);
+    if (['timeline.v1.json', 'race-desk/captures', 'publication-rights.v1.json'].some(value => html.includes(value))) errors.push(`${file}: timeline provenance exposed`);
     const canonical = lock.origin + model.path;
     const canonicals = [...html.matchAll(/<link\b[^>]*\brel="canonical"[^>]*\bhref="([^"]+)"[^>]*>/g)];
     const ogUrls = [...html.matchAll(/<meta\b[^>]*\bproperty="og:url"[^>]*\bcontent="([^"]+)"[^>]*>/g)];

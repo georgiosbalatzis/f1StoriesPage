@@ -6,6 +6,7 @@ import { readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
 import { readResultsContexts } from '../race-desk/results-files.mjs';
 import taxonomy from '../../blog-module/taxonomy.js';
 import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
+import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
 import { renderHub } from '../race-desk/hub-render.mjs';
 import { expandPageIncludes } from './include.mjs';
 
@@ -25,6 +26,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   if (fs.lstatSync(root).isSymbolicLink()) throw new Error('Refusing symlinked repository root');
   const registry = readHubRegistry(root);
   const stories = readEditorialSelection(root, registry, { posts, today });
+  const timelines = readTimelineContexts(root, registry);
   const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json'), 'utf8'));
   const models = createPublicationModels(registry, lock, readHubEvidence(root), { currentYear });
   const results = readResultsContexts(root, registry);
@@ -37,7 +39,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   for (const model of models) {
     const file = model.path.slice(1) + 'index.html';
     const destination = safeDestination(root, file);
-    const html = await expandPageIncludes(renderHub({ ...model, stories: stories.get(model.raceId), results: results.get(model.raceId) }, { origin: lock.origin }), { root, relativePath: file });
+    const html = await expandPageIncludes(renderHub({ ...model, stories: stories.get(model.raceId), timeline: timelines.get(model.raceId), results: results.get(model.raceId) }, { origin: lock.origin }), { root, relativePath: file });
     prepared.push({ destination, html, page: { file, path: model.path, changefreq: 'monthly', priority: '0.5' } });
   }
   // Only this marked region is generated; the four-product index stays separate.

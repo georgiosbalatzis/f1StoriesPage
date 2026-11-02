@@ -1,4 +1,5 @@
 import { renderResultsSection } from './results-render.mjs';
+import { renderTimelineSection } from './timeline-render.mjs';
 import taxonomy from '../../blog-module/taxonomy.js';
 import dates from '../../blog-module/build/article-dates.js';
 
@@ -32,6 +33,9 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   const base = safeUrl(origin);
   if (!base || !/^\/[a-z0-9/-]+\/$/.test(model.path)) throw new TypeError('Invalid hub origin or path');
   if (!Array.isArray(model.stories)) throw new TypeError('Invalid stories');
+  // Sections are numbered in page order; 01 is the schedule and results (when present) render their own 02.
+  let section = model.results ? 2 : 1;
+  const next = () => String(++section).padStart(2, '0');
   for (const story of model.stories) {
     try {
       const url = new URL(story.url);
@@ -93,12 +97,13 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
         <div class="race-desk-table-wrap" role="region" tabindex="0" aria-label="Πίνακας προγράμματος" aria-describedby="schedule-scroll-hint"><table><caption>Καταγεγραμμένες προγραμματισμένες ενάρξεις σε UTC, τοπική ώρα και ώρα Ελλάδας</caption><thead><tr><th scope="col">Περίοδος</th><th scope="col">UTC</th><th scope="col">Τοπική ώρα</th><th scope="col">Ώρα Ελλάδας</th></tr></thead><tbody>${sessions}</tbody></table></div>
       </section>
       ${model.results ? renderResultsSection(model.results) : ''}
+      ${renderTimelineSection(model.timeline, { number: next() })}
       <section class="race-desk-section" aria-labelledby="tools-title">
-        <div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '03' : '02'} / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
+        <div class="race-desk-section-head"><div><p class="race-desk-kicker">${next()} / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
         <ul class="race-desk-tools">${model.tools.map(toolRow).join('\n')}</ul>
       </section>
-      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '04' : '03'} / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>${model.stories.length ? 'Επιμελημένη επιλογή δημοσιευμένων άρθρων του F1 Stories για αυτό το Grand Prix. Ο σύνδεσμος δεν επαληθεύει κάθε ισχυρισμό του άρθρου.' : 'Δεν έχουν καταγραφεί ακόμη επιμελημένοι σύνδεσμοι άρθρων για αυτό το Grand Prix.'}</p></div>${model.stories.length ? `<ol class="race-desk-stories" role="list">${model.stories.map(story => `<li><h3><a href="${escape(story.url)}">${escape(story.title)}</a></h3><time datetime="${escape(story.date)}">${escape(taxonomy.formatDate(story.date, 'long'))}</time></li>`).join('\n')}</ol>` : ''}</section>
-      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '05' : '04'} / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
+      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${next()} / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>${model.stories.length ? 'Επιμελημένη επιλογή δημοσιευμένων άρθρων του F1 Stories για αυτό το Grand Prix. Ο σύνδεσμος δεν επαληθεύει κάθε ισχυρισμό του άρθρου.' : 'Δεν έχουν καταγραφεί ακόμη επιμελημένοι σύνδεσμοι άρθρων για αυτό το Grand Prix.'}</p></div>${model.stories.length ? `<ol class="race-desk-stories" role="list">${model.stories.map(story => `<li><h3><a href="${escape(story.url)}">${escape(story.title)}</a></h3><time datetime="${escape(story.date)}">${escape(taxonomy.formatDate(story.date, 'long'))}</time></li>`).join('\n')}</ol>` : ''}</section>
+      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${next()} / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
     </div>
   </main>
   <!-- @include partials/cookie-banner.html -->
