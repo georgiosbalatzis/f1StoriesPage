@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPublicationModels } from '../race-desk/hub-publication.mjs';
 import { readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
+import { readResultsContexts } from '../race-desk/results-files.mjs';
 import { renderHub } from '../race-desk/hub-render.mjs';
 import { expandPageIncludes } from './include.mjs';
 
@@ -23,6 +24,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   const registry = readHubRegistry(root);
   const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json'), 'utf8'));
   const models = createPublicationModels(registry, lock, readHubEvidence(root), { currentYear });
+  const results = readResultsContexts(root, registry);
   const homePath = safeDestination(root, 'index.html');
   const home = fs.readFileSync(homePath, 'utf8');
   const marker = /<!-- f1s:gp-discovery:begin -->[\s\S]*?<!-- f1s:gp-discovery:end -->/;
@@ -32,7 +34,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   for (const model of models) {
     const file = model.path.slice(1) + 'index.html';
     const destination = safeDestination(root, file);
-    const html = await expandPageIncludes(renderHub(model, { origin: lock.origin }), { root, relativePath: file });
+    const html = await expandPageIncludes(renderHub({ ...model, results: results.get(model.raceId) }, { origin: lock.origin }), { root, relativePath: file });
     prepared.push({ destination, html, page: { file, path: model.path, changefreq: 'monthly', priority: '0.5' } });
   }
   // Only this marked region is generated; the four-product index stays separate.

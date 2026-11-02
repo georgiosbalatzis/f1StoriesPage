@@ -2,6 +2,10 @@
 
 This record reconciles the 2026-10-30 master brief with the existing repository. The owner subsequently authorized necessary PR merges and automatic production deployments. That permission persists; each milestone still requires its evidence, tests and independent review. Evidence quality cannot be approved into existence.
 
+## Current status — 2026-11-01
+
+R-03 #400 has merged. An R-04 integrated candidate and R-05 editorial draft exist; each still needs its own evidence and review. Historical status entries below describe earlier checkpoints. The current user directive takes precedence over historical merge or deployment authorization: this work does not authorize merging or deployment.
+
 ## Observed baseline
 
 Initial observed main was `ee48967a312a3242a155d950bdd6e560eb8b9b00`. [R-01 PR #392](https://github.com/georgiosbalatzis/f1StoriesPage/pull/392) was already merged on 2026-10-30 at 09:48:46 UTC before this execution. Its original report remains historical, including its local Lighthouse miss. The subsequently authorized follow-up merge is recorded below.

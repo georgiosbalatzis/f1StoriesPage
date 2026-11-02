@@ -7,6 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { Launcher } from 'chrome-launcher';
+import { assertResultsPage } from './results-browser.mjs';
+import { readResultsContexts } from './results-files.mjs';
 import { createPublicationModels } from './hub-publication.mjs';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -19,6 +21,7 @@ const registry = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/regi
 const lock = JSON.parse(fs.readFileSync(path.join(repo, 'scripts/deployment/sources.json')));
 const evidence = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/hub-evidence.v1.json')));
 const models = createPublicationModels(registry, lock, evidence, { currentYear: new Date().getUTCFullYear() });
+const resultsContexts = readResultsContexts(repo, registry);
 const races = new Map(registry.races.map(race => [race.raceId, race]));
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -83,6 +86,13 @@ try {
     const response = await page.goto(origin + model.path, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200);
     await ready(page);
+    await assertResultsPage(page, resultsContexts.get(model.raceId));
+    const resultRegion = page.locator('.gp-results-table-wrap').first();
+    if (await resultRegion.count()) {
+      assert.ok(await page.locator('.gp-results-hint').first().isVisible());
+      await resultRegion.focus(); await page.keyboard.press('ArrowRight'); await page.waitForTimeout(250);
+      assert.ok(await resultRegion.evaluate(el => el.scrollLeft > 0), 'results scroll by keyboard with or without JavaScript');
+    }
     const canonical = `https://f1-stories.gr${model.path}`;
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), canonical);
     assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'), canonical);
@@ -99,7 +109,7 @@ try {
     assert.ok(fonts.greekReady && fonts.faces.some(face => /IBM Plex Sans/i.test(face.family) && /370/i.test(face.unicodeRange) && face.status === 'loaded'), `Greek font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok(fonts.brandReady && fonts.faces.some(face => /Barlow Condensed/i.test(face.family) && face.status === 'loaded'), `brand font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok((await page.locator('main').innerText()).includes(model.venue.name));
-    const table = page.locator('main table');
+    const table = page.locator('.race-desk-table-wrap[aria-label="Πίνακας προγράμματος"] table');
     assert.equal(await table.count(), 1);
     assert.deepEqual(await table.locator('tbody time').evaluateAll(nodes => nodes.map(node => node.getAttribute('datetime'))), race.sessions.filter(s => s.startUtc).map(s => s.startUtc));
     const tableText = await table.innerText();
@@ -114,7 +124,9 @@ try {
         const offset = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'longOffset' }).formatToParts(new Date(session.startUtc)).find(part => part.type === 'timeZoneName').value.replace('GMT', 'UTC');
         assert.ok(text.includes(offset));
       }
-      assert.match(text, /μη συνδεδεμένα/i);
+      const result = resultsContexts.get(race.raceId)?.classifications?.[session.kind];
+      const note = result?.status === 'available' ? /Καταγεγραμμένη κατάταξη Jolpica/i : ({ 'unmapped-race': /Δεν υπάρχει αντιστοίχιση/, 'uncaptured-session': /Δεν υπάρχει καταγεγραμμένη απόκριση/, 'provider-empty': /δεν περιέχει αποτελέσματα/ }[result?.reason] ?? /μη συνδεδεμένα/i);
+      assert.match(text, note);
     }
     const officialGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Επίσημη πηγή προγράμματος και ονομασίας' }) });
     const localGroup = page.locator('.race-desk-source-group').filter({ has: page.getByRole('heading', { name: 'Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας' }) });
@@ -193,6 +205,8 @@ try {
     await check(`${model.raceId}: ${width} ${theme} visual and keyboard`, async () => {
       assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(run.page);
       assert.equal((await run.page.locator('html').getAttribute('data-theme')) || 'dark', theme);
+      await assertResultsPage(run.page, resultsContexts.get(model.raceId));
+      if (await run.page.locator('.gp-results-hint').count()) assert.equal(await run.page.locator('.gp-results-hint').first().isVisible(), width < 992);
       const layout = await run.page.evaluate(() => {
         const viewport = document.documentElement.clientWidth, main = document.querySelector('main');
         const rect = main.getBoundingClientRect();
@@ -219,6 +233,19 @@ try {
     });
     await run.context.close();
   }
+  for (const width of [991, 992]) for (const javascriptEnabled of [false, true]) {
+    const run = await open({ width, javascriptEnabled });
+    await check(`results fit or expose scrolling at ${width}, JS ${javascriptEnabled}`, async () => {
+      await run.page.goto(origin + models.find(model => model.raceId === '2026-singapore-gp').path, { waitUntil: 'domcontentloaded' }); await ready(run.page);
+      for (const region of await run.page.locator('.gp-results-table-wrap').all()) {
+        const dimensions = await region.evaluate(el => ({ width: el.clientWidth, scrollWidth: el.scrollWidth }));
+        const hint = run.page.locator(`#${await region.getAttribute('aria-describedby')}`);
+        assert.equal(await hint.isVisible(), width < 992);
+        if (width >= 992) assert.ok(dimensions.scrollWidth <= dimensions.width, JSON.stringify(dimensions));
+      }
+    });
+    await run.context.close();
+  }
   const nav = await open({ width: 390, theme: 'light' });
   await check('mobile navigation, keyboard focus and theme toggle', async () => {
     await nav.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(nav.page);
@@ -236,7 +263,7 @@ try {
   await nav.context.close();
   const schedule = await open({ width: 390, theme: 'light' });
   await check('mobile schedule can be reached and scrolled with keyboard', async () => {
-    await schedule.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(schedule.page);
+    await schedule.page.goto(origin + models.find(model => model.raceId === '2026-japanese-gp').path, { waitUntil: 'domcontentloaded' }); await ready(schedule.page);
     const region = schedule.page.locator('.race-desk-table-wrap');
     assert.equal(await region.getAttribute('role'), 'region'); assert.equal(await region.getAttribute('tabindex'), '0');
     assert.ok(await region.getAttribute('aria-label'));
@@ -257,6 +284,11 @@ try {
     assert.ok(focused, 'schedule region must be reachable by Tab');
     await schedule.page.keyboard.press('ArrowRight'); await schedule.page.waitForTimeout(250);
     assert.ok(await region.evaluate(el => el.scrollLeft > 0), 'ArrowRight must scroll the schedule');
+    const resultsRegion = schedule.page.locator('.gp-results-table-wrap').first();
+    assert.ok(await schedule.page.locator('.gp-results-hint').first().isVisible());
+    assert.equal(await resultsRegion.getAttribute('tabindex'), '0');
+    await resultsRegion.focus(); await schedule.page.keyboard.press('ArrowRight'); await schedule.page.waitForTimeout(250);
+    assert.ok(await resultsRegion.evaluate(el => el.scrollLeft > 0), 'ArrowRight must scroll results');
     assert.deepEqual(schedule.errors, []);
   });
   await schedule.context.close();

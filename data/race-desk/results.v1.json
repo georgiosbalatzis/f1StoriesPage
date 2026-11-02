@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "bindings": [
+    {
+      "raceId": "2026-japanese-gp",
+      "season": 2026,
+      "round": 3,
+      "expectedRace": {
+        "raceName": "Japanese Grand Prix",
+        "circuitId": "suzuka",
+        "date": "2026-03-29",
+        "time": "05:00:00Z"
+      },
+      "captures": {
+        "race": "jolpica-2026-3-race",
+        "qualifying": "jolpica-2026-3-qualifying",
+        "sprint": "jolpica-2026-3-sprint"
+      }
+    },
+    {
+      "raceId": "2026-azerbaijan-gp",
+      "season": 2026,
+      "round": 15,
+      "expectedRace": {
+        "raceName": "Azerbaijan Grand Prix",
+        "circuitId": "baku",
+        "date": "2026-09-26",
+        "time": "11:00:00Z"
+      },
+      "captures": {
+        "race": "jolpica-2026-15-race",
+        "qualifying": "jolpica-2026-15-qualifying",
+        "sprint": "jolpica-2026-15-sprint"
+      }
+    },
+    {
+      "raceId": "2026-bahrain-gp",
+      "season": 2026,
+      "round": 16,
+      "expectedRace": {
+        "raceName": "Bahrain Grand Prix in Malaysia",
+        "circuitId": "sepang",
+        "date": "2026-10-04",
+        "time": "07:00:00Z"
+      },
+      "captures": {
+        "race": "jolpica-2026-16-race",
+        "qualifying": "jolpica-2026-16-qualifying",
+        "sprint": "jolpica-2026-16-sprint"
+      }
+    },
+    {
+      "raceId": "2026-singapore-gp",
+      "season": 2026,
+      "round": 17,
+      "expectedRace": {
+        "raceName": "Singapore Grand Prix",
+        "circuitId": "marina_bay",
+        "date": "2026-10-11",
+        "time": "12:00:00Z"
+      },
+      "captures": {
+        "race": "jolpica-2026-17-race",
+        "qualifying": "jolpica-2026-17-qualifying",
+        "sprint": "jolpica-2026-17-sprint"
+      }
+    }
+  ],
+  "captures": [
+    {
+      "captureId": "jolpica-2026-3-race",
+      "provider": "jolpica",
+      "raceId": "2026-japanese-gp",
+      "season": 2026,
+      "round": 3,
+      "sessionKind": "race",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/3/results.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:37.502606Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-3-results.response",
+      "sha256": "db7d8dc67b897c7b31a2dc6aca36e8356c22b5d25e447f24295e95f99d3cf48b",
+      "bytes": 13165,
+      "expectedRace": {
+        "raceName": "Japanese Grand Prix",
+        "circuitId": "suzuka",
+        "date": "2026-03-29",
+        "time": "05:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-3-qualifying",
+      "provider": "jolpica",
+      "raceId": "2026-japanese-gp",
+      "season": 2026,
+      "round": 3,
+      "sessionKind": "qualifying",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/3/qualifying.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:38.986719Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-3-qualifying.response",
+      "sha256": "185cca3e72519ffc5e74923179c710ef7e1dd6e3ed9763f90adae7d1323c99f3",
+      "bytes": 9945,
+      "expectedRace": {
+        "raceName": "Japanese Grand Prix",
+        "circuitId": "suzuka",
+        "date": "2026-03-29",
+        "time": "05:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-3-sprint",
+      "provider": "jolpica",
+      "raceId": "2026-japanese-gp",
+      "season": 2026,
+      "round": 3,
+      "sessionKind": "sprint",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/3/sprint.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:40.243901Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-3-sprint.response",
+      "sha256": "bf423b7683c6c43187aa92c33be846fe5c11d6635642b3ef8eb95ea1990fb3fa",
+      "bytes": 187,
+      "expectedRace": {
+        "raceName": "Japanese Grand Prix",
+        "circuitId": "suzuka",
+        "date": "2026-03-29",
+        "time": "05:00:00Z"
+      },
+      "rowCount": 0
+    },
+    {
+      "captureId": "jolpica-2026-15-race",
+      "provider": "jolpica",
+      "raceId": "2026-azerbaijan-gp",
+      "season": 2026,
+      "round": 15,
+      "sessionKind": "race",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/15/results.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:41.514082Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-15-results.response",
+      "sha256": "f3561141b309caa5c05e04e20d20034f9d843569e3d1ee21d7adc57e6bcad884",
+      "bytes": 12961,
+      "expectedRace": {
+        "raceName": "Azerbaijan Grand Prix",
+        "circuitId": "baku",
+        "date": "2026-09-26",
+        "time": "11:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-15-qualifying",
+      "provider": "jolpica",
+      "raceId": "2026-azerbaijan-gp",
+      "season": 2026,
+      "round": 15,
+      "sessionKind": "qualifying",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/15/qualifying.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:42.974231Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-15-qualifying.response",
+      "sha256": "bc37970852b9f188910766727ab7104438cada3ff598b2577d6ada32cb334c68",
+      "bytes": 9931,
+      "expectedRace": {
+        "raceName": "Azerbaijan Grand Prix",
+        "circuitId": "baku",
+        "date": "2026-09-26",
+        "time": "11:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-15-sprint",
+      "provider": "jolpica",
+      "raceId": "2026-azerbaijan-gp",
+      "season": 2026,
+      "round": 15,
+      "sessionKind": "sprint",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/15/sprint.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:44.121134Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-15-sprint.response",
+      "sha256": "17b61c7a3a405805ff13fdae837cead2c4d2427b693b7eb681ff0e9762b9fe24",
+      "bytes": 189,
+      "expectedRace": {
+        "raceName": "Azerbaijan Grand Prix",
+        "circuitId": "baku",
+        "date": "2026-09-26",
+        "time": "11:00:00Z"
+      },
+      "rowCount": 0
+    },
+    {
+      "captureId": "jolpica-2026-16-race",
+      "provider": "jolpica",
+      "raceId": "2026-bahrain-gp",
+      "season": 2026,
+      "round": 16,
+      "sessionKind": "race",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/16/results.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:45.467234Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-16-results.response",
+      "sha256": "094d36d81e6f2876f1966df586f3ea0e483ef9b3f6661c1cb85c02748ada8d9e",
+      "bytes": 13181,
+      "expectedRace": {
+        "raceName": "Bahrain Grand Prix in Malaysia",
+        "circuitId": "sepang",
+        "date": "2026-10-04",
+        "time": "07:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-16-qualifying",
+      "provider": "jolpica",
+      "raceId": "2026-bahrain-gp",
+      "season": 2026,
+      "round": 16,
+      "sessionKind": "qualifying",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/16/qualifying.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:46.912640Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-16-qualifying.response",
+      "sha256": "d9a50f5d9f33ecfc31b5393ba0af87ff2433668597b933e5aa69dc484b86b93b",
+      "bytes": 9959,
+      "expectedRace": {
+        "raceName": "Bahrain Grand Prix in Malaysia",
+        "circuitId": "sepang",
+        "date": "2026-10-04",
+        "time": "07:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-16-sprint",
+      "provider": "jolpica",
+      "raceId": "2026-bahrain-gp",
+      "season": 2026,
+      "round": 16,
+      "sessionKind": "sprint",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/16/sprint.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:48.160744Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-16-sprint.response",
+      "sha256": "74331e1199ee5265ff597678f0503f3cb51d053da8b2f8bb5fe9db9923418f26",
+      "bytes": 189,
+      "expectedRace": {
+        "raceName": "Bahrain Grand Prix in Malaysia",
+        "circuitId": "sepang",
+        "date": "2026-10-04",
+        "time": "07:00:00Z"
+      },
+      "rowCount": 0
+    },
+    {
+      "captureId": "jolpica-2026-17-race",
+      "provider": "jolpica",
+      "raceId": "2026-singapore-gp",
+      "season": 2026,
+      "round": 17,
+      "sessionKind": "race",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/17/results.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:49.313278Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-17-results.response",
+      "sha256": "9f23b984ce414d455eff5c2c7d9be094198a0f62df89c26524f37edcdd35bc8f",
+      "bytes": 13120,
+      "expectedRace": {
+        "raceName": "Singapore Grand Prix",
+        "circuitId": "marina_bay",
+        "date": "2026-10-11",
+        "time": "12:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-17-qualifying",
+      "provider": "jolpica",
+      "raceId": "2026-singapore-gp",
+      "season": 2026,
+      "round": 17,
+      "sessionKind": "qualifying",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/17/qualifying.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:50.790618Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-17-qualifying.response",
+      "sha256": "ebf8ff50c80fdcb1cf9bd7ccaa68aa690d5b48e3a5990db8cb1cd7db9852709c",
+      "bytes": 9955,
+      "expectedRace": {
+        "raceName": "Singapore Grand Prix",
+        "circuitId": "marina_bay",
+        "date": "2026-10-11",
+        "time": "12:00:00Z"
+      },
+      "rowCount": 22
+    },
+    {
+      "captureId": "jolpica-2026-17-sprint",
+      "provider": "jolpica",
+      "raceId": "2026-singapore-gp",
+      "season": 2026,
+      "round": 17,
+      "sessionKind": "sprint",
+      "requestUrl": "https://api.jolpi.ca/ergast/f1/2026/17/sprint.json?limit=100",
+      "finalUrl": null,
+      "observedAt": "2026-11-01T07:13:51.941127Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/jolpica/2026-17-sprint.response",
+      "sha256": "280a46d4542ebc0eb9006ee21fff95e123ed63b0869625038934ec78d65b057d",
+      "bytes": 12429,
+      "expectedRace": {
+        "raceName": "Singapore Grand Prix",
+        "circuitId": "marina_bay",
+        "date": "2026-10-11",
+        "time": "12:00:00Z"
+      },
+      "rowCount": 22
+    }
+  ],
+  "standings": [
+    {
+      "captureId": "jolpica-2026-2-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 2,
+      "path": "standings/rounds/2026-2.json",
+      "sha256": "fe94db02608dc77466c5e24e0539f545f802f2c725dec70956daadb90aaf2a11",
+      "bytes": 12381,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-06T12:21:12.046Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/2/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/2/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/2/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/2/constructorstandings.json"
+      }
+    },
+    {
+      "captureId": "jolpica-2026-3-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 3,
+      "path": "standings/rounds/2026-3.json",
+      "sha256": "2be0dc95e85dd3c9f19086c072b539ad384eecbbfb95580ba06ef527b10b3eaf",
+      "bytes": 12387,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-06T12:21:13.027Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/3/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/3/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/3/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/3/constructorstandings.json"
+      }
+    },
+    {
+      "captureId": "jolpica-2026-14-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 14,
+      "path": "standings/rounds/2026-14.json",
+      "sha256": "7956f222f42e92fa7d990588dc8b68b20a80e8a682fc6ade6311f85d3d6b4ac6",
+      "bytes": 12946,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-06T12:21:28.937Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/14/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/14/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/14/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/14/constructorstandings.json"
+      }
+    },
+    {
+      "captureId": "jolpica-2026-15-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 15,
+      "path": "standings/rounds/2026-15.json",
+      "sha256": "f0b96e4536b235118f48385eacda5d4b556d57a620220081c3b5963aceba153d",
+      "bytes": 12949,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-06T12:21:29.932Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/15/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/15/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/15/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/15/constructorstandings.json"
+      }
+    },
+    {
+      "captureId": "jolpica-2026-16-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 16,
+      "path": "standings/rounds/2026-16.json",
+      "sha256": "f77acd07db08b269e85cc0fe59d5dd59ad0b03860e99aeeb722d3861a7753294",
+      "bytes": 12952,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-06T12:21:30.084Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/16/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/16/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json"
+      }
+    },
+    {
+      "captureId": "jolpica-2026-17-standings",
+      "provider": "jolpica",
+      "season": 2026,
+      "round": 17,
+      "path": "standings/rounds/2026-17.json",
+      "sha256": "5e93e21663d4a244ef3ec8bf26432e6ab3d299427fbbf1eaf5afeab3344f209c",
+      "bytes": 12944,
+      "revision": "7b0ca4fa4b0641665e9a0d39b8e71c375f60158d",
+      "generatedAt": "2026-10-12T11:47:19.828Z",
+      "wrapperUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/17/driverstandings.json?limit=30",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/17/constructorstandings.json?limit=30"
+      },
+      "embeddedUrls": {
+        "drivers": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json",
+        "constructors": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json"
+      }
+    }
+  ]
+}

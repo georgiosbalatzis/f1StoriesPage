@@ -1,3 +1,5 @@
+import { renderResultsSection } from './results-render.mjs';
+
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const safeUrl = value => {
   try {
@@ -7,7 +9,8 @@ const safeUrl = value => {
 };
 const kinds = { fp1: 'Ελεύθερες δοκιμές 1', fp2: 'Ελεύθερες δοκιμές 2', fp3: 'Ελεύθερες δοκιμές 3', qualifying: 'Κατατακτήριες', 'sprint-qualifying': 'Κατατακτήριες Sprint', sprint: 'Sprint', race: 'Αγώνας' };
 const clock = value => value ? `${escape(value.date)} · ${escape(value.time)}<small>${escape(value.zone)} · ${escape(value.offset)}</small>` : 'Μη διαθέσιμο';
-const sessionRow = session => `<tr><th scope="row">${escape(kinds[session.kind] ?? session.kind)}<small>Δεδομένα περιόδου: μη συνδεδεμένα σε αυτή τη σελίδα.</small></th><td>${session.startUtc && session.utcTime ? `<time datetime="${escape(session.startUtc)}">${clock(session.utcTime)}</time>` : 'Μη διαθέσιμο'}</td><td>${clock(session.venueTime)}</td><td>${clock(session.athensTime)}</td></tr>`;
+const sessionNote = result => result?.status === 'available' ? 'Καταγεγραμμένη κατάταξη Jolpica στον πίνακα αποτελεσμάτων παρακάτω.' : ({ 'provider-empty': 'Η καταγεγραμμένη απόκριση της πηγής δεν περιέχει αποτελέσματα.', 'unmapped-race': 'Δεν υπάρχει αντιστοίχιση αποτελεσμάτων για αυτό το Grand Prix.', 'uncaptured-session': 'Δεν υπάρχει καταγεγραμμένη απόκριση για αυτή την περίοδο.' }[result?.reason] ?? 'Δεδομένα περιόδου: μη συνδεδεμένα σε αυτή τη σελίδα.');
+const sessionRow = (session, results) => `<tr><th scope="row">${escape(kinds[session.kind] ?? session.kind)}<small>${sessionNote(results?.classifications?.[session.kind])}</small></th><td>${session.startUtc && session.utcTime ? `<time datetime="${escape(session.startUtc)}">${clock(session.utcTime)}</time>` : 'Μη διαθέσιμο'}</td><td>${clock(session.venueTime)}</td><td>${clock(session.athensTime)}</td></tr>`;
 const toolNote = tool => {
   const selection = tool.kind === 'generic' ? 'Γενική προβολή · επίλεξε αγώνα μέσα στο εργαλείο.' : tool.kind === 'partial' ? 'Μέρος της επιλογής μεταφέρεται · έλεγξε την επιλογή στο εργαλείο.' : tool.target === 'grid' ? 'Συμπαγής προβολή THE GRID για τον συγκεκριμένο αγώνα.' : 'Σύνδεσμος για τον συγκεκριμένο αγώνα.';
   return tool.target === 'tyres' ? `${selection} Προεπισκόπηση TYRES, όχι μετρημένα αποτελέσματα αγώνα.` : selection;
@@ -38,7 +41,7 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   const officialDetails = evidence ? `<details><summary>Στοιχεία επίσημου τεκμηρίου</summary><span>Τίτλος: ${escape(evidence.title)}</span><span>SHA-256: ${escape(evidence.sha256)} · ${escape(evidence.bytes)} bytes</span><span>Αναφορές ταυτότητας: ${escape(evidence.titleReference)} · ${escape(evidence.meetingReference)} · ${escape(evidence.circuitReference)}</span><span>Απόκλιση ώρας πηγής: UTC${escape(evidence.gmtOffset)}</span>${(evidence.sessions ?? []).map(session => `<span>${escape(session.kind)}: ${escape(session.nameReference)} · ${escape(session.startReference)}</span>`).join('')}</details>` : '';
   const local = model.localIdentity;
   const localDetails = local ? `<details><summary>Ονομασίες στο τοπικό μητρώο</summary><span>Αγώνας: ${escape(local.eventName)}</span><span>Ονομασία προβολής: ${escape(local.displayName)}</span><span>Πίστα: ${escape(local.venue?.name)}</span><span>Ζώνη: ${escape(local.venue?.timeZone)}</span></details>` : '';
-  const sessions = model.sessions.length ? model.sessions.map(sessionRow).join('\n') : '<tr><td colspan="4">Δεν υπάρχουν καταγεγραμμένες περίοδοι διαθέσιμες σε αυτή τη σελίδα.</td></tr>';
+  const sessions = model.sessions.length ? model.sessions.map(session => sessionRow(session, model.results)).join('\n') : '<tr><td colspan="4">Δεν υπάρχουν καταγεγραμμένες περίοδοι διαθέσιμες σε αυτή τη σελίδα.</td></tr>';
   return `<!doctype html>
 <html lang="el">
 <head>
@@ -76,12 +79,13 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
         <p id="schedule-scroll-hint" class="race-desk-scroll-hint">Κύλησε οριζόντια για όλες τις ώρες · με πληκτρολόγιο, χρησιμοποίησε τα βέλη.</p>
         <div class="race-desk-table-wrap" role="region" tabindex="0" aria-label="Πίνακας προγράμματος" aria-describedby="schedule-scroll-hint"><table><caption>Καταγεγραμμένες προγραμματισμένες ενάρξεις σε UTC, τοπική ώρα και ώρα Ελλάδας</caption><thead><tr><th scope="col">Περίοδος</th><th scope="col">UTC</th><th scope="col">Τοπική ώρα</th><th scope="col">Ώρα Ελλάδας</th></tr></thead><tbody>${sessions}</tbody></table></div>
       </section>
+      ${model.results ? renderResultsSection(model.results) : ''}
       <section class="race-desk-section" aria-labelledby="tools-title">
-        <div class="race-desk-section-head"><div><p class="race-desk-kicker">02 / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
+        <div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '03' : '02'} / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
         <ul class="race-desk-tools">${model.tools.map(toolRow).join('\n')}</ul>
       </section>
-      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div><p class="race-desk-kicker">03 / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>Δεν υπάρχουν διαθέσιμες επιμελημένες συνδέσεις άρθρων για αυτό το Grand Prix.</p></section>
-      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">04 / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
+      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div><p class="race-desk-kicker">${model.results ? '04' : '03'} / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>Δεν υπάρχουν διαθέσιμες επιμελημένες συνδέσεις άρθρων για αυτό το Grand Prix.</p></section>
+      <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '05' : '04'} / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
     </div>
   </main>
   <!-- @include partials/cookie-banner.html -->
