@@ -1,7 +1,8 @@
-import { timestamp } from './timeline.mjs';
+import { buildTimelineContext, timestamp } from './timeline.mjs';
 import { normalizeSessionKind } from './core/index.mjs';
 
-export const PACE_LAP_REASONS = ['duration-null', 'duration-missing', 'duration-invalid-type', 'duration-nonfinite', 'duration-nonpositive', 'sector-sum-mismatch', 'opening-lap', 'pit-in', 'pit-out', 'lap-conflict', 'driver-identity-missing', 'driver-identity-conflicting', 'stint-unassigned', 'stint-overlap', 'stint-integrity-unresolved', 'compound-unknown', 'pit-out-unknown', 'pit-boundary-uncertain', 'sector-invalid', 'lap-start-missing', 'lap-start-invalid', 'lap-start-outside-session', 'neutralisation-unresolved'];
+export const PACE_LAP_REASONS = ['duration-null', 'duration-missing', 'duration-invalid-type', 'duration-nonfinite', 'duration-nonpositive', 'duration-out-of-range', 'sector-sum-mismatch', 'opening-lap', 'pit-in', 'pit-out', 'lap-conflict', 'driver-identity-missing', 'driver-identity-conflicting', 'stint-unassigned', 'stint-overlap', 'stint-integrity-unresolved', 'compound-unknown', 'pit-out-unknown', 'pit-boundary-uncertain', 'sector-invalid', 'lap-start-missing', 'lap-start-invalid', 'lap-start-outside-session', 'neutralisation-unresolved', 'sector-check-unavailable'];
+const EXCLUDED_REASONS = new Set(['duration-null', 'duration-missing', 'duration-invalid-type', 'duration-nonfinite', 'duration-nonpositive', 'duration-out-of-range', 'sector-sum-mismatch', 'opening-lap', 'pit-in', 'pit-out']);
 export const PACE_COVERAGE_REASONS = ['source-partial', 'stints-missing', 'drivers-missing', 'pit-missing', 'laps-missing', 'missing-laps', 'unassigned-laps', 'lap-conflicts', 'identity-missing', 'identity-conflicting', 'stint-gap', 'stint-overlap', 'stint-invalid-interval', 'stint-unverified', 'stint-bounds-unknown', 'compound-unknown', 'tyre-age-unknown', 'sector-sum-mismatch', 'lap-start-anomaly', 'neutralisation-unresolved', 'no-observations'];
 const fail = message => { throw new Error(`Invalid pace: ${message}`); };
 const ordered = (codes, order) => order.filter(code => codes.has(code));
@@ -12,9 +13,9 @@ const emptyCounts = () => ({ observed: 0, timed: 0, excluded: 0, unknown: 0, eli
 const canonical = v => typeof v === 'number' && !Number.isFinite(v) ? String(v) : Array.isArray(v) ? `[${v.map(canonical).join(',')}]` : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${canonical(v[k])}`).join(',')}}` : `${typeof v}:${JSON.stringify(v)}`;
 const time = value => { try { return timestamp(value); } catch { fail('timestamp'); } };
 export function summarizeDurations(seconds) {
-  if (!Array.isArray(seconds) || seconds.some(n => !validPositive(n))) fail('durations');
+  if (!Array.isArray(seconds) || seconds.some(n => !validPositive(n) || n > 86400)) fail('durations');
   const a = [...seconds].sort((x, y) => x - y), n = a.length;
-  return { count: n, minMs: n ? ms(a[0]) : null, medianMs: n < 3 ? null : ms(n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) };
+  return { count: n, minMs: n ? ms(a[0]) : null, medianMs: n < 3 ? null : ms(n % 2 ? a[(n - 1) / 2] : a[n / 2 - 1] + (a[n / 2] - a[n / 2 - 1]) / 2) };
 }
 const ranges = (numbers, first, last) => {
   const result = []; let next = first;
@@ -47,6 +48,7 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
   if (sessionRows.length !== 1) fail('session window');
   const session = sessionRows[0], windowStartUtc = time(session.date_start), windowEndUtc = time(session.date_end);
   if (session.session_name !== 'Race' || session.session_type !== 'Race' || session.year !== race.season || session.is_cancelled === true || windowStartUtc >= windowEndUtc || windowStartUtc !== time(sessions[0].startUtc)) fail('session identity');
+  buildTimelineContext({ race, receipts: receipts.filter(r => ['sessions', 'pit', 'race_control'].includes(r.endpoint)), payloads, rights });
   const diagnostics = [], driverMap = new Map(); let exactDuplicateRows = 0, conflictingLapKeys = 0, unassignedLaps = 0, outOfWindowControlRows = 0;
   const diag = (code, driverNumber, stintNumber, lapNumber, sourceRefs = []) => diagnostics.push({ code, driverNumber, stintNumber, lapNumber, sourceRefs: [...sourceRefs].sort((a, b) => a.captureId.localeCompare(b.captureId) || a.recordIndex - b.recordIndex) });
   const driver = n => { if (!integer(n) || n > 99) fail('driver number'); if (!driverMap.has(n)) driverMap.set(n, { n, roster: new Map(), lapKeys: new Map(), stintKeys: new Map(), pits: new Set() }); return driverMap.get(n); };
@@ -76,11 +78,12 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
       if (conflict) { conflictingLapKeys++; codes.add('lap-conflict'); diag('lap-conflict', d.n, null, n, refs); }
       const duration = row.lap_duration;
       if (!conflict) {
-        if (!Object.hasOwn(row, 'lap_duration')) codes.add('duration-missing'); else if (duration === null) codes.add('duration-null'); else if (typeof duration !== 'number') codes.add('duration-invalid-type'); else if (!Number.isFinite(duration)) codes.add('duration-nonfinite'); else if (duration <= 0) codes.add('duration-nonpositive');
+        if (!Object.hasOwn(row, 'lap_duration')) codes.add('duration-missing'); else if (duration === null) codes.add('duration-null'); else if (typeof duration !== 'number') codes.add('duration-invalid-type'); else if (!Number.isFinite(duration)) codes.add('duration-nonfinite'); else if (duration <= 0) codes.add('duration-nonpositive'); else if (duration > 86400) codes.add('duration-out-of-range');
       }
-      const seconds = !conflict && validPositive(duration) ? duration : null;
+      const seconds = !conflict && validPositive(duration) && duration <= 86400 ? duration : null;
       const sectors = [row.duration_sector_1, row.duration_sector_2, row.duration_sector_3];
       if (!conflict && sectors.some(s => s != null && !validPositive(s))) codes.add('sector-invalid');
+      if (!conflict && seconds !== null && !codes.has('sector-invalid') && sectors.some(s => s == null)) codes.add('sector-check-unavailable');
       if (!conflict && seconds !== null && sectors.every(validPositive) && Math.abs(sectors.reduce((a, b) => a + b, 0) - seconds) > 0.003 + 1e-9) codes.add('sector-sum-mismatch');
       if (n === 1) codes.add('opening-lap'); if (d.pits.has(n)) codes.add('pit-in');
       if (!conflict && row.is_pit_out_lap === true) codes.add('pit-out'); else if (conflict || typeof row.is_pit_out_lap !== 'boolean') codes.add('pit-out-unknown');
@@ -102,7 +105,12 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
     for (let i = 0; i < stints.length; i++) {
       const s = stints[i], prev = stints[i - 1];
       if (s.n !== (prev?.n ?? 0) + 1) promote(s, 'partial', 'stint-gap');
-      if (!prev || prev.start === null || prev.end === null || s.start === null || s.end === null) continue;
+      if (!prev) continue;
+      if (prev.start === null || prev.end === null || s.start === null || s.end === null) {
+        if (prev.start !== null && prev.end !== null) promote(prev, 'unverified', 'stint-unverified');
+        if (s.start !== null && s.end !== null) promote(s, 'unverified', 'stint-unverified');
+        continue;
+      }
       if (s.start <= prev.end) { promote(prev, 'inconsistent', 'stint-overlap'); promote(s, 'inconsistent', 'stint-overlap'); }
       else if (s.start > prev.end + 1) { promote(prev, 'partial', 'stint-gap'); promote(s, 'partial', 'stint-gap'); }
       const out = laps.find(l => l.n === s.start);
@@ -127,7 +135,7 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
       if (['lap-start-missing', 'lap-start-invalid', 'lap-start-outside-session'].some(c => lap.codes.has(c))) reasons.add('lap-start-anomaly');
       if (lap.conflict) reasons.add('lap-conflicts');
       for (const code of lap.codes) if (code !== 'lap-conflict') diag(code, d.n, lap.stint?.n ?? null, lap.n, lap.refs);
-      const excluded = PACE_LAP_REASONS.slice(0, 9).some(c => lap.codes.has(c));
+      const excluded = [...EXCLUDED_REASONS].some(c => lap.codes.has(c));
       if (!excluded) lap.codes.add('neutralisation-unresolved');
       lap.eligibility = excluded ? 'EXCLUDED' : 'UNKNOWN';
     }
@@ -136,6 +144,9 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
     const stintOutput = stints.map((s, i) => {
       const contained = s.start !== null && s.end !== null && s.start <= s.end ? laps.filter(l => l.n >= s.start && l.n <= s.end) : [];
       const missingRanges = s.start !== null && s.end !== null && s.start <= s.end ? ranges(contained.map(l => l.n), s.start, s.end) : [];
+      if (contained.some(l => l.conflict)) s.reasons.add('lap-conflicts');
+      if (contained.some(l => l.codes.has('sector-sum-mismatch'))) s.reasons.add('sector-sum-mismatch');
+      if (contained.some(l => ['lap-start-missing', 'lap-start-invalid', 'lap-start-outside-session'].some(c => l.codes.has(c)))) s.reasons.add('lap-start-anomaly');
       if (missingRanges.length) promote(s, 'partial', 'missing-laps');
       if (i === stints.length - 1 && laps.some(l => l.n > (s.end ?? Infinity))) promote(s, 'partial', 'unassigned-laps');
       for (const r of sourceReasons) s.reasons.add(r); for (const r of s.reasons) reasons.add(r);
