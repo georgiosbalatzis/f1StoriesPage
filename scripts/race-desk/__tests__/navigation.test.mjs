@@ -337,7 +337,8 @@ test("Grid round pin digit grammar agrees with the native consumer", () => {
     }
   }
   const search = "?tab=drivers&embed=1&season=02026&round=3";
-  assert.deepEqual(parseRoundPin(search, 2026), { season: "2026", round: "3" });
+  // Five-digit seasons are outside the grammar; both consumers decline the pin.
+  assert.equal(parseRoundPin(search, 2026), null);
   const result = parseToolUrl(seed, `https://f1-stories.gr/standings/${search}`, options);
   checkParse(result);
   assert.notEqual(result.status, "resolved");

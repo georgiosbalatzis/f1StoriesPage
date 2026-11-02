@@ -4,8 +4,11 @@ import { jolpicaRoundUrls, loadPinnedStandings, parseRoundPin, roundSnapshotUrl 
 // URL parsing
 assert.deepEqual(parseRoundPin('?tab=drivers&embed=1&season=2026&round=4', 2026), { season: '2026', round: '4' });
 assert.deepEqual(parseRoundPin('?round=12', 2026), { season: '2026', round: '12' }, 'season defaults to the current year');
-assert.deepEqual(parseRoundPin('?round=3&season=1999', 2026), { season: '2026', round: '3' }, 'out-of-range season falls back');
+for (const season of ['1999', '9999', 'abc', '', '2026.5']) {
+    assert.equal(parseRoundPin('?round=3&season=' + season, 2026), null, 'explicit unusable season ' + (season || '(empty)') + ' is not pinned');
+}
 assert.deepEqual(parseRoundPin('?round=3&season=2027', 2026), { season: '2027', round: '3' }, 'next season is allowed');
+assert.deepEqual(parseRoundPin('?round=3&season=2024', 2026), { season: '2024', round: '3' }, 'first season is allowed');
 for (const bad of ['', '?round=0', '?round=31', '?round=abc', '?round=-2', '?round=4.5', '?round=']) {
     assert.equal(parseRoundPin(bad, 2026), null, bad || '(empty)');
 }
@@ -57,4 +60,12 @@ function makeIo(handlers) {
 {
     const io = makeIo({ snapshot: () => Promise.reject(new Error('nope')), live: () => Promise.reject(new Error('down')) });
     await assert.rejects(() => loadPinnedStandings({ season: '2026', round: '4' }, io), /down/);
+}
+
+// Never label a different round's constructor or fallback standings as the requested round.
+{
+    const wrong = standings('2026', '3');
+    const io = makeIo({ snapshot: async () => ({ ...snapshot, constructorStandings: wrong }), live: async () => wrong });
+    await assert.rejects(() => loadPinnedStandings({ season: '2026', round: '4' }, io), /do not match/);
+    assert.ok(io.calls.some(call => call.startsWith('live:')));
 }
