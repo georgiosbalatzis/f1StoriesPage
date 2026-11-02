@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { verifyCapture } from './capture.mjs';
 
 const kinds = { race: ['results', 'Results'], qualifying: ['qualifying', 'QualifyingResults'], sprint: ['sprint', 'SprintResults'] };
 const present = value => typeof value === 'string' && value.trim().length > 0;
@@ -24,13 +24,11 @@ function urlMatches(value, pathname, allowQuery = true) {
   } catch { return false; }
 }
 function bytesAndJson(raw, capture, errors) {
-  if (!(typeof raw === 'string' || Buffer.isBuffer(raw) || raw instanceof Uint8Array)) {
-    error(errors, 'invalid-provenance', 'raw'); return null;
+  try { return verifyCapture(raw, capture); }
+  catch (failure) {
+    for (const issue of failure.issues) error(errors, issue.code, issue.path);
+    return failure.parsed ?? null;
   }
-  const bytes = Buffer.from(raw);
-  if (!Number.isSafeInteger(capture.bytes) || capture.bytes < 0 || !/^[a-f0-9]{64}$/.test(capture.sha256 ?? '')) error(errors, 'invalid-provenance', 'capture');
-  else if (bytes.length !== capture.bytes || createHash('sha256').update(bytes).digest('hex') !== capture.sha256) error(errors, 'digest-mismatch', 'raw');
-  try { return JSON.parse(bytes.toString('utf8')); } catch { error(errors, 'invalid-json', 'raw'); return null; }
 }
 function pagination(mr, count, errors, path) {
   if (!integer(mr?.offset) || mr.offset !== '0' || !integer(mr?.total) || !integer(mr?.limit) || Number(mr.total) !== count || Number(mr.limit) < count) error(errors, 'incomplete-pagination', path);
