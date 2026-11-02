@@ -364,7 +364,7 @@ try {
         assert.ok(await summary.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'pace summary focus must have a visible outline');
         assert.ok(await summary.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused pace summary must not be covered');
         const region = run.page.locator('.gp-pace-table-wrap').first();
-        if (await region.evaluate(el => el.scrollWidth > el.clientWidth + 2)) { await region.evaluate(el => { el.scrollLeft = 0; }); await region.focus(); await run.page.keyboard.press('ArrowRight'); assert.ok(await region.evaluate(el => el.scrollLeft > 0), 'pace overview scrolls by keyboard'); }
+        if (await region.evaluate(el => el.scrollWidth > el.clientWidth + 2)) { await region.evaluate(el => { el.scrollLeft = 0; }); await region.focus(); await run.page.keyboard.press('ArrowRight'); await run.page.waitForTimeout(250); assert.ok(await region.evaluate(el => el.scrollLeft > 0), 'pace overview scrolls by keyboard'); }
         // Measure the expanded state: every driver disclosure open.
         await paceDetails.evaluateAll(nodes => nodes.forEach(node => { node.open = true; }));
       }
