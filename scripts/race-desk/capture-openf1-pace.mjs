@@ -5,15 +5,21 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { openF1Url, readTimelineInventory, MAX_CAPTURE_BYTES } from './timeline-files.mjs';
 import { buildPaceContext } from './pace.mjs';
-import { readPaceInventory, validatePaceInventory } from './pace-files.mjs';
+import { validatePaceInventory } from './pace-files.mjs';
 import { readBounded } from './capture-files.mjs';
 
 export async function captureOpenF1Pace({ root, registry, raceId, codeRevision, fetch: fetchImpl = globalThis.fetch, clock = () => new Date(), fs: io = fs }) {
   const timeline = readTimelineInventory(root, registry);
   const { rights } = timeline;
-  readPaceInventory(root, registry);
   const inventoryPath = 'data/race-desk/pace.v1.json';
   const inventoryData = JSON.parse(readBounded(root, inventoryPath, 5_000_000).toString('utf8'));
+  // A fresh capture may replace stale digests, but still validates the old captures and pin identities.
+  const previous = structuredClone(inventoryData);
+  for (const binding of previous.timelineBindings ?? []) if (binding.raceId === raceId && Array.isArray(binding.sources)) for (const source of binding.sources) {
+    const current = timeline.receipts.find(item => item.captureId === source.captureId && item.raceId === raceId && item.endpoint === source.endpoint && item.sessionKind === binding.sessionKind);
+    if (current && /^[a-f0-9]{64}$/.test(source.sha256 ?? '')) source.sha256 = current.sha256;
+  }
+  validatePaceInventory(previous, registry, timeline, receipt => readBounded(root, receipt.path, MAX_CAPTURE_BYTES));
   const receipts = inventoryData.captures;
   const race = registry.races.find(item => item.raceId === raceId);
   const sessions = race?.sessions?.filter(item => item.kind === 'race');
