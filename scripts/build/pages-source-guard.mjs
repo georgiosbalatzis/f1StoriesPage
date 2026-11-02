@@ -70,7 +70,10 @@ function main() {
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /^  push:\s*\n\s+branches:\s*\[main\]/m, 'maintenance must own main pushes');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'maintenance must call the reusable Pages deploy in the same run');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /outputs:\s*\n\s+changed:/, 'maintenance jobs must expose whether they committed a change');
-    assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/actions\/build-pages\b/, 'article generation must prepare Pages using its installed dependencies');
+    // Latest main always deploys: only Deploy Pages builds artifacts, from main as it is then, in one queued group.
+    assertNoPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/actions\/build-pages\b/, 'maintenance must not hand Deploy Pages a prebuilt artifact');
+    assertPattern(DEPLOY_WORKFLOW, workflow, /uses:\s*\.\/\.github\/actions\/build-pages\b/, 'Pages deploy must build its own artifact');
+    assertPattern(DEPLOY_WORKFLOW, workflow, /^concurrency:\s*\n\s+group:\s*pages\s*\n\s+cancel-in-progress:\s*false\s*$/m, 'Pages runs must queue, never cancel each other');
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {

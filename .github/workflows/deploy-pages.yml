@@ -2,12 +2,6 @@ name: Deploy Pages
 
 on:
   workflow_call:
-    inputs:
-      artifact_ready:
-        description: A trusted caller already validated and uploaded the Pages artifact in this run.
-        required: false
-        type: boolean
-        default: false
   # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
   # Each aggregate build refreshes TYRES schedules and forecasts. Owner cadence (2026-11-02): every 6 h
@@ -20,9 +14,14 @@ on:
 # Granted per job: only the deploy job can publish Pages or mint an OIDC token.
 permissions: {}
 
+# Latest main always deploys. Every run builds main as it is when its build job starts, and runs queue instead of
+# cancelling: the running deploy finishes, the newest arrival replaces any older pending one and then builds the
+# newest main and TYRES data. Every change to main is followed by a call or dispatch of this workflow, so the last
+# run always deploys it. (cancel-in-progress let a run that arrived late with an older, prebuilt artifact cancel a
+# newer build on 2026-11-02.)
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   gate:
@@ -49,7 +48,7 @@ jobs:
   build:
     name: Build Pages artifact
     needs: gate
-    if: ${{ !cancelled() && !inputs.artifact_ready && (github.event_name != 'schedule' || needs.gate.outputs.enabled == 'true') }}
+    if: ${{ !cancelled() && (github.event_name != 'schedule' || needs.gate.outputs.enabled == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -69,7 +68,7 @@ jobs:
   deploy:
     name: Deploy Pages artifact
     needs: build
-    if: ${{ !cancelled() && (needs.build.result == 'success' || (inputs.artifact_ready && needs.build.result == 'skipped')) }}
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
