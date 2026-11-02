@@ -219,7 +219,7 @@ test('every suite job builds before testing; only full checks run packaging gate
         modules: ['Build public artifact', 'Run race desk contract tests', 'Test isolated research prototype (DEMO and mocked provider only)',
             'Run standings module tests', 'Run countdown schedule tests', 'Run visual focus capture regression', 'Run security policy tests',
             'Run dashboard snapshot tests (synthetic data and generated keys only, no network)', 'Run aggregate deployment gate tests',
-            'Run tablet CLS guard tests'],
+            'Run tablet CLS guard tests', 'Run author research notebook browser tests'],
         built: ['Build public artifact', 'Run author module tests', 'Run publishing regression tests'],
         artifact: ['Build public artifact', 'Run static source guard', 'Verify asset size budgets', 'Verify generated editorial media',
             'Run blog module tests', 'Verify next-race countdown'],
@@ -240,6 +240,18 @@ test('every suite job builds before testing; only full checks run packaging gate
         }
     }
     assert.match(step('built', 'Run publishing regression tests'), /quality-routing.test.mjs/);
+});
+
+test('the two author steps together run exactly the test:author files, each once', () => {
+    const root = fileURLToPath(new URL('../../../', import.meta.url));
+    const command = step => step.match(/run: node --test (.*)/)[1];
+    const list = script => spawnSync('bash', ['-c', `printf '%s\\n' ${script}`], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n');
+    const built = list(command(step('built', 'Run author module tests')));
+    const modules = list(command(step('modules', 'Run author research notebook browser tests')));
+    const all = list(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts['test:author'].replace('node --test ', ''));
+    assert.ok(all.length > 5);
+    assert.deepEqual(modules, ['scripts/author/__tests__/research-browser.test.mjs']);
+    assert.deepEqual([...built, ...modules].sort(), [...all].sort());
 });
 
 test('PRs restore the same image cache key deployment saves, and never save one', () => {
