@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { readBounded } from './capture-files.mjs';
 import { verifyCapture } from './capture.mjs';
-import { buildTimelineContext } from './timeline.mjs';
+import { buildTimelineContext, timestamp } from './timeline.mjs';
 
 const fail = message => { throw new Error(`Timeline archive: ${message}`); };
 const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).sort().join('\0') === [...expected].sort().join('\0');
@@ -20,6 +20,11 @@ export function readTimelineInventory(root, registry) {
   if (!keys(rights, ['schemaVersion', 'providers']) || rights.schemaVersion !== 1 || !keys(rights.providers, ['openf1', 'jolpica'])) fail('invalid rights');
   const openf1 = rights.providers.openf1, jolpica = rights.providers.jolpica;
   if (!keys(openf1, ['status', 'decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution']) || !['approved', 'unresolved'].includes(openf1.status) || !['decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution'].every(key => text(openf1[key])) || !/^\d{4}-\d\d-\d\d$/.test(openf1.decidedOn) || openf1.license !== 'CC BY-NC-SA 4.0' || openf1.licenseUrl !== 'https://creativecommons.org/licenses/by-nc-sa/4.0/' || openf1.terms !== 'https://openf1.org/' || openf1.attribution !== 'OpenF1' || !keys(jolpica, ['status', 'note']) || !['approved', 'unresolved'].includes(jolpica.status) || !text(jolpica.note)) fail('invalid provider rights');
+  const payloads = validateBatch(inventory.captures, registry, receipt => readBounded(base, receipt.path, 20_000_000));
+  return { receipts: inventory.captures, payloads, rights };
+}
+
+export function validateBatch(receipts, registry, readBytes) {
   if (!Array.isArray(registry?.races)) fail('invalid registry');
   const races = new Map();
   for (const race of registry.races) {
@@ -27,8 +32,10 @@ export function readTimelineInventory(root, registry) {
     races.set(race.raceId, race);
   }
   const ids = new Set(), pairs = new Set(), paths = new Set(), payloads = new Map();
-  for (const receipt of inventory.captures) {
-    if (!keys(receipt, fields) || receipt.schemaVersion !== 1 || !text(receipt.captureId) || receipt.provider !== 'openf1' || !endpoints.includes(receipt.endpoint) || receipt.sessionKind !== 'race' || receipt.synthetic !== false || !/^[a-f0-9]{40}$/.test(receipt.codeRevision ?? '') || receipt.httpStatus !== 200 || !Number.isSafeInteger(receipt.rowCount) || receipt.rowCount < 0 || !['full', 'partial', 'empty', 'invalid'].includes(receipt.coverage) || !Array.isArray(receipt.coverageReasons) || !receipt.coverageReasons.every(text) || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z$/.test(receipt.observedAt ?? '') || !Number.isFinite(Date.parse(receipt.observedAt))) fail('invalid receipt');
+  for (const receipt of receipts) {
+    if (!keys(receipt, fields) || receipt.schemaVersion !== 1 || !text(receipt.captureId) || receipt.provider !== 'openf1' || !endpoints.includes(receipt.endpoint) || receipt.sessionKind !== 'race' || receipt.synthetic !== false || !/^[a-f0-9]{40}$/.test(receipt.codeRevision ?? '') || receipt.httpStatus !== 200 || !Number.isSafeInteger(receipt.rowCount) || receipt.rowCount < 0 || !Array.isArray(receipt.coverageReasons) || !receipt.coverageReasons.every(text) || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(receipt.observedAt ?? '')) fail('invalid receipt');
+    timestamp(receipt.observedAt);
+    if ((receipt.coverage === 'partial' && receipt.coverageReasons.length === 0) || (['full', 'empty'].includes(receipt.coverage) && receipt.coverageReasons.length !== 0) || !['full', 'partial', 'empty'].includes(receipt.coverage)) fail('coverage mismatch');
     const race = races.get(receipt.raceId), sessions = race?.sessions?.filter(session => session.kind === 'race');
     const meetingKey = race?.sourceKeys?.openf1MeetingKey, sessionKey = sessions?.[0]?.openf1SessionKey;
     if (sessions?.length !== 1 || !positive(meetingKey) || !positive(sessionKey)) fail('unmapped receipt');
@@ -38,7 +45,7 @@ export function readTimelineInventory(root, registry) {
     const pair = `${receipt.raceId}\0${sessionKey}\0${receipt.endpoint}`;
     if (ids.has(receipt.captureId) || pairs.has(pair) || paths.has(receipt.path)) fail('duplicate capture');
     ids.add(receipt.captureId); pairs.add(pair); paths.add(receipt.path);
-    const rows = verifyCapture(readBounded(base, receipt.path, 20_000_000), receipt);
+    const rows = verifyCapture(readBytes(receipt), receipt);
     if (!Array.isArray(rows) || rows.length !== receipt.rowCount) fail('row count mismatch');
     if ((rows.length === 0 && receipt.coverage !== 'empty') || (rows.length > 0 && !['full', 'partial'].includes(receipt.coverage))) fail('coverage mismatch');
     if (rows.length === 0) {
@@ -48,7 +55,7 @@ export function readTimelineInventory(root, registry) {
     }
     payloads.set(receipt.captureId, rows);
   }
-  return { receipts: inventory.captures, payloads, rights };
+  return payloads;
 }
 
 export function readTimelineContexts(root, registry) {

@@ -16,7 +16,13 @@ function fixture(t) {
   fs.writeFileSync(path.join(root, 'data/race-desk/publication-rights.v1.json'), JSON.stringify(rights));
   return root;
 }
-const capture = root => captureOpenF1({ root, registry, raceId: 'synthetic-race', codeRevision: 'a'.repeat(40), clock: () => new Date('2026-01-01T00:00:00Z'), fetch: async url => ({ status: 200, url, arrayBuffer: async () => Buffer.from(JSON.stringify([{ meeting_key: 11, session_key: 22, synthetic: true }])) }) });
+const syntheticRows = () => ({
+  sessions: [{ meeting_key: 11, session_key: 22, session_name: 'Race', session_type: 'Race', date_start: '2026-01-01T12:00:00Z', date_end: '2026-01-01T14:00:00Z', synthetic: true }],
+  race_control: [{ meeting_key: 11, session_key: 22, date: '2026-01-01T12:30:00Z', message: 'synthetic' }],
+  pit: [],
+});
+const capture = (root, rows = syntheticRows(), io = fs) => captureOpenF1({ root, registry, raceId: 'synthetic-race', codeRevision: 'a'.repeat(40), clock: () => new Date('2026-01-01T00:00:00Z'), fs: io, fetch: async url => ({ status: 200, url, arrayBuffer: async () => Buffer.from(JSON.stringify(rows[new URL(url).pathname.split('/').pop()])) }) });
+
 function mutate(root, fn) {
   const file = path.join(root, 'data/race-desk/timeline.v1.json'), inventory = JSON.parse(fs.readFileSync(file));
   fn(inventory); fs.writeFileSync(file, JSON.stringify(inventory));
@@ -28,11 +34,14 @@ test('fake capture round trips exact bytes and rejects receipt tampering', async
   assert.deepEqual(receipts.map(item => item.endpoint), ['pit', 'race_control', 'sessions']);
   assert.equal(readTimelineInventory(root, registry).receipts.length, 3);
   const original = fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json'));
-  for (const change of [r => { r.synthetic = true; }, r => { r.rowCount++; }, r => { r.sha256 = '0'.repeat(64); }, r => { r.httpStatus = 404; }, r => { r.requestUrl += '&x=1'; }, r => { r.returnedIdentity.meeting_key++; }, r => { r.path = 'data/race-desk/captures/openf1/../escape.response'; }, r => { r.codeRevision = 'bad'; }]) {
+  for (const change of [r => { r.synthetic = true; }, r => { r.rowCount++; }, r => { r.sha256 = '0'.repeat(64); }, r => { r.httpStatus = 404; }, r => { r.requestUrl += '&x=1'; }, r => { r.path = 'data/race-desk/captures/openf1/../escape.response'; }, r => { r.codeRevision = 'bad'; }]) {
     mutate(root, inventory => change(inventory.captures[0]));
     assert.throws(() => readTimelineInventory(root, registry));
     fs.writeFileSync(path.join(root, 'data/race-desk/timeline.v1.json'), original);
   }
+  mutate(root, inventory => { inventory.captures.find(r => r.endpoint === 'sessions').returnedIdentity.meeting_key++; });
+  assert.throws(() => readTimelineInventory(root, registry));
+  fs.writeFileSync(path.join(root, 'data/race-desk/timeline.v1.json'), original);
   mutate(root, inventory => inventory.captures.push({ ...inventory.captures[0], captureId: 'other' }));
   assert.throws(() => readTimelineInventory(root, registry), /duplicate/);
 });
@@ -65,4 +74,51 @@ test('readTimelineContexts builds a synthetic context end to end and the product
   assert.deepEqual(context.events.map(e => [e.eventType, e.timestampUtc]), [['race-control-observation', '2026-01-01T12:30:00.000000Z'], ['pit-lane-visit', '2026-01-01T12:31:00.250000Z']]);
   const real = JSON.parse(fs.readFileSync('data/race-desk/registry.v1.json'));
   assert.ok([...readTimelineContexts(process.cwd(), real).values()].every(c => c.status === 'unavailable' && c.reason === 'unmapped'));
+});
+
+test('failed staging and replacement preserve the previous archive', async t => {
+  const root = fixture(t);
+  await capture(root);
+  const before = readTimelineContexts(root, registry);
+  const inventory = fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json'));
+  for (const [operation, failAt] of [['writeFileSync', 2], ['renameSync', 2], ['renameSync', 4]]) {
+    let calls = 0;
+    const io = { ...fs, [operation]: (...args) => {
+      if (++calls === failAt) throw new Error('synthetic failure');
+      return fs[operation](...args);
+    } };
+    const rows = syntheticRows(); rows.race_control[0].message = 'synthetic refresh';
+    await assert.rejects(capture(root, rows, io), /synthetic failure/);
+    assert.deepEqual(fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json')), inventory);
+    assert.deepEqual(readTimelineContexts(root, registry), before);
+  }
+});
+
+test('invalid proposed session is rejected before touching the archive', async t => {
+  const root = fixture(t);
+  await capture(root);
+  const before = readTimelineContexts(root, registry);
+  const inventory = fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json'));
+  const rows = syntheticRows(); rows.sessions[0].session_name = 'Sprint';
+  await assert.rejects(capture(root, rows), /session kind/);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json')), inventory);
+  assert.deepEqual(readTimelineContexts(root, registry), before);
+});
+
+test('receipt coverage and observedAt are validated and partial reaches the context', async t => {
+  const root = fixture(t);
+  await capture(root);
+  const file = path.join(root, 'data/race-desk/timeline.v1.json');
+  const original = fs.readFileSync(file);
+  mutate(root, inventory => { const r = inventory.captures.find(r => r.endpoint === 'race_control'); r.coverage = 'partial'; r.coverageReasons = ['synthetic truncation']; });
+  const context = readTimelineContexts(root, registry).get('synthetic-race');
+  assert.equal(context.coverage, 'partial'); assert.equal(context.events[0].coverage, 'partial');
+  for (const change of [r => { r.coverage = 'partial'; }, r => { r.coverageReasons = ['unexpected']; }, r => { r.coverage = 'invalid'; }, r => { r.coverage = 'empty'; }, r => { r.observedAt = '2026-02-30T00:00:00Z'; }, r => { r.observedAt = '2026-01-01T00:00:00.1234Z'; }]) {
+    fs.writeFileSync(file, original);
+    mutate(root, inventory => change(inventory.captures.find(r => r.endpoint === 'race_control')));
+    assert.throws(() => readTimelineContexts(root, registry));
+  }
+  fs.writeFileSync(file, original);
+  mutate(root, inventory => { const r = inventory.captures.find(r => r.endpoint === 'pit'); r.coverageReasons = ['unexpected']; });
+  assert.throws(() => readTimelineContexts(root, registry));
 });

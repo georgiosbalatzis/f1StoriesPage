@@ -73,3 +73,11 @@ test('event IDs are deterministic and repeated runs deep equal', () => {
   const x = input([control()]); const a = buildTimelineContext(x); assert.deepEqual(a, buildTimelineContext(x));
   const expected = createHash('sha256').update(['synthetic-gp', 'race', 'openf1', 'race_control', 'a'.repeat(64), 0].join('|')).digest('hex'); assert.equal(a.events[0].eventId, `tl-${expected}`);
 });
+
+test('unresolved rights do not hide malformed captured rows', () => {
+  const x = input([control(null)], [pit(undefined, { stop_duration: -1 })]);
+  x.rights.providers.openf1.status = 'unresolved';
+  assert.throws(() => buildTimelineContext(x), /timestamp/);
+  x.payloads.get('synthetic-race_control')[0].date = '2026-01-01T12:00:00Z';
+  assert.throws(() => buildTimelineContext(x), /duration/);
+});

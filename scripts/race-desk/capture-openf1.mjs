@@ -1,12 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { openF1Url, readTimelineInventory } from './timeline-files.mjs';
+import { openF1Url, readTimelineInventory, validateBatch } from './timeline-files.mjs';
+import { buildTimelineContext } from './timeline.mjs';
+import { readBounded } from './capture-files.mjs';
 
-export async function captureOpenF1({ root, registry, raceId, codeRevision, fetch: fetchImpl = globalThis.fetch, clock = () => new Date() }) {
-  const { receipts } = readTimelineInventory(root, registry);
+export async function captureOpenF1({ root, registry, raceId, codeRevision, fetch: fetchImpl = globalThis.fetch, clock = () => new Date(), fs: io = fs }) {
+  const { receipts, rights } = readTimelineInventory(root, registry);
   const race = registry.races.find(item => item.raceId === raceId);
   const sessions = race?.sessions?.filter(item => item.kind === 'race');
   const sessionKey = sessions?.[0]?.openf1SessionKey, meetingKey = race?.sourceKeys?.openf1MeetingKey;
@@ -22,24 +24,57 @@ export async function captureOpenF1({ root, registry, raceId, codeRevision, fetc
     const observedAt = clock().toISOString();
     captures.push({ bytes, receipt: { schemaVersion: 1, captureId: `openf1-${sessionKey}-${endpoint}`, provider: 'openf1', endpoint, raceId, sessionKind: 'race', requestUrl, query: { session_key: sessionKey }, finalUrl: response.url || null, observedAt, httpStatus: 200, path: `data/race-desk/captures/openf1/${sessionKey}-${endpoint}.response`, sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, rowCount: rows.length, returnedIdentity: rows.length ? { meeting_key: meetingKey, session_key: sessionKey } : null, coverage: rows.length ? 'full' : 'empty', coverageReasons: [], codeRevision, synthetic: false } });
   }
+  const next = [...receipts.filter(item => !(item.raceId === raceId && ['sessions', 'race_control', 'pit'].includes(item.endpoint))), ...captures.map(item => item.receipt)].sort((a, b) => a.captureId.localeCompare(b.captureId, 'en'));
+  const proposed = new Map(captures.map(item => [item.receipt.captureId, item.bytes]));
+  const payloads = validateBatch(next, registry, receipt => proposed.get(receipt.captureId) ?? readBounded(root, receipt.path, 20_000_000));
+  buildTimelineContext({ race, receipts: next.filter(item => item.raceId === raceId), payloads, rights });
   let current = root;
   for (const part of 'data/race-desk/captures/openf1'.split('/')) {
     current = path.join(current, part);
-    try { fs.mkdirSync(current); } catch (error) { if (error.code !== 'EEXIST') throw error; }
-    const stat = fs.lstatSync(current);
+    try { io.mkdirSync(current); } catch (error) { if (error.code !== 'EEXIST') throw error; }
+    const stat = io.lstatSync(current);
     if (stat.isSymbolicLink() || !stat.isDirectory()) throw new Error('Unsafe capture directory');
   }
-  for (const capture of captures) {
-    const file = path.join(root, capture.receipt.path);
-    try { if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw new Error('Unsafe capture file'); }
-    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const inventory = path.join(root, 'data/race-desk/timeline.v1.json');
+  const files = [...captures.map(capture => ({ file: path.join(root, capture.receipt.path), bytes: capture.bytes })),
+    { file: inventory, bytes: Buffer.from(JSON.stringify({ schemaVersion: 1, captures: next }, null, 2) + '\n') }];
+  const staged = [], replaced = [];
+  let rollbackFailed = false;
+  try {
+    for (const item of files) {
+      let exists = false;
+      try {
+        const stat = io.lstatSync(item.file);
+        if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Unsafe capture file');
+        exists = true;
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      const suffix = `.tmp-${randomUUID()}`;
+      const entry = { ...item, temp: item.file + suffix, backup: exists ? item.file + suffix + '.bak' : null };
+      staged.push(entry);
+      io.writeFileSync(entry.temp, item.bytes, { flag: 'wx', mode: 0o644 });
+      if (entry.backup) io.linkSync(item.file, entry.backup);
+    }
+    for (const entry of staged) {
+      io.renameSync(entry.temp, entry.file);
+      replaced.push(entry);
+    }
+  } catch (error) {
+    const failures = [];
+    for (const entry of replaced.reverse()) {
+      try {
+        if (entry.backup) io.renameSync(entry.backup, entry.file);
+        else io.unlinkSync(entry.file);
+      } catch (failure) { failures.push(failure); }
+    }
+    if (failures.length) { rollbackFailed = true; throw new AggregateError([error, ...failures], 'Capture failed; backup files retained'); }
+    throw error;
+  } finally {
+    for (const entry of staged) {
+      for (const file of [entry.temp, rollbackFailed ? null : entry.backup]) if (file) {
+        try { io.unlinkSync(file); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      }
+    }
   }
-  for (const capture of captures) {
-    const fd = fs.openSync(path.join(root, capture.receipt.path), fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | (fs.constants.O_NOFOLLOW ?? 0), 0o644);
-    try { fs.writeFileSync(fd, capture.bytes); } finally { fs.closeSync(fd); }
-  }
-  const next = [...receipts.filter(item => !(item.raceId === raceId && ['sessions', 'race_control', 'pit'].includes(item.endpoint))), ...captures.map(item => item.receipt)].sort((a, b) => a.captureId.localeCompare(b.captureId, 'en'));
-  fs.writeFileSync(path.join(root, 'data/race-desk/timeline.v1.json'), JSON.stringify({ schemaVersion: 1, captures: next }, null, 2) + '\n');
   return next;
 }
 
