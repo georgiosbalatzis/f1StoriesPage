@@ -71,7 +71,6 @@ test('deployment waits for regeneration, survives skipped jobs and stops on push
         changes: { result: 'success', outputs: { blog: 'true' } },
         publish_blog: { result: 'success', outputs: { changed: 'true' } },
         publish_data: { result: 'skipped', outputs: {} },
-        refresh_youtube: { result: 'skipped', outputs: {} },
         refresh_standings_data: { result: 'skipped', outputs: {} }
     };
     assert.equal(condition('publish_blog', { event_name: 'push' }, needs), true);
@@ -100,7 +99,6 @@ test('automatic, scheduled and manual publishers deploy only changed maintenance
         changes: { result: 'skipped', outputs: {} },
         publish_blog: { result: 'success', outputs: { changed: 'true' } },
         publish_data: { result: 'skipped', outputs: {} },
-        refresh_youtube: { result: 'skipped', outputs: {} },
         refresh_standings_data: { result: 'skipped', outputs: {} }
     };
     for (const event_name of ['workflow_run', 'schedule', 'workflow_dispatch']) {
@@ -125,7 +123,6 @@ test('fetch jobs cannot deploy data before its publishing job has pushed it', ()
         changes: { result: 'skipped', outputs: {} },
         publish_blog: { result: 'skipped', outputs: {} },
         publish_data: { result: 'skipped', outputs: {} },
-        refresh_youtube: { result: 'skipped', outputs: {} },
         refresh_standings_data: { result: 'success', outputs: { patch: 'true' } }
     };
     assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), true);
@@ -138,7 +135,7 @@ test('fetch jobs cannot deploy data before its publishing job has pushed it', ()
     assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), false);
     needs.refresh_standings_data = { result: 'success', outputs: { patch: 'false' } };
     assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), false);
-    needs.refresh_youtube = { result: 'success', outputs: { patch: 'true' } };
+    needs.refresh_standings_data = { result: 'success', outputs: { patch: 'true' } };
     assert.equal(condition('publish_data', { event_name: 'workflow_dispatch' }, needs), true);
     assert.equal(condition('publish_data', { event_name: 'workflow_dispatch' }, needs, {}, true), false);
 });

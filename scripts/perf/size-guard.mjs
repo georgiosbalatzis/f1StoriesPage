@@ -90,9 +90,7 @@ const SOURCE_FILES = [
     'blog-module/build/home-panels.js',
     'blog-module/build/__tests__/golden.js',
     'blog-module/build/__tests__/run-golden.js',
-    'scripts/build/fetch-youtube.mjs',
     'sw.js',
-    'assets/youtube-latest.json',
     'images/icons/sprite.svg'
 ];
 

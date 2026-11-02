@@ -55,7 +55,6 @@ const REQUIRED_EXACT = [
     'sitemap.xml',
     'feed.xml',
     'sw.js',
-    'assets/youtube-latest.json',
     'blog-module/blog-index-data.json',
     'blog-module/search-destinations.json',
     'blog-module/search-destinations.min.js',

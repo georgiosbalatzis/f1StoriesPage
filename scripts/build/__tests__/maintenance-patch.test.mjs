@@ -33,12 +33,10 @@ function fixture(t) {
         git('-c', 'user.name=Maintenance test', '-c', 'user.email=test@example.invalid', 'commit', '-m', 'fixture');
     };
     git('init', '-q');
-    for (const file of ['assets/youtube-latest.json', 'standings/standings-cache.json',
+    for (const file of ['standings/standings-cache.json',
         'standings/dirty-air-cache.json', 'standings/dirty-air/index.json',
         'standings/dirty-air/old-session.json', 'standings/rounds/2026-1.json',
         'standings/debrief-cache.json']) write(file, '{"version":1}\n');
-    write('images/youtube/old.webp', Buffer.from([0, 1, 2, 3, 255]));
-    write('images/youtube/kept.webp', Buffer.from([0, 1, 2, 3, 254]));
     write('README.md', 'original docs\n');
     commit();
     const output = path.join(root, 'output');
@@ -58,36 +56,28 @@ function fixture(t) {
 }
 
 test('slow fetching is read-only and only final publishing holds the article lock', () => {
-    for (const name of ['refresh_youtube', 'refresh_standings_data']) {
-        assert.match(job(name), /permissions:\n      contents: read/);
-        assert.doesNotMatch(job(name), /content-publishing|commit-and-push/);
-    }
-    assert.match(job('publish_data'), /needs: \[refresh_youtube, refresh_standings_data\]/);
+    assert.match(job('refresh_standings_data'), /permissions:\n      contents: read/);
+    assert.doesNotMatch(job('refresh_standings_data'), /content-publishing|commit-and-push/);
+    assert.match(job('publish_data'), /needs: refresh_standings_data\n/);
+    assert.doesNotMatch(workflow, /youtube/i, 'the YouTube snapshot refresh was retired on 2026-11-02');
     assert.match(job('publish_data'), /group: content-publishing/);
     assert.match(job('publish_data'), /fetch-depth: 0/);
     assert.doesNotMatch(job('publish_data'), /actions\/setup|\.github\/actions\/setup|npm /);
 });
 
-for (const [jobName, stepName] of [
-    ['refresh_youtube', 'Prepare YouTube patch'],
-    ['refresh_standings_data', 'Prepare standings patch']
-]) test(`${jobName} skips publishing when its data is unchanged`, t => {
+test('refresh_standings_data skips publishing when its data is unchanged', t => {
     const f = fixture(t);
     // Unrelated source changes must not create a maintenance commit.
     f.write('README.md', 'unrelated docs\n');
-    assert.equal(f.prepare(jobName, stepName), 'changed=false');
+    assert.equal(f.prepare('refresh_standings_data', 'Prepare standings patch'), 'changed=false');
     assert.equal(fs.readFileSync(f.patch, 'utf8'), '');
 });
 
-test('YouTube patches preserve a newer article and carry binary additions, changes and deletions', t => {
+test('standings patches preserve a newer article and leave unrelated fetch-job edits out', t => {
     const f = fixture(t);
-    const bytes = Buffer.from([0, 13, 10, 255, 128, 4]);
-    f.write('assets/youtube-latest.json', '{"version":2}\n');
-    f.write('images/youtube/new.webp', bytes);
-    f.write('images/youtube/kept.webp', bytes);
-    fs.unlinkSync(path.join(f.repo, 'images/youtube/old.webp'));
+    f.write('standings/standings-cache.json', '{"version":2}\n');
     f.write('README.md', 'unrelated fetch-job edit\n');
-    assert.equal(f.prepare('refresh_youtube', 'Prepare YouTube patch'), 'changed=true');
+    assert.equal(f.prepare('refresh_standings_data', 'Prepare standings patch'), 'changed=true');
     assert.doesNotMatch(fs.readFileSync(f.patch, 'utf8'), /README.md/);
     f.git('reset', '--hard', 'HEAD');
     f.write('blog-module/blog-entries/new/source.txt', 'new article\n');
@@ -95,14 +85,8 @@ test('YouTube patches preserve a newer article and carry binary additions, chang
     const result = f.apply();
     assert.equal(result.status, 0, result.stderr);
     assert.equal(fs.readFileSync(path.join(f.repo, 'blog-module/blog-entries/new/source.txt'), 'utf8'), 'new article\n');
-    assert.deepEqual(fs.readFileSync(path.join(f.repo, 'images/youtube/new.webp')), bytes);
-    assert.deepEqual(fs.readFileSync(path.join(f.repo, 'images/youtube/kept.webp')), bytes);
-    assert.equal(fs.existsSync(path.join(f.repo, 'images/youtube/old.webp')), false);
-    assert.equal(fs.readFileSync(path.join(f.repo, 'assets/youtube-latest.json'), 'utf8'), '{"version":2}\n');
     assert.equal(fs.readFileSync(path.join(f.repo, 'README.md'), 'utf8'), 'original docs\n');
-    assert.deepEqual(f.git('diff', '--cached', '--name-only').split('\n'), [
-        'assets/youtube-latest.json', 'images/youtube/kept.webp', 'images/youtube/new.webp', 'images/youtube/old.webp'
-    ]);
+    assert.equal(f.git('diff', '--cached', '--name-only'), 'standings/standings-cache.json');
 });
 
 test('standings patches include split snapshots and their deletions after main moves', t => {
@@ -128,23 +112,23 @@ test('standings patches include split snapshots and their deletions after main m
 
 test('overlapping data refreshes fail before committing rather than overwriting newer data', t => {
     const f = fixture(t);
-    f.write('assets/youtube-latest.json', '{"version":2}\n');
-    f.prepare('refresh_youtube', 'Prepare YouTube patch');
+    f.write('standings/standings-cache.json', '{"version":2}\n');
+    f.prepare('refresh_standings_data', 'Prepare standings patch');
     f.git('reset', '--hard', 'HEAD');
-    f.write('assets/youtube-latest.json', '{"version":3}\n');
+    f.write('standings/standings-cache.json', '{"version":3}\n');
     f.commit();
     const head = f.git('rev-parse', 'HEAD');
     const result = f.apply();
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /conflict/i);
     assert.equal(f.git('rev-parse', 'HEAD'), head);
-    assert.equal(f.git('show', 'HEAD:assets/youtube-latest.json'), '{"version":3}');
+    assert.equal(f.git('show', 'HEAD:standings/standings-cache.json'), '{"version":3}');
 });
 
 test('an already-published snapshot applies cleanly without another commit', t => {
     const f = fixture(t);
-    f.write('assets/youtube-latest.json', '{"version":2}\n');
-    f.prepare('refresh_youtube', 'Prepare YouTube patch');
+    f.write('standings/standings-cache.json', '{"version":2}\n');
+    f.prepare('refresh_standings_data', 'Prepare standings patch');
     f.commit();
     const result = f.apply();
     assert.equal(result.status, 0, result.stderr);

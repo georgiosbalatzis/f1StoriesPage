@@ -18,7 +18,7 @@ PR ──► Site Quality ─┬─ modules   build:public → contracts, resear
 Quality gates success on author/* ──► Publish Article ─► guard + merge ─► Site Maintenance task=blog
 Quality gates success on dependabot/** ──► Merge Dependency Updates ─► merge ─► Deploy Pages
 push main ──► Site Maintenance ─► route ─► [publish blog: process, stamp, commit, build-pages] ─► Deploy Pages
-schedules ──► Deploy Pages (TYRES) │ Site Maintenance (standings, YouTube) │ Intelligence Snapshot ─► Deploy Pages
+schedules ──► Deploy Pages (TYRES) │ Site Maintenance (standings) │ Intelligence Snapshot ─► Deploy Pages
              Intelligence Health │ Security Headers
 
 build-pages: restore/save image cache → aggregate build (5 apps, Node 22 + 24, Chromium) → static, media,
@@ -36,10 +36,10 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 | **A** mandatory PR | classify, `build:public`, static guard, size budgets, media QA, blog URL contracts, countdown QA, Race Desk contracts, standings, security policy, deployment negative cases, publishing/workflow regressions, author tool, research prototype (mocked), intelligence + dashboard (synthetic keys), countdown/visual-focus/tablet-CLS units | Article build and URL contracts, CSP/security policy, workflow privileges, encrypted dashboard privacy, deploy refusal paths |
 | **B** conditional PR | full route: release media/domain, runtime audit, Race Desk navigation, GP hubs, Edition, consent/RUM, tablet CLS browser. Ecosystem dry run on deployment/setup/build-pages/workflow paths | Code changes to public runtime, consent, navigation; assembled five-app integrity before merge |
 | **C** release | `build-pages` (aggregate build, static/media/domain/audit gates, smoke, Race Desk navigation, GP hubs, upload), Deploy Pages deploy, Site Maintenance routing/commit, author PR guard + merge, Dependabot merge | The exact artifact that ships: source pins, canonical/sitemap/domain files, assembled navigation, CSP refusals, 404s |
-| **D** scheduled | Deploy Pages TYRES refresh (6 h Thu–Mon, daily Tue–Wed), standings (Fri 23:59, Sat/Mon 07:01 Athens), YouTube (Sat 23:59), Intelligence Snapshot (03:00) and Health (11:00/17:00), Security Headers (Mon) | Data freshness, live header drift, analytics pipeline health |
+| **D** scheduled | Deploy Pages TYRES refresh (6 h Thu–Mon, daily Tue–Wed), standings (Fri 23:59, Sat/Mon 07:01 Athens), Intelligence Snapshot (03:00) and Health (11:00/17:00), Security Headers (Mon) | Data freshness, live header drift, analytics pipeline health |
 | **E** manual / diagnostic | Ecosystem dry run dispatch, Deploy Pages dispatch, Security Headers `--strict`, `npm run verify` extras (`qa:visual`, `perf:lighthouse`, `perf:images`, `perf:article-media`, `qa:author-images`), `qa:embeds`, `qa:audio-player`, `qa:embed-dialog`, `dashboard-browser.mjs --screenshots`, perf profilers (`global-runtime-profile`, `global-cues-profile`, `standings-performance`, `standings-dirty-air-performance`, `rum-performance`, `shared-nav-cues-qa`, `grid-round-pin-qa`) | Investigation; not merge gates |
 | **F** removed | PR-title-gated I-06D screenshot capture/upload (its extra dashboard session now always runs). Already gone before this program: "Rehearsal - publish without mtime restore (temporary)", "Scheduled Publish" | — |
-| **G** owner | YouTube refresh: keep, retire later with the YouTube UI | — |
+| **F** removed 2026-11-02 | YouTube channel snapshot (`fetch-youtube.mjs`, `assets/youtube-latest.json`, `images/youtube/`, Saturday refresh): no page read it; owner retired it. Channel links and article video embeds remain | — |
 
 ## Intentional duplication
 
@@ -82,5 +82,5 @@ The Deploy Pages and Site Maintenance medians in the baseline predate #402, whic
 Ruleset "Force Protection": deletion and non-fast-forward blocked; no required status checks. Owner approved requiring
 **Quality gates** with the GitHub Actions integration as a bypass actor, but GitHub refuses that bypass on a
 personal-account repository (HTTP 422, "Actor GitHub Actions integration must be part of the ruleset source or owner
-organization"). Without it the rule would reject `commit-and-push` (blog artifacts, standings/YouTube data,
+organization"). Without it the rule would reject `commit-and-push` (blog artifacts, standings data,
 intelligence snapshot), so the ruleset is unchanged. Open owner decision.
