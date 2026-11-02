@@ -105,7 +105,7 @@ try {
     for (const [index, id] of ids.entries()) {
       const post = posts.get(id); assert.ok(post, `cached article ${id}`);
       const item = items.nth(index), link = item.locator('h3 > a[href]'), time = item.locator('time[datetime]');
-      assert.equal(await link.count(), 1); assert.equal(await link.getAttribute('href'), storyHref(id));
+      assert.equal(await link.count(), 1); assert.equal(new URL(await link.getAttribute('href'), 'https://f1-stories.gr').href, storyHref(id));
       assert.equal(await link.textContent(), post.title);
       assert.equal(await time.count(), 1); assert.equal(await time.getAttribute('datetime'), post.date);
       assert.equal(await time.innerText(), new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${post.date}T00:00:00Z`)));
@@ -291,12 +291,12 @@ try {
     assert.ok(focused, 'first story must be reachable by Tab');
     assert.ok(await link.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'story focus must have a visible outline');
     assert.ok(await link.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused story link must not be covered');
-    const href = await link.getAttribute('href'); assert.equal(href, storyHref(storyIds[model.raceId][0]));
+    const href = new URL(await link.getAttribute('href'), 'https://f1-stories.gr').href; assert.equal(href, storyHref(storyIds[model.raceId][0]));
     const response = await stories.page.goto(origin + new URL(href).pathname, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200);
     assert.equal(await stories.page.locator('link[rel="canonical"]').getAttribute('href'), href);
     await stories.page.goBack({ waitUntil: 'domcontentloaded' });
-    assert.deepEqual(await stories.page.locator('.race-desk-stories li h3 > a').evaluateAll(nodes => nodes.map(node => node.getAttribute('href'))), storyIds[model.raceId].map(storyHref));
+    assert.deepEqual(await stories.page.locator('.race-desk-stories li h3 > a').evaluateAll(nodes => nodes.map(node => new URL(node.getAttribute('href'), 'https://f1-stories.gr').href)), storyIds[model.raceId].map(storyHref));
     assert.deepEqual(stories.errors, []);
   });
   await stories.context.close();
