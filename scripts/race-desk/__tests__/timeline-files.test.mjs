@@ -140,3 +140,24 @@ test('receipt coverage and observedAt are validated and partial reaches the cont
   mutate(root, inventory => { const r = inventory.captures.find(r => r.endpoint === 'pit'); r.coverageReasons = ['unexpected']; });
   assert.throws(() => readTimelineContexts(root, registry));
 });
+
+test('R-07 pace rights are optional, exact and do not let the timeline inventory accept pace endpoints', async t => {
+  const root = fixture(t);
+  await capture(root);
+  const file = path.join(root, 'data/race-desk/publication-rights.v1.json');
+  const write = openf1 => fs.writeFileSync(file, JSON.stringify({ ...rights, providers: { ...rights.providers, openf1 } }));
+  const { pace, ...legacy } = rights.providers.openf1;
+  assert.equal(pace.status, 'approved');
+  write(legacy);
+  assert.equal(readTimelineInventory(root, registry).receipts.length, 3);
+  for (const bad of [{ ...pace, extra: 1 }, { ...pace, status: 'maybe' }, { ...pace, decidedOn: '2026-02-30' }, { ...pace, sessionKind: 'sprint' }, { ...pace, sessionKey: 0 },
+    { ...pace, endpoints: ['laps', 'laps', 'stints'] }, { ...pace, endpoints: ['laps', 'stints'] }, { ...pace, endpoints: ['laps', 'stints', 'pit'] }, { ...pace, uses: ['stints', 'compounds', 'lap-times'] }, null]) {
+    write({ ...legacy, pace: bad });
+    assert.throws(() => readTimelineInventory(root, registry), /provider rights/);
+  }
+  write({ ...legacy, pace: { ...pace, status: 'unresolved', endpoints: ['drivers', 'stints', 'laps'] } });
+  assert.equal(readTimelineInventory(root, registry).receipts.length, 3);
+  write({ ...legacy, pace });
+  mutate(root, inventory => { inventory.captures[0].endpoint = 'laps'; });
+  assert.throws(() => readTimelineInventory(root, registry), /invalid receipt/);
+});

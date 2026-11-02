@@ -8,7 +8,18 @@
       "license": "CC BY-NC-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "terms": "https://openf1.org/",
-      "attribution": "OpenF1"
+      "attribution": "OpenF1",
+      "pace": {
+        "status": "approved",
+        "decidedBy": "site owner",
+        "decidedOn": "2026-11-02",
+        "raceId": "2026-singapore-gp",
+        "sessionKind": "race",
+        "meetingKey": 1296,
+        "sessionKey": 11388,
+        "endpoints": ["laps", "stints", "drivers"],
+        "uses": ["stints", "compounds", "lap-times", "descriptive-pace"]
+      }
     },
     "jolpica": {
       "status": "unresolved",
