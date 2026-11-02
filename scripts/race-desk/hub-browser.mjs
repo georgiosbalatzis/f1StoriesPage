@@ -27,6 +27,35 @@ const storyIds = { '2026-singapore-gp': ['20261012W', '20261008J'], '2026-mexica
 const posts = new Map(JSON.parse(fs.readFileSync(path.join(repo, 'blog-module/blog-source-cache.json'))).posts.map(post => [post.id, post]));
 const editorial = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/editorial.v1.json')));
 const privateEvidence = ['source.txt', 'editorial.v1.json', ...editorial.associations.flatMap(({ evidence }) => [evidence.sha256, evidence.reviewedRevision])];
+const timelineInventory = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/timeline.v1.json')));
+const timelineReceipts = timelineInventory.captures.filter(item => item.raceId === '2026-singapore-gp');
+const timelinePayload = endpoint => {
+  const matches = timelineReceipts.filter(item => item.endpoint === endpoint);
+  assert.equal(matches.length, 1, `one Singapore ${endpoint} capture`);
+  return JSON.parse(fs.readFileSync(path.join(repo, matches[0].path)));
+};
+const instant = value => {
+  const match = /^(.*?)(?:\.(\d{1,6}))?(Z|[+-]\d\d:\d\d)$/.exec(value);
+  assert.ok(match, `valid capture timestamp: ${value}`);
+  const millis = Date.parse(`${match[1]}.${(match[2] || '').padEnd(6, '0').slice(0, 3)}${match[3]}`);
+  assert.ok(Number.isFinite(millis));
+  return BigInt(millis) * 1000n + BigInt((match[2] || '').padEnd(6, '0').slice(3));
+};
+const stable = value => value && typeof value === 'object' ? Array.isArray(value) ? value.map(stable) : Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
+const sessions = timelinePayload('sessions');
+assert.equal(sessions.length, 1);
+const start = instant(sessions[0].date_start), end = instant(sessions[0].date_end);
+assert.ok(start <= end);
+const timelineCount = ['race_control', 'pit'].reduce((total, endpoint) => {
+  const unique = new Set();
+  for (const row of timelinePayload(endpoint)) {
+    const time = instant(row.date);
+    if (time >= start && time <= end) unique.add(JSON.stringify(stable(row)));
+  }
+  return total + unique.size;
+}, 0);
+assert.ok(timelineCount > 0, 'Singapore pilot must contain observations');
+const timelinePrivate = ['timeline.v1.json', 'data/race-desk/captures', ...timelineInventory.captures.map(item => item.sha256)];
 const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -93,11 +122,58 @@ try {
     assert.equal(response.status(), 200);
     await ready(page);
     await assertResultsPage(page, resultsContexts.get(model.raceId));
+    const sections = page.locator('main section.race-desk-section');
+    assert.equal(await sections.count(), 6);
+    assert.deepEqual(await sections.evaluateAll(nodes => nodes.map(node => ({ id: node.getAttribute('aria-labelledby'), headings: [...node.querySelectorAll('h2')].map(h => h.id), kicker: node.querySelector('.race-desk-kicker')?.textContent.trim() }))), [
+      ['schedule-title', '01 / ΠΡΟΓΡΑΜΜΑ'], ['gp-results-title', '02 / ΑΠΟΤΕΛΕΣΜΑΤΑ'], ['gp-timeline-title', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ'], ['tools-title', '04 / ΕΡΓΑΛΕΙΑ'], ['related-title', '05 / ΙΣΤΟΡΙΕΣ'], ['sources-title', '06 / ΤΕΚΜΗΡΙΩΣΗ']
+    ].map(([id, kicker]) => ({ id, headings: [id], kicker })));
+    const allIds = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));
+    assert.equal(new Set(allIds).size, allIds.length, 'document IDs must be unique');
+    const timeline = page.locator('section.gp-timeline[aria-labelledby="gp-timeline-title"]');
+    assert.equal(await page.locator('section.gp-timeline').count(), 1);
+    assert.equal(await timeline.count(), 1);
+    assert.equal(await timeline.locator('h2').innerText(), 'Χρονολόγιο αγώνα');
+    const details = timeline.locator('details.gp-timeline-details'), list = timeline.locator('ol.gp-timeline-list[role="list"]');
+    if (model.raceId === '2026-singapore-gp') {
+      assert.equal(await timeline.locator('.gp-timeline-counts').count(), 1);
+      assert.match(await timeline.locator('.gp-timeline-counts').innerText(), /μηνύματα αγωνοδιεύθυνσης.*διελεύσεις από το pit lane/);
+      assert.equal(await timeline.locator('details').count(), 1); assert.equal(await details.count(), 1);
+      assert.equal(await details.getAttribute('open'), null, 'timeline starts closed');
+      assert.equal(await list.count(), 1); assert.equal(await details.locator('ol').count(), 1);
+      const items = list.locator(':scope > li'); assert.equal(await items.count(), timelineCount);
+      const rows = await items.evaluateAll(nodes => nodes.map(item => ({
+        meta: item.querySelectorAll(':scope > p.gp-timeline-meta').length,
+        times: [...item.querySelectorAll(':scope > p.gp-timeline-meta time')].map(time => ({ date: time.getAttribute('datetime'), text: time.textContent.trim() })),
+        metaText: item.querySelector(':scope > p.gp-timeline-meta')?.textContent.trim(),
+        labels: item.querySelectorAll(':scope > p.gp-timeline-label').length,
+        details: item.querySelectorAll(':scope > p.gp-timeline-detail').length
+      })));
+      const clock = new Intl.DateTimeFormat('el-GR', { timeZone: 'Europe/Athens', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+      let previous = '';
+      for (const row of rows) {
+        assert.equal(row.meta, 1); assert.equal(row.times.length, 1); assert.equal(row.labels, 1); assert.ok(row.details <= 1);
+        const { date, text } = row.times[0];
+        assert.match(date, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/);
+        assert.ok(!previous || previous <= date, 'timeline timestamps must be non-decreasing'); previous = date;
+        assert.equal(text, clock.format(new Date(date))); assert.match(row.metaText, /ώρα Ελλάδας/);
+      }
+      const source = timeline.locator('p.gp-timeline-source'); assert.equal(await source.count(), 1);
+      assert.equal(await source.locator('a[href="https://openf1.org/"]').count(), 1);
+      assert.equal(await source.locator('a[href="https://creativecommons.org/licenses/by-nc-sa/4.0/"]').count(), 1);
+      const summary = details.locator('summary'); assert.equal(await summary.count(), 1);
+      await summary.focus(); await page.keyboard.press('Enter'); assert.notEqual(await details.getAttribute('open'), null);
+      await page.keyboard.press('Space'); assert.equal(await details.getAttribute('open'), null);
+      await page.keyboard.press('Space'); assert.notEqual(await details.getAttribute('open'), null);
+    } else {
+      assert.ok((await timeline.innerText()).includes('Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα.'));
+      assert.equal(await timeline.locator('details, ol, .gp-timeline-list').count(), 0);
+    }
+    assert.doesNotMatch(await timeline.textContent(), /\b(?:null|undefined)\b/i);
     const related = page.locator('section.race-desk-related[aria-labelledby="related-title"]');
     assert.equal(await page.locator('section.race-desk-related').count(), 1);
     assert.equal(await related.count(), 1);
     assert.equal(await related.locator('h2#related-title').innerText(), 'Σχετικά άρθρα');
-    assert.equal(await related.locator('.race-desk-kicker').innerText(), '04 / ΙΣΤΟΡΙΕΣ');
+    assert.equal(await related.locator('.race-desk-kicker').innerText(), '05 / ΙΣΤΟΡΙΕΣ');
     const ids = storyIds[model.raceId] || [], items = related.locator('ol.race-desk-stories > li');
     assert.equal(await related.locator('ol.race-desk-stories').count(), ids.length ? 1 : 0);
     assert.equal(await items.count(), ids.length);
@@ -118,6 +194,7 @@ try {
     assert.ok(headings.every((heading, index) => !heading.story || (index > relatedIndex && index < sourcesIndex)));
     const html = await response.text();
     for (const value of privateEvidence) assert.ok(!html.includes(value), 'editorial evidence must not appear in page source');
+    for (const value of timelinePrivate) assert.ok(!html.includes(value), 'timeline provenance must not appear in page source');
     const resultRegion = page.locator('.gp-results-table-wrap').first();
     if (await resultRegion.count()) {
       assert.ok(await page.locator('.gp-results-hint').first().isVisible());
@@ -231,13 +308,22 @@ try {
   const missing = await open();
   await check('unknown route returns 404', async () => { assert.equal((await missing.page.goto(origin + '/race-desk/gp/2026-unknown-gp/')).status(), 404); });
   await missing.context.close();
-  for (const model of models) for (const theme of ['light', 'dark']) for (const width of (storyIds[model.raceId] ? [390, 576, 768, 992, 1280, 1440] : [390, 576, 768, 1440])) {
-    const run = await open({ width, theme });
-    await check(`${model.raceId}: ${width} ${theme} visual and keyboard`, async () => {
+  for (const model of models) for (const theme of ['light', 'dark']) for (const width of (storyIds[model.raceId] ? [390, 576, 768, 992, 1280, 1440] : [390, 576, 768, 1440])) for (const javascriptEnabled of (model.raceId === '2026-singapore-gp' ? [false, true] : [true])) {
+    const run = await open({ width, theme, javascriptEnabled });
+    await check(`${model.raceId}: ${width} ${theme} visual and keyboard, JS ${javascriptEnabled ? 'on' : 'off'}`, async () => {
       assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(run.page);
+      if (!javascriptEnabled) await run.page.evaluate(value => document.documentElement.setAttribute('data-theme', value), theme);
       assert.equal((await run.page.locator('html').getAttribute('data-theme')) || 'dark', theme);
       await assertResultsPage(run.page, resultsContexts.get(model.raceId));
       if (await run.page.locator('.gp-results-hint').count()) assert.equal(await run.page.locator('.gp-results-hint').first().isVisible(), width < 992);
+      const timelineDetails = run.page.locator('.gp-timeline-details');
+      if (await timelineDetails.count()) {
+        const summary = timelineDetails.locator('summary');
+        await summary.focus(); await run.page.keyboard.press('Tab'); await run.page.keyboard.press('Shift+Tab');
+        assert.ok(await summary.evaluate(el => el.matches(':focus-visible') && parseFloat(getComputedStyle(el).outlineWidth) > 0), 'timeline summary focus must have a visible outline');
+        assert.ok(await summary.evaluate(el => { const r = el.getBoundingClientRect(); const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return top === el || el.contains(top); }), 'focused timeline summary must not be covered');
+        await run.page.keyboard.press('Enter'); assert.notEqual(await timelineDetails.getAttribute('open'), null);
+      }
       const layout = await run.page.evaluate(() => {
         const viewport = document.documentElement.clientWidth, main = document.querySelector('main');
         const rect = main.getBoundingClientRect();
@@ -252,7 +338,7 @@ try {
         }).map(el => ({ tag: el.tagName, className: String(el.className), left: el.getBoundingClientRect().left, right: el.getBoundingClientRect().right }));
         return { viewport, scrollWidth: document.documentElement.scrollWidth, main: { left: rect.left, right: rect.right }, overflow };
       });
-      const file = `${model.raceId}-${width}-${theme}.png`; await run.page.screenshot({ path: path.join(reports, file), fullPage: true });
+      const file = `${model.raceId}-${width}-${theme}${javascriptEnabled ? '' : '-no-js'}.png`; await run.page.screenshot({ path: path.join(reports, file), fullPage: true });
       report.captures.push(file);
       const bodies = (await Promise.all(run.bodies)).filter(Boolean);
       report.observations.push({ raceId: model.raceId, width, theme, requests: run.requests.length, localRequests: run.requests.filter(url => new URL(url).origin === origin).length, providerRequests: providerRequests(run.requests), decodedResponseBytes: bodies.reduce((sum, body) => sum + body.bytes, 0), decodedHtmlJsBytes: bodies.filter(body => /(?:\.html|\.js|\/)$/i.test(body.path)).reduce((sum, body) => sum + body.bytes, 0), bodies, layout });
@@ -260,7 +346,7 @@ try {
       assert.ok(layout.main.left >= -2 && layout.main.right <= layout.viewport + 2, JSON.stringify(layout));
       assert.deepEqual(layout.overflow, [], JSON.stringify(layout.overflow));
       const first = run.page.locator('a[href],button').first(); await first.focus(); assert.equal(await first.evaluate(el => document.activeElement === el), true); await run.page.keyboard.press('Tab'); assert.ok(await run.page.evaluate(() => document.activeElement !== document.body));
-      assert.deepEqual(report.observations.at(-1).providerRequests, [calendarUrl]); assert.deepEqual(run.errors, []);
+      assert.deepEqual(report.observations.at(-1).providerRequests, javascriptEnabled ? [calendarUrl] : []); assert.deepEqual(run.errors, []);
     });
     await run.context.close();
   }
@@ -277,8 +363,9 @@ try {
     });
     await run.context.close();
   }
-  const stories = await open({ width: 390, theme: 'light' });
-  await check('Singapore stories keyboard focus and article navigation', async () => {
+  for (const javascriptEnabled of [false, true]) {
+  const stories = await open({ width: 390, theme: 'light', javascriptEnabled });
+  await check(`Singapore stories keyboard focus and article navigation, JS ${javascriptEnabled ? 'on' : 'off'}`, async () => {
     const model = models.find(item => item.raceId === '2026-singapore-gp');
     assert.equal((await stories.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200); await ready(stories.page);
     const link = stories.page.locator('.race-desk-stories li h3 > a').first();
@@ -300,6 +387,7 @@ try {
     assert.deepEqual(stories.errors, []);
   });
   await stories.context.close();
+  }
   const nav = await open({ width: 390, theme: 'light' });
   await check('mobile navigation, keyboard focus and theme toggle', async () => {
     await nav.page.goto(origin + models[0].path, { waitUntil: 'domcontentloaded' }); await ready(nav.page);
