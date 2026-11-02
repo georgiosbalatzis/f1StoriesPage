@@ -210,7 +210,7 @@ test('pace capture drift or a stale timeline pin leaves pages and home byte-iden
       assert.equal((pace.match(/<tr>/g) || []).length, 48 + 1240 + 22);
       assert.match(pace, /επιλέξιμοι: 0/);
       // #1 stint 1, laps 1–32: hand-checked from the receipted laps response (n=32, median 98.327 s, min 97.558 s).
-      assert.match(pace, /<th scope="row">#1 Lando NORRIS<\/th><td>1<\/td><td>SOFT<\/td><td>0<\/td><td>1–32<\/td><td>32<\/td><td>32 \/ 32<\/td><td>98,327 s \(n=32\)<\/td><td>97,558 s \(n=32\)<\/td>/);
+      assert.match(pace, /<tbody><tr><th scope="rowgroup" rowspan="2">#1 Lando NORRIS<\/th><td>1<\/td><td>SOFT<\/td><td>0<\/td><td>1–32<\/td><td>32<\/td><td>32 \/ 32<\/td><td>98,327 s \(n=32\)<\/td><td>97,558 s \(n=32\)<\/td>/);
     } else assert.match(pace, /Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα\./);
   }
   const check = async mutate => {

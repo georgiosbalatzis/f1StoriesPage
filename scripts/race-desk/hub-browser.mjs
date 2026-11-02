@@ -186,7 +186,7 @@ try {
       assert.deepEqual(await paceDetails.evaluateAll(nodes => nodes.map(node => Number(node.querySelector('summary').textContent.match(/#(\d+)/)[1]))), paceDrivers);
       const tables = pace.locator('table');
       assert.equal(await tables.count(), 1 + paceDrivers.length);
-      assert.ok(await tables.evaluateAll(nodes => nodes.every(table => table.querySelector(':scope > caption')?.textContent.trim() && [...table.querySelectorAll('th')].every(th => ['col', 'row'].includes(th.getAttribute('scope'))))), 'pace tables need captions and scoped headers');
+      assert.ok(await tables.evaluateAll(nodes => nodes.every(table => table.querySelector(':scope > caption')?.textContent.trim() && [...table.querySelectorAll('th')].every(th => ['col', 'row', 'rowgroup'].includes(th.getAttribute('scope'))))), 'pace tables need captions and scoped headers');
       assert.equal(await pace.locator('details.gp-pace-details tbody tr').count(), paceLaps.length);
       assert.ok(await pace.locator('.gp-pace-table-wrap[role="region"][tabindex="0"][aria-label]').count() === 1 + paceDrivers.length);
       const paceText = await pace.innerText();
