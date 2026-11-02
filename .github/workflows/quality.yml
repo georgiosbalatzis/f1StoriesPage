@@ -62,6 +62,9 @@ jobs:
       - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
         run: npm run test:intelligence && npm run test:dashboard:browser
 
+      - name: Run author research notebook browser tests
+        run: node --test scripts/author/__tests__/research-browser.test.mjs
+
       - name: Run aggregate deployment gate tests
         run: npm run test:deployment
 
@@ -96,8 +99,9 @@ jobs:
       - name: Build public artifact
         run: npm run build:public
 
+      # research-browser.test.mjs runs in the module job (same built tree) to balance the article-PR critical path.
       - name: Run author module tests
-        run: npm run test:author
+        run: node --test $(ls scripts/author/__tests__/*.test.mjs | grep -v '/research-browser\.test\.mjs$')
 
       - name: Run publishing regression tests
         run: node --test scripts/build/__tests__/social-cards.test.mjs scripts/build/__tests__/disqus-removal.test.mjs scripts/build/__tests__/public-artifact-refs.test.mjs scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs

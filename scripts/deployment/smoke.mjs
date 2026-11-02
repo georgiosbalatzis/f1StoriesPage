@@ -101,9 +101,13 @@ async function open(page, pathname) {
     assert.equal(response.status(), 200, pathname);
     await page.locator(readySelector(pathname)).first().waitFor();
     if (pathname.includes('betcast') || pathname.includes('BetCastVisualisation')) await page.locator('#chart-select').waitFor();
-    await page.waitForTimeout(900);
-    // Main's retired-worker cleanup can intentionally reload this document once.
-    await page.locator(readySelector(pathname)).first().waitFor();
+    // Main's retired-worker cleanup (scripts/sw-cleanup.js) can intentionally reload this document once, but only
+    // when a service worker controls it. Uncontrolled pages cannot reload, so only controlled ones wait it out.
+    // A context destroyed mid-check means that reload has started.
+    if (await page.evaluate(() => !!navigator.serviceWorker?.controller).catch(() => true)) {
+        await page.waitForTimeout(900);
+        await page.locator(readySelector(pathname)).first().waitFor();
+    }
     await page.evaluate(() => document.fonts.ready);
 }
 // Wait for every face the page uses before capturing. A metric fallback face built only from local() system
