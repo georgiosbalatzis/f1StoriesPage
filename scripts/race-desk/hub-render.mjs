@@ -1,4 +1,6 @@
 import { renderResultsSection } from './results-render.mjs';
+import taxonomy from '../../blog-module/taxonomy.js';
+import dates from '../../blog-module/build/article-dates.js';
 
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const safeUrl = value => {
@@ -29,6 +31,17 @@ const sourceRow = source => {
 export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   const base = safeUrl(origin);
   if (!base || !/^\/[a-z0-9/-]+\/$/.test(model.path)) throw new TypeError('Invalid hub origin or path');
+  if (!Array.isArray(model.stories)) throw new TypeError('Invalid stories');
+  for (const story of model.stories) {
+    try {
+      const url = new URL(story.url);
+      const path = `/blog-module/blog-entries/${encodeURIComponent(story.articleId)}/article.html`;
+      if (typeof story.articleId !== 'string' || !/^[\p{L}\p{N}-]+$/u.test(story.articleId) || typeof story.url !== 'string'
+        || url.protocol !== 'https:' || url.origin !== new URL(base).origin || url.username || url.password
+        || url.pathname !== path || !story.url.endsWith(path) || url.search || url.hash
+        || typeof story.title !== 'string' || !story.title.trim() || typeof story.date !== 'string' || !dates.isCalendarDay(story.date)) throw new Error();
+    } catch { throw new TypeError('Invalid story'); }
+  }
   const canonical = new URL(model.path, base).href;
   const name = model.displayName ?? model.eventName;
   const title = `${name} ${model.season} | F1 Stories`;
@@ -84,7 +97,7 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
         <div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '03' : '02'} / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
         <ul class="race-desk-tools">${model.tools.map(toolRow).join('\n')}</ul>
       </section>
-      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div><p class="race-desk-kicker">${model.results ? '04' : '03'} / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>Δεν υπάρχουν διαθέσιμες επιμελημένες συνδέσεις άρθρων για αυτό το Grand Prix.</p></section>
+      <section class="race-desk-section race-desk-related" aria-labelledby="related-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '04' : '03'} / ΙΣΤΟΡΙΕΣ</p><h2 id="related-title">Σχετικά άρθρα</h2></div><p>${model.stories.length ? 'Επιμελημένη επιλογή δημοσιευμένων άρθρων του F1 Stories για αυτό το Grand Prix. Ο σύνδεσμος δεν επαληθεύει κάθε ισχυρισμό του άρθρου.' : 'Δεν έχουν καταγραφεί ακόμη επιμελημένοι σύνδεσμοι άρθρων για αυτό το Grand Prix.'}</p></div>${model.stories.length ? `<ol class="race-desk-stories">${model.stories.map(story => `<li><h3><a href="${escape(story.url)}">${escape(story.title)}</a></h3><time datetime="${escape(story.date)}">${escape(taxonomy.formatDate(story.date, 'long'))}</time></li>`).join('\n')}</ol>` : ''}</section>
       <section class="race-desk-section" aria-labelledby="sources-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">${model.results ? '05' : '04'} / ΤΕΚΜΗΡΙΩΣΗ</p><h2 id="sources-title">Πηγές</h2></div><p>Η ανάγνωση της επίσημης πηγής και ο έλεγχος των τοπικών πηγών είναι διαφορετικές ημερομηνίες· καμία δεν δηλώνει πότε ενημερώθηκαν τα δεδομένα.</p></div><div class="race-desk-source-group"><h3>Επίσημη πηγή προγράμματος και ονομασίας</h3><ul class="race-desk-sources"><li><div>${officialLink}<span>Ανάγνωση πηγής: ${officialDate}</span>${officialDetails}</div></li></ul></div><div class="race-desk-source-group"><h3>Τοπικό μητρώο · αντιστοίχιση και ζώνη ώρας</h3><p>Η ζώνη IANA προέρχεται από το τοπικό μητρώο. Η επίσημη πηγή χρησιμοποιήθηκε μόνο για έλεγχο συμφωνίας της απόκλισης ώρας.</p>${localDetails}<ul class="race-desk-sources">${model.sources.length ? model.sources.map(sourceRow).join('\n') : '<li>Δεν υπάρχουν διαθέσιμες πηγές.</li>'}</ul></div></section>
     </div>
   </main>

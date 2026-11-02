@@ -16,10 +16,10 @@
 .race-desk-hero-foot p { margin: 0; }
 .race-desk-hero-foot strong { color: var(--text-primary); }
 .race-desk-section { padding: 4.5rem 0; border-bottom: 1px solid var(--border); }
-.race-desk-section-head, .race-desk-related { display: grid; grid-template-columns: 1fr minmax(15rem, 25rem); gap: 2rem; align-items: end; margin-bottom: 2rem; }
-.race-desk-related { margin: 0; }
+.race-desk-section-head { display: grid; grid-template-columns: 1fr minmax(15rem, 25rem); gap: 2rem; align-items: end; margin-bottom: 2rem; }
+.race-desk-section-head:last-child { margin-bottom: 0; }
 .race-desk-section h2 { margin: 0; font-family: var(--font-brand); font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1; }
-.race-desk-section-head > p, .race-desk-related > p { margin: 0; color: var(--text-secondary); line-height: 1.6; }
+.race-desk-section-head > p { margin: 0; color: var(--text-secondary); line-height: 1.6; }
 .race-desk-table-wrap { overflow-x: auto; }
 .race-desk-table-wrap:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
 .race-desk-scroll-hint { display: none; color: var(--text-secondary); font-size: .85rem; }
@@ -31,12 +31,14 @@
 .race-desk-page td { min-width: 10rem; font-variant-numeric: tabular-nums; }
 .race-desk-page td time { font-size: .82rem; overflow-wrap: anywhere; }
 .race-desk-page :is(td, tbody th) small { display: block; margin-top: .35rem; color: var(--text-secondary); font-size: .75rem; }
-.race-desk-tools, .race-desk-sources { margin: 0; padding: 0; list-style: none; }
+.race-desk-tools, .race-desk-sources, .race-desk-stories { margin: 0; padding: 0; list-style: none; }
 .race-desk-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3rem; }
-.race-desk-tools li, .race-desk-sources li { padding: 1.4rem 0; border-top: 1px solid var(--border); }
-.race-desk-tools h3 { margin: 0 0 .5rem; font-family: var(--font-brand); font-size: 1.8rem; }
+.race-desk-tools li, .race-desk-sources li, .race-desk-stories li { padding: 1.4rem 0; border-top: 1px solid var(--border); }
+.race-desk-tools h3, .race-desk-stories h3 { margin: 0 0 .5rem; font-family: var(--font-brand); font-size: 1.8rem; }
+.race-desk-stories h3 { overflow-wrap: anywhere; }
+.race-desk-stories time { color: var(--text-secondary); font-size: .85rem; }
 .race-desk-page a { color: inherit; }
-.race-desk-tools a, .race-desk-sources a { text-decoration-thickness: 1px; text-underline-offset: .2em; }
+.race-desk-tools a, .race-desk-sources a, .race-desk-stories a { text-decoration-thickness: 1px; text-underline-offset: .2em; }
 .race-desk-page a:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
 .race-desk-tools p { max-width: 32rem; margin: 0; color: var(--text-secondary); line-height: 1.55; }
 .race-desk-source-group { margin-top: 2.5rem; }
@@ -59,7 +61,7 @@
   .race-desk-hero .race-desk-kicker { margin-top: 3rem; }
   .race-desk-hero-foot { flex-direction: column; margin-top: 2rem; }
   .race-desk-section { padding: 3rem 0; }
-  .race-desk-section-head, .race-desk-related { grid-template-columns: 1fr; gap: 1rem; }
+  .race-desk-section-head { grid-template-columns: 1fr; gap: 1rem; }
   .race-desk-tools { grid-template-columns: 1fr; }
 }
 
