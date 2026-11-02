@@ -51,6 +51,7 @@
     }
 
     function hideBanner() {
+        banner.hidden = true;
         banner.classList.remove('show');
         banner.classList.remove('is-ready');
         banner.classList.remove('is-settings-open');
@@ -64,6 +65,7 @@
     }
 
     function showBanner(openSettings) {
+        banner.hidden = false;
         banner.classList.add('cookie-banner');
         banner.classList.toggle('is-settings-open', openSettings === true);
         banner.style.display = 'block';
@@ -72,6 +74,7 @@
         var details = banner.querySelector('.cookie-details');
         if (details) details.open = openSettings === true;
         requestAnimationFrame(function () {
+            if (banner.hidden) return;
             banner.classList.add('show');
             banner.classList.add('is-ready');
         });

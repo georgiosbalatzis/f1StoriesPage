@@ -138,7 +138,7 @@ let latestStandingsMeta = {
 };
 let latestStandingsRound = '';
 let latestStandingsSeason = '';
-// ?round=N in an embed: standings as of that round, never refreshed live (see core/rounds.js).
+// ?round=N: standings as of that round, never refreshed live (see core/rounds.js).
 let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
@@ -205,39 +205,11 @@ function sanitizePitStopsRound(value) {
     return /^\d+$/.test(trimmed) ? trimmed : '';
 }
 
-function sanitizeQualiView(value) {
+function sanitizeDetailView(value) {
     return value === 'race-detail' ? 'race-detail' : 'overview';
 }
 
-function sanitizeQualiSession(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeLap1View(value) {
-    return value === 'race-detail' ? 'race-detail' : 'overview';
-}
-
-function sanitizeLap1Session(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeTyreSession(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeDirtyAirSession(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeTrackSession(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeTrackDriverKey(value) {
-    return value == null ? '' : String(value);
-}
-
-function sanitizeDebriefRound(value) {
+function sanitizeSelection(value) {
     return value == null ? '' : String(value);
 }
 
@@ -257,16 +229,16 @@ function readStandingsURLState() {
         embed: params.get('embed') === '1',
         pitView: sanitizePitStopsView(params.get('pitView')),
         pitRound: sanitizePitStopsRound(params.get('pitRound')),
-        qualiView: sanitizeQualiView(params.get('qualiView')),
-        qualiSession: sanitizeQualiSession(params.get('qualiSession')),
-        lap1View: sanitizeLap1View(params.get('lap1View')),
-        lap1Session: sanitizeLap1Session(params.get('lap1Session')),
-        tyreSession: sanitizeTyreSession(params.get('tyreSession')),
-        dirtyAirSession: sanitizeDirtyAirSession(params.get('dirtyAirSession')),
-        trackSession: sanitizeTrackSession(params.get('trackSession')),
-        trackTeamA: sanitizeTrackDriverKey(params.get('trackTeamA')),
-        trackTeamB: sanitizeTrackDriverKey(params.get('trackTeamB')),
-        debriefRound: sanitizeDebriefRound(params.get('debriefRound')),
+        qualiView: sanitizeDetailView(params.get('qualiView')),
+        qualiSession: sanitizeSelection(params.get('qualiSession')),
+        lap1View: sanitizeDetailView(params.get('lap1View')),
+        lap1Session: sanitizeSelection(params.get('lap1Session')),
+        tyreSession: sanitizeSelection(params.get('tyreSession')),
+        dirtyAirSession: sanitizeSelection(params.get('dirtyAirSession')),
+        trackSession: sanitizeSelection(params.get('trackSession')),
+        trackTeamA: sanitizeSelection(params.get('trackTeamA')),
+        trackTeamB: sanitizeSelection(params.get('trackTeamB')),
+        debriefRound: sanitizeSelection(params.get('debriefRound')),
         debriefView: sanitizeDebriefView(params.get('debriefView'))
     };
 }
@@ -358,7 +330,10 @@ function buildStandingsURL(target, embed) {
     if (shareTarget) url.searchParams.set('focus', shareTarget);
     if (embed) url.searchParams.set('embed', '1');
     // A copied embed of the standings keeps showing the round it was copied at, not whatever is live later.
-    if (embed && (tabName === 'drivers' || tabName === 'constructors') && latestStandingsRound) {
+    if (pinnedRound) {
+        url.searchParams.set('season', pinnedRound.season);
+        url.searchParams.set('round', pinnedRound.round);
+    } else if (embed && (tabName === 'drivers' || tabName === 'constructors') && latestStandingsRound) {
         url.searchParams.set('season', latestStandingsSeason || String(YEAR));
         url.searchParams.set('round', latestStandingsRound);
     }
@@ -460,11 +435,14 @@ function updateStandingsReportContext(tabName) {
         selectorShell.setAttribute('data-active-report', detail.label);
         selectorShell.setAttribute('aria-label', 'Active report: ' + detail.label);
     }
+    // A pinned championship round describes the standings tables only; other reports show the current
+    // season without its badge. Readers use latestStandingsSeason, never this header text.
+    const championship = !pinnedRound || LIGHTWEIGHT_TABS.includes(tabName);
+    const season = championship && latestStandingsSeason || String(YEAR);
+    const round = championship ? latestStandingsRound : '';
+    document.getElementById('season-year').textContent = season;
+    document.getElementById('round-badge').classList.toggle('is-visible', !!round);
     if (!standingsReportMetaStatus) return;
-    const seasonEl = document.getElementById('season-year');
-    const roundEl = document.getElementById('round-num');
-    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
-    const round = roundEl && roundEl.textContent ? roundEl.textContent : '';
     standingsReportMetaStatus.textContent = detail.note + ' · Σεζόν ' + season + (round ? ' · Γύρος ' + round : '');
 }
 
@@ -711,12 +689,11 @@ function refreshEmbedFooter() {
     const link = document.getElementById('embed-footer-link');
     if (!meta || !link) return;
 
-    const seasonEl = document.getElementById('season-year');
     const roundEl = document.getElementById('round-num');
-    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const season = latestStandingsSeason || String(YEAR);
     const round = roundEl && roundEl.textContent ? roundEl.textContent.trim() : '';
     const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
-    const isStandingsTarget = SHARE_TARGETS[target] && ['drivers', 'constructors'].indexOf(SHARE_TARGETS[target].tab) !== -1;
+    const isStandingsTarget = SHARE_TARGETS[target] && LIGHTWEIGHT_TABS.includes(SHARE_TARGETS[target].tab);
 
     // Season-cumulative views are "as of round N". Session-scoped tabs (tyre pace, dirty air, track
     // dominance, pit stops, debrief) already name their own race in the embed, so no round is claimed.
@@ -725,8 +702,8 @@ function refreshEmbedFooter() {
 
     const parts = ['F1 Stories'];
     if (isStandingsTarget) parts.push(String(latestStandingsMeta.source || 'Jolpica F1').split(' · ')[0]);
-    parts.push('Σεζόν ' + season);
-    if (isSeasonView && round) {
+    parts.push('Σεζόν ' + (pinnedRound && !isStandingsTarget ? YEAR : season));
+    if (isSeasonView && round && (!pinnedRound || isStandingsTarget)) {
         const raceName = isStandingsTarget && latestStandingsMeta.raceName
             ? ' · ' + String(latestStandingsMeta.raceName).replace(/ Grand Prix/, ' GP')
             : '';
@@ -741,7 +718,12 @@ function refreshEmbedFooter() {
         if (index < parts.length - 1) meta.appendChild(document.createTextNode(' '));
     });
 
-    link.href = buildStandingsURL(SHARE_TARGETS[target] ? target : '', false);
+    const footerURL = new URL(buildStandingsURL(SHARE_TARGETS[target] ? target : '', false));
+    if (pinnedRound && isStandingsTarget) {
+        footerURL.searchParams.delete('season');
+        footerURL.searchParams.delete('round');
+    }
+    link.href = footerURL;
     // A pinned embed shows an old round, so its link says where the live numbers are.
     link.textContent = pinnedRound && isStandingsTarget ? 'Σημερινή βαθμολογία →' : EMBED_FOOTER_LINK_TEXT;
 }
@@ -1199,18 +1181,14 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     // Same standings from a new source (the snapshot confirmed live): only the "Πηγή" summary
     // cards change, so the tables and their headshots are left in place.
     if (sameStandings) {
-        const seasonText = document.getElementById('season-year').textContent || YEAR;
+        const seasonText = latestStandingsSeason || YEAR;
         renderDriverStandingsPolish(dStandings, latestStandingsMeta, seasonText);
         if (cStandings.length) renderConstructorStandingsPolish(cStandings, teamDriverCodes(dStandings), latestStandingsMeta, seasonText);
         acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
         return true;
     }
 
-    document.getElementById('season-year').textContent = season || YEAR;
-    if (round) {
-        document.getElementById('round-badge').classList.add('is-visible');
-        document.getElementById('round-num').textContent = round;
-    }
+    if (round) document.getElementById('round-num').textContent = round;
     updateStandingsReportContext(activeStandingsTab);
     refreshEmbedFooter();
 
@@ -1370,7 +1348,7 @@ function renderDrivers(standings, openf1Map) {
     }
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    renderDriverStandingsPolish(standings, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    renderDriverStandingsPolish(standings, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Οδηγός / Ομάδα');
 
     standings.forEach(function(s, index) {
@@ -1466,7 +1444,7 @@ function renderConstructors(standings, driverStandings) {
     const teamDrivers = teamDriverCodes(driverStandings);
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Κατασκευαστής / Οδηγοί');
 
     standings.forEach(function(s, index) {
@@ -1707,6 +1685,11 @@ function bindEvents() {
     }
 
     window.addEventListener('popstate', function(event) {
+        const nextPin = parseRoundPin(window.location.search, YEAR);
+        if (JSON.stringify(nextPin) !== JSON.stringify(pinnedRound)) {
+            window.location.reload();
+            return;
+        }
         const nextState = readStandingsURLState();
         currentFocusTarget = nextState.focus;
         pendingRevealTarget = nextState.focus;
@@ -1785,8 +1768,8 @@ function init() {
     pendingTrackTeamB = initialURLState.trackTeamB;
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
+    pinnedRound = parseRoundPin(window.location.search, YEAR);
     if (isEmbedMode) {
-        pinnedRound = parseRoundPin(window.location.search, YEAR);
         pendingLap1View = 'race-detail';
         if (initialURLState.qualiSession && !new URLSearchParams(window.location.search).has('qualiView')) pendingQualiView = 'race-detail';
         wireEmbedCapLinks(function() {

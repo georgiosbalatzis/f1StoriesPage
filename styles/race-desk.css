@@ -84,3 +84,35 @@
   .gp-results-table-wrap table { table-layout: fixed; }
   .race-desk-page .gp-results-table-wrap :is(th, td, tbody th) { min-width: 0; overflow-wrap: anywhere; }
 }
+
+/* Consent on Race Desk hubs, which do not load the site-wide stylesheet. Hub-only, so it stays out of
+   the site-wide shared-nav budget; loaded after editorial.css, so shadow and background-image are left to it. */
+body.race-desk-page .cookie-consent { position: fixed; left: 0; bottom: 0; z-index: 9999; max-height: min(70vh, 520px); overflow-y: auto; transform: translateY(100%); opacity: 0; visibility: hidden; background: var(--bg-base); color: var(--text-primary); border: 1px solid var(--border); }
+body.race-desk-page .cookie-consent.show.is-ready { transform: translateY(0); opacity: 1; visibility: visible; }
+body.race-desk-page .cookie-content { display: grid; gap: 12px; padding: 16px; }
+body.race-desk-page .cookie-header, body.race-desk-page .cookie-toggle { display: flex; align-items: center; justify-content: space-between; }
+body.race-desk-page .cookie-header h3 { margin: 0; font-size: .875rem; letter-spacing: .06em; text-transform: uppercase; }
+body.race-desk-page .cookie-header .close-btn { width: 44px; height: 44px; border: 0; background-color: transparent; color: var(--text-primary); font-size: 1.5rem; }
+body.race-desk-page .cookie-intro, body.race-desk-page .cookie-section p { margin: 0; color: var(--text-secondary); font-size: .8125rem; line-height: 1.5; }
+body.race-desk-page .cookie-content a, body.race-desk-page .cookie-settings-summary { color: var(--accent-readable); font-weight: 700; }
+body.race-desk-page .cookie-settings-summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font-size: .8125rem; }
+body.race-desk-page .cookie-details[open] { padding: 8px; background: var(--bg-surface-alt); border: 1px solid var(--border); }
+body.race-desk-page .cookie-section { padding: 8px 0; border-bottom: 1px solid var(--border); }
+body.race-desk-page .cookie-section h4 { margin: 0 0 4px; font-size: .8125rem; }
+body.race-desk-page .badge-essential { font-size: .7rem; }
+body.race-desk-page .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; flex-shrink: 0; }
+body.race-desk-page .toggle-switch input { opacity: 0; width: 0; height: 0; }
+body.race-desk-page .toggle-slider { position: absolute; inset: 0; background: #777; border-radius: 24px; cursor: pointer; }
+body.race-desk-page .toggle-slider::before { position: absolute; content: ''; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; }
+body.race-desk-page input:checked + .toggle-slider { background: var(--accent); }
+body.race-desk-page input:checked + .toggle-slider::before { transform: translateX(26px); }
+body.race-desk-page .toggle-switch input:focus-visible + .toggle-slider { outline: 2px solid var(--accent-readable); outline-offset: 2px; }
+body.race-desk-page .cookie-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+body.race-desk-page .cookie-btn { min-height: 44px; padding: 10px 12px; border: 1px solid var(--border); font: inherit; font-size: .8125rem; }
+body.race-desk-page .reject-btn { background: var(--bg-surface); color: var(--text-primary); }
+body.race-desk-page .accept-btn { background: var(--accent); color: var(--accent-contrast); }
+body.race-desk-page .accept-selected-btn { grid-column: 1 / -1; order: 1; background: var(--accent-muted); color: var(--accent-readable); }
+body.race-desk-page .cookie-details:not([open]) ~ .cookie-actions .accept-selected-btn { display: none; }
+body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .75rem; }
+@media (min-width: 768px) { body.race-desk-page .cookie-consent { left: auto; right: 2rem; bottom: 2rem; width: min(390px, calc(100vw - 2rem)); } }
+@media (max-width: 767.98px) { body.race-desk-page .cookie-consent { right: 0; width: 100%; } body.race-desk-page .cookie-content { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); } }
