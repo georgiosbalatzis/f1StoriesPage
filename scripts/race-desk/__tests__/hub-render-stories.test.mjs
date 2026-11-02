@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderHub } from '../hub-render.mjs';
 
-const model = stories => ({ path: '/race-desk/gp/test/', displayName: 'Test GP', season: 2026, venue: {}, sessions: [], tools: [], sources: [], stories, timeline: { status: 'unavailable', reason: 'unmapped' } });
+const model = stories => ({ path: '/race-desk/gp/test/', displayName: 'Test GP', season: 2026, venue: {}, sessions: [], tools: [], sources: [], stories, timeline: { status: 'unavailable', reason: 'unmapped' }, pace: { schemaVersion: 1, raceId: 'test', status: 'unavailable', reason: 'unmapped' } });
 const story = (id = 'first') => ({ articleId: id, url: `https://f1-stories.gr/blog-module/blog-entries/${id}/article.html`, title: `Τίτλος ${id}`, date: '2026-10-08' });
 const section = html => html.match(/<section class="race-desk-section race-desk-related[^>]*>[\s\S]*?<\/section>/)[0];
 
@@ -24,12 +24,12 @@ test('preserves story order and does not expose evidence', () => {
 
 test('keeps an honest empty section and the correct section number', () => {
   const race = model([]), html = section(renderHub(race));
-  assert.match(html, /04 \/ ΙΣΤΟΡΙΕΣ/);
+  assert.match(html, /05 \/ ΙΣΤΟΡΙΕΣ/);
   assert.match(html, /Δεν έχουν καταγραφεί ακόμη επιμελημένοι σύνδεσμοι/);
   assert.doesNotMatch(html, /<ol|δεν υπάρχουν σχετικά/i);
   const unavailable = { status: 'unavailable', reason: 'unmapped-race' };
   race.results = { classifications: { race: unavailable, qualifying: unavailable, sprint: unavailable }, comparison: { status: 'unavailable', reason: 'missing-snapshot' } };
-  assert.match(section(renderHub(race)), /05 \/ ΙΣΤΟΡΙΕΣ/);
+  assert.match(section(renderHub(race)), /06 \/ ΙΣΤΟΡΙΕΣ/);
 });
 
 test('requires an array of stories', () => {

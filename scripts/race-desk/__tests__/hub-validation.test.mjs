@@ -8,6 +8,8 @@ import { readEditorialSelection } from '../editorial-files.mjs';
 import { validateHubOutput } from '../hub-validation.mjs';
 import { readTimelineContexts } from '../timeline-files.mjs';
 import { renderTimelineSection } from '../timeline-render.mjs';
+import { readPaceContexts } from '../pace-files.mjs';
+import { renderPaceSection } from '../pace-render.mjs';
 
 const registry = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
 const lock = JSON.parse(fs.readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
@@ -15,6 +17,7 @@ const evidence = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/hub
 const sourceRoot = new URL('../../..', import.meta.url).pathname;
 const stories = readEditorialSelection(sourceRoot, registry, { today: '2026-11-02' });
 const timelines = readTimelineContexts(sourceRoot, registry);
+const paces = readPaceContexts(sourceRoot, registry);
 const manifest = JSON.parse(fs.readFileSync(new URL('../../../data/race-desk/editorial.v1.json', import.meta.url)));
 const models = createPublicationModels(registry, lock, evidence, { currentYear: 2026 });
 const esc = value => value.replaceAll('&', '&amp;');
@@ -24,9 +27,9 @@ function fixture(t) {
   const write = (file, value) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), value); };
   write('index.html', models.map(model => `<a href="${model.path}">GP</a>`).join(''));
   write('sitemap.xml', `<urlset>${models.map(model => `<url><loc>${lock.origin}${model.path}</loc></url>`).join('')}</urlset>`);
-  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page"><a href="${model.scheduleEvidence.url}">Official</a>${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderTimelineSection(timelines.get(model.raceId), { number: '03' })}<section class="race-desk-section race-desk-related">${stories.get(model.raceId).length ? `<ol class="race-desk-stories">${stories.get(model.raceId).map(story => `<li><a href="${esc(story.url)}">${esc(story.title)}</a><time datetime="${story.date}">Date</time></li>`).join('')}</ol>` : ''}</section></body>`);
+  for (const model of models) write(model.path.slice(1) + 'index.html', `<head><link rel="canonical" href="${lock.origin}${model.path}"><meta property="og:url" content="${lock.origin}${model.path}"></head><body class="race-desk-page"><a href="${model.scheduleEvidence.url}">Official</a>${model.tools.map(tool => `<a href="${esc(tool.url)}">Tool</a>`).join('')}${model.sessions.filter(session => session.startUtc).map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderTimelineSection(timelines.get(model.raceId), { number: '03' })}${renderPaceSection(paces.get(model.raceId), { number: '04' })}<section class="race-desk-section race-desk-related">${stories.get(model.raceId).length ? `<ol class="race-desk-stories">${stories.get(model.raceId).map(story => `<li><a href="${esc(story.url)}">${esc(story.title)}</a><time datetime="${story.date}">Date</time></li>`).join('')}</ol>` : ''}</section></body>`);
   const change = (file, replace) => write(file, replace(fs.readFileSync(path.join(root, file), 'utf8')));
-  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026, evidence, stories, timelines) };
+  return { root, change, validate: () => validateHubOutput(root, registry, lock, 2026, evidence, stories, timelines, paces) };
 }
 
 test('all selected GP pages require static discovery, exact canonical links and recorded starts', t => {

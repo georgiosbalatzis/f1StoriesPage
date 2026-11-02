@@ -1,5 +1,6 @@
 import { renderResultsSection } from './results-render.mjs';
 import { renderTimelineSection } from './timeline-render.mjs';
+import { renderPaceSection } from './pace-render.mjs';
 import taxonomy from '../../blog-module/taxonomy.js';
 import dates from '../../blog-module/build/article-dates.js';
 
@@ -98,6 +99,7 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
       </section>
       ${model.results ? renderResultsSection(model.results) : ''}
       ${renderTimelineSection(model.timeline, { number: next() })}
+      ${renderPaceSection(model.pace, { number: next() })}
       <section class="race-desk-section" aria-labelledby="tools-title">
         <div class="race-desk-section-head"><div><p class="race-desk-kicker">${next()} / ΕΡΓΑΛΕΙΑ</p><h2 id="tools-title">Συνέχισε την εξερεύνηση</h2></div><p>Οι σύνδεσμοι ανοίγουν τα εργαλεία. Η επιλογή αγώνα και η διαθεσιμότητα δεδομένων εξαρτώνται από το καθένα.</p></div>
         <ul class="race-desk-tools">${model.tools.map(toolRow).join('\n')}</ul>

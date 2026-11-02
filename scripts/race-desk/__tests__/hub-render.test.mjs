@@ -8,7 +8,7 @@ import { renderHub } from '../hub-render.mjs';
 const registry = JSON.parse(readFileSync(new URL('../../../data/race-desk/registry.v1.json', import.meta.url)));
 const lock = JSON.parse(readFileSync(new URL('../../deployment/sources.json', import.meta.url)));
 const models = createHubModels(registry, lock, { currentYear: 2026 });
-const model = () => ({ ...structuredClone(models.find(item => item.raceId === '2026-singapore-gp')), stories: [], timeline: { status: 'unavailable', reason: 'unmapped' } });
+const model = () => ({ ...structuredClone(models.find(item => item.raceId === '2026-singapore-gp')), stories: [], timeline: { status: 'unavailable', reason: 'unmapped' }, pace: { schemaVersion: 1, raceId: '2026-singapore-gp', status: 'unavailable', reason: 'unmapped' } });
 
 test('renders static schedule, canonical metadata, includes and tool destinations', () => {
   const race = model(), html = renderHub(race);
@@ -75,7 +75,7 @@ test('preserves recorded sprint order, null times and unavailable selections', (
 test('gated official capture and local registry retain distinct attribution and dates', () => {
   const evidence = JSON.parse(readFileSync(new URL('../../../data/race-desk/hub-evidence.v1.json', import.meta.url)));
   const race = createPublicationModels(registry, lock, evidence, { currentYear: 2026 }).find(item => item.raceId === '2026-japanese-gp');
-  race.stories = []; race.timeline = { status: 'unavailable', reason: 'unmapped' };
+  race.stories = []; race.timeline = { status: 'unavailable', reason: 'unmapped' }; race.pace = { schemaVersion: 1, raceId: '2026-japanese-gp', status: 'unavailable', reason: 'unmapped' };
   const html = renderHub(race);
   assert.match(html, /<h1>Japanese Grand Prix/);
   assert.match(html, /Suzuka Circuit/);
@@ -107,9 +107,9 @@ test('session rows distinguish captured empty, unmapped and uncaptured results',
   assert.match(html, /Αγώνας<small>Δεν υπάρχει αντιστοίχιση/);
   assert.match(html, /Κατατακτήριες<small>Δεν υπάρχει καταγεγραμμένη απόκριση/);
   assert.match(html, /Sprint<small>Η καταγεγραμμένη απόκριση της πηγής δεν περιέχει αποτελέσματα/);
-  for (const heading of ['02 / ΑΠΟΤΕΛΕΣΜΑΤΑ', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ', '04 / ΕΡΓΑΛΕΙΑ', '05 / ΙΣΤΟΡΙΕΣ', '06 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(html.includes(heading));
+  for (const heading of ['02 / ΑΠΟΤΕΛΕΣΜΑΤΑ', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ', '04 / ΡΥΘΜΟΣ ΑΓΩΝΑ &amp; STINTS', '05 / ΕΡΓΑΛΕΙΑ', '06 / ΙΣΤΟΡΙΕΣ', '07 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(html.includes(heading));
   race.results = null;
   const withoutResults = renderHub(race);
-  for (const heading of ['02 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ', '03 / ΕΡΓΑΛΕΙΑ', '04 / ΙΣΤΟΡΙΕΣ', '05 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(withoutResults.includes(heading));
+  for (const heading of ['02 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ', '03 / ΡΥΘΜΟΣ ΑΓΩΝΑ &amp; STINTS', '04 / ΕΡΓΑΛΕΙΑ', '05 / ΙΣΤΟΡΙΕΣ', '06 / ΤΕΚΜΗΡΙΩΣΗ']) assert.ok(withoutResults.includes(heading));
   assert.doesNotMatch(html, /δεν (?:διεξήχθη|υπήρξε) sprint/i);
 });
