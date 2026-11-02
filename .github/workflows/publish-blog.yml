@@ -1,6 +1,6 @@
 name: Site Maintenance
 
-# Owns generated content maintenance: blog artifacts, standings data, and the YouTube snapshot.
+# Owns generated content maintenance: blog artifacts and standings data.
 # Scheduled jobs are split by cron through job-level conditions. This is the
 # sole main-push entry point: regenerate blog content when needed, then deploy once.
 # Publish Article calls this
@@ -10,9 +10,6 @@ name: Site Maintenance
 on:
   schedule:
     # Local Athens schedules follow daylight saving time automatically.
-    # YouTube snapshot: Saturday 23:59.
-    - cron: '59 23 * * 6'
-      timezone: Europe/Athens
     # Standings refresh: Friday 23:59, Saturday 07:01 and Monday 07:01 Europe/Athens
     # (after practice, after qualifying, after the race).
     - cron: '59 23 * * 5'
@@ -37,7 +34,6 @@ on:
         options:
           - blog
           - standings
-          - youtube
 
 # Fetch jobs are read-only and do not hold the article publishing lock.
 # publish_blog and publish_data serialize their commits to main; the write
@@ -141,57 +137,6 @@ jobs:
         with:
           dependency_hash: ${{ steps.setup.outputs.dependency_hash }}
 
-  refresh_youtube:
-    name: Refresh YouTube snapshot
-    permissions:
-      contents: read
-    if: >-
-      ${{
-        (github.event_name == 'schedule' && github.event.schedule == '59 23 * * 6') ||
-        inputs.task == 'youtube'
-      }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    concurrency:
-      group: youtube-fetch
-      queue: max
-    outputs:
-      patch: ${{ steps.patch.outputs.changed }}
-      artifact: ${{ steps.snapshot.outputs.artifact-id }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: main
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - name: Refresh YouTube snapshot
-        run: node scripts/build/fetch-youtube.mjs
-
-      - name: Prepare YouTube patch
-        id: patch
-        run: |
-          set -eu
-          git add -- assets/youtube-latest.json images/youtube
-          git diff --cached --binary --full-index > "$RUNNER_TEMP/maintenance.patch"
-          if git diff --cached --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Upload YouTube patch
-        id: snapshot
-        if: ${{ steps.patch.outputs.changed == 'true' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: youtube-refresh-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/maintenance.patch
-          retention-days: 1
-          if-no-files-found: error
-
   refresh_standings_data:
     name: Refresh standings data
     permissions:
@@ -245,13 +190,13 @@ jobs:
 
   publish_data:
     name: Commit refreshed data
-    needs: [refresh_youtube, refresh_standings_data]
+    needs: refresh_standings_data
     if: >-
       ${{
         !cancelled() &&
         (
-          (needs.refresh_youtube.result == 'success' && needs.refresh_youtube.outputs.patch == 'true') ||
-          (needs.refresh_standings_data.result == 'success' && needs.refresh_standings_data.outputs.patch == 'true')
+          needs.refresh_standings_data.result == 'success' &&
+          needs.refresh_standings_data.outputs.patch == 'true'
         )
       }}
     runs-on: ubuntu-latest
@@ -272,12 +217,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # Each schedule/manual task refreshes exactly one data source. The artifact
-      # ID also works when only a failed publishing job is rerun later.
+      # The artifact ID also works when only a failed publishing job is rerun later.
       - name: Download snapshot patch
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          artifact-ids: ${{ needs.refresh_youtube.outputs.artifact || needs.refresh_standings_data.outputs.artifact }}
+          artifact-ids: ${{ needs.refresh_standings_data.outputs.artifact }}
           path: ${{ runner.temp }}/maintenance
           merge-multiple: true
 
@@ -294,8 +238,7 @@ jobs:
         id: commit
         uses: ./.github/actions/commit-and-push
         with:
-          message: >-
-            ${{ needs.refresh_youtube.outputs.patch == 'true' && 'chore(data): refresh youtube snapshot [skip ci]' || 'chore(data): refresh standings snapshots [skip ci]' }}
+          message: 'chore(data): refresh standings snapshots [skip ci]'
           token: ${{ github.token }}
 
   deploy:

@@ -20,25 +20,20 @@ test('each local cron selects exactly its maintenance task, including delayed ru
     for (const { cron, timezone } of schedules(maintenance)) {
         assert.equal(timezone, 'Europe/Athens');
         const github = { event_name: 'schedule', event: { schedule: cron } };
-        const youtube = runs('refresh_youtube', github), standings = runs('refresh_standings_data', github);
-        assert.equal(Number(youtube) + Number(standings), 1, cron);
-        assert.equal(youtube, cron === '59 23 * * 6');
+        assert.equal(runs('refresh_standings_data', github), true, cron);
     }
     // A delayed scheduled run uses the cron that fired, with no wall-clock guard.
     assert.doesNotMatch(maintenance, /schedule_window|offset_hours|athens_hour|TZ=Europe\/Athens/);
     for (const cron of ['59 20 * * 6', '59 21 * * 5', 'unexpected']) {
         const github = { event_name: 'schedule', event: { schedule: cron } };
-        assert.equal(runs('refresh_youtube', github), false);
         assert.equal(runs('refresh_standings_data', github), false);
     }
     for (const task of ['youtube', 'standings', 'blog']) {
         for (const event_name of ['workflow_dispatch', 'workflow_call']) {
             const github = { event_name, event: {} };
-            assert.equal(runs('refresh_youtube', github, { task }), task === 'youtube');
             assert.equal(runs('refresh_standings_data', github, { task }), task === 'standings');
         }
     }
-    assert.equal(runs('refresh_youtube', { event_name: 'push', event: {} }), false);
     assert.equal(runs('refresh_standings_data', { event_name: 'push', event: {} }), false);
 
 });
@@ -61,11 +56,9 @@ test('Athens slots keep their local times across spring and autumn DST changes',
     const cases = [
         ['59 23 * * 5', '2026-03-27T21:59:00Z'],
         ['1 7 * * 1,6', '2026-03-28T05:01:00Z'],
-        ['59 23 * * 6', '2026-03-28T21:59:00Z'],
         ['1 7 * * 1,6', '2026-03-30T04:01:00Z'],
         ['59 23 * * 5', '2026-10-23T20:59:00Z'],
         ['1 7 * * 1,6', '2026-10-24T04:01:00Z'],
-        ['59 23 * * 6', '2026-10-24T20:59:00Z'],
         ['1 7 * * 1,6', '2026-10-26T05:01:00Z'],
     ];
     const crons = schedules(maintenance).map(({ cron }) => cron);
@@ -76,12 +69,12 @@ test('Athens slots keep their local times across spring and autumn DST changes',
     }
 });
 
-test('one week has four data refreshes without offset-only runs', () => {
+test('one week has three data refreshes without offset-only runs', () => {
     for (const start of ['2026-01-12T00:00:00Z', '2026-07-13T00:00:00Z',
         '2026-03-23T00:00:00Z', '2026-10-19T00:00:00Z']) {
-        for (const [workflow, expected] of [[maintenance, 4]]) {
+        for (const [workflow, expected] of [[maintenance, 3]]) {
             const entries = schedules(workflow);
-            assert.equal(entries.length, 3);
+            assert.equal(entries.length, 2);
             for (const entry of entries) assert.equal(entry.timezone, 'Europe/Athens');
             const minutes = [...new Set(entries.flatMap(({ cron }) => cron.split(' ')[0].split(',').map(Number)))];
             let count = 0;
@@ -115,7 +108,7 @@ test('TYRES Pages refreshes run every 6 h Thursday–Monday and once a day Tuesd
 
 test('every maintenance and Pages runner job has a bounded timeout', () => {
     for (const [workflow, names] of [
-        [maintenance, ['changes', 'publish_blog', 'refresh_youtube', 'refresh_standings_data', 'publish_data']],
+        [maintenance, ['changes', 'publish_blog', 'refresh_standings_data', 'publish_data']],
         [pages, ['build', 'deploy']]
     ]) for (const name of names) {
         const minutes = Number(job(workflow, name).match(/timeout-minutes: (\d+)/)?.[1]);

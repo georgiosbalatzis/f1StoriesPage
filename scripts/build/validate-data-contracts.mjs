@@ -24,7 +24,6 @@ const SITE_ORIGIN = 'https://f1-stories.gr';
 const CURRENT_YEAR = new Date().getFullYear();
 
 const FILE_LIMITS = {
-    'assets/youtube-latest.json': 40 * 1024,
     'blog-module/blog-index-data.json': 160 * 1024,
     'blog-module/search-destinations.json': 4 * 1024,
     'blog-module/blog-source-cache.json': 1024 * 1024,
@@ -367,30 +366,6 @@ function validateBlogSourceCache() {
     });
 }
 
-function validateYoutubeSnapshot() {
-    const relPath = 'assets/youtube-latest.json';
-    const data = requireObject(readJson(relPath), relPath);
-    requireString(data, 'channelId', relPath, { maxLength: 80 });
-    requireString(data, 'channelTitle', relPath, { maxLength: 160 });
-    assertCondition(isHttpsUrl(data.source), relPath, 'source must be an HTTPS URL');
-    validateDateTimeString(`${relPath}.lastUpdated`, requireString(data, 'lastUpdated', relPath, { maxLength: 40 }));
-    validateDateTimeString(`${relPath}.newestPublishedAt`, requireString(data, 'newestPublishedAt', relPath, { maxLength: 40 }));
-
-    const videos = requireArray(data.videos, `${relPath}.videos`, { maxLength: 20 });
-    const seen = new Set();
-    videos.forEach((video, index) => {
-        const label = `${relPath}.videos[${index}]`;
-        requireObject(video, label);
-        const id = requireString(video, 'id', label, { maxLength: 80 });
-        assertCondition(!seen.has(id), label, `duplicate id ${id}`);
-        seen.add(id);
-        requireString(video, 'title', label, { maxLength: 240 });
-        assertCondition(isHttpsUrl(video.thumbnail), label, 'thumbnail must be an HTTPS URL');
-        assertCondition(isHttpsUrl(video.url), label, 'url must be an HTTPS URL');
-        validateDateTimeString(`${label}.publishedAt`, requireString(video, 'publishedAt', label, { maxLength: 40 }));
-    });
-}
-
 function validateJolpicaStandingsPayload(payload, label) {
     requireObject(payload, label);
     const mrData = requireObject(payload.MRData, `${label}.MRData`);
@@ -669,7 +644,6 @@ function main() {
     catch (error) { addError('blog-module/search-destinations.json', error.message); }
     validateHomeLatest();
     validateBlogSourceCache();
-    validateYoutubeSnapshot();
     validateStandingsCache();
     validateRoundSnapshots();
     validateDirtyAirCache();
@@ -686,7 +660,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Data contracts validated: race desk registry, blog data, standings caches, YouTube snapshot, asset manifest, sitemap, and RSS feed.');
+    console.log('Data contracts validated: race desk registry, blog data, standings caches, asset manifest, sitemap, and RSS feed.');
 }
 
 main();

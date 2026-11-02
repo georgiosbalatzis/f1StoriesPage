@@ -8,7 +8,6 @@ Current checked contracts:
 - `blog-module/blog-index-data.json`: compact blog index `v: 2`.
 - `blog-module/blog-source-cache.json`: source cache used by author/build tooling.
 - `blog-module/home-latest.json`: homepage latest-articles payload, at most 4 posts: `[0]` is the cover story, `[1..3]` fill the journal. Optional `deck` (≤240 chars) and `lede` (≤320 chars) are whole sentences from the article's opening paragraph, used by the cover instead of the truncated `excerpt`.
-- `assets/youtube-latest.json`: local YouTube snapshot.
 - `standings/standings-cache.json`: Jolpica standings snapshot.
 - `standings/rounds/<season>-<round>.json`: immutable per-round standings snapshot (same shape as the cache plus `raceName`); `season`/`round` in both standings payloads must match the file name.
 - `standings/dirty-air-cache.json`: dirty-air cache `version: 1` (build input, not published).
