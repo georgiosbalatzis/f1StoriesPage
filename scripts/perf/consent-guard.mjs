@@ -251,6 +251,45 @@ async function assertRejectKeepsAnalyticsBlocked(browser, origin) {
     }
 }
 
+async function assertHubAccessibility(browser, origin) {
+    const route = '/race-desk/gp/2026-japanese-gp/';
+    for (const choice of ['accept-all', 'reject-all']) {
+        const context = await browser.createBrowserContext();
+        const page = await context.newPage();
+        try {
+            await page.goto(new URL(route, origin).toString(), { waitUntil: 'domcontentloaded' });
+            const initiallyHidden = await page.$eval('#cookie-consent', el => el.hidden && el.getAttribute('aria-hidden') === 'true');
+            if (!initiallyHidden) throw new Error('Hub consent is focusable before it is revealed');
+            await page.waitForSelector('#cookie-consent.show.is-ready', { visible: true, timeout: 10000 });
+            const position = await page.$eval('#cookie-consent', el => getComputedStyle(el).position);
+            if (position !== 'fixed') throw new Error('Hub consent is not styled as a fixed banner');
+            await page.focus('#' + choice);
+            await page.keyboard.press('Enter');
+            const state = await page.evaluate(key => ({ hidden: document.querySelector('#cookie-consent').hidden, consent: JSON.parse(localStorage.getItem(key)) }), STORAGE_KEY);
+            if (!state.hidden || state.consent?.analytics !== (choice === 'accept-all')) throw new Error('Hub consent choice was not saved or hidden');
+            await page.reload({ waitUntil: 'domcontentloaded' });
+            if (!await page.$eval('#cookie-consent', el => el.hidden)) throw new Error('Saved hub consent was not retained');
+            await page.evaluate(key => localStorage.removeItem(key), STORAGE_KEY);
+            await page.reload({ waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('#cookie-consent.show.is-ready', { visible: true, timeout: 10000 });
+        } finally { await context.close(); }
+    }
+    const context = await browser.createBrowserContext();
+    const page = await context.newPage();
+    try {
+        await page.setJavaScriptEnabled(false);
+        await page.goto(new URL(route, origin).toString(), { waitUntil: 'domcontentloaded' });
+        const fallback = await page.evaluate(() => {
+            const banner = document.querySelector('#cookie-consent');
+            banner.querySelector('button').focus();
+            const notice = document.querySelector('noscript p');
+            return banner.hidden && !banner.contains(document.activeElement) && !!notice && getComputedStyle(notice).display !== 'none';
+        });
+        if (!fallback) throw new Error('Hub no-JavaScript consent fallback is inaccessible');
+    } finally { await context.close(); }
+    return { route, status: 'accessible consent controls and fallback' };
+}
+
 async function main() {
     const args = parseArgs(process.argv);
     const chromePath = getChromePath();
@@ -275,6 +314,7 @@ async function main() {
         }
         rows.push(await assertRejectKeepsAnalyticsBlocked(browser, started.origin));
         rows.push(await assertAcceptLoadsAnalytics(browser, started.origin));
+        rows.push(await assertHubAccessibility(browser, started.origin));
 
         console.table(rows);
         console.log('Consent analytics guard passed.');
