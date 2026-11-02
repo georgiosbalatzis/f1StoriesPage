@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { openF1Url, readTimelineInventory, validateBatch } from './timeline-files.mjs';
+import { openF1Url, readTimelineInventory, validateBatch, MAX_CAPTURE_BYTES } from './timeline-files.mjs';
 import { buildTimelineContext } from './timeline.mjs';
 import { readBounded } from './capture-files.mjs';
 
@@ -26,7 +26,7 @@ export async function captureOpenF1({ root, registry, raceId, codeRevision, fetc
   }
   const next = [...receipts.filter(item => !(item.raceId === raceId && ['sessions', 'race_control', 'pit'].includes(item.endpoint))), ...captures.map(item => item.receipt)].sort((a, b) => a.captureId.localeCompare(b.captureId, 'en'));
   const proposed = new Map(captures.map(item => [item.receipt.captureId, item.bytes]));
-  const payloads = validateBatch(next, registry, receipt => proposed.get(receipt.captureId) ?? readBounded(root, receipt.path, 20_000_000));
+  const payloads = validateBatch(next, registry, receipt => proposed.get(receipt.captureId) ?? readBounded(root, receipt.path, MAX_CAPTURE_BYTES));
   buildTimelineContext({ race, receipts: next.filter(item => item.raceId === raceId), payloads, rights });
   let current = root;
   for (const part of 'data/race-desk/captures/openf1'.split('/')) {

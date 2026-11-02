@@ -110,6 +110,19 @@ test('invalid proposed session is rejected before touching the archive', async t
   assert.deepEqual(readTimelineContexts(root, registry), before);
 });
 
+test('an oversized response is rejected before touching the archive', async t => {
+  const root = fixture(t);
+  await capture(root);
+  const before = readTimelineContexts(root, registry);
+  const inventory = fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json'));
+  const rows = syntheticRows();
+  await assert.rejects(captureOpenF1({ root, registry, raceId: 'synthetic-race', codeRevision: 'a'.repeat(40), clock: () => new Date('2026-01-03T00:00:00Z'),
+    fetch: async url => { const endpoint = new URL(url).pathname.split('/').pop(); const json = Buffer.from(JSON.stringify(rows[endpoint]));
+      return { status: 200, url, arrayBuffer: async () => endpoint === 'race_control' ? Buffer.concat([json, Buffer.alloc(20_000_001 - json.length, ' ')]) : json }; } }), /too large/);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'data/race-desk/timeline.v1.json')), inventory);
+  assert.deepEqual(readTimelineContexts(root, registry), before);
+});
+
 test('receipt coverage and observedAt are validated and partial reaches the context', async t => {
   const root = fixture(t);
   await capture(root);

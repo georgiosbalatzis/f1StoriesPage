@@ -20,9 +20,12 @@ export function readTimelineInventory(root, registry) {
   if (!keys(rights, ['schemaVersion', 'providers']) || rights.schemaVersion !== 1 || !keys(rights.providers, ['openf1', 'jolpica'])) fail('invalid rights');
   const openf1 = rights.providers.openf1, jolpica = rights.providers.jolpica;
   if (!keys(openf1, ['status', 'decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution']) || !['approved', 'unresolved'].includes(openf1.status) || !['decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution'].every(key => text(openf1[key])) || !/^\d{4}-\d\d-\d\d$/.test(openf1.decidedOn) || openf1.license !== 'CC BY-NC-SA 4.0' || openf1.licenseUrl !== 'https://creativecommons.org/licenses/by-nc-sa/4.0/' || openf1.terms !== 'https://openf1.org/' || openf1.attribution !== 'OpenF1' || !keys(jolpica, ['status', 'note']) || !['approved', 'unresolved'].includes(jolpica.status) || !text(jolpica.note)) fail('invalid provider rights');
-  const payloads = validateBatch(inventory.captures, registry, receipt => readBounded(base, receipt.path, 20_000_000));
+  const payloads = validateBatch(inventory.captures, registry, receipt => readBounded(base, receipt.path, MAX_CAPTURE_BYTES));
   return { receipts: inventory.captures, payloads, rights };
 }
+
+// One limit for reading and for capture preflight, so capture can never write an archive the reader rejects.
+export const MAX_CAPTURE_BYTES = 20_000_000;
 
 export function validateBatch(receipts, registry, readBytes) {
   if (!Array.isArray(registry?.races)) fail('invalid registry');
@@ -45,7 +48,9 @@ export function validateBatch(receipts, registry, readBytes) {
     const pair = `${receipt.raceId}\0${sessionKey}\0${receipt.endpoint}`;
     if (ids.has(receipt.captureId) || pairs.has(pair) || paths.has(receipt.path)) fail('duplicate capture');
     ids.add(receipt.captureId); pairs.add(pair); paths.add(receipt.path);
-    const rows = verifyCapture(readBytes(receipt), receipt);
+    const bytes = readBytes(receipt);
+    if (bytes.length > MAX_CAPTURE_BYTES) fail('capture too large');
+    const rows = verifyCapture(bytes, receipt);
     if (!Array.isArray(rows) || rows.length !== receipt.rowCount) fail('row count mismatch');
     if ((rows.length === 0 && receipt.coverage !== 'empty') || (rows.length > 0 && !['full', 'partial'].includes(receipt.coverage))) fail('coverage mismatch');
     if (rows.length === 0) {
