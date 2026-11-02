@@ -1,4 +1,86 @@
 {
   "schemaVersion": 1,
-  "captures": []
+  "captures": [
+    {
+      "schemaVersion": 1,
+      "captureId": "openf1-11388-pit",
+      "provider": "openf1",
+      "endpoint": "pit",
+      "raceId": "2026-singapore-gp",
+      "sessionKind": "race",
+      "requestUrl": "https://api.openf1.org/v1/pit?session_key=11388",
+      "query": {
+        "session_key": 11388
+      },
+      "finalUrl": "https://api.openf1.org/v1/pit?session_key=11388",
+      "observedAt": "2026-11-02T17:47:04.330Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/openf1/11388-pit.response",
+      "sha256": "07be2948a659d4a94f96c9c04878c81567d9e06b5bb2b7537304c497ce6e3c9e",
+      "bytes": 4569,
+      "rowCount": 25,
+      "returnedIdentity": {
+        "meeting_key": 1296,
+        "session_key": 11388
+      },
+      "coverage": "full",
+      "coverageReasons": [],
+      "codeRevision": "4cb429609923ae56d291d88ae77c1374c256010f",
+      "synthetic": false
+    },
+    {
+      "schemaVersion": 1,
+      "captureId": "openf1-11388-race_control",
+      "provider": "openf1",
+      "endpoint": "race_control",
+      "raceId": "2026-singapore-gp",
+      "sessionKind": "race",
+      "requestUrl": "https://api.openf1.org/v1/race_control?session_key=11388",
+      "query": {
+        "session_key": 11388
+      },
+      "finalUrl": "https://api.openf1.org/v1/race_control?session_key=11388",
+      "observedAt": "2026-11-02T17:47:04.279Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/openf1/11388-race_control.response",
+      "sha256": "98f3d422d248fe468c3c2eb78d5ac10eb1df9c0d77af304af2a1f4230c77781f",
+      "bytes": 40627,
+      "rowCount": 155,
+      "returnedIdentity": {
+        "meeting_key": 1296,
+        "session_key": 11388
+      },
+      "coverage": "full",
+      "coverageReasons": [],
+      "codeRevision": "4cb429609923ae56d291d88ae77c1374c256010f",
+      "synthetic": false
+    },
+    {
+      "schemaVersion": 1,
+      "captureId": "openf1-11388-sessions",
+      "provider": "openf1",
+      "endpoint": "sessions",
+      "raceId": "2026-singapore-gp",
+      "sessionKind": "race",
+      "requestUrl": "https://api.openf1.org/v1/sessions?session_key=11388",
+      "query": {
+        "session_key": 11388
+      },
+      "finalUrl": "https://api.openf1.org/v1/sessions?session_key=11388",
+      "observedAt": "2026-11-02T17:47:04.218Z",
+      "httpStatus": 200,
+      "path": "data/race-desk/captures/openf1/11388-sessions.response",
+      "sha256": "f5d774693cf0c7dd31ccc18cf172f2eb019b565b95b8de9230be2e611095cfa6",
+      "bytes": 363,
+      "rowCount": 1,
+      "returnedIdentity": {
+        "meeting_key": 1296,
+        "session_key": 11388
+      },
+      "coverage": "full",
+      "coverageReasons": [],
+      "codeRevision": "4cb429609923ae56d291d88ae77c1374c256010f",
+      "synthetic": false
+    }
+  ]
 }
