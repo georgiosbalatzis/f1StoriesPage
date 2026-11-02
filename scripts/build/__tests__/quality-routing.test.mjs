@@ -160,28 +160,79 @@ test('depth-two checkout classifies content while missing parents fall back to f
     }
 });
 
-function step(name) {
-    return workflow.split(`      - name: ${name}\n`)[1].split(/\n      - /)[0];
+const jobs = '\n' + workflow.split('\njobs:\n')[1];
+const jobIds = [...jobs.matchAll(/\n  ([a-z_]+):\n/g)].map(m => m[1]);
+const job = id => jobs.split(`\n  ${id}:\n`)[1].split(/\n  [a-z_]+:\n/)[0];
+function step(jobId, name) {
+    const body = job(jobId).split(`      - name: ${name}\n`)[1];
+    assert.ok(body, `${jobId}: step "${name}" missing`);
+    return body.split(/\n      - /)[0];
 }
+const runsFor = (jobId, name, contentOnly) => {
+    const condition = step(jobId, name).match(/if: \$\{\{(.*?)\}\}/);
+    if (!condition) return true;
+    return new Function('steps', `return (${condition[1]});`)({ changes: { outputs: { content_only: contentOnly } } });
+};
 
-test('both routes preserve Quality gates and shared tests; only full checks package and audit', () => {
-    assert.match(workflow, /name: Quality gates/);
-    assert.doesNotMatch(workflow, /github.head_ref|startsWith\(/);
-    assert.match(step('Checkout'), /fetch-depth: 2/);
-    assert.match(step('Classify changed files'), /run: node scripts\/build\/classify-quality.mjs/);
-    const routed = ['Restore optimized article images', 'Build public artifact',
-        'Validate article content', 'Audit runtime dependencies'];
+test('Quality gates reports one conclusion that requires every suite job', () => {
+    const gates = job('gates');
+    assert.match(gates, /^    name: Quality gates$/m);
+    assert.match(gates, /^    if: \$\{\{ always\(\) \}\}$/m);
+    const suites = jobIds.filter(id => id !== 'gates');
+    assert.deepEqual(suites, ['source', 'built', 'artifact', 'browser']);
+    assert.equal(gates.match(/^    needs: \[(.*)\]$/m)[1], suites.join(', '));
+    assert.equal((workflow.match(/name: Quality gates/g) || []).length, 1);
+    const script = gates.split('        run: |\n')[1].split('\n').map(line => line.slice(10)).join('\n');
+    const gate = needs => spawnSync('bash', ['-e', '-c', script], { encoding: 'utf8',
+        env: { ...process.env, NEEDS: JSON.stringify(needs) } }).status;
+    const all = result => Object.fromEntries(suites.map(id => [id, { result }]));
+    assert.equal(gate(all('success')), 0);
+    for (const result of ['failure', 'cancelled', 'skipped']) {
+        for (const id of suites) assert.notEqual(gate({ ...all('success'), [id]: { result } }), 0, `${id}: ${result}`);
+    }
+    const { browser, ...missing } = all('success');
+    assert.notEqual(gate(missing), 0, 'a missing suite job cannot pass');
+});
+
+test('both routes preserve shared tests; only full checks run packaging gates and browsers', () => {
+    assert.doesNotMatch(workflow, /github.head_ref|startsWith\(|I-06D/);
+    for (const id of ['artifact', 'browser']) {
+        assert.match(step(id, 'Checkout'), /fetch-depth: 2/);
+        assert.match(step(id, 'Classify changed files'), /run: node scripts\/build\/classify-quality.mjs/);
+    }
+    // Source and built-tree suites never route: they run for every PR.
+    for (const id of ['source', 'built']) assert.doesNotMatch(job(id), /\bif:/, id);
+    for (const id of ['built', 'artifact']) {
+        const body = job(id), restore = body.indexOf('\n      - uses: ./.github/actions/restore-article-images\n');
+        assert.ok(restore > 0 && restore < body.indexOf('\n      - name: Build public artifact\n        run: npm run build:public\n'), id);
+    }
+    const built = job('built');
+    assert.ok(built.indexOf('run: npm run build:public') < built.indexOf('run: npm run test:author'));
+    assert.ok(built.indexOf('run: npm run build:public') < built.indexOf('name: Run publishing regression tests'));
+    const always = ['Build public artifact', 'Run static source guard',
+        'Verify asset size budgets', 'Verify generated editorial media', 'Run blog module tests', 'Verify next-race countdown'];
+    const full = { artifact: ['Verify release media and primary domain', 'Audit runtime dependencies',
+        'Verify Race Desk navigation and offline URL compatibility', 'Verify static Grand Prix pilot pages'],
+    browser: ['Restore optimized article images', 'Build public artifact for browser regressions', 'Run Edition discovery regression',
+        'Run consent and RUM regressions', 'Run tablet CLS regression (both themes, edition font swap)'] };
     for (const contentOnly of ['true', 'false', undefined]) {
-        const steps = { changes: { outputs: { content_only: contentOnly } } };
-        for (const name of routed) {
-            const expression = step(name).match(/if: \$\{\{(.*?)\}\}/)[1];
-            const runs = new Function('steps', `return (${expression});`)(steps);
-            assert.equal(runs, name === 'Validate article content' ? contentOnly === 'true' : contentOnly !== 'true');
+        for (const name of always) assert.equal(runsFor('artifact', name, contentOnly), true, name);
+        for (const [id, names] of Object.entries(full)) {
+            for (const name of names) assert.equal(runsFor(id, name, contentOnly), contentOnly !== 'true', `${id}: ${name}`);
         }
     }
-    for (const name of ['Run static source guard', 'Run author module tests',
-        'Run standings module tests', 'Run security policy tests', 'Run publishing regression tests']) {
-        assert.doesNotMatch(step(name), /\bif:/, name);
-    }
-    assert.match(step('Run publishing regression tests'), /quality-routing.test.mjs/);
+    assert.match(step('artifact', 'Build public artifact'), /run: npm run build:public/);
+    assert.ok(job('artifact').indexOf('name: Build public artifact') < job('artifact').indexOf('name: Run blog module tests'),
+        'blog URL contracts need dist/');
+    assert.match(step('built', 'Run publishing regression tests'), /quality-routing.test.mjs/);
+});
+
+test('PRs restore the same image cache key deployment saves, and never save one', () => {
+    const restore = fs.readFileSync(new URL('../../../.github/actions/restore-article-images/action.yml', import.meta.url), 'utf8');
+    const publisher = fs.readFileSync(new URL('../../../.github/actions/build-pages/action.yml', import.meta.url), 'utf8');
+    const cacheKeys = text => [...text.matchAll(/\n\s+key: (.*)\n\s+restore-keys: \|\n\s+(.*)\n/g)].map(m => [m[1], m[2]]);
+    assert.equal(cacheKeys(restore).length, 1);
+    assert.deepEqual(cacheKeys(publisher), cacheKeys(restore));
+    assert.match(restore, /uses: actions\/cache\/restore@/);
+    assert.doesNotMatch(workflow + restore, /actions\/cache@|actions\/cache\/save@/);
 });
