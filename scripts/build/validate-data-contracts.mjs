@@ -13,6 +13,7 @@ import search from '../../blog-module/search-destinations.js';
 import { validateRegistry } from '../race-desk/core/index.mjs';
 import { createRaceDeskProjection } from '../race-desk/projection.mjs';
 import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
+import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
 import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import { readHubEvidence } from '../race-desk/hub-files.mjs';
 import raceDeskLinks from '../../standings/core/race-desk-links.generated.js';
@@ -638,6 +639,7 @@ function main() {
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);
             }
+            try { readTimelineContexts(REPO_ROOT, registry); } catch (error) { addError('data/race-desk/timeline.v1.json', error.message); }
         }
     }
     validateCompactBlogIndex();

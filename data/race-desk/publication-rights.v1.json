@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "providers": {
+    "openf1": {
+      "status": "approved",
+      "decidedBy": "site owner",
+      "decidedOn": "2026-11-02",
+      "license": "CC BY-NC-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "terms": "https://openf1.org/",
+      "attribution": "OpenF1"
+    },
+    "jolpica": {
+      "status": "unresolved",
+      "note": "R-04 predates this record."
+    }
+  }
+}

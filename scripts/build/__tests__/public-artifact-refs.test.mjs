@@ -184,7 +184,7 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
-    for (const file of ['results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['capture.mjs', 'capture-files.mjs', 'results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
     }
     write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));

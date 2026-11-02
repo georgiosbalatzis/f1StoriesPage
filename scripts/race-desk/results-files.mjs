@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import path from 'node:path';
+import { readBounded as readCaptureFile } from './capture-files.mjs';
 import { adaptJolpicaClassification, adaptChampionshipSnapshot, compareChampionshipSnapshots } from './results.mjs';
 
 const pilots = new Map([
@@ -17,17 +17,9 @@ const shape = (value, keys, label) => {
 const descriptor = (value, label) => shape(value, ['raceName', 'circuitId', 'date', 'time'], label);
 const urls = (value, label) => shape(value, ['drivers', 'constructors'], label);
 
-// Reject links at every relative component before opening the fixed allowlisted file.
 function readBounded(root, relative) {
-  let current = root;
-  const parts = relative.split('/');
-  for (let i = 0; i < parts.length; i++) {
-    current = path.join(current, parts[i]);
-    const stat = fs.lstatSync(current);
-    if (stat.isSymbolicLink() || (i < parts.length - 1 ? !stat.isDirectory() : !stat.isFile())) fail(`unsafe path ${relative}`);
-  }
-  const fd = fs.openSync(current, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0));
-  try { return fs.readFileSync(fd); } finally { fs.closeSync(fd); }
+  try { return readCaptureFile(root, relative); }
+  catch (error) { if (error.message.startsWith('unsafe path ')) fail(error.message); throw error; }
 }
 
 export function readResultsContexts(root, registry) {
