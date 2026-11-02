@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 01 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής!</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261102J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261102J/article.html</guid>
+      <pubDate>Sun, 01 Nov 2026 22:00:00 GMT</pubDate>
+      <description>«Θα βάλει έναν μικρό πίσω από το τιμόνι της Mercedes». Αυτά ήταν λίγα ειπώθηκαν για τον μικρότερο ηλικιακά πρωταθλητή στην Formula 1.</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
+    <item>
       <title>Max Verstappen: Η τέχνη να κερδίζεις</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Από πού να ξεκινήσουμε να μιλάμε για τη Ferrari και πού να τελειώσουμε; Σαν να ακούω τους τιφόζι να τραγουδάνε... «Τι αμαρτίες, έχω κάνει; Δεν αντέχω...</description>
       <category>Άποψη</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Marco Bezzecchi: Η κυριαρχία στην Ινδονησία και η νίκη που έδωσε ξανά ζωή στα όνειρά του!</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261011W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261011W/article.html</guid>
-      <pubDate>Sat, 10 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Marco Bezzecchi επέστρεψε στον δρόμο των επιτυχιών με τον πιο εμφατικό τρόπο, κατακτώντας τη νίκη στο Grand Prix της Ινδονησίας και επιβεβαιώνοντας πως…</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
