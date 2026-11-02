@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sat, 31 Oct 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 01 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Max Verstappen: Η τέχνη να κερδίζεις</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</guid>
+      <pubDate>Sun, 01 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο Max Verstappen μετατρέπει την πέμπτη θέση εκκίνησης σε θρίαμβο στο Μεξικό, αποδεικνύοντας την ταχύτητα, την ψυχραιμία και την αγωνιστική του ευφυΐα.</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Marc Marquez: Σπουδαία νίκη στην Μαλαισία</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261101-2W/article.html</link>
@@ -266,15 +275,6 @@
       <pubDate>Sat, 10 Oct 2026 21:00:00 GMT</pubDate>
       <description>Ο Marco Bezzecchi επέστρεψε στον δρόμο των επιτυχιών με τον πιο εμφατικό τρόπο, κατακτώντας τη νίκη στο Grand Prix της Ινδονησίας και επιβεβαιώνοντας πως…</description>
       <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Luciano Burti: ο οδηγός που το 2001 είδε την καριέρα του να αλλάζει μέσα σε λίγα δευτερόλεπτα.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261010W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261010W/article.html</guid>
-      <pubDate>Fri, 09 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Βραζιλιάνος δεν ήταν ένας «τυχαίος» οδηγός της εποχής. Πρωταθλητής Formula Vauxhall Junior το 1997, τρίτος στη βρετανική Formula 3 το 1998 και δεύτερος…</description>
-      <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>

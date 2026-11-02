@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261102W",
+      "title": "Max Verstappen: Η τέχνη να κερδίζεις",
+      "author": "Themis Charvalis",
+      "date": "2026-11-02",
+      "dateISO": "2026-11-02",
+      "displayDate": "2 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261102W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261102W/2.webp",
+      "excerpt": "Ο Max Verstappen μετατρέπει την πέμπτη θέση εκκίνησης σε θρίαμβο στο Μεξικό, αποδεικνύοντας την ταχύτητα, την ψυχραιμία και την αγωνιστική του ευφυΐα.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261102W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Max Verstappen",
+        "Red bull racing",
+        "Mexico gp 2026"
+      ],
+      "wordCount": 789,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 1367,
+      "backgroundImageWidth": 276,
+      "backgroundImageHeight": 183,
+      "inputDigest": "801d16a5a98d9c17b07333b78830a7abb52bb6f89c216b3e147303441583336c"
+    },
+    {
       "id": "20261101-2W",
       "title": "Marc Marquez: Σπουδαία νίκη στην Μαλαισία",
       "author": "Themis Charvalis",
@@ -11441,5 +11472,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-01T18:36:46.816Z"
+  "lastUpdated": "2026-11-02T17:24:36.843Z"
 }
