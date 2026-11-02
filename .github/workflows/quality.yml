@@ -12,21 +12,34 @@ concurrency:
   group: quality-${{ github.ref }}
   cancel-in-progress: true
 
-# Independent suites run as parallel jobs. "Quality gates" is the single check that publishing
-# (workflow_run consumers) and reviewers rely on: it fails unless every suite job succeeded.
+# Independent suites run as parallel jobs. Every suite job builds first, so each suite sees the same
+# built tree (generated bundles, indexes, stamped HTML, dist/) it saw when Site Quality was one job.
+# "Quality gates" is the single check that publishing (workflow_run consumers) and reviewers rely on:
+# it fails unless every suite job succeeded.
 jobs:
-  # Suites that read only tracked source and fixtures: proven to give identical results without a build.
-  source:
-    name: Source suites
+  modules:
+    name: Module suites
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
+
+      - uses: ./.github/actions/restore-article-images
+
+      - name: Build public artifact
+        run: npm run build:public
 
       - name: Run race desk contract tests
         run: npm run test:race-desk
@@ -55,8 +68,10 @@ jobs:
       - name: Run tablet CLS guard tests
         run: node --test scripts/build/__tests__/tablet-cls.test.mjs
 
-  # These suites serve or read generated files (minified bundles, asset manifest, stamped HTML),
-  # so they run on the same built tree as before the split.
+      - name: Run consent and RUM regressions
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:consent && npm run test:rum:browser
+
   built:
     name: Author and publishing suites
     runs-on: ubuntu-latest
@@ -65,9 +80,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
 
       - uses: ./.github/actions/restore-article-images
 
@@ -79,6 +101,18 @@ jobs:
 
       - name: Run publishing regression tests
         run: node --test scripts/build/__tests__/social-cards.test.mjs scripts/build/__tests__/disqus-removal.test.mjs scripts/build/__tests__/public-artifact-refs.test.mjs scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs
+
+      - name: Verify Race Desk navigation and offline URL compatibility
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:race-desk:browser -- --site dist --reports .build/race-desk-r02c
+
+      - name: Upload Race Desk navigation diagnostics
+        if: ${{ !cancelled() && steps.changes.outputs.content_only != 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: race-desk-navigation-reports
+          path: .build/race-desk-r02c/
+          if-no-files-found: warn
 
   artifact:
     name: Public artifact
@@ -130,18 +164,6 @@ jobs:
       - name: Verify next-race countdown
         run: npm run qa:countdown -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
 
-      - name: Verify Race Desk navigation and offline URL compatibility
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: npm run test:race-desk:browser -- --site dist --reports .build/race-desk-r02c
-
-      - name: Upload Race Desk navigation diagnostics
-        if: ${{ !cancelled() && steps.changes.outputs.content_only != 'true' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: race-desk-navigation-reports
-          path: .build/race-desk-r02c/
-          if-no-files-found: warn
-
       - name: Verify static Grand Prix pilot pages
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run test:race-desk:hubs -- --site dist --reports .build/race-desk-r03
@@ -187,17 +209,13 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
-      - name: Run consent and RUM regressions
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: npm run test:consent && npm run test:rum:browser
-
       - name: Run tablet CLS regression (both themes, edition font swap)
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run perf:cls-tablet -- --widths 768
 
   gates:
     name: Quality gates
-    needs: [source, built, artifact, browser]
+    needs: [modules, built, artifact, browser]
     # Always report a conclusion: a skipped or cancelled suite must never read as a pass.
     if: ${{ always() }}
     runs-on: ubuntu-latest
@@ -208,4 +226,4 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
         run: |
           echo "$NEEDS" | jq -c 'map_values(.result)'
-          echo "$NEEDS" | jq -e 'length == 4 and all(.[]; .result == "success")' > /dev/null
+          echo "$NEEDS" | jq -se 'length == 1 and (.[0] | type == "object" and keys == ["artifact", "browser", "built", "modules"] and all(.[]; .result == "success"))' > /dev/null
