@@ -79,7 +79,6 @@ jobs:
     needs: changes
     permissions:
       contents: write
-      pages: read # configure-pages reads the Pages site while preparing the artifact
     if: >-
       ${{
         !cancelled() &&
@@ -95,7 +94,6 @@ jobs:
       queue: max
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
-      artifact_ready: ${{ steps.pages.outcome == 'success' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -105,7 +103,6 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/setup
-        id: setup
 
       - name: Run blog processor
         run: node blog-module/blog-processor.js
@@ -127,15 +124,6 @@ jobs:
         with:
           message: 'chore(blog): auto-build generated artifacts [skip ci]'
           token: ${{ github.token }}
-
-      # Reuse this checkout and npm install after the commit/rebase. Artifact
-      # preparation still runs all Pages checks and sees the resulting main tree.
-      - name: Prepare Pages from published checkout
-        id: pages
-        if: ${{ github.event_name == 'push' || steps.commit.outputs.changed == 'true' }}
-        uses: ./.github/actions/build-pages
-        with:
-          dependency_hash: ${{ steps.setup.outputs.dependency_hash }}
 
   refresh_standings_data:
     name: Refresh standings data
@@ -241,6 +229,8 @@ jobs:
           message: 'chore(data): refresh standings snapshots [skip ci]'
           token: ${{ github.token }}
 
+  # A successful blog run always deploys, even without a generated commit: Publish Article's merge is a
+  # GITHUB_TOKEN push that starts no other run, so this is the only deploy of the merged article.
   deploy:
     name: Deploy site once
     needs: [changes, publish_blog, publish_data]
@@ -253,7 +243,7 @@ jobs:
             needs.changes.result == 'success' &&
             (needs.publish_blog.result == 'success' || needs.publish_blog.result == 'skipped')
           ) ||
-          (needs.publish_blog.result == 'success' && needs.publish_blog.outputs.changed == 'true') ||
+          needs.publish_blog.result == 'success' ||
           (needs.publish_data.result == 'success' && needs.publish_data.outputs.changed == 'true')
         )
       }}
@@ -262,5 +252,3 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/deploy-pages.yml
-    with:
-      artifact_ready: ${{ needs.publish_blog.outputs.artifact_ready == 'true' }}

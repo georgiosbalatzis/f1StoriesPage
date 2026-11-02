@@ -94,7 +94,7 @@ test('deployment waits for regeneration, survives skipped jobs and stops on push
     assert.equal(condition('deploy', { event_name: 'push' }, needs, {}, true), false);
 });
 
-test('automatic, scheduled and manual publishers deploy only changed maintenance content', () => {
+test('blog publishers always deploy; data publishers deploy only changed content', () => {
     const needs = {
         changes: { result: 'skipped', outputs: {} },
         publish_blog: { result: 'success', outputs: { changed: 'true' } },
@@ -104,8 +104,9 @@ test('automatic, scheduled and manual publishers deploy only changed maintenance
     for (const event_name of ['workflow_run', 'schedule', 'workflow_dispatch']) {
         assert.equal(condition('publish_blog', { event_name }, needs, { task: 'blog' }), true);
         assert.equal(condition('deploy', { event_name }, needs), true);
+        // A merged author PR whose blog run commits nothing must still deploy the merged article.
         needs.publish_blog.outputs.changed = 'false';
-        assert.equal(condition('deploy', { event_name }, needs), false);
+        assert.equal(condition('deploy', { event_name }, needs), true);
         needs.publish_blog.outputs.changed = 'true';
     }
     needs.publish_blog = { result: 'skipped', outputs: {} };

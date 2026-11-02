@@ -1,26 +1,9 @@
 name: Prepare Pages artifact
 description: Build, validate and upload Pages using the current checkout and installed dependencies.
 
-inputs:
-  dependency_hash:
-    description: Optional hash of installed manifests, to detect a publishing rebase that changed dependencies.
-    required: false
-    default: ''
-
 runs:
   using: composite
   steps:
-    - name: Refresh dependencies if their manifests changed
-      if: inputs.dependency_hash != ''
-      shell: bash
-      env:
-        INSTALLED_HASH: ${{ inputs.dependency_hash }}
-      run: |
-        set -eu
-        if [ "$INSTALLED_HASH" != "$(git hash-object package.json package-lock.json | git hash-object --stdin)" ]; then
-          npm ci --no-audit --no-fund
-        fi
-
     - name: Read assembly mode
       id: assembly
       shell: bash
