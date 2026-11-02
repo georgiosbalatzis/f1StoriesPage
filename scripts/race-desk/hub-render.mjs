@@ -25,7 +25,7 @@ const toolRow = tool => {
 };
 const sourceRow = source => {
   const url = safeUrl(source.url);
-  const label = source.path.startsWith('data/weekends/') ? 'Πρόγραμμα στο TYRES' : source.repository === 'georgiosbalatzis/Tyres' ? 'Εγγραφή αγώνα στο TYRES' : source.repository === 'georgiosbalatzis/f1StoriesPage' ? 'Στιγμιότυπο THE GRID' : 'Εγγραφή πηγής';
+  const label = source.path.startsWith('data/weekends/') ? 'Πρόγραμμα στο TYRES' : source.repository === 'georgiosbalatzis/Tyres' ? 'Εγγραφή αγώνα στο TYRES' : source.path.startsWith('standings/rounds/') ? 'Στιγμιότυπο THE GRID' : source.path === 'docs/race-desk-r06-openf1-identity.md' ? 'Τεκμηρίωση ταυτότητας OpenF1' : 'Εγγραφή πηγής';
   return `<li><div>${url ? `<a href="${escape(url)}">${label}</a>` : '<span>Σύνδεσμος πηγής μη διαθέσιμος.</span>'}<span>Έλεγχος πηγής: <time datetime="${escape(source.reviewedAt)}">${escape(source.reviewedAt.slice(0, 10))}</time></span><details><summary>Στοιχεία τεκμηρίου</summary><span>${escape(source.id)}</span><span>Αναθεώρηση: ${escape(source.revision)}</span><span>${escape(source.path)}</span></details></div></li>`;
 };
 
