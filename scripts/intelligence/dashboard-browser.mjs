@@ -235,12 +235,11 @@ try {
         'locking removes every decrypted value');
     await finish(session, 'fresh');
 
-    if (shots) {
-        session = await open(fresh, { width: 1280, scheme: 'light' });
-        await unlock(session.page, key);
-        await session.page.screenshot({ path: path.join(shots, 'dashboard-desktop-light.png'), fullPage: true });
-        await finish(session, 'desktop light');
-    }
+    // Always run the desktop/light session for its finish() checks; only the screenshot is optional.
+    session = await open(fresh, { width: 1280, scheme: 'light' });
+    await unlock(session.page, key);
+    if (shots) await session.page.screenshot({ path: path.join(shots, 'dashboard-desktop-light.png'), fullPage: true });
+    await finish(session, 'desktop light');
 
     session = await open(legacy);
     await unlock(session.page, key);

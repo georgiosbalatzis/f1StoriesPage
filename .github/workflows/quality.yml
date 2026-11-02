@@ -12,23 +12,23 @@ concurrency:
   group: quality-${{ github.ref }}
   cancel-in-progress: true
 
+# Independent suites run as parallel jobs. Every suite job builds first, so each suite sees the same
+# built tree (generated bundles, indexes, stamped HTML, dist/) it saw when Site Quality was one job.
+# "Quality gates" is the single check that publishing (workflow_run consumers) and reviewers rely on:
+# it fails unless every suite job succeeded.
 jobs:
-  quality:
-    name: Quality gates
+  modules:
+    name: Module suites
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Compare the tested PR merge with its base parent without full history.
           fetch-depth: 2
           persist-credentials: false
 
       - uses: ./.github/actions/setup
-
-      - name: Run race desk contract tests
-        run: npm run test:race-desk
 
       - name: Classify changed files
         id: changes
@@ -36,28 +36,71 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/build/classify-quality.mjs
 
-      # PR jobs can reuse main's images, but cannot save a cache used by deployment.
-      - name: Restore optimized article images
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: .build/public-images
-          key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif', 'blog-module/blog-source-cache.json', 'blog-module/taxonomy.js', 'blog-module/media-metadata.json', 'blog-module/build/media-meta.js', 'scripts/build/social-cards.mjs', 'scripts/build/assets/*', 'docs/design-tokens.json', 'images/logo-256.webp') }}
-          restore-keys: |
-            public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
+      - uses: ./.github/actions/restore-article-images
 
       - name: Build public artifact
+        run: npm run build:public
+
+      - name: Run race desk contract tests
+        run: npm run test:race-desk
+
+      - name: Test isolated research prototype (DEMO and mocked provider only)
+        run: npm run test:research
+
+      - name: Run standings module tests
+        run: npm run test:standings
+
+      - name: Run countdown schedule tests
+        run: node --test scripts/build/__tests__/countdown-schedule.test.mjs scripts/build/__tests__/race-calendar.test.mjs
+
+      - name: Run visual focus capture regression
+        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs
+
+      - name: Run security policy tests
+        run: npm run test:security
+
+      - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
+        run: npm run test:intelligence && npm run test:dashboard:browser
+
+      - name: Run aggregate deployment gate tests
+        run: npm run test:deployment
+
+      - name: Run tablet CLS guard tests
+        run: node --test scripts/build/__tests__/tablet-cls.test.mjs
+
+      - name: Run consent and RUM regressions
         if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:consent && npm run test:rum:browser
+
+  built:
+    name: Author and publishing suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
+
+      - uses: ./.github/actions/restore-article-images
+
+      - name: Build public artifact
         run: npm run build:public
 
-      # Content-only PRs also need dist/ for artifact URL contract tests; build:public
-      # runs the same content builders plus public packaging and validation.
-      - name: Validate article content
-        if: ${{ steps.changes.outputs.content_only == 'true' }}
-        run: npm run build:public
+      - name: Run author module tests
+        run: npm run test:author
 
-      - name: Run static source guard
-        run: npm run quality:static
+      - name: Run publishing regression tests
+        run: node --test scripts/build/__tests__/social-cards.test.mjs scripts/build/__tests__/disqus-removal.test.mjs scripts/build/__tests__/public-artifact-refs.test.mjs scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs
 
       - name: Verify Race Desk navigation and offline URL compatibility
         if: ${{ steps.changes.outputs.content_only != 'true' }}
@@ -71,17 +114,34 @@ jobs:
           path: .build/race-desk-r02c/
           if-no-files-found: warn
 
-      - name: Verify static Grand Prix pilot pages
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: npm run test:race-desk:hubs -- --site dist --reports .build/race-desk-r03
-
-      - name: Upload Grand Prix pilot diagnostics
-        if: ${{ !cancelled() && steps.changes.outputs.content_only != 'true' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+  artifact:
+    name: Public artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          name: race-desk-gp-reports
-          path: .build/race-desk-r03/
-          if-no-files-found: warn
+          # Compare the tested PR merge with its base parent without full history.
+          fetch-depth: 2
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
+
+      - uses: ./.github/actions/restore-article-images
+
+      # Content-only PRs also need dist/ for artifact URL contract tests.
+      - name: Build public artifact
+        run: npm run build:public
+
+      - name: Run static source guard
+        run: npm run quality:static
 
       - name: Verify asset size budgets
         run: npm run perf:budget
@@ -97,20 +157,51 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run audit:runtime
 
-      - name: Run author module tests
-        run: npm run test:author
-
-      - name: Test isolated research prototype (DEMO and mocked provider only)
-        run: npm run test:research
-
-      - name: Run standings module tests
-        run: npm run test:standings
-
+      # Needs dist/: its URL contract tests skip artifact assertions without it.
       - name: Run blog module tests
         run: npm run test:blog
 
       - name: Verify next-race countdown
-        run: node --test scripts/build/__tests__/countdown-schedule.test.mjs scripts/build/__tests__/race-calendar.test.mjs && npm run qa:countdown -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
+        run: npm run qa:countdown -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
+
+      - name: Verify static Grand Prix pilot pages
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run test:race-desk:hubs -- --site dist --reports .build/race-desk-r03
+
+      - name: Upload Grand Prix pilot diagnostics
+        if: ${{ !cancelled() && steps.changes.outputs.content_only != 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: race-desk-gp-reports
+          path: .build/race-desk-r03/
+          if-no-files-found: warn
+
+  browser:
+    name: Browser regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
+
+      - name: Restore optimized article images
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        uses: ./.github/actions/restore-article-images
+
+      - name: Build public artifact for browser regressions
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: npm run build:public
 
       # ubuntu-latest supplies Chrome and its runtime libraries; use that browser
       # through chrome-launcher rather than downloading Playwright binaries.
@@ -118,41 +209,21 @@ jobs:
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run qa:edition
 
-      - name: Run consent and RUM regressions
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: npm run test:consent && npm run test:rum:browser
-
-      - name: Run visual focus capture regression
-        if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs
-
-      - name: Run security policy tests
-        run: npm run test:security
-
-      - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
-        run: npm run test:intelligence && npm run test:dashboard:browser
-
-      # Only this visual-review PR publishes screenshot evidence, using synthetic rows and generated keys.
-      # Never upload screenshots or unlocked dashboard content from actual production data.
-      - name: Capture I-06D visual review (synthetic only)
-        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'I-06D') }}
-        run: node scripts/intelligence/dashboard-browser.mjs --screenshots="$RUNNER_TEMP/intelligence-visual-review"
-
-      - name: Upload I-06D synthetic visual review
-        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'I-06D') }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: dashboard-i06d-visual-review
-          path: ${{ runner.temp }}/intelligence-visual-review/
-          retention-days: 7
-          if-no-files-found: error
-
-      - name: Run aggregate deployment gate tests
-        run: npm run test:deployment
-
-      - name: Run publishing regression tests
-        run: node --test scripts/build/__tests__/social-cards.test.mjs scripts/build/__tests__/disqus-removal.test.mjs scripts/build/__tests__/public-artifact-refs.test.mjs scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/public-media-integrity.test.mjs scripts/build/__tests__/media-qa.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs scripts/build/__tests__/icon-sprite.test.mjs scripts/build/__tests__/edition-prerequisites.test.mjs
-
       - name: Run tablet CLS regression (both themes, edition font swap)
         if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: node --test scripts/build/__tests__/tablet-cls.test.mjs && npm run perf:cls-tablet -- --widths 768
+        run: npm run perf:cls-tablet -- --widths 768
+
+  gates:
+    name: Quality gates
+    needs: [modules, built, artifact, browser]
+    # Always report a conclusion: a skipped or cancelled suite must never read as a pass.
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every suite job to succeed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -c 'map_values(.result)'
+          echo "$NEEDS" | jq -se 'length == 1 and (.[0] | type == "object" and keys == ["artifact", "browser", "built", "modules"] and all(.[]; .result == "success"))' > /dev/null
