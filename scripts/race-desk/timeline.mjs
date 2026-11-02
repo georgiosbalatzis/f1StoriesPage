@@ -6,7 +6,7 @@ const MAX_MESSAGE_LENGTH = 2000;
 const labels = { Flag: 'Σημαία', SafetyCar: 'Safety Car / VSC', SessionStatus: 'Κατάσταση συνεδρίας', Other: 'Μήνυμα αγωνοδιεύθυνσης' };
 const fail = message => { throw new Error(`Invalid timeline: ${message}`); };
 
-function timestamp(value) {
+export function timestamp(value) {
   if (typeof value !== 'string') fail('timestamp');
   const m = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(?:\.(\d{1,6}))?(Z|[+-]\d\d:\d\d)$/.exec(value);
   if (!m) fail('timestamp');
@@ -58,7 +58,6 @@ export function buildTimelineContext({ race, receipts, payloads, rights } = {}) 
   const meetingKey = race.sourceKeys?.openf1MeetingKey, sessionKey = raceSession?.openf1SessionKey;
   if (meetingKey == null || sessionKey == null) return { status: 'unavailable', reason: 'unmapped' };
   if (!receipts.length) return { status: 'unavailable', reason: 'uncaptured' };
-  if (rights?.providers?.openf1?.status !== 'approved') return { status: 'unavailable', reason: 'rights-unresolved' };
   const byEndpoint = new Map();
   for (const receipt of receipts) {
     if (receipt.raceId !== race.raceId || receipt.sessionKind !== 'race' || receipt.provider !== 'openf1' || !['sessions', 'race_control', 'pit'].includes(receipt.endpoint) || byEndpoint.has(receipt.endpoint)) fail('receipt identity');
@@ -100,7 +99,8 @@ export function buildTimelineContext({ race, receipts, payloads, rights } = {}) 
     });
   }
   events.sort((a, b) => a.timestampUtc < b.timestampUtc ? -1 : a.timestampUtc > b.timestampUtc ? 1 : 0);
-  const coverage = !byEndpoint.has('race_control') || !byEndpoint.has('pit') || counts.outOfWindow ? 'partial' : counts.raceControl === 0 && counts.pit === 0 ? 'empty' : 'full';
+  if (rights?.providers?.openf1?.status !== 'approved') return { status: 'unavailable', reason: 'rights-unresolved' };
+  const coverage = [...byEndpoint.values()].some(({ receipt }) => receipt.coverage === 'partial') || !byEndpoint.has('race_control') || !byEndpoint.has('pit') || counts.outOfWindow ? 'partial' : counts.raceControl === 0 && counts.pit === 0 ? 'empty' : 'full';
   for (const event of events) event.coverage = coverage === 'partial' ? 'partial' : 'full';
   const sources = [...byEndpoint.values()].map(({ receipt }) => ({ endpoint: receipt.endpoint, requestUrl: receipt.requestUrl, observedAt: receipt.observedAt, rowCount: receipt.rowCount })).sort((a, b) => a.endpoint.localeCompare(b.endpoint, 'en'));
   return { status: 'available', coverage, provider: 'openf1', session: { kind: 'race', meetingKey, sessionKey, windowStartUtc, windowEndUtc }, sources, counts, attribution: { name: 'OpenF1', url: 'https://openf1.org/', license: 'CC BY-NC-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/' }, events };
