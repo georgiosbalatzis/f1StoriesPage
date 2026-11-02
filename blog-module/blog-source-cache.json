@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261102J",
+      "title": "«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-02",
+      "dateISO": "2026-11-02",
+      "displayDate": "2 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261102J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261102J/1.webp",
+      "excerpt": "«Θα βάλει έναν μικρό πίσω από το τιμόνι της Mercedes». Αυτά ήταν λίγα ειπώθηκαν για τον μικρότερο ηλικιακά πρωταθλητή στην Formula 1.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261102J/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Kimi",
+        "Antonelli",
+        "2026",
+        "Πρωταθλητής"
+      ],
+      "wordCount": 588,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "bf5806d6e9d13abd50ec53f7d26740873449eeb6ca55ce2c4c19eab1930248f7"
+    },
+    {
       "id": "20261102W",
       "title": "Max Verstappen: Η τέχνη να κερδίζεις",
       "author": "Themis Charvalis",
@@ -11472,5 +11504,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-02T17:24:36.843Z"
+  "lastUpdated": "2026-11-02T19:44:52.965Z"
 }
