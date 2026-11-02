@@ -56,7 +56,12 @@ try {
         assert.doesNotMatch(await page.locator('#embed-footer-meta').innerText(), /Γύρο 3/);
     }
     await open('?round=0', null);
-    await open('?tab=pit-stops&season=2026&round=3', '2026-3');
+    // An explicit unusable season must not be shown as another season's pinned round.
+    for (const season of ['9999', 'abc']) await open(`?season=${season}&round=3`, null);
+    await open('?tab=pit-stops&season=2026&round=3&pitRound=16', '2026-3');
+    assert.equal(await page.locator('#round-badge.is-visible').count(), 0, 'pinned championship badge hidden on other reports');
+    await page.locator('[data-tab="drivers"]').first().click();
+    assert.equal(await page.locator('#round-badge.is-visible #round-num').innerText(), '3');
     // A valid different season must be requested rather than silently using this year.
     requests.length = 0;
     await Promise.all([page.waitForResponse(response => response.url().includes('/rounds/2025-3.json')), page.goto(`${origin}/standings/?season=2025&round=3`)]);

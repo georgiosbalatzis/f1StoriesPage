@@ -435,10 +435,12 @@ function updateStandingsReportContext(tabName) {
         selectorShell.setAttribute('data-active-report', detail.label);
         selectorShell.setAttribute('aria-label', 'Active report: ' + detail.label);
     }
+    // A pinned championship round describes the standings tables only, so other reports hide its badge.
+    const championship = !pinnedRound || LIGHTWEIGHT_TABS.includes(tabName);
+    document.getElementById('round-badge').classList.toggle('is-visible', !!latestStandingsRound && championship);
     if (!standingsReportMetaStatus) return;
     const seasonEl = document.getElementById('season-year');
     const roundEl = document.getElementById('round-num');
-    const championship = !pinnedRound || LIGHTWEIGHT_TABS.includes(tabName);
     const season = championship && seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
     const round = championship && roundEl && roundEl.textContent ? roundEl.textContent : '';
     standingsReportMetaStatus.textContent = detail.note + ' · Σεζόν ' + season + (round ? ' · Γύρος ' + round : '');
@@ -1188,10 +1190,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     }
 
     document.getElementById('season-year').textContent = season || YEAR;
-    if (round) {
-        document.getElementById('round-badge').classList.add('is-visible');
-        document.getElementById('round-num').textContent = round;
-    }
+    if (round) document.getElementById('round-num').textContent = round;
     updateStandingsReportContext(activeStandingsTab);
     refreshEmbedFooter();
 

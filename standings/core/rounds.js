@@ -12,14 +12,14 @@ function toInt(value) {
     return /^\d{1,4}$/.test(String(value == null ? '' : value).trim()) ? parseInt(value, 10) : NaN;
 }
 
-// -> { season, round } as strings when `round` is a usable number, otherwise null (not pinned).
+// -> { season, round } as strings when `round` and any explicit `season` are usable, otherwise null (not pinned).
+// An unusable explicit season is not pinned: showing another season's round would mislabel it.
 export function parseRoundPin(search, currentYear) {
     const params = new URLSearchParams(search || '');
     const round = toInt(params.get('round'));
-    if (!(round >= 1 && round <= MAX_ROUND)) return null;
-    const season = toInt(params.get('season'));
-    const validSeason = season >= FIRST_SEASON && season <= currentYear + 1 ? season : currentYear;
-    return { season: String(validSeason), round: String(round) };
+    const season = toInt(params.has('season') ? params.get('season') : currentYear);
+    if (!(round >= 1 && round <= MAX_ROUND && season >= FIRST_SEASON && season <= currentYear + 1)) return null;
+    return { season: String(season), round: String(round) };
 }
 
 export function roundSnapshotUrl(season, round) {
