@@ -5,6 +5,14 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 export const ORIGIN = 'https://f1-stories.gr';
+
+export function seedImageCache(source, destination) {
+    if (!fs.existsSync(source)) return;
+    fs.cpSync(source, destination, {
+        recursive: true,
+        filter: file => path.basename(file) !== 'report.json' && !fs.lstatSync(file).isSymbolicLink(),
+    });
+}
 // application, repository, canonical path, output directory: the reviewed ownership map.
 export const EXPECTED = [
     ['main', 'georgiosbalatzis/f1StoriesPage', '/', 'dist'],

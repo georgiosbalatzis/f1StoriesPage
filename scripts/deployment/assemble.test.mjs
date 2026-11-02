@@ -6,7 +6,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
-import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, seedImageCache } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
 import { verifyPublic } from './verify-public.mjs';
@@ -224,12 +224,34 @@ test('a release with unmet readiness conditions is refused; local and dry-run re
 });
 
 const read = rel => fs.readFileSync(path.join(here, '../..', rel), 'utf8');
+test('image cache seeding copies entries without reports or outside writes', t => {
+    const root = fixture(t, {
+        'source/image.webp': 'image', 'source/report.json': 'stale',
+        'source/social-cards/card.jpg': 'card', 'source/social-cards/report.json': 'stale',
+        'outside/keep': 'untouched',
+    });
+    const source = path.join(root, 'source'), destination = path.join(root, 'snapshot/.build/public-images');
+    fs.symlinkSync(path.join(root, 'outside'), path.join(source, 'link'));
+    seedImageCache(path.join(root, 'missing'), destination);
+    assert.equal(fs.existsSync(destination), false);
+    seedImageCache(source, destination);
+    assert.equal(fs.readFileSync(path.join(destination, 'image.webp'), 'utf8'), 'image');
+    assert.equal(fs.readFileSync(path.join(destination, 'social-cards/card.jpg'), 'utf8'), 'card');
+    for (const file of ['report.json', 'social-cards/report.json', 'link']) assert.equal(fs.existsSync(path.join(destination, file)), false);
+    assert.equal(fs.readFileSync(path.join(root, 'outside/keep'), 'utf8'), 'untouched');
+    assert.equal(fs.readFileSync(path.join(source, 'report.json'), 'utf8'), 'stale');
+});
+
 test('the dry run cannot publish, and the publisher never builds a rehearsal', () => {
     const dryRun = read('.github/workflows/aggregate-dry-run.yml');
     assert.doesNotMatch(dryRun, /uses:\s*actions\/(?:deploy-pages|upload-pages-artifact|configure-pages)|uses:\s*\.\/\.github\/(?:workflows\/deploy-pages|actions\/build-pages)|pages:\s*write|id-token|contents:\s*write/);
     assert.match(dryRun, /permissions:\n  contents: read\n/);
     assert.match(dryRun, /build:ecosystem -- --rehearsal --node-bin "\$F1S_NODE_BIN"/);
     assert.match(dryRun, /rehearsal: 'true'/);
+    assert.match(dryRun, /- uses: \.\/\.github\/actions\/restore-article-images\n\s+- name: Build the pinned aggregate \(rehearsal\)/);
+    const restore = read('.github/actions/restore-article-images/action.yml');
+    assert.match(restore, /uses: actions\/cache\/restore@/);
+    assert.doesNotMatch(dryRun + restore, /actions\/cache@|actions\/cache\/save@/);
     for (const publisher of ['.github/actions/build-pages/action.yml', '.github/workflows/deploy-pages.yml', '.github/workflows/publish-blog.yml']) {
         assert.doesNotMatch(read(publisher), /--rehearsal|--local|--allow-dirty|rehearsal: 'true'/, publisher);
     }
