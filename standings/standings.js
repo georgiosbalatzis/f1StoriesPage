@@ -435,14 +435,14 @@ function updateStandingsReportContext(tabName) {
         selectorShell.setAttribute('data-active-report', detail.label);
         selectorShell.setAttribute('aria-label', 'Active report: ' + detail.label);
     }
-    // A pinned championship round describes the standings tables only, so other reports hide its badge.
+    // A pinned championship round describes the standings tables only; other reports show the current
+    // season without its badge. Readers use latestStandingsSeason, never this header text.
     const championship = !pinnedRound || LIGHTWEIGHT_TABS.includes(tabName);
-    document.getElementById('round-badge').classList.toggle('is-visible', !!latestStandingsRound && championship);
+    const season = championship && latestStandingsSeason || String(YEAR);
+    const round = championship ? latestStandingsRound : '';
+    document.getElementById('season-year').textContent = season;
+    document.getElementById('round-badge').classList.toggle('is-visible', !!round);
     if (!standingsReportMetaStatus) return;
-    const seasonEl = document.getElementById('season-year');
-    const roundEl = document.getElementById('round-num');
-    const season = championship && seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
-    const round = championship && roundEl && roundEl.textContent ? roundEl.textContent : '';
     standingsReportMetaStatus.textContent = detail.note + ' · Σεζόν ' + season + (round ? ' · Γύρος ' + round : '');
 }
 
@@ -689,9 +689,8 @@ function refreshEmbedFooter() {
     const link = document.getElementById('embed-footer-link');
     if (!meta || !link) return;
 
-    const seasonEl = document.getElementById('season-year');
     const roundEl = document.getElementById('round-num');
-    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const season = latestStandingsSeason || String(YEAR);
     const round = roundEl && roundEl.textContent ? roundEl.textContent.trim() : '';
     const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
     const isStandingsTarget = SHARE_TARGETS[target] && LIGHTWEIGHT_TABS.includes(SHARE_TARGETS[target].tab);
@@ -1182,14 +1181,13 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     // Same standings from a new source (the snapshot confirmed live): only the "Πηγή" summary
     // cards change, so the tables and their headshots are left in place.
     if (sameStandings) {
-        const seasonText = document.getElementById('season-year').textContent || YEAR;
+        const seasonText = latestStandingsSeason || YEAR;
         renderDriverStandingsPolish(dStandings, latestStandingsMeta, seasonText);
         if (cStandings.length) renderConstructorStandingsPolish(cStandings, teamDriverCodes(dStandings), latestStandingsMeta, seasonText);
         acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
         return true;
     }
 
-    document.getElementById('season-year').textContent = season || YEAR;
     if (round) document.getElementById('round-num').textContent = round;
     updateStandingsReportContext(activeStandingsTab);
     refreshEmbedFooter();
@@ -1350,7 +1348,7 @@ function renderDrivers(standings, openf1Map) {
     }
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    renderDriverStandingsPolish(standings, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    renderDriverStandingsPolish(standings, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Οδηγός / Ομάδα');
 
     standings.forEach(function(s, index) {
@@ -1446,7 +1444,7 @@ function renderConstructors(standings, driverStandings) {
     const teamDrivers = teamDriverCodes(driverStandings);
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Κατασκευαστής / Οδηγοί');
 
     standings.forEach(function(s, index) {

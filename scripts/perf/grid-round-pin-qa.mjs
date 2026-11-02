@@ -62,6 +62,21 @@ try {
     assert.equal(await page.locator('#round-badge.is-visible').count(), 0, 'pinned championship badge hidden on other reports');
     await page.locator('[data-tab="drivers"]').first().click();
     assert.equal(await page.locator('#round-badge.is-visible #round-num').innerText(), '3');
+    // Another season's pin labels only the championship tables; other reports keep the current season.
+    // No 2025 round snapshot is committed, so serve 2026 round 3 relabelled as 2025.
+    const fixture = JSON.parse(fs.readFileSync(path.join(root, 'standings/rounds/2026-3.json')));
+    for (const key of ['driverStandings', 'constructorStandings']) {
+        const table = fixture[key].MRData.StandingsTable;
+        table.season = table.StandingsLists[0].season = '2025';
+    }
+    await page.route('**/standings/rounds/2025-3.json', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(fixture) }));
+    await page.goto(`${origin}/standings/?tab=pit-stops&season=2025&round=3&pitRound=16`);
+    await page.waitForFunction(() => document.getElementById('round-num').textContent === '3' && !!document.querySelector('#drivers-table .st-row'));
+    assert.equal(await page.locator('#season-year').innerText(), '2026');
+    assert.equal(await page.locator('#round-badge.is-visible').count(), 0);
+    await page.locator('[data-tab="drivers"]').first().click();
+    assert.equal(await page.locator('#season-year').innerText(), '2025');
+    assert.equal(await page.locator('#round-badge.is-visible #round-num').innerText(), '3');
     // A valid different season must be requested rather than silently using this year.
     requests.length = 0;
     await Promise.all([page.waitForResponse(response => response.url().includes('/rounds/2025-3.json')), page.goto(`${origin}/standings/?season=2025&round=3`)]);
