@@ -211,7 +211,8 @@ try {
         const actual = await paceDetails.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.children].map(cell => cell.textContent.trim())));
         assert.deepEqual(actual.map(row => [row[0], row[2]]), expected.map(lap => [String(lap.lap_number), lap.lap_duration === null ? 'Μη διαθέσιμος' : formatTime(lap.lap_duration)]), `driver #${driver} lap times`);
       }
-      const overview = await tables.first().locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.children].map(cell => cell.textContent.trim())));
+      // The driver header spans that driver's stint rows (scope=rowgroup): carry it onto every row.
+      const overview = await tables.first().locator('tbody tr').evaluateAll(rows => { let driver = ''; return rows.map(row => { const cells = [...row.children].map(cell => cell.textContent.trim()); if (row.firstElementChild.tagName === 'TH') driver = cells.shift(); return [driver, ...cells]; }); });
       const sortedStints = [...paceStints].sort((a, b) => a.driver_number - b.driver_number || a.stint_number - b.stint_number);
       assert.equal(overview.length, sortedStints.length);
       for (const [index, stint] of sortedStints.entries()) {
@@ -268,7 +269,8 @@ try {
     for (const value of privateEvidence) assert.ok(!html.includes(value), 'editorial evidence must not appear in page source');
     for (const value of timelinePrivate) assert.ok(!html.includes(value), 'timeline provenance must not appear in page source');
     for (const value of pacePrivate) assert.ok(!html.includes(value), 'pace provenance must not appear in page source');
-    assert.doesNotMatch(html, /\b[a-f0-9]{64}\b|openf1-\d+-(?:laps|stints|drivers|pit|race_control|sessions)|https?:\/\/api\.openf1\.org\/v1\//i, 'provider provenance must not appear in page source');
+    // The Sources section intentionally cites the official schedule capture digest; the pace section must carry none.
+    assert.doesNotMatch(await pace.evaluate(node => node.outerHTML), /\b[a-f0-9]{64}\b|openf1-\d+-(?:laps|stints|drivers|pit|race_control|sessions)|https?:\/\/api\.openf1\.org\/v1\//i, 'provider provenance must not appear in the pace section');
     const resultRegion = page.locator('.gp-results-table-wrap').first();
     if (await resultRegion.count()) {
       assert.ok(await page.locator('.gp-results-hint').first().isVisible());
