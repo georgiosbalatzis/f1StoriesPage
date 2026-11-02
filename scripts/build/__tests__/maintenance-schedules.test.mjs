@@ -96,6 +96,23 @@ test('one week has four data refreshes without offset-only runs', () => {
     }
 });
 
+test('TYRES Pages refreshes run every 6 h Thursday–Monday and once a day Tuesday–Wednesday (UTC)', () => {
+    const crons = [...pages.matchAll(/- cron: '([^']+)'(\n\s+timezone:)?/g)];
+    assert.ok(crons.every(([, , timezone]) => !timezone), 'Pages schedules are UTC');
+    const perDay = Array(7).fill(0);
+    for (let hour = 0; hour < 7 * 24; hour++) {
+        const day = Math.floor(hour / 24), h = hour % 24;
+        for (const [, cron] of crons) {
+            const [minute, hours, dom, month, days] = cron.split(' ');
+            assert.equal(`${minute} ${dom} ${month}`, '41 * *', cron);
+            const hourMatch = hours.startsWith('*/') ? h % Number(hours.slice(2)) === 0 : hours.split(',').map(Number).includes(h);
+            if (hourMatch && days.split(',').map(Number).includes(day)) perDay[day]++;
+        }
+    }
+    // Sunday..Saturday
+    assert.deepEqual(perDay, [4, 4, 1, 1, 4, 4, 4]);
+});
+
 test('every maintenance and Pages runner job has a bounded timeout', () => {
     for (const [workflow, names] of [
         [maintenance, ['changes', 'publish_blog', 'refresh_youtube', 'refresh_standings_data', 'publish_data']],

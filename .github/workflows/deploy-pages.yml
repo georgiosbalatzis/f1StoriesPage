@@ -10,10 +10,12 @@ on:
         default: false
   # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
-  # TYRES refreshes schedules and forecasts every 6 h. Once aggregation is enabled the primary site
-  # rebuilds on that cadence; until then scheduled runs stop at the gate below.
+  # Each aggregate build refreshes TYRES schedules and forecasts. Owner cadence (2026-11-02): every 6 h
+  # Thursday–Monday (race weekends), once a day Tuesday–Wednesday. Scheduled runs stop at the gate below
+  # unless aggregation is enabled.
   schedule:
-    - cron: '41 */6 * * *'
+    - cron: '41 */6 * * 0,1,4,5,6'
+    - cron: '41 6 * * 2,3'
 
 # Granted per job: only the deploy job can publish Pages or mint an OIDC token.
 permissions: {}
