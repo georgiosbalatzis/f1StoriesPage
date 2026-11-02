@@ -286,7 +286,7 @@ queries. Deploy repaired main if needed and keep all key material private.
 Equal headers with different SHA-256 envelope digests instead produce immediate critical publication/Pages divergence.
 **Diagnosis:** compare `https://f1-stories.gr/dashboard/data/snapshot.json` metadata and canonical-envelope digest with main and the relevant
 **Deploy Pages artifact** job. A successful dispatch or gate is not proof of deployment or endpoint version.
-The Deploy Pages schedule `41 */6 * * *` has a **Scheduled refresh gate** controlled by
+The Deploy Pages TYRES schedule (every 6 h Thursday–Monday, daily Tuesday–Wednesday) has a **Scheduled refresh gate** controlled by
 `scripts/deployment/sources.json` `enabled`; do not rely on it to repair the snapshot. **Recovery:** dispatch
 **Deploy Pages** on `main`, wait for deployment, then recheck public metadata and digest without credentials or decryption.
 Do not regenerate an already correct repository snapshot.
