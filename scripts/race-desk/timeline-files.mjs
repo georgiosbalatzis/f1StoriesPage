@@ -1,7 +1,7 @@
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
 import { readBounded } from './capture-files.mjs';
 import { verifyCapture } from './capture.mjs';
+import { buildTimelineContext } from './timeline.mjs';
 
 const fail = message => { throw new Error(`Timeline archive: ${message}`); };
 const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).sort().join('\0') === [...expected].sort().join('\0');
@@ -26,7 +26,7 @@ export function readTimelineInventory(root, registry) {
     if (!text(race?.raceId) || races.has(race.raceId)) fail('invalid registry race');
     races.set(race.raceId, race);
   }
-  const ids = new Set(), pairs = new Set(), paths = new Set(), payloads = Object.create(null);
+  const ids = new Set(), pairs = new Set(), paths = new Set(), payloads = new Map();
   for (const receipt of inventory.captures) {
     if (!keys(receipt, fields) || receipt.schemaVersion !== 1 || !text(receipt.captureId) || receipt.provider !== 'openf1' || !endpoints.includes(receipt.endpoint) || receipt.sessionKind !== 'race' || receipt.synthetic !== false || !/^[a-f0-9]{40}$/.test(receipt.codeRevision ?? '') || receipt.httpStatus !== 200 || !Number.isSafeInteger(receipt.rowCount) || receipt.rowCount < 0 || !['full', 'partial', 'empty', 'invalid'].includes(receipt.coverage) || !Array.isArray(receipt.coverageReasons) || !receipt.coverageReasons.every(text) || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z$/.test(receipt.observedAt ?? '') || !Number.isFinite(Date.parse(receipt.observedAt))) fail('invalid receipt');
     const race = races.get(receipt.raceId), sessions = race?.sessions?.filter(session => session.kind === 'race');
@@ -46,14 +46,12 @@ export function readTimelineInventory(root, registry) {
     } else {
       if (!keys(receipt.returnedIdentity, ['meeting_key', 'session_key']) || receipt.returnedIdentity.meeting_key !== meetingKey || receipt.returnedIdentity.session_key !== sessionKey || rows.some(row => row?.meeting_key !== meetingKey || row?.session_key !== sessionKey)) fail('identity mismatch');
     }
-    payloads[receipt.captureId] = rows;
+    payloads.set(receipt.captureId, rows);
   }
-  return { receipts: inventory.captures, payloads, rights: rights.providers };
+  return { receipts: inventory.captures, payloads, rights };
 }
 
 export function readTimelineContexts(root, registry) {
   const { receipts, payloads, rights } = readTimelineInventory(root, registry);
-  // Terra B supplies this module when the lanes are integrated.
-  const { buildTimelineContext } = createRequire(import.meta.url)('./timeline.mjs');
   return new Map(registry.races.map(race => [race.raceId, buildTimelineContext({ race, receipts: receipts.filter(item => item.raceId === race.raceId), payloads, rights })]));
 }

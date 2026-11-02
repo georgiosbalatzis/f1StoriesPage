@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readTimelineInventory } from '../timeline-files.mjs';
+import { readTimelineInventory, readTimelineContexts } from '../timeline-files.mjs';
 import { captureOpenF1 } from '../capture-openf1.mjs';
 
 const rights = JSON.parse(fs.readFileSync('data/race-desk/publication-rights.v1.json'));
@@ -48,4 +48,21 @@ test('rejects unmapped race before fetch and rejects symlinked capture', async t
   assert.throws(() => readTimelineInventory(root, registry), /unsafe path/);
 });
 
-test.todo('readTimelineContexts end-to-end after Terra B timeline.mjs is integrated');
+test('readTimelineContexts builds a synthetic context end to end and the production inventory is unmapped', async t => {
+  const root = fixture(t);
+  // Synthetic rows only: a session window and one row per endpoint, plus one race-control row before the window.
+  const rows = {
+    sessions: [{ meeting_key: 11, session_key: 22, session_name: 'Race', session_type: 'Race', date_start: '2026-01-01T12:00:00+00:00', date_end: '2026-01-01T14:00:00+00:00' }],
+    race_control: [{ meeting_key: 11, session_key: 22, date: '2026-01-01T11:00:00+00:00', lap_number: 1, category: 'Other', flag: null, scope: null, sector: null, driver_number: null, qualifying_phase: null, message: 'SYNTHETIC PRE-START' },
+      { meeting_key: 11, session_key: 22, date: '2026-01-01T12:30:00+00:00', lap_number: 9, category: 'SafetyCar', flag: null, scope: null, sector: null, driver_number: null, qualifying_phase: null, message: 'SYNTHETIC VSC DEPLOYED' }],
+    pit: [{ meeting_key: 11, session_key: 22, date: '2026-01-01T12:31:00.250000+00:00', lap_number: 10, driver_number: 7, lane_duration: 21.5, pit_duration: 21.5, stop_duration: 2.4 }],
+  };
+  await captureOpenF1({ root, registry, raceId: 'synthetic-race', codeRevision: 'a'.repeat(40), clock: () => new Date('2026-01-02T00:00:00Z'),
+    fetch: async url => ({ status: 200, url, arrayBuffer: async () => Buffer.from(JSON.stringify(rows[new URL(url).pathname.split('/').pop()])) }) });
+  const context = readTimelineContexts(root, registry).get('synthetic-race');
+  assert.equal(context.status, 'available'); assert.equal(context.coverage, 'partial');
+  assert.deepEqual(context.counts, { raceControl: 2, pit: 1, outOfWindow: 1, duplicates: 0 });
+  assert.deepEqual(context.events.map(e => [e.eventType, e.timestampUtc]), [['race-control-observation', '2026-01-01T12:30:00.000000Z'], ['pit-lane-visit', '2026-01-01T12:31:00.250000Z']]);
+  const real = JSON.parse(fs.readFileSync('data/race-desk/registry.v1.json'));
+  assert.ok([...readTimelineContexts(process.cwd(), real).values()].every(c => c.status === 'unavailable' && c.reason === 'unmapped'));
+});
