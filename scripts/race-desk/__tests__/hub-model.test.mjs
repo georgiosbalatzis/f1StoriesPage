@@ -55,6 +55,7 @@ test('relocation retains identity and incomplete, unmapped sessions remain truth
   claim(race, 'venue.name').value = race.venue.name;
   for (const key of Object.keys(race.sourceKeys)) race.sourceKeys[key] = null;
   race.evidence = race.evidence.filter(c => !c.field.startsWith('sourceKeys.'));
+    for (const session of race.sessions) { session.openf1SessionKey = null; session.evidence = session.evidence.filter(c => c.field !== 'openf1SessionKey'); }
   race.sessions = race.sessions.slice(0, 2);
   for (const session of race.sessions) {
     session.startUtc = null;
@@ -116,6 +117,7 @@ test('all races without provider mappings remain generic and season identities s
   for (const race of data.races) {
     for (const key of Object.keys(race.sourceKeys)) race.sourceKeys[key] = null;
     race.evidence = race.evidence.filter(c => !c.field.startsWith('sourceKeys.'));
+    for (const session of race.sessions) { session.openf1SessionKey = null; session.evidence = session.evidence.filter(c => c.field !== 'openf1SessionKey'); }
   }
   const models = make(data);
   assert.ok(models.every(model => model.tools.every(tool => tool.kind === 'generic')));

@@ -16,7 +16,7 @@ const writeJson = (file, value) => fs.writeFileSync(file, JSON.stringify(value))
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-hubs-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const rel of ['data/race-desk/editorial.v1.json', 'blog-module/blog-source-cache.json', ...['20261012W', '20261008J', '20261031J'].flatMap(id => [`blog-module/blog-entries/${id}/source.txt`, `blog-module/blog-entries/${id}/article.html`]), 'data/race-desk/results.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
+  for (const rel of ['data/race-desk/editorial.v1.json', 'blog-module/blog-source-cache.json', ...['20261012W', '20261008J', '20261031J'].flatMap(id => [`blog-module/blog-entries/${id}/source.txt`, `blog-module/blog-entries/${id}/article.html`]), 'data/race-desk/results.v1.json', 'data/race-desk/timeline.v1.json', 'data/race-desk/publication-rights.v1.json', 'data/race-desk/captures', ...[2, 3, 14, 15, 16, 17].map(round => `standings/rounds/2026-${round}.json`), registryPath, 'data/race-desk/hub-evidence.v1.json', lockPath, 'partials']) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }
@@ -45,6 +45,20 @@ test('generates six exact pages, discovery and stable bytes without touching unk
     const ids = [...section.matchAll(/blog-entries\/(\d+[A-Z])\/article.html/g)].map(match => match[1]);
     assert.deepEqual(ids, item.path.includes('2026-singapore-gp') ? ['20261012W', '20261008J'] : item.path.includes('2026-mexican-gp') ? ['20261031J'] : []);
     if (!ids.length) assert.doesNotMatch(section, /<ol class="race-desk-stories"/);
+    const timeline = html.match(/<section class="race-desk-section gp-timeline"[\s\S]*?<\/section>/)[0];
+    if (item.path.includes('2026-singapore-gp')) {
+      const list = timeline.match(/<ol class="gp-timeline-list"[^>]*>([\s\S]*?)<\/ol>/)[1];
+      assert.equal((list.match(/<li>/g) || []).length, 172);
+      assert.match(timeline, /155 μηνύματα αγωνοδιεύθυνσης, 25 διελεύσεις από το pit lane, 8 εκτός παραθύρου συνεδρίας/);
+      assert.match(timeline, /href="https:\/\/openf1\.org\/"/);
+      assert.match(timeline, /href="https:\/\/creativecommons\.org\/licenses\/by-nc-sa\/4\.0\/"/);
+    } else assert.match(timeline, /Δεν υπάρχει εγκεκριμένη αντιστοίχιση πηγής για αυτόν τον αγώνα\./);
+    const numbers = [...html.matchAll(/<p class="race-desk-kicker">(\d\d) \/ /g)].map(match => Number(match[1]));
+    assert.equal(numbers.length, html.includes('02 / ΑΠΟΤΕΛΕΣΜΑΤΑ') ? 6 : 5);
+    assert.deepEqual(numbers, numbers.map((_, i) => i + 1));
+    const allIds = [...html.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
+    assert.equal(new Set(allIds).size, allIds.length);
+
   }
   assert.ok(before.every(html => html.includes('<!-- @include:begin partials/nav.html -->')));
   registry.races.reverse(); registry.sources.reverse(); writeJson(registryFile, registry);
@@ -173,4 +187,13 @@ test('invalid editorial selection leaves existing pages and home unchanged', asy
     assert.deepEqual(result.map(item => page(root, item)), before);
     assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
   }
+});
+
+test('timeline capture drift leaves existing pages and home byte-identical', async t => {
+  const root = fixture(t), result = await writeRaceDeskHubs(root, 2026, { today: '2026-11-02' });
+  const before = result.map(item => fs.readFileSync(path.join(root, item.file))), home = fs.readFileSync(path.join(root, 'index.html'));
+  fs.appendFileSync(path.join(root, 'data/race-desk/captures/openf1/11388-pit.response'), 'x');
+  await assert.rejects(writeRaceDeskHubs(root, 2026, { today: '2026-11-02' }));
+  assert.deepEqual(result.map(item => fs.readFileSync(path.join(root, item.file))), before);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'index.html')), home);
 });

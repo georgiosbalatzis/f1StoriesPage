@@ -428,7 +428,7 @@ test("source lock matches reviewed origin, application paths and pinned revision
   }
 });
 
-test("real seed produces exact TYRES and Grid links while OpenF1 remains unmapped", () => {
+test("real seed produces exact TYRES and Grid links and requires session scope for mapped Singapore", () => {
   const cases = [
     [
       "2026-japanese-gp",
@@ -474,7 +474,7 @@ test("real seed produces exact TYRES and Grid links while OpenF1 remains unmappe
         target,
         target === "telemetry" ? { currentYear: 2026 } : {},
       );
-      assert.deepEqual(link, result("missing", "openf1-meeting-unmapped"));
+      assert.deepEqual(link, result("missing", raceId === "2026-singapore-gp" ? "session-unmapped" : "openf1-meeting-unmapped"));
       assert.equal(Object.hasOwn(link, "url"), false);
     }
     if (!grid) assert.equal(Object.hasOwn(gridResult, "url"), false);
