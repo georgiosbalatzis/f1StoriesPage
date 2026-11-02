@@ -2,6 +2,7 @@
 // Browser acceptance of an existing public or assembled artifact. No build or provider data is fetched.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -55,12 +56,24 @@ const timelineCount = ['race_control', 'pit'].reduce((total, endpoint) => {
   return total + unique.size;
 }, 0);
 assert.ok(timelineCount > 0, 'Singapore pilot must contain observations');
-const timelinePrivate = ['timeline.v1.json', 'data/race-desk/captures', ...timelineInventory.captures.map(item => item.sha256)];
+const timelinePrivate = ['timeline.v1.json', 'data/race-desk/captures', ...timelineInventory.captures.flatMap(item => [item.sha256, item.captureId, item.requestUrl])];
 const paceInventory = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/pace.v1.json')));
 const pacePrivate = ['pace.v1.json', 'timelineBindings', 'reasonCodes', ...paceInventory.captures.flatMap(item => [item.sha256, item.captureId, item.requestUrl])];
-// Singapore's receipted laps response: one lap-table row per distinct (driver, lap) key.
-const paceLaps = (() => { const receipt = paceInventory.captures.find(item => item.raceId === '2026-singapore-gp' && item.endpoint === 'laps'); assert.ok(receipt, 'Singapore pace laps receipt'); return JSON.parse(fs.readFileSync(path.join(repo, receipt.path))); })();
+// Read and pin the actual receipt bytes independently of the pace implementation.
+const pacePayload = endpoint => {
+  const receipts = paceInventory.captures.filter(item => item.raceId === '2026-singapore-gp' && item.endpoint === endpoint);
+  assert.equal(receipts.length, 1, `one Singapore ${endpoint} capture`);
+  const receipt = receipts[0], bytes = fs.readFileSync(path.join(repo, receipt.path));
+  assert.equal(bytes.length, receipt.bytes);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), receipt.sha256);
+  const rows = JSON.parse(bytes); assert.equal(rows.length, receipt.rowCount); return rows;
+};
+const paceLaps = pacePayload('laps'), paceStints = pacePayload('stints');
 const paceDrivers = [...new Set(paceLaps.map(row => row.driver_number))].sort((a, b) => a - b);
+const uncertainDrivers = [...new Set(timelinePayload('pit').filter(pit => !paceStints.some(stint => stint.driver_number === pit.driver_number && stint.lap_end === pit.lap_number) || !paceStints.some(stint => stint.driver_number === pit.driver_number && stint.lap_start === pit.lap_number + 1)).map(pit => pit.driver_number))].sort((a, b) => a - b);
+// The three observed pit visits without a stint boundary belong to #6, #14 and #18.
+assert.deepEqual(uncertainDrivers, [6, 14, 18]);
+const formatTime = seconds => `${new Intl.NumberFormat('el-GR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(Math.floor(seconds * 1000 + 0.5 + 1e-9) / 1000)} s`;
 const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 // TYRES override circuit.name at code/data snapshot 50e5f50be89e038257cbe3426b366810e0c1f59a.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
@@ -177,7 +190,7 @@ try {
     const pace = page.locator('section.gp-pace[aria-labelledby="gp-pace-title"]');
     assert.equal(await page.locator('section.gp-pace').count(), 1); assert.equal(await pace.count(), 1);
     assert.equal(await pace.locator('h2').innerText(), 'Ρυθμός αγώνα & stints');
-    assert.doesNotMatch(await pace.textContent(), /\b(?:null|undefined|NaN)\b/i);
+    assert.doesNotMatch(await pace.textContent(), /\b(?:null|undefined|NaN|Infinity)\b/i);
     assert.equal(await pace.locator('script, svg, img, canvas, [onclick]').count(), 0);
     if (model.raceId === '2026-singapore-gp') {
       const paceDetails = pace.locator('details.gp-pace-details');
@@ -189,6 +202,33 @@ try {
       assert.ok(await tables.evaluateAll(nodes => nodes.every(table => table.querySelector(':scope > caption')?.textContent.trim() && [...table.querySelectorAll('th')].every(th => ['col', 'row', 'rowgroup'].includes(th.getAttribute('scope'))))), 'pace tables need captions and scoped headers');
       assert.equal(await pace.locator('details.gp-pace-details tbody tr').count(), paceLaps.length);
       assert.ok(await pace.locator('.gp-pace-table-wrap[role="region"][tabindex="0"][aria-label]').count() === 1 + paceDrivers.length);
+      const labels = await pace.locator('.gp-pace-table-wrap').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')));
+      assert.ok(labels.every(Boolean) && new Set(labels).size === labels.length, 'pace region labels must be unique');
+      const summaries = await paceDetails.locator('summary').allTextContents();
+      assert.ok(summaries.every(text => text.trim()) && new Set(summaries).size === summaries.length, 'pace summary labels must be unique');
+      for (const [index, driver] of paceDrivers.entries()) {
+        const expected = paceLaps.filter(lap => lap.driver_number === driver).sort((a, b) => a.lap_number - b.lap_number);
+        const actual = await paceDetails.nth(index).locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.children].map(cell => cell.textContent.trim())));
+        assert.deepEqual(actual.map(row => [row[0], row[2]]), expected.map(lap => [String(lap.lap_number), lap.lap_duration === null ? 'Μη διαθέσιμος' : formatTime(lap.lap_duration)]), `driver #${driver} lap times`);
+      }
+      const overview = await tables.first().locator('tbody tr').evaluateAll(rows => rows.map(row => [...row.children].map(cell => cell.textContent.trim())));
+      const sortedStints = [...paceStints].sort((a, b) => a.driver_number - b.driver_number || a.stint_number - b.stint_number);
+      assert.equal(overview.length, sortedStints.length);
+      for (const [index, stint] of sortedStints.entries()) {
+        const row = overview[index], driver = stint.driver_number;
+        assert.match(row[0], new RegExp(`^#${driver}\\b`));
+        assert.deepEqual(row.slice(1, 5), [String(stint.stint_number), stint.compound, String(stint.tyre_age_at_start), `${stint.lap_start}–${stint.lap_end}`], `driver #${driver} stint metadata`);
+        const laps = paceLaps.filter(lap => lap.driver_number === driver && lap.lap_number >= stint.lap_start && lap.lap_number <= stint.lap_end);
+        const times = laps.map(lap => lap.lap_duration).filter(value => typeof value === 'number' && Number.isFinite(value) && value > 0).sort((a, b) => a - b);
+        assert.equal(row[6], `${laps.length} / ${times.length}`, `driver #${driver} stint counts`);
+        if (uncertainDrivers.includes(driver)) {
+          assert.deepEqual(row.slice(7, 9), ['Μη διαθέσιμος', 'Μη διαθέσιμος'], `driver #${driver} uncertain stint`);
+        } else {
+          assert.ok(times.length, `driver #${driver} stint has timed laps`);
+          const middle = Math.floor(times.length / 2), median = times.length % 2 ? times[middle] : (times[middle - 1] + times[middle]) / 2;
+          assert.deepEqual(row.slice(7, 9), [`${formatTime(median)} (n=${times.length})`, `${formatTime(times[0])} (n=${times.length})`], `driver #${driver} stint summary`);
+        }
+      }
       const paceText = await pace.innerText();
       for (const phrase of ['Δεν αποτελούν σύγκριση οδηγών ή γομών.', 'Δεν παρουσιάζεται δείγμα επιβεβαιωμένων καθαρών γύρων.', 'επιλέξιμοι: 0', 'Ανεπίσημη πηγή, χωρίς σύνδεση με τη Formula 1.']) assert.ok(paceText.includes(phrase), phrase);
       const source = pace.locator('p.gp-pace-source');
@@ -228,6 +268,7 @@ try {
     for (const value of privateEvidence) assert.ok(!html.includes(value), 'editorial evidence must not appear in page source');
     for (const value of timelinePrivate) assert.ok(!html.includes(value), 'timeline provenance must not appear in page source');
     for (const value of pacePrivate) assert.ok(!html.includes(value), 'pace provenance must not appear in page source');
+    assert.doesNotMatch(html, /\b[a-f0-9]{64}\b|openf1-\d+-(?:laps|stints|drivers|pit|race_control|sessions)|https?:\/\/api\.openf1\.org\/v1\//i, 'provider provenance must not appear in page source');
     const resultRegion = page.locator('.gp-results-table-wrap').first();
     if (await resultRegion.count()) {
       assert.ok(await page.locator('.gp-results-hint').first().isVisible());
