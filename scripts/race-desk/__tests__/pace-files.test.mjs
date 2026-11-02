@@ -31,6 +31,8 @@ test('binding requires all exact timeline pins and rejects duplicate bindings an
     x => { x.inventory.timelineBindings[0].sources[0].endpoint = 'pit'; },
     x => { x.inventory.captures = []; },
     x => { x.inventory.captures.push(structuredClone(x.inventory.captures[0])); },
+    x => { const other = receipt('drivers'); other.path = x.inventory.captures[0].path; x.inventory.captures.push(other); },
+    x => { x.timeline.receipts[0].raceId = 'synthetic-other'; },
     x => { x.inventory.captures[0].path = 'data/race-desk/captures/openf1/../escape.response'; },
     x => { x.inventory.captures[0].rowCount = 2; },
     x => { x.inventory.captures[0].bytes++; },
@@ -51,7 +53,7 @@ test('partial coverage is accepted while source bytes remain pinned', () => {
 });
 
 test('pace modules do not import perf or review probe material', () => {
-  for (const file of ['scripts/race-desk/pace-files.mjs', 'scripts/race-desk/capture-openf1-pace.mjs']) {
-    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /(?:perf\/|scratchpad\/)/);
+  for (const file of ['scripts/race-desk/pace-files.mjs', 'scripts/race-desk/capture-openf1-pace.mjs', 'scripts/race-desk/pace.mjs']) {
+    assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /(?:perf\/|scratchpad)/);
   }
 });
