@@ -43,6 +43,7 @@ jobs:
         run: |
           mkdir -p "$REPORTS"
           { echo "node=$(node --version)"; echo "node_extra=$("${F1S_NODE_BIN#*=}/node" --version)"; echo "runner=$ImageOS $ImageVersion"; } | tee "$REPORTS/toolchain.txt"
+      - uses: ./.github/actions/restore-article-images
       - name: Build the pinned aggregate (rehearsal)
         id: build
         run: npm run build:ecosystem -- --rehearsal --node-bin "$F1S_NODE_BIN" --output "$SITE" --reports "$REPORTS"

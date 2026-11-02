@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { assemble, prepareMain } from './assemble.mjs';
-import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, treeDigest } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, seedImageCache, treeDigest } from './release.mjs';
 
 const mainRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
@@ -100,6 +100,7 @@ try {
                 command('npm', ['run', app.data.refresh], snapshot, false, node.env);
                 metadata.data.refresh.digest = treeDigest(snapshot, app.data.paths);
             }
+            if (app.application === 'main') seedImageCache(path.join(mainRoot, '.build/public-images'), path.join(snapshot, '.build/public-images'));
             command('npm', ['run', app.build], snapshot, false, node.env);
             if (app.application === 'main') {
                 // The publisher's release gates verify this build's image and social-card reports in the

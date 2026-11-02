@@ -60,6 +60,8 @@ test('ready artifacts skip building but failed, cancelled or unprepared builds c
 
 test('both preparation modes retain validation and upload only validated dist', () => {
     assert.match(job(pages, 'build'), /uses: \.\/\.github\/actions\/build-pages/);
+    assert.match(preparation, /- name: Reuse optimized article images\n\s+uses: actions\/cache@/);
+    assert.ok(preparation.indexOf('name: Reuse optimized article images') < preparation.indexOf('name: Build pinned aggregate artifact'));
     assert.match(preparation, /run: npm run build:public/);
     assert.match(preparation, /run: npm run quality:static/);
     assert.match(preparation, /run: npm run audit:runtime/);

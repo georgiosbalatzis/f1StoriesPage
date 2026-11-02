@@ -27,7 +27,6 @@ runs:
       run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
 
     - name: Reuse optimized article images
-      if: steps.assembly.outputs.enabled != 'true'
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .build/public-images
