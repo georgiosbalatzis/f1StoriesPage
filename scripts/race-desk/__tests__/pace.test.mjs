@@ -87,3 +87,103 @@ test('missing feeds, invalid intervals and reported tyre metadata remain visible
   let c = build({ stints: [] }); assert.equal(c.drivers[0].stints.length, 0); assert.ok(c.drivers[0].coverageReasons.includes('stints-missing')); assert.ok(c.drivers[0].laps[1].reasonCodes.includes('stint-unassigned'));
   c = build({ stints: [stint(1, 3, 1, { compound: null, tyre_age_at_start: null })] }); assert.equal(c.drivers[0].stints[0].integrity, 'inconsistent'); assert.equal(c.drivers[0].stints[0].rawSummary, null); assert.equal(c.drivers[0].stints[0].tyreAgeAtStart, null);
 });
+
+test('out-of-window control rows do not imply partial source coverage', () => {
+  const c = build({ race_control: [{ ...id, date: '2026-01-01T11:59:00Z' }] });
+  // One control row falls before the session.
+  assert.equal(c.normalization.outOfWindowControlRows, 1);
+  assert.ok(!c.coverageReasons.includes('source-partial'));
+  const x = input(); x.receipts.find(r => r.endpoint === 'laps').coverage = 'partial';
+  assert.ok(buildPaceContext(x).coverageReasons.includes('source-partial'));
+});
+
+test('all provider row orderings preserve diagnostics apart from source references', () => {
+  const rows = {
+    drivers: [{ ...id, driver_number: 6, full_name: 'A' }, { ...id, driver_number: 6, full_name: 'B' }, { ...id, driver_number: 6, full_name: 'A' }],
+    laps: [lap(1), lap(1), lap(2, { lap_duration: null }), lap(2, { lap_duration: NaN }), lap(3, { date_start: 'bad' })],
+    stints: [stint(2, 2, 3), stint(1, 1, 1), stint(1, 1, 1)],
+    pit: [{ ...id, driver_number: 6, lap_number: 1 }, { ...id, driver_number: 6, lap_number: 2 }],
+    race_control: [{ ...id, date: '2026-01-01T11:59:00Z' }, { ...id, date: '2026-01-01T12:01:00Z' }]
+  };
+  const clean = c => { for (const d of c.diagnostics) delete d.sourceRefs; return c; };
+  const reversed = Object.fromEntries(Object.entries(rows).map(([key, value]) => [key, [...value].reverse()]));
+  assert.deepEqual(clean(build(rows)), clean(build(reversed)));
+});
+
+test('roster union keeps number identities separate and validates numbers', () => {
+  const c = build({ drivers: [{ ...id, driver_number: 6, name_acronym: 'SYN' }, { ...id, driver_number: 8, name_acronym: 'SYN' }, { ...id, driver_number: 9, name_acronym: 'ONLY' }], laps: [lap(1), lap(2, { driver_number: 7 })], stints: [stint(1, 1, 1), stint(1, 1, 3, { driver_number: 8 })] });
+  partition(c);
+  // Union of roster 6,8,9 and lap driver 7 has four separate numbers.
+  assert.deepEqual(c.drivers.map(d => d.driverNumber), [6, 7, 8, 9]);
+  assert.equal(c.drivers[1].identity, 'missing'); assert.equal(c.drivers[1].name, null);
+  // Driver 7 has no reported stints: zero rows.
+  assert.equal(c.drivers[1].stints.length, 0); assert.ok(c.drivers[1].laps[0].reasonCodes.includes('stint-unassigned'));
+  assert.equal(c.drivers[2].coverage, 'empty'); assert.equal(c.drivers[2].stints[0].coverage, 'empty');
+  assert.equal(c.drivers[3].coverage, 'empty'); assert.equal(c.drivers[0].acronym, c.drivers[2].acronym);
+  for (const endpoint of ['drivers', 'laps', 'stints']) for (const number of [0, 100, '7']) {
+    const x = input(); x.payloads.get(`synthetic-${endpoint}`)[0].driver_number = number;
+    assert.throws(() => buildPaceContext(x), /driver number/);
+  }
+});
+
+test('duration variants, sector tolerance and timestamp uncertainty', () => {
+  const missing = lap(2); delete missing.lap_duration;
+  const noDate = lap(10); delete noDate.date_start;
+  const c = build({ laps: [lap(1, { lap_duration: null }), missing, lap(3, { lap_duration: '100' }), lap(4, { lap_duration: NaN }), lap(5, { lap_duration: Infinity }), lap(6, { lap_duration: 0 }), lap(7, { lap_duration: -1 }), lap(8, { duration_sector_1: 30, duration_sector_2: 30, duration_sector_3: 40.003 }), lap(9, { duration_sector_1: 30, duration_sector_2: 30, duration_sector_3: 40.0031 }), noDate, lap(11, { duration_sector_1: 30, duration_sector_2: 30 }), lap(12, { duration_sector_1: 0, date_start: 'bad' }), lap(13, { date_start: '2026-01-01T15:00:00Z' })], stints: [stint(1, 1, 13)] });
+  partition(c);
+  for (const [index, code] of [[0, 'duration-null'], [1, 'duration-missing'], [2, 'duration-invalid-type'], [3, 'duration-nonfinite'], [4, 'duration-nonfinite'], [5, 'duration-nonpositive'], [6, 'duration-nonpositive']]) assert.ok(c.drivers[0].laps[index].reasonCodes.includes(code));
+  assert.ok(!c.drivers[0].laps[7].reasonCodes.includes('sector-sum-mismatch')); assert.ok(c.drivers[0].laps[8].reasonCodes.includes('sector-sum-mismatch'));
+  assert.ok(!c.drivers[0].laps[10].reasonCodes.includes('sector-sum-mismatch')); assert.ok(c.drivers[0].laps[11].reasonCodes.includes('sector-invalid'));
+  for (const [index, code] of [[9, 'lap-start-missing'], [11, 'lap-start-invalid'], [12, 'lap-start-outside-session']]) { assert.equal(c.drivers[0].laps[index].eligibility, 'UNKNOWN'); assert.ok(c.drivers[0].laps[index].reasonCodes.includes(code)); }
+});
+
+test('stint gaps, metadata and pit visits remain reported without inferred splits', () => {
+  const c = build({ laps: [lap(1), lap(2), lap(3, { is_pit_out_lap: true }), lap(5), lap(7)], pit: [{ ...id, driver_number: 6, lap_number: 2 }], stints: [stint(4, 7, 7, { compound: null, tyre_age_at_start: -1 }), stint(1, 1, 3, { compound: 'UNKNOWN', tyre_age_at_start: 0 }), stint(3, 5, 5, { compound: 'hard', tyre_age_at_start: null })] });
+  partition(c);
+  // Observed 1,2,3,5,7 leaves two single-lap gaps: 4 and 6.
+  assert.deepEqual(c.drivers[0].missingLapRanges, [{ from: 4, to: 4 }, { from: 6, to: 6 }]);
+  assert.deepEqual(c.drivers[0].stints.map(s => s.stintNumber), [1, 3, 4]);
+  assert.deepEqual(c.drivers[0].stints.map(s => s.compound), [null, null, null]);
+  assert.deepEqual(c.drivers[0].stints.map(s => s.tyreAgeAtStart), [0, null, null]);
+  assert.ok(c.drivers[0].coverageReasons.includes('stint-gap')); assert.equal(c.drivers[0].stints[0].integrity, 'unverified');
+  assert.deepEqual(c.drivers[0].stints[0].pitInLaps, [2]);
+});
+
+test('exclusions precede unknown reasons and summaries retain extreme timed laps', () => {
+  const c = build({ laps: [lap(1, { lap_duration: null, is_pit_out_lap: true, date_start: 'bad' }), lap(2), lap(3, { lap_duration: 300 })] }); partition(c);
+  assert.equal(c.drivers[0].laps[0].eligibility, 'EXCLUDED');
+  assert.deepEqual(c.drivers[0].laps[0].reasonCodes, ['duration-null', 'opening-lap', 'pit-out', 'lap-start-invalid']);
+  // Two timed observations, 100 and 300 s: minimum 100000 ms; median requires three.
+  assert.deepEqual(c.drivers[0].stints[0].rawSummary, { count: 2, minMs: 100000, medianMs: null });
+  // Two values, 2 and 4 s: minimum 2000 ms; median requires three.
+  assert.deepEqual(summarizeDurations([4, 2]), { count: 2, minMs: 2000, medianMs: null });
+});
+
+test('missing required receipts and null mapping keys return unavailable', () => {
+  for (const endpoint of ['sessions', 'laps']) { const x = input(); x.receipts = x.receipts.filter(r => r.endpoint !== endpoint); assert.equal(buildPaceContext(x).reason, 'uncaptured'); }
+  const x = input(); x.race.sessions[0].openf1SessionKey = null; assert.equal(buildPaceContext(x).reason, 'unmapped');
+});
+
+test('each synthetic unsupported boundary stays unverified without splitting at the pit', () => {
+  for (const [number, pitLap] of [[6, 33], [14, 35], [18, 26]]) {
+    const c = build({ drivers: [{ ...id, driver_number: number }], laps: [lap(1, { driver_number: number }), lap(pitLap, { driver_number: number }), lap(pitLap + 1, { driver_number: number, is_pit_out_lap: true })], pit: [{ ...id, driver_number: number, lap_number: pitLap }], stints: [stint(2, 2, pitLap + 1, { driver_number: number }), stint(1, 1, 1, { driver_number: number })] });
+    partition(c); assert.deepEqual(c.drivers[0].stints.map(s => s.integrity), ['unverified', 'unverified']);
+    // The lap after the pit remains assigned to the reported second stint: 2.
+    assert.deepEqual(c.drivers[0].stints[1].pitInLaps, [pitLap]); assert.equal(c.drivers[0].laps[2].stintNumber, 2);
+  }
+});
+
+test('conflicting null and each nonfinite duration never collapse', () => {
+  for (const value of [NaN, Infinity, -Infinity]) {
+    const c = build({ laps: [lap(2, { lap_duration: null }), lap(2, { lap_duration: value })] });
+    // Two variants at one key produce one conflict and one observed lap.
+    assert.equal(c.normalization.conflictingLapKeys, 1); assert.equal(c.counts.observed, 1);
+    assert.equal(c.drivers[0].laps[0].durationMs, null); assert.ok(c.drivers[0].laps[0].reasonCodes.includes('lap-conflict'));
+  }
+});
+
+test('a 300 second outlier remains in a three-lap raw median', () => {
+  const c = build({ laps: [lap(1, { lap_duration: 100 }), lap(2, { lap_duration: 300 }), lap(3, { lap_duration: 200 })] });
+  // Sorted 100, 200, 300 s: minimum 100000 ms and median 200000 ms.
+  assert.deepEqual(c.drivers[0].stints[0].rawSummary, { count: 3, minMs: 100000, medianMs: 200000 });
+});

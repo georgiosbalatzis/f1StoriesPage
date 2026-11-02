@@ -64,7 +64,7 @@ export function buildPaceContext({ race, receipts, payloads, rights } = {}) {
   for (const row of by.get('pit')?.rows ?? []) { if (!integer(row.driver_number) || row.driver_number > 99 || !integer(row.lap_number)) fail('pit identity'); driverMap.get(row.driver_number)?.pits.add(row.lap_number); }
   for (const row of by.get('race_control')?.rows ?? []) { const t = time(row.date); if (t < windowStartUtc || t > windowEndUtc) outOfWindowControlRows++; }
   const sourceReasons = new Set();
-  if (outOfWindowControlRows || [...by.values()].some(x => x.receipt.coverage === 'partial')) sourceReasons.add('source-partial');
+  if ([...by.values()].some(x => x.receipt.coverage === 'partial')) sourceReasons.add('source-partial');
   for (const endpoint of ['stints', 'drivers', 'pit']) if (!by.has(endpoint) || (endpoint !== 'pit' && !by.get(endpoint).rows.length)) sourceReasons.add(`${endpoint}-missing`);
   if (!by.get('laps').rows.length) sourceReasons.add('laps-missing');
   const drivers = [], allLaps = [], raceReasons = new Set(sourceReasons);
