@@ -119,3 +119,15 @@ body.race-desk-page .cookie-details:not([open]) ~ .cookie-actions .accept-select
 body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .75rem; }
 @media (min-width: 768px) { body.race-desk-page .cookie-consent { left: auto; right: 2rem; bottom: 2rem; width: min(390px, calc(100vw - 2rem)); } }
 @media (max-width: 767.98px) { body.race-desk-page .cookie-consent { right: 0; width: 100%; } body.race-desk-page .cookie-content { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); } }
+
+/* R-06 race timeline */
+.gp-timeline-counts, .gp-timeline-source { color: var(--text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
+.gp-timeline-source { font-size: .85rem; }
+.gp-timeline-details summary { cursor: pointer; overflow-wrap: anywhere; }
+.gp-timeline-details summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+.gp-timeline-list { margin: 1rem 0 0; padding: 0; list-style: none; }
+.gp-timeline-list li { padding: 1.4rem 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+.gp-timeline-list p { margin: 0 0 .35rem; }
+.gp-timeline-meta { color: var(--text-secondary); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.gp-timeline-label { font-weight: 600; }
+.gp-timeline-detail { line-height: 1.6; }
