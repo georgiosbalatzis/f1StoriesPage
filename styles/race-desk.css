@@ -132,3 +132,13 @@ body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16
 .gp-timeline-meta { color: var(--text-secondary); font-size: .85rem; font-variant-numeric: tabular-nums; }
 .gp-timeline-label { font-weight: 600; }
 .gp-timeline-detail { line-height: 1.6; }
+
+.gp-pace .gp-pace-hint { display: block; margin: 1.25rem 0 .5rem; }
+.gp-pace .gp-pace-table-wrap { max-width: 100%; }
+.gp-pace .gp-pace-table-wrap table { min-width: 760px; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.gp-pace .gp-pace-table-wrap caption { text-align: left; font-weight: 700; margin-bottom: .5rem; }
+.gp-pace .gp-pace-table-wrap th, .gp-pace .gp-pace-table-wrap td { padding: .6rem .75rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.gp-pace .gp-pace-details { border-top: 1px solid var(--border); padding: 1rem 0; }
+.gp-pace .gp-pace-details summary { cursor: pointer; overflow-wrap: anywhere; }
+.gp-pace .gp-pace-details summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+.gp-pace .gp-pace-source { color: var(--text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
