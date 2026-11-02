@@ -7,7 +7,16 @@ const fail = message => { throw new Error(`Timeline archive: ${message}`); };
 const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).sort().join('\0') === [...expected].sort().join('\0');
 const text = value => typeof value === 'string' && value.trim().length > 0;
 const positive = value => Number.isSafeInteger(value) && value > 0;
-const endpoints = ['sessions', 'race_control', 'pit'];
+const timelineEndpoints = ['sessions', 'race_control', 'pit'];
+// validateBatch checks receipts for both inventories; each reader restricts its own endpoints.
+const endpoints = [...timelineEndpoints, 'laps', 'stints', 'drivers'];
+const legacyOpenF1 = ['status', 'decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution'];
+const paceKeys = ['status', 'decidedBy', 'decidedOn', 'raceId', 'sessionKind', 'meetingKey', 'sessionKey', 'endpoints', 'uses'];
+const sameSet = (value, expected) => Array.isArray(value) && value.length === expected.length && new Set(value).size === value.length && expected.every(item => value.includes(item));
+const calendarDay = value => typeof value === 'string' && /^\d{4}-\d\d-\d\d$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+// R-07 pace scope is recorded separately from the R-06 provider approval; absent means unresolved.
+const paceValid = pace => keys(pace, paceKeys) && ['approved', 'unresolved'].includes(pace.status) && text(pace.decidedBy) && calendarDay(pace.decidedOn) && text(pace.raceId)
+  && pace.sessionKind === 'race' && positive(pace.meetingKey) && positive(pace.sessionKey) && sameSet(pace.endpoints, ['laps', 'stints', 'drivers']) && sameSet(pace.uses, ['stints', 'compounds', 'lap-times', 'descriptive-pace']);
 const fields = ['schemaVersion', 'captureId', 'provider', 'endpoint', 'raceId', 'sessionKind', 'requestUrl', 'query', 'finalUrl', 'observedAt', 'httpStatus', 'path', 'sha256', 'bytes', 'rowCount', 'returnedIdentity', 'coverage', 'coverageReasons', 'codeRevision', 'synthetic'];
 export const openF1Url = (endpoint, sessionKey) => `https://api.openf1.org/v1/${endpoint}?session_key=${sessionKey}`;
 
@@ -19,7 +28,8 @@ export function readTimelineInventory(root, registry) {
   if (!keys(inventory, ['schemaVersion', 'captures']) || inventory.schemaVersion !== 1 || !Array.isArray(inventory.captures)) fail('invalid inventory');
   if (!keys(rights, ['schemaVersion', 'providers']) || rights.schemaVersion !== 1 || !keys(rights.providers, ['openf1', 'jolpica'])) fail('invalid rights');
   const openf1 = rights.providers.openf1, jolpica = rights.providers.jolpica;
-  if (!keys(openf1, ['status', 'decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution']) || !['approved', 'unresolved'].includes(openf1.status) || !['decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution'].every(key => text(openf1[key])) || !/^\d{4}-\d\d-\d\d$/.test(openf1.decidedOn) || openf1.license !== 'CC BY-NC-SA 4.0' || openf1.licenseUrl !== 'https://creativecommons.org/licenses/by-nc-sa/4.0/' || openf1.terms !== 'https://openf1.org/' || openf1.attribution !== 'OpenF1' || !keys(jolpica, ['status', 'note']) || !['approved', 'unresolved'].includes(jolpica.status) || !text(jolpica.note)) fail('invalid provider rights');
+  if (!(keys(openf1, legacyOpenF1) || (keys(openf1, [...legacyOpenF1, 'pace']) && paceValid(openf1.pace))) || !['approved', 'unresolved'].includes(openf1.status) || !['decidedBy', 'decidedOn', 'license', 'licenseUrl', 'terms', 'attribution'].every(key => text(openf1[key])) || !/^\d{4}-\d\d-\d\d$/.test(openf1.decidedOn) || openf1.license !== 'CC BY-NC-SA 4.0' || openf1.licenseUrl !== 'https://creativecommons.org/licenses/by-nc-sa/4.0/' || openf1.terms !== 'https://openf1.org/' || openf1.attribution !== 'OpenF1' || !keys(jolpica, ['status', 'note']) || !['approved', 'unresolved'].includes(jolpica.status) || !text(jolpica.note)) fail('invalid provider rights');
+  if (!inventory.captures.every(receipt => timelineEndpoints.includes(receipt?.endpoint))) fail('invalid receipt');
   const payloads = validateBatch(inventory.captures, registry, receipt => readBounded(base, receipt.path, MAX_CAPTURE_BYTES));
   return { receipts: inventory.captures, payloads, rights };
 }
