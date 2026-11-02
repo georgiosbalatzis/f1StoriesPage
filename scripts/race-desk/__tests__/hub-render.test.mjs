@@ -55,6 +55,16 @@ test('escapes supplied data and suppresses unsafe links', () => {
   assert.match(html, /Σύνδεσμος πηγής μη διαθέσιμος/);
 });
 
+test('labels each main-repository source by what it is, not by repository', () => {
+  const race = model(), grid = race.sources.find(source => source.path.startsWith('standings/rounds/'));
+  const blob = path => `https://github.com/georgiosbalatzis/f1StoriesPage/blob/0000000000000000000000000000000000000000/${path}`;
+  for (const path of ['docs/race-desk-r06-openf1-identity.md', 'data/race-desk/other.json']) race.sources.push({ ...grid, id: path, path, url: blob(path) });
+  const html = renderHub(race), label = path => html.match(new RegExp(`<a href="[^"]*/${path}">([^<]+)</a>`))?.[1];
+  assert.equal(label(grid.path), 'Στιγμιότυπο THE GRID');
+  assert.equal(label('docs/race-desk-r06-openf1-identity.md'), 'Τεκμηρίωση ταυτότητας OpenF1');
+  assert.equal(label('data/race-desk/other.json'), 'Εγγραφή πηγής');
+});
+
 test('preserves recorded sprint order, null times and unavailable selections', () => {
   const race = model();
   race.displayName = 'Bahrain GP in Malaysia';
