@@ -34,8 +34,9 @@
 .race-desk-tools, .race-desk-sources, .race-desk-stories { margin: 0; padding: 0; list-style: none; }
 .race-desk-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3rem; }
 .race-desk-tools li, .race-desk-sources li, .race-desk-stories li { padding: 1.4rem 0; border-top: 1px solid var(--border); }
-.race-desk-tools h3, .race-desk-stories h3 { margin: 0 0 .5rem; font-family: var(--font-brand); font-size: 1.8rem; }
-.race-desk-stories h3 { overflow-wrap: anywhere; }
+.race-desk-tools h3 { margin: 0 0 .5rem; font-family: var(--font-brand); font-size: 1.8rem; }
+/* Article titles are mostly Greek; Barlow Condensed has no Greek glyphs. */
+.race-desk-stories h3 { margin: 0 0 .5rem; font-family: var(--font-editorial); font-size: clamp(1.2rem, 2vw, 1.45rem); font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
 .race-desk-stories time { color: var(--text-secondary); font-size: .85rem; }
 .race-desk-page a { color: inherit; }
 .race-desk-tools a, .race-desk-sources a, .race-desk-stories a { text-decoration-thickness: 1px; text-underline-offset: .2em; }
