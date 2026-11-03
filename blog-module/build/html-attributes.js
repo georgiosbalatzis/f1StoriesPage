@@ -58,7 +58,8 @@ function readAttributes(html, i) {
 }
 
 // Opening ({ name, attrs, unresolved, start: index of `<` }) and closing ({ name, close: true }) tags in document order.
-function tags(html) {
+// With { comments: true } also real comments as { comment: text, start, end } (end is the index after `-->`).
+function tags(html, { comments = false } = {}) {
     const out = [];
     const n = html.length;
     let i = 0;
@@ -67,7 +68,9 @@ function tags(html) {
             // `<!-->` and `<!--->` close at once, as in HTML.
             const abrupt = /^<!---?>/.exec(html.slice(i, i + 6));
             const end = abrupt ? -1 : html.indexOf('-->', i + 4);
-            i = abrupt ? i + abrupt[0].length : end < 0 ? n : end + 3;
+            const next = abrupt ? i + abrupt[0].length : end < 0 ? n : end + 3;
+            if (comments) out.push({ comment: abrupt ? '' : html.slice(i + 4, end < 0 ? n : end), start: i, end: next });
+            i = next;
         } else if (/^<[!?]/.test(html.slice(i, i + 2)) || /^<\/[^a-z]/i.test(html.slice(i, i + 3))) {
             const end = html.indexOf('>', i); // doctype and bogus comments
             i = end < 0 ? n : end + 1;

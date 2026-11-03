@@ -19,28 +19,37 @@ function journeyHtml(selected, articleId) {
 const BEGIN = '<!-- f1s:journey:begin -->';
 const END = '<!-- f1s:journey:end -->';
 
-// The region lives only directly before the real pit-wall tag (found by the tokenizer, so a marker or anchor string in a
-// comment, script or textarea is body text and never touched). Separators sit inside the markers, so removing the
-// region restores the page byte for byte. Returns { at, from } (region start, pit-wall start) or null without a pit wall.
-function journeyRegion(html) {
-    const pits = tags(html).filter(tag => !tag.close && tag.name === 'section' && (tag.attrs.class || '').split(/\s+/).includes('rr-pitwall'));
-    if (pits.length !== 1) return null;
-    const at = pits[0].start;
-    if (!html.slice(0, at).endsWith(END)) return { at, from: at };
-    const from = html.lastIndexOf(BEGIN, at - END.length);
-    if (from < 0) throw new Error('Malformed journey region');
-    return { at, from };
-}
-
-function withJourney(html, component) {
-    const region = journeyRegion(html);
-    if (!region) {
-        if (component) throw new Error('Journey requires exactly one rr-pitwall section');
-        return html;
+// Markers and the pit wall are found with the tokenizer, so their strings inside scripts, textareas, attributes or other
+// comments are body text and never touched. Returns the [start, end) ranges of the real marker pairs; an unpaired real
+// marker throws.
+function journeyRegions(html) {
+    const ranges = [];
+    let open = null;
+    for (const token of tags(html, { comments: true })) {
+        if (token.comment === BEGIN.slice(4, -3)) {
+            if (open) throw new Error('Malformed journey region');
+            open = token;
+        } else if (token.comment === END.slice(4, -3)) {
+            if (!open) throw new Error('Malformed journey region');
+            ranges.push([open.start, token.end]);
+            open = null;
+        }
     }
-    const head = html.slice(0, region.from);
-    const indent = /[\t ]*$/.exec(head)[0];
-    return head + (component ? `${BEGIN}\n${component}\n${indent}${END}` : '') + html.slice(region.at);
+    if (open) throw new Error('Malformed journey region');
+    return ranges;
 }
 
-module.exports = { BEGIN, END, journeyHtml, journeyRegion, withJourney };
+// Strips every real region wherever it is (a withdrawn journey leaves nothing, whatever the anchors), then inserts the
+// component directly before the single pit wall. Separators sit inside the markers: stripping restores the page bytes.
+function withJourney(html, component) {
+    let stripped = html;
+    for (const [start, end] of journeyRegions(html).reverse()) stripped = stripped.slice(0, start) + stripped.slice(end);
+    if (!component) return stripped;
+    const pits = tags(stripped).filter(tag => !tag.close && tag.name === 'section' && (tag.attrs.class || '').split(/\s+/).includes('rr-pitwall'));
+    if (pits.length !== 1) throw new Error('Journey requires exactly one rr-pitwall section');
+    const head = stripped.slice(0, pits[0].start);
+    const indent = /[\t ]*$/.exec(head)[0];
+    return `${head}${BEGIN}\n${component}\n${indent}${END}${stripped.slice(pits[0].start)}`;
+}
+
+module.exports = { BEGIN, END, journeyHtml, journeyRegions, withJourney };

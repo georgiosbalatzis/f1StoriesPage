@@ -1110,7 +1110,7 @@ export function validateJourneys(errors, { distRoot = DIST_ROOT, selected, today
         const data = JSON.parse(fs.readFileSync(path.join(distRoot, 'blog-module/blog-index-data.json'), 'utf8'));
         (data.p || []).forEach(row => dates.set(row[0], row[3]));
     } catch (error) { errors.push(`journeys: cannot read blog-index-data.json (${error.message})`); }
-    const begin = '<!-- f1s:journey:begin -->', end = '<!-- f1s:journey:end -->';
+    const { BEGIN: begin, END: end } = journeyRender;
     const seen = new Set();
     // Actual and expected text get the same whitespace folding (a double space in an approved title is valid).
     const fold = value => value.replace(/\s+/g, ' ').trim();
@@ -1118,18 +1118,23 @@ export function validateJourneys(errors, { distRoot = DIST_ROOT, selected, today
     const visit = (abs, file) => {
         if (!/\.html$/i.test(file)) return;
         const html = fs.readFileSync(abs, 'utf8');
-        const starts = html.split(begin).length - 1, ends = html.split(end).length - 1;
         const member = members.get(file);
-        if (!member) {
-            if (starts || ends) errors.push(`${file}: journey region on non-member`);
+        if (member) seen.add(file);
+        // Real marker comments only (the renderer's locator); marker strings in scripts or text are body content.
+        let regions;
+        try { regions = journeyRender.journeyRegions(html); } catch (error) {
+            errors.push(`${file}: ${error.message}`);
             return;
         }
-        seen.add(file);
-        if (starts !== 1 || ends !== 1 || html.indexOf(end) < html.indexOf(begin)) {
+        if (!member) {
+            if (regions.length) errors.push(`${file}: journey region on non-member`);
+            return;
+        }
+        if (regions.length !== 1) {
             errors.push(`${file}: expected exactly one journey region`);
             return;
         }
-        const start = html.indexOf(begin), finish = html.indexOf(end) + end.length;
+        const [start, finish] = regions[0];
         const region = html.slice(start + begin.length, finish - end.length);
         const before = htmlAttributes.tags(html.slice(0, start));
         let articleDepth = 0;

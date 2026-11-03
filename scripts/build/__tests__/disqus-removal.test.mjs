@@ -3,12 +3,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { removeRetiredComments } from '../remove-retired-comments.mjs';
 import { CONTENT_SECURITY_POLICY, securityHeadersText } from '../security-policy.mjs';
 import { JS_INPUTS } from '../asset-sources.mjs';
+import { stamperWorkspace } from './stamper-workspace.mjs';
 
 const ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 const require = createRequire(import.meta.url);
@@ -67,31 +67,13 @@ test('a new source-backed article has no comments and retains content, SEO, shar
 });
 
 test('the real stamper cleans source-less historical HTML without a comments manifest entry and is byte-stable', t => {
-    const root = workspace(t);
-    const copy = rel => {
-        fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
-        fs.copyFileSync(path.join(ROOT, rel), path.join(root, rel));
-    };
-    for (const rel of ['stamp-html.mjs', 'article-editorial.mjs', 'article-scope.mjs', 'remove-retired-comments.mjs', 'asset-manifest.json']) copy(`scripts/build/${rel}`);
-    for (const rel of ['hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) copy(`scripts/race-desk/${rel}`);
-    copy('scripts/deployment/release.mjs');
-    fs.mkdirSync(path.join(root, 'data/race-desk'), { recursive: true });
-    copy('data/race-desk/registry.v1.json');
-    copy('data/race-desk/hub-evidence.v1.json');
-    copy('blog-module/build/youtube-facade.js');
-    copy('images/icons/sprite.svg');
-    const manifest = JSON.parse(fs.readFileSync(path.join(root, 'scripts/build/asset-manifest.json')));
+    const { root, manifest, stamp: run } = stamperWorkspace(t, 'f1s-no-comments-');
     assert.ok(!manifest.files['blog-module/blog/article-comments.js']);
-    for (const info of Object.values(manifest.files)) if (info.min) copy(info.min);
     const dir = path.join(root, 'blog-module/blog-entries/historical');
     fs.mkdirSync(dir, { recursive: true });
     const article = path.join(dir, 'article.html');
     fs.writeFileSync(article, `<!doctype html>\n<html><head><meta charset="utf-8"><title>Historical headline</title></head><body>\n<p>Original historical editorial text.</p>\n${sponsors}${retired}${next}<script defer src="/blog-module/blog/article-script.min.js"></script>\n</body></html>\n`);
-    const stamp = () => {
-        const result = spawnSync(process.execPath, ['scripts/build/stamp-html.mjs'], { cwd: root, encoding: 'utf8' });
-        assert.equal(result.status, 0, result.stderr);
-        return fs.readFileSync(article, 'utf8');
-    };
+    const stamp = () => { run(); return fs.readFileSync(article, 'utf8'); };
     const first = stamp();
     assert.doesNotMatch(first, forbidden);
     assert.ok(first.includes(sponsors + next), 'no empty wrapper or divider between sponsors and NEXT UP');

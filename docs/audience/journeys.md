@@ -95,12 +95,14 @@ topic links and the prev/next band are written, inserts or replaces the componen
 stale component, so a withdrawn journey disappears on the next build. Files are written only when they change. With no
 eligible journey the public artifact is byte-identical to the base.
 
-A region is recognised only directly before the real pit-wall tag (located with the shared HTML tokenizer), so marker or
-pit-wall strings inside comments, scripts or textareas are left alone. Every separator sits inside the markers: removing
+Markers and the pit wall are located with the shared HTML tokenizer: only real marker comments count, so marker or
+pit-wall strings inside scripts, textareas, attributes or other comments are left alone, and an unpaired real marker
+stops the build. Every real region is stripped wherever it sits (zero or several pit walls, whitespace around it); a new
+component is inserted only directly before a page's single pit wall. Every separator sits inside the markers: removing
 the region restores the page byte for byte.
 
-`validate-public-artifact` checks the actual `dist/`, after stamping: the component appears exactly once on each eligible
-member and nowhere else (any marker string on a non-member fails, so the check errs towards a false alarm); inside it, n
+`validate-public-artifact` checks the actual `dist/`, after stamping, with the same locator: the component appears exactly
+once on each eligible member and nowhere else; inside it, n
 list entries, n−1 links in authored order (whole URLs), one current step in the right place, the right wording; the
 region is byte-identical to the renderer's output for the approved selection; every member is a published, direct,
 indexable article.

@@ -70,6 +70,21 @@ test('requires the pit wall for insertion and rejects incomplete markers', () =>
     assert.throws(() => withJourney('<article></article>', '<div>journey</div>'), /rr-pitwall/);
     assert.throws(() => withJourney('<section class="rr-pitwall"></section><section class="rr-pitwall"></section>', '<div>j</div>'), /rr-pitwall/);
     assert.throws(() => withJourney('<article><!-- f1s:journey:end --><section class="rr-pitwall"></section></article>', ''), /Malformed journey region/);
+    assert.throws(() => withJourney('<!-- f1s:journey:begin --><!-- f1s:journey:begin --><!-- f1s:journey:end -->', ''), /Malformed journey region/);
+    assert.throws(() => withJourney('<p>x</p><!-- f1s:journey:begin -->', ''), /Malformed journey region/);
+    // A begin string in a script is not a marker: it never pairs with a real end comment to swallow body content.
+    const scripted = '<script>var s = "<!-- f1s:journey:begin -->";</script><p>body</p><!-- f1s:journey:end --><section class="rr-pitwall"></section>';
+    assert.throws(() => withJourney(scripted, ''), /Malformed journey region/);
+});
+
+test('withdrawal strips a real region whatever the anchors', () => {
+    const component = journeyHtml(selected, 'first');
+    const region = `<!-- f1s:journey:begin -->\n${component}\n<!-- f1s:journey:end -->`;
+    for (const page of [
+        `<article><p>body</p>${region}</article>`, // no pit wall
+        `<article>${region}<section class="rr-pitwall"></section><section class="rr-pitwall"></section></article>`, // two
+        `<article>${region}\n  <section class="rr-pitwall"></section></article>` // whitespace after the end marker
+    ]) assert.equal(withJourney(page, ''), page.replace(region, ''));
 });
 
 test('marker and anchor strings in comments or raw text stay body text', () => {
