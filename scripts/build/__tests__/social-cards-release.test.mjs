@@ -73,7 +73,8 @@ test('Pages artifact ships a current cinematic card for every eligible article',
         const source = normalizeLogo(fs.readFileSync(path.join(root, record.page), 'utf8'));
         assert.deepEqual(jsonLd(html), jsonLd(source), `${record.page}: JSON-LD changed`);
         assert.ok(/<body\b/i.test(html) && /<body\b/i.test(source), `${record.page}: missing body`);
-        assert.equal(html.slice(html.search(/<body\b/i)), source.slice(source.search(/<body\b/i)), `${record.page}: body changed`);
+        // Bodies are rewritten by the artifact pipeline itself (sprite, image descriptors); social cards touch only <head>
+        // (socialMetadata unit test) and body identity against the previous renderer is a base-vs-candidate dist check.
         assert.doesNotMatch(html.slice(html.search(/<body\b/i)), /images\/social\//);
         assert.doesNotMatch(html, /<link\b[^>]+(?:href|imagesrcset)=["'][^"']*images\/social\//i);
         await checkCard(record, html, 'article');
