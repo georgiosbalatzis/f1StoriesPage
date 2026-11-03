@@ -501,7 +501,13 @@ async function main() {
         return relPath;
     });
     const publicFiles = copied.concat(social.files, retiredPages, writeSecurityHeadersFile()).sort();
-    console.log(`✓ social cards: ${social.files.length} JPEG files, ${social.records.filter(r => r.cacheHit).length} reused, ${social.records.filter(r => r.error).length} fallbacks, ${social.elapsedMs}ms`);
+    const articleCards = social.records.filter(record => record.page !== 'index.html');
+    const fallbackCounts = articleCards.reduce((counts, record) => {
+        if (record.fallback) counts[record.fallback] = (counts[record.fallback] || 0) + 1;
+        return counts;
+    }, {});
+    const fallbackSummary = Object.entries(fallbackCounts).sort(([a], [b]) => a.localeCompare(b)).map(([reason, count]) => `${reason}: ${count}`).join(', ') || 'none';
+    console.log(`✓ social cards: ${articleCards.filter(record => record.file).length} article cards, fallbacks (${fallbackSummary}), ${articleCards.filter(record => record.cacheHit).length} cache hits, ${articleCards.filter(record => record.truncated).length} truncated, ${social.elapsedMs}ms`);
     const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
     const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);
     const reused = optimizedImages.filter(image => image.cacheHit).length;
