@@ -33,9 +33,11 @@ function exportEdition(id, out) {
 }
 
 if (require.main === module) {
-    const args = process.argv.slice(2);
-    const id = args.indexOf('--id'), out = args.indexOf('--out');
-    if (id < 0 || !args[id + 1] || args[id + 1].startsWith('--') || (out >= 0 && (!args[out + 1] || args[out + 1].startsWith('--'))) || args.filter(x => x === '--id').length !== 1 || args.filter(x => x === '--out').length > 1 || args.some((x, i) => !['--id', '--out'].includes(x) && i !== id + 1 && i !== out + 1)) throw new Error('Usage: npm run briefings:export -- --id <id> [--out <dir>]');
-    exportEdition(args[id + 1], out < 0 ? undefined : args[out + 1]);
+    try {
+        const args = process.argv.slice(2);
+        const id = args.indexOf('--id'), out = args.indexOf('--out');
+        if (id < 0 || !args[id + 1] || args[id + 1].startsWith('--') || (out >= 0 && (!args[out + 1] || args[out + 1].startsWith('--'))) || args.filter(x => x === '--id').length !== 1 || args.filter(x => x === '--out').length > 1 || args.some((x, i) => !['--id', '--out'].includes(x) && i !== id + 1 && i !== out + 1)) throw new Error('Usage: npm run briefings:export -- --id <id> [--out <dir>]');
+        exportEdition(args[id + 1], out < 0 ? undefined : args[out + 1]);
+    } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
 module.exports = { candidate, exportEdition };
