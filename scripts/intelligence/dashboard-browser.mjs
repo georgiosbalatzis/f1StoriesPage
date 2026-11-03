@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { Launcher } from 'chrome-launcher';
 import { install, refresh, sealSnapshot, snapshotWindow, windowDays } from './snapshot.mjs';
-import { fakeClient, syntheticRows } from './__tests__/snapshot-fixture.mjs';
+import { fakeClient, propertyDaysBefore, syntheticRows } from './__tests__/snapshot-fixture.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const shots = process.argv.find(arg => arg.startsWith('--screenshots='))?.slice('--screenshots='.length);
@@ -26,7 +26,7 @@ async function seal(now, days = 1) {
     const scratch = fs.mkdtempSync(path.join(fs.realpathSync(process.env.TMPDIR || '/tmp'), 'f1s-dash-'));
     let text;
     for (let i = days - 1; i >= 0; i--) {
-        const at = new Date(now.getTime() - i * 86400000);
+        const at = propertyDaysBefore(now, i);
         text = await refresh({ mode: 'refresh', enabled: true, root: scratch, env, now: at, client: fakeClient(snapshotWindow(at)), log: () => {} });
         install(text, scratch);
     }
@@ -64,7 +64,7 @@ const editorialOnly = (() => {
 const discoveryDay = await seal(new Date(), 2);
 const discoveryCarried = await seal(new Date(), 3);
 const fourDays = await seal(new Date('2026-10-26T23:00:00Z')); // as_of 26 Oct: 19–22 Oct, all the export has
-const stale = await seal(new Date(Date.now() - 3 * 86400000));
+const stale = await seal(propertyDaysBefore(new Date(), 3));
 const tampered = (() => {
     const envelope = JSON.parse(fresh);
     const data = Buffer.from(envelope.data, 'base64');
