@@ -8,7 +8,10 @@ import { gatewayDigest, selectGateways, validateGatewayManifest } from './gatewa
 import { prepareHubModels } from '../build/race-desk-hubs.mjs';
 
 try {
-  const args = process.argv.slice(2), root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  // `npm run gateways:validate -- --digest <raceId>` arrives as `--validate --digest <raceId>`.
+  let args = process.argv.slice(2);
+  if (args[0] === '--validate' && args[1] === '--digest') args = args.slice(1);
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const manifest = readGatewayManifest(root), registry = readHubRegistry(root);
   const editorialManifest = JSON.parse(fs.readFileSync(path.join(root, 'data/race-desk/editorial.v1.json'), 'utf8'));
   if (args[0] === '--digest' && args.length === 2) {

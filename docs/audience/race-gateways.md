@@ -163,7 +163,7 @@ No event, parameter, dimension, model, query, identifier, cookie or storage is a
 | Question | Existing source | Label |
 | --- | --- | --- |
 | Race-weekend activity ([KPI 6](measurement-contract.md#6-race-weekend-behaviour)) | Daily site totals in a registry session window; no race dimension | `PROXY_ONLY` |
-| Hub → article / tool clicks ([KPI 14](measurement-contract.md#14-article-to-race-desk-navigation)) | Gateway links are plain anchors. Article and tool links (all on `f1-stories.gr`, the tools through their existing routes) are recorded by the existing consented `internal_page_click` as `link_section=page` from the hub path, not separable from the same link elsewhere on the hub; in-page section links are not recorded | `PROXY_ONLY` (aggregate); per gateway `NOT_VERIFIED` |
+| Hub → article / tool clicks ([KPI 14](measurement-contract.md#14-article-to-race-desk-navigation)) | Gateway links are plain anchors. Article and tool links (on `f1-stories.gr` while aggregation is enabled; with it disabled the tools fall back to their external hosts and count as outbound clicks) are recorded by the existing consented `internal_page_click` as `link_section=page` from the hub path, not separable from the same link elsewhere on the hub; in-page section links are not recorded | `PROXY_ONLY` (aggregate); per gateway `NOT_VERIFIED` |
 | Tool use, successful loads, returning readers, finishing a perspective | None. A click is intent; child tools are outside the main property; no visitor identity | `NOT_MEASURABLE` |
 | Performance guardrail ([KPI 15](measurement-contract.md#15-core-web-vitals-guardrails)) | GP hubs have no RUM emitter; lab measurement only | `NOT_MEASURABLE` in the field |
 

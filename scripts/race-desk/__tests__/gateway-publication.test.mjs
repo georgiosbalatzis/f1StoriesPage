@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { writeRaceDeskHubs, prepareHubModels } from '../../build/race-desk-hubs.mjs';
@@ -71,8 +72,35 @@ test('gateway publication is atomic, reversible, deterministic and validated', a
   const toolEnd = html.indexOf('</section>', toolStart);
   const missingTool = html.slice(0, toolStart) + html.slice(toolStart, toolEnd).replace(`href="${encodedUrl}"`, 'href="/missing"') + html.slice(toolEnd);
   assert.ok(missingTool.includes(`href="${encodedUrl}"`));
-  for (const mutated of [missingTool, html.replace(section, ''), html.replace(section, section + section), html.replace(section, '').replace('</section>', `</section>${section}`), html.replace(section, '').replace('</header>', `</header>${section}`),html.replace('Συνθετικός οδηγός', 'Αλλαγή'), html.replace('<main', '<main id="gateway-target-extra"'), html.replace(section, `<!--${section}-->`), html.replace('</body>', `${one.review.contentSha256}</body>`), html.replace('</body>', '"contentSha256"</body>')]) {
+  for (const mutated of [missingTool, html.replace(section, ''), html.replace(section, section + section), html.replace(section, '').replace('</section>', `</section>${section}`), html.replace(section, '').replace('</header>', `</header>${section}`),html.replace('Συνθετικός οδηγός', 'Αλλαγή'), html.replace('<main', '<main id="gateway-target-extra"'), html.replace(section, `<!--${section}-->`), html.replace('</body>', `${one.review.contentSha256}</body>`), html.replace('</body>', '"contentSha256":</body>'), html.replace('</body>', '&quot;review&quot;:</body>')]) {
     put(root, file, mutated);
     assert.ok(validate().length);
   }
+});
+
+test('real manifest on the real hub models: no published gateway is withheld (strict gate)', async () => {
+  const repo = fileURLToPath(new URL('../../../', import.meta.url));
+  const { athensDay } = (await import('../../../blog-module/taxonomy.js')).default;
+  const { selectGateways } = await import('../gateway.mjs');
+  const today = athensDay(), { models } = prepareHubModels(repo, { today });
+  const manifest = JSON.parse(fs.readFileSync(path.join(repo, 'data/audience/race-gateways.v1.json'), 'utf8'));
+  const editorialManifest = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/editorial.v1.json'), 'utf8'));
+  const rows = selectGateways({ manifest, registry: readHubRegistry(repo), editorialManifest, models, today });
+  assert.deepEqual(rows.filter(row => row.status === 'published' && !row.eligible).map(row => [row.raceId, row.reasons]), []);
+  assert.ok(rows.filter(row => row.status !== 'published').every(row => !row.eligible));
+});
+
+test('gateway CLI: npm-style digest and strict validation', () => {
+  const cli = fileURLToPath(new URL('../gateway-report.mjs', import.meta.url));
+  const manifest = JSON.parse(fs.readFileSync(fileURLToPath(new URL('../../../data/audience/race-gateways.v1.json', import.meta.url)), 'utf8'));
+  const raceId = manifest.gateways[0].raceId;
+  for (const args of [['--digest', raceId], ['--validate', '--digest', raceId]]) {
+    const run = spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
+    assert.equal(run.status, 0, run.stderr);
+    assert.match(run.stdout, /^[a-f0-9]{64}\n$/);
+  }
+  assert.equal(spawnSync(process.execPath, [cli, '--digest', '2026-unknown-gp'], { encoding: 'utf8' }).status, 1);
+  const strict = spawnSync(process.execPath, [cli, '--validate', '--strict', '--day', '2026-11-03'], { encoding: 'utf8' });
+  assert.equal(strict.status, 0, strict.stderr);
+  assert.equal(strict.stdout.trim().split('\n').length, manifest.gateways.length);
 });

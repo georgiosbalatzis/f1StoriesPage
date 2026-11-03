@@ -23,7 +23,7 @@ export function validateHubOutput(root, registry, lock, currentYear, evidence, s
   const privateValues = ['editorial.v1.json', 'source.txt', ...manifest.associations.flatMap(({ evidence: item }) => [item.sha256, item.reviewedRevision])];
   const localManifest = path.join(root, 'data/audience/race-gateways.v1.json');
   const gatewayManifest = JSON.parse(fs.readFileSync(fs.existsSync(localManifest) ? localManifest : new URL('../../data/audience/race-gateways.v1.json', import.meta.url), 'utf8'));
-  const gatewayPrivate = ['race-gateways.v1.json', 'data/audience/', '&quot;contentSha256&quot;', '&quot;perspectives&quot;', '&quot;review&quot;', '"contentSha256"', '"perspectives"', '"review"', ...gatewayManifest.gateways.map(item => item.review?.contentSha256).filter(Boolean)];
+  const gatewayPrivate = ['race-gateways.v1.json', 'data/audience/', ...['contentSha256', 'perspectives', 'review'].flatMap(key => [`"${key}":`, `&quot;${key}&quot;:`]), ...gatewayManifest.gateways.map(item => item.review?.contentSha256).filter(Boolean)];
   const models = createPublicationModels(registry, lock, evidence, { currentYear });
   const read = file => {
     try { return fs.readFileSync(path.join(root, file), 'utf8'); }
