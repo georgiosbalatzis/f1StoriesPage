@@ -190,6 +190,8 @@ links the archive, and when (if ever) A-06/A-07 start.
 
 **Feature:** offer an independently consented newsletter, subject to owner and legal decisions. A-06 owns signup, consent and preferences; A-07 owns delivery and editorial approval of each issue. Both must pass this gate; A-07 cannot start before A-06's consent and unsubscribe flow is approved.
 
+**Status (A-06, 2026-11-03):** engineering foundation completed and **disabled**: lifecycle and consent contract, fail-closed activation gate, local mock preview ([newsletter-a06.md](newsletter-a06.md)). Provider **not selected** ([evaluation](newsletter-provider-evaluation.md)); signup **not activated**; **no subscribers collected**; **no emails sent**; every [activation evidence item](newsletter-activation-checklist.md) open. A-07 **not started**.
+
 **Depends on:** A-01; [privacy flow](privacy-data-flow.md), [acquisition model](../intelligence/audience-model.md), [editorial review](../editorial-review.md).
 
 **KPIs:** [KPI 7 Newsletter subscriptions; KPI 8 Confirmed opt-ins; KPI 9 Unsubscribes and newsletter clicks; KPI 10 Newsletter-origin traffic](measurement-contract.md).
@@ -304,7 +306,7 @@ links the archive, and when (if ever) A-06/A-07 start.
 4. Set collection and reading-path editorial ownership, approval and maintenance rules.
 5. Decide whether race-level classification or child-tool measurement merits a later proposal after existing-source review.
 6. Decide reading-list storage scope, retention, deletion, shared-device behaviour and any sync requirements.
-7. Define the newsletter provider selection process and criteria, independent consent, confirmation, unsubscribe, retention and operator; do not choose a vendor in A-01.
+7. Define the newsletter provider selection process and criteria, independent consent, confirmation, unsubscribe, retention and operator; do not choose a vendor in A-01. A-06 supplies the research, contract and gate; the decisions themselves are listed in [newsletter-a06.md](newsletter-a06.md#owner-decisions-required) and remain open.
 8. Decide notification purpose, frequency, permission and revocation flow, delivery ownership and service-worker compatibility.
 9. Set community participation scope, moderation, abuse reporting, appeals, removal, rights and retention policies.
 10. Determine when DPIA and DPA evaluation and legal review are triggered, who performs them, and how decisions are recorded.

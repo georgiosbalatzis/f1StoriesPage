@@ -31,6 +31,9 @@ Any new event named in these documents is a **recommendation only**.
 | [journeys.md](journeys.md) | Article reading journeys: schema, approval, the in-article component, build integration, removal, measurement limits | A-03 |
 | [race-gateways.md](race-gateways.md) | Race weekend reader gateway on GP Hubs: Race Desk ownership, schema, approval, evidence and tool binding, build integration, rollback, measurement limits, pilots | A-04 |
 | [briefings.md](briefings.md) | Weekly briefing: schema, ISO-week editions, approval and digest, eligibility, public archive, content exports, preview, withdrawal, A-06/A-07 handoff, candidates | A-05 |
+| [newsletter-a06.md](newsletter-a06.md) | Newsletter foundation: lifecycle, independent consent, double opt-in, preferences/unsubscribe, disabled mode, mock preview, CSP, privacy review record, rollback, A-07 contract | A-06 |
+| [newsletter-provider-evaluation.md](newsletter-provider-evaluation.md) | Brevo / MailerLite / Buttondown research matrix with sources; provisional preference; no provider selected | A-06 |
+| [newsletter-activation-checklist.md](newsletter-activation-checklist.md) | The 18 evidence items the activation gate checks, reviewers and the activation PR outline | A-06 |
 
 Authoritative sources stay where they are. Phase 4 links them and never re-defines them:
 Intelligence ([README](../intelligence/README.md), [metrics contract](../intelligence/metrics-contract.md),
@@ -77,7 +80,8 @@ Details and evidence: each linked document. Every claim there cites a repository
 | A-03 | Article Reading Journeys: merged (#432), no journey approved; see [journeys.md](journeys.md) |
 | A-04 | Race Weekend Reader Gateway: technical foundation merged (#433), no gateway approved or live; see [race-gateways.md](race-gateways.md) |
 | A-05 | Weekly Briefing Editorial Foundation: technical foundation, no edition approved or published, no newsletter; see [briefings.md](briefings.md) |
-| A-06..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
+| A-06 | Newsletter Signup, Consent & Preferences: engineering foundation only, **disabled**. Provider not selected, signup not activated, no subscribers collected, no emails sent; see [newsletter-a06.md](newsletter-a06.md) |
+| A-07..A-09 | Not started. A-07 is blocked by the A-06 [activation checklist](newsletter-activation-checklist.md). Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
 
 ## Unresolved owner decisions
 
