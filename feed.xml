@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sun, 01 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 02 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Gigi Galli: όταν η επιθετικότητα γίνεται τέχνη</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261103W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261103W/article.html</guid>
+      <pubDate>Mon, 02 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Gigi Galli ο θεαματικός Ιταλός με το ακραία επιθετικό στυλ.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής!</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261102J/article.html</link>
@@ -267,15 +276,6 @@
       <description>Ο Verstappen είχε ήδη δώσει δείγματα της ανταγωνιστικότητας της Red Bull κατακτώντας τη νίκη στο Sprint του Σαββάτου, σε έναν αγώνα που επηρεάστηκε…</description>
       <category>Ανάλυση</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261011J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261011J/article.html</guid>
-      <pubDate>Sat, 10 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Από πού να ξεκινήσουμε να μιλάμε για τη Ferrari και πού να τελειώσουμε; Σαν να ακούω τους τιφόζι να τραγουδάνε... «Τι αμαρτίες, έχω κάνει; Δεν αντέχω...</description>
-      <category>Άποψη</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>

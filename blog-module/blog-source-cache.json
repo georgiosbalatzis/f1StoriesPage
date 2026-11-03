@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261103W",
+      "title": "Gigi Galli: όταν η επιθετικότητα γίνεται τέχνη",
+      "author": "Themis Charvalis",
+      "date": "2026-11-03",
+      "dateISO": "2026-11-03",
+      "displayDate": "3 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261103W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261103W/2.webp",
+      "excerpt": "Gigi Galli ο θεαματικός Ιταλός με το ακραία επιθετικό στυλ.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261103W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "WRC",
+        "Gigi Galli",
+        "Mitsubishi lancer evo WRC"
+      ],
+      "wordCount": 417,
+      "readingTime": "3 min",
+      "imageWidth": 563,
+      "imageHeight": 545,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1066,
+      "inputDigest": "6d16dfda21fa02d9d2fe81dd3aa68ca1d7293e4aa2fff63da62187100f6d706d"
+    },
+    {
       "id": "20261102J",
       "title": "«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής!",
       "author": "Giannis Poulikidis",
@@ -11504,5 +11535,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-02T19:44:52.965Z"
+  "lastUpdated": "2026-11-03T20:43:30.128Z"
 }
