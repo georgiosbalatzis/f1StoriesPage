@@ -1,6 +1,8 @@
 # Audience privacy and data flow
 
 Status: A-01 audit; base `58331f9fb`; investigation 2026-11-03 UTC.
+A-02 correction (2026-11-03, base `d8308bf0d`): adds the navbar schedule, podcast feed and audio requests and the
+`f1s-schedule-v2` / `f1s-sw-removed` keys that the A-01 review recorded as omitted.
 This is not a legal opinion; no compliance is certified.
 [Evidence labels](measurement-contract.md#evidence-labels) describe evidence and do not
 replace Intelligence statuses.
@@ -20,7 +22,8 @@ third parties may use other storage.
 | Export and reporting: Google BigQuery / encrypted dashboard | GA4 export feeds mature aggregate models; a scheduled workflow encrypts an aggregate snapshot for the dashboard. [Validation record](../intelligence/bigquery-validation.md); [snapshot design](../intelligence/dashboard-snapshots.md#how-it-works). | Source population is consented analytics; no separate browser storage required for export. Dashboard key is entered by an authorized user and handled in memory. | Export retention: not stated in repo. Workflow encrypted upload: one day; committed encrypted envelopes may remain in Git history. [Snapshot design](../intelligence/dashboard-snapshots.md#how-it-works), [encryption](../intelligence/dashboard-snapshots.md#encryption). |
 | Contact: Formspree | A visitor submits contact fields through the Formspree endpoint in [index.html](../../index.html); [AJAX handler](../../scripts/f1-optimized.js) posts the form and supports native fallback. | Submission is a separate user action, not gated by analytics. Formspree browser storage: not stated in repo. | “μόνο για όσο χρόνο χρειάζεται” — only as long as needed for response, cooperation or security; no fixed duration. [Privacy sections 4 and 6](../../privacy/privacy.html). |
 | Video and social embeds: YouTube and relevant social providers | Loading or playing embedded content may contact the provider and expose technical request data. [Privacy section 4](../../privacy/privacy.html); [CSP frame and script sources](../../scripts/build/security-policy.mjs). | Not governed by the analytics toggle as an embed gate; provider storage may be used. Exact names and retention: not stated in repo. | Not stated in repo; provider policy applies. [Privacy sections 4–6](../../privacy/privacy.html). |
-| F1 data: Jolpica F1 and OpenF1 | Requests for public race data support Βαθμολογία & Στατιστικά. [Privacy section 4](../../privacy/privacy.html); [CSP connect sources](../../scripts/build/security-policy.mjs). | Functional requests are not analytics-consent gated; provider storage names not stated in repo. | Not stated in repo. |
+| F1 data: Jolpica F1 and OpenF1 | Requests for public race data support Βαθμολογία & Στατιστικά. Every page with the shared navigation also requests the current season's race schedule from Jolpica for the countdown, unless a fresh copy is cached in the tab. [Privacy section 4](../../privacy/privacy.html); [CSP connect sources](../../scripts/build/security-policy.mjs); [schedule fetch](../../scripts/shared-nav.js) (`loadLiveSchedule`, lines 739–767). | Functional requests are not analytics-consent gated. First-party `sessionStorage` `f1s-schedule-v2` caches the parsed schedule (see the table below); provider storage names not stated in repo. | Not stated in repo. |
+| Podcast feed and audio: anchor.fm feed and episode audio host | Top-level pages whose shared navigation bar has the audio control (`.blog-nav-right`; not embeds) fetch the BetCast RSS feed from `anchor.fm` once the page has loaded, without credentials. The episode audio is requested from the feed's enclosure URL only when a listener presses play, or when a tab resumes an episode that was playing. [Feed fetch](../../scripts/shared-nav.js) (`loadLatest`, lines 276–291); [audio start](../../scripts/shared-nav.js) (`begin`, lines 221–224); [CSP `connect-src` and `media-src`](../../scripts/build/security-policy.mjs). | Functional requests are not analytics-consent gated. Playback state is first-party `sessionStorage` `f1stories-audio` (see the table below). The audio host follows the feed and is not fixed in the repository; provider storage names not stated in repo. | Not stated in repo. |
 
 Other first-party browser storage, none of it transmitted by these flows:
 
@@ -29,6 +32,8 @@ Other first-party browser storage, none of it transmitted by these flows:
 | `localStorage` | `f1stories-theme`: theme preference | `scripts/shared-nav.js:6–10` |
 | `sessionStorage` | `f1stories-audio`: podcast URL, playing state and position carried between pages | `scripts/shared-nav.js:119,162–172` |
 | `sessionStorage` | `f1s-err-count`: per-tab error counter, incremented before the send-time consent check (the `js_error` send itself is consent-gated) | `scripts/perf/error-beacon.js:6,45–56` |
+| `sessionStorage` | `f1s-schedule-v2`: the parsed race schedule and its fetch time, reused for six hours | `scripts/shared-nav.js:740–762` |
+| `sessionStorage` | `f1s-sw-removed`: one-time flag that stops a repeated reload after an old service worker and its caches are removed | `scripts/sw-cleanup.js:10,30–31` |
 | IndexedDB `f1s-standings`, `sessionStorage` fallback | Cached public standings API responses | `standings/core/cache.js:1–14` |
 
 CSP permission is not evidence that a request occurred, and the presence of a third-party
