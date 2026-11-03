@@ -64,7 +64,11 @@
         });
         var analysis = document.getElementById('analysis-stories');
         clear(analysis);
-        stories.filter(function (s) { return s.categories.includes('Analysis') || s.categories.includes('Technical'); }).slice(0, 6).forEach(function (story, i) {
+        var candidates = stories.slice(3).filter(function (s) { return s.categories.includes('Analysis') || s.categories.includes('Technical'); });
+        var technical = candidates.find(function (s) { return s.categories.includes('Technical'); });
+        var selected = candidates.slice(0, 6);
+        if (technical && !selected.includes(technical)) selected[5] = technical;
+        selected.forEach(function (story, i) {
             var li = el('li', 'analysis-item');
             var body = el('div');
             body.append(meta(story), headline(story, 'h3'));

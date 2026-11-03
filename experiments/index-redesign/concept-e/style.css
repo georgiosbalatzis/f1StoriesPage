@@ -22,7 +22,7 @@
 .concept-e .search button, .concept-e .month-actions button, .concept-e .month-actions select, .concept-e #more { min-height: 44px; border: 0; background: transparent; color: var(--text-primary); }
 .concept-e .search-row button { padding: 0 0 0 14px; font-size: .75rem; font-weight: 600; }
 .concept-e .result-count { margin: 12px 0 4px; font-size: .8rem; color: var(--text-secondary); }
-.concept-e .results { max-height: 260px; overflow: auto; padding: 0; margin: 0; list-style: none; }
+.concept-e .results { padding: 0; margin: 0; list-style: none; }
 .concept-e .results li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: .875rem; }
 .concept-e .results small { flex-shrink: 0; color: var(--text-secondary); }
 .concept-e #more { padding: 0; text-decoration: underline; }
@@ -44,6 +44,7 @@
 .concept-e .month-top h2 { margin: 0; font: 600 clamp(2rem, 4vw, 3.8rem)/1.05 var(--font-body); letter-spacing: -.035em; }
 .concept-e .month-top h2 span { font: 700 1.1em/.9 var(--font-brand); }
 .concept-e .month-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: end; gap: 0 15px; font-size: .8rem; }
+.concept-e .month-actions #recent { order: -1; }
 .concept-e .month-actions button { min-width: 44px; padding: 0 10px; border: 1px solid var(--border); font-weight: 600; }
 .concept-e .month-actions button:disabled { color: var(--text-tertiary); border-color: var(--border); opacity: .6; }
 .concept-e .month-actions label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
@@ -133,6 +134,9 @@
 @media (max-width: 389px) {
  .concept-e .wrap { padding-inline: 17px; }
  .concept-e h1 { font-size: 15.3vw; }
+ .concept-e .month-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+ .concept-e .month-actions #recent { order: 0; }
+ .concept-e .month-actions select { grid-column: 1 / -1; width: 100%; max-width: none; }
  .concept-e .feature-body { grid-template-columns: 1fr; }
  .concept-e .feature-date { display: flex; align-items: baseline; gap: 8px; }
  .concept-e .feature-date small { margin: 0; }

@@ -32,6 +32,7 @@
         var copy = element('div', 'preview-copy');
         copy.append(link(story.categoryLabel, story.sectionUrl, 'preview-kicker'));
         var title = element('h3');
+        title.tabIndex = -1;
         title.append(link(story.title, story.url));
         copy.append(title, element('p', 'excerpt', story.excerpt), link(story.author, story.authorUrl, 'byline'));
         var strip = element('div', 'stat-strip');
@@ -59,7 +60,10 @@
             var media = element('span', 'sheet-media');
             media.append(picture(story, index < 2, false));
             button.append(media, element('span', 'sheet-title', story.title));
-            button.addEventListener('click', function () { select(story, buttons); });
+            button.addEventListener('click', function () {
+                select(story, buttons);
+                if (window.matchMedia('(max-width: 900px)').matches) preview.querySelector('h3').focus();
+            });
             buttons.push(button);
             item.append(button, link('Άνοιγμα ↗', story.url, 'open-link'));
             sheet.append(item);

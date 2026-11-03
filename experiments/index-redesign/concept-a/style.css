@@ -55,7 +55,8 @@
 .concept-a .tech-image { display: block; width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; }
 .concept-a .tech-list { padding: 22px 0 0; margin: 24px 0 0; list-style: none; border-top: 1px solid var(--border-inverse); }
 .concept-a .tech-list li a { display: block; padding: 12px 0; font-weight: 600; }
-.concept-a .directory { display: grid; grid-template-columns: 1.4fr .6fr; gap: 8%; margin-top: 40px; }
+.concept-a .directory { display: grid; grid-template-columns: 1.4fr .6fr; row-gap: 64px; column-gap: 8%; margin-top: 40px; }
+.concept-a .desk-row h3, .concept-a #technical { scroll-margin-top: 100px; }
 .concept-a .desk-row { display: grid; grid-template-columns: .85fr 1.15fr; align-items: center; gap: 20px; border-bottom: 1px solid var(--border); }
 .concept-a .desk-row h3 { margin: 0; font: 600 clamp(1.3rem, 2vw, 2rem)/1.15 var(--font-body); }
 .concept-a .desk-row h3 a { display: flex; align-items: baseline; gap: 10px; padding: 20px 0; text-decoration: none; }

@@ -1,4 +1,5 @@
 .concept-d .wrap { max-width: 1440px; margin-inline: auto; padding-inline: 48px; }
+.concept-d [hidden] { display: none; }
 .concept-d main { color: var(--text-primary); background: var(--bg-base); }
 .concept-d a { color: inherit; }
 .concept-d main a:hover { text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: .18em; }

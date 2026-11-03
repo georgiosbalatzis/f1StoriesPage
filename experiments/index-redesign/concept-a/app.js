@@ -82,8 +82,8 @@
         var shown = 0;
         function render() {
             list.replaceChildren();
-            matches.slice(shown - 6, shown).forEach(function (story) { var item = el('li'); item.append(link(story.title, story.url)); list.append(item); });
-            status.textContent = matches.length + ' αποτελέσματα' + (matches.length ? ' · ' + (shown - 5) + '–' + Math.min(shown, matches.length) : '');
+            matches.slice(0, shown).forEach(function (story) { var item = el('li'); item.append(link(story.title, story.url)); list.append(item); });
+            status.textContent = matches.length + ' αποτελέσματα · εμφανίζονται ' + Math.min(shown, matches.length);
             more.hidden = shown >= matches.length;
         }
         function search(showEmpty) {

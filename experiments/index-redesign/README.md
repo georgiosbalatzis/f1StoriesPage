@@ -51,3 +51,46 @@ leads, and the primary interaction.
 
 All five use the same shared shell (`shared/`) and the same real content (`shared/content.json`, built by
 `build-content.cjs` from the tracked published metadata). Only the page design differs between them.
+
+## G. Production implementation plan (for the owner-selected concept, not executed)
+
+Written for the recommended concept **A**. The same path applies to any concept; only step 2 differs.
+
+1. **Keep the generator and replace only the front page body.** THE INDEX is generated statically by
+   `blog-module/build/discovery.js`:
+   - `buildModel` builds the model;
+   - `indexBody` builds the front page;
+   - `sectionBody` builds the paginated `section/<kind>/` and `section/<kind>/page/<n>/` pages;
+   - `monthBody` and `archiveBody` build the archive;
+   - `headHtml` writes the SEO head;
+   - `composePage` assembles the page.
+
+   The redesign rewrites `indexBody` (and `mastheadHtml` if the masthead changes) to emit the concept's markup as
+   static HTML. It reuses the existing helpers (`kicker`, `meta`, `dateCell`, `leadHtml`, `rowHtml`,
+   `monthGroups`). It does not fetch `content.json` in the browser. Section, month and archive pages, pagination,
+   `?author=` filtering and `?q=` search keep their routes and behaviour.
+2. **Port the styles into the archive layer.** Move the scoped prototype CSS into
+   `blog-module/blog/archive-editorial.css`, using its existing `body.archive-page` scope and the tokens from
+   `styles/editorial.css`, and delete the replaced rules. The shared shell is a stand-in only: production keeps
+   `partials/nav.html` and `shared-nav`.
+3. **Keep the interactions inside the existing JS.** Desk anchors (A) need no JS. Search stays in
+   `blog-module/blog-index.js` (its `norm` already matches). The prototype `app.js` files are not shipped.
+4. **SEO and accessibility.**
+   - Unchanged: canonical URL, title and description, Open Graph, JSON-LD and `prev`/`next` from `headHtml`, the
+     sitemap entries, one H1, the skip link, `aria-current`, and visible focus.
+   - The lead image becomes the LCP element: eager, `fetchpriority="high"`, with a `cardImageSrcset`/`CARD_SIZES`
+     srcset. Every other image stays lazy, with intrinsic sizes.
+5. **Gates before merge.**
+   - `npm run build:public` and `build:check`.
+   - `test:blog`, including the discovery golden files (`run-golden.js`), which will need an intentional,
+     reviewed update.
+   - `qa:edition`.
+   - `perf:cls-tablet` in both themes.
+   - `perf:budget`: the inlined head CSS must stay within budget. Never use `perf:budget:update` to pass.
+   - `perf:lighthouse` on the INDEX.
+   - `quality:static` and `test:consent`.
+   - A base-vs-candidate `dist/` diff confirming that only the INDEX, its CSS and its stamped references change.
+6. **Rollout.** Ship as one PR with before/after captures at 1440/768/390/320 in both themes. Rollback is a revert:
+   the generator stays deterministic and URLs do not change.
+
+Out of scope until the owner decides: the shell, homepage, article, section and month page designs.

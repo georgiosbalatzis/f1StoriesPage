@@ -8,6 +8,9 @@
 .concept-c h1, .concept-c .c-index > h2 { margin: 24px 0 22px; font: 700 clamp(4.4rem, 9vw, 8rem)/.82 var(--font-brand); letter-spacing: -.012em; }
 .concept-c h1 span, .concept-c .c-index h2 span, .concept-c .c-authors h2 span { color: var(--signal); }
 .concept-c .c-deck { max-width: 52ch; margin: 0; color: var(--text-secondary); font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.6; }
+.concept-c .c-discovery { display: flex; flex-wrap: wrap; column-gap: 24px; border-bottom: 1px solid var(--border); }
+.concept-c .c-discovery a { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-secondary); font-size: .875rem; text-decoration: none; }
+.concept-c .c-discovery a:hover { color: var(--accent-readable); text-decoration: underline; text-underline-offset: .2em; }
 .concept-c .c-search { padding: 48px 0 55px; }
 .concept-c .c-search h2, .concept-c .c-results h2, .concept-c .c-index h3 { margin: 0 0 20px; font-size: 1.125rem; font-weight: 600; }
 .concept-c .c-search form { border-left: 3px solid var(--signal); padding-left: 22px; }
