@@ -56,7 +56,7 @@ export function isGeneratedPath(relPath) {
     if (GENERATED_EXACT.has(relPath)) return true;
     if (/^scripts\/author\/research-content\/\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(relPath)) return true;
     if (/^blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return true;
-    if (/^blog-module\/blog\/(?:section|archive|entities|collections)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
+    if (/^blog-module\/blog\/(?:section|archive|entities|collections|briefing)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     return /\.min\.(?:css|js)$/i.test(relPath);
 }
 

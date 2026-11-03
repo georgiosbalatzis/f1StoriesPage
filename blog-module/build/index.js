@@ -239,13 +239,13 @@ function injectTopicLinks(blogPosts, hubLinks) {
 
 // The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
 // pages are static files; blog-index.js only renders the ?category= / ?author= / ?q= views on top of them.
-function injectEdition(indexPosts, selection = {}, { today = athensDay(), hubLinks = [], collectionLinks = [] } = {}) {
+function injectEdition(indexPosts, selection = {}, { today = athensDay(), hubLinks = [], collectionLinks = [], briefingLinks = [] } = {}) {
     const blogDir = CONFIG.OUTPUT_HTML_DIR;
     if (!fs.existsSync(path.join(blogDir, 'index.html'))) {
         console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
         return null;
     }
-    const edition = buildPages(indexPosts, { today, selection, hubLinks, collectionLinks, deps: { storyImage, renderStoryImage, cardSrcset } });
+    const edition = buildPages(indexPosts, { today, selection, hubLinks, collectionLinks, briefingLinks, deps: { storyImage, renderStoryImage, cardSrcset } });
     edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
     writeDiscoveryPages(blogDir, edition);
     console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
@@ -1180,7 +1180,11 @@ async function processBlogEntries(options = {}) {
     const collections = buildCollectionPages(blogPosts, { today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset } });
     const selection = loadEditorialSelection();
     const hubLinks = buildHubLinks(entities);
-    const edition = injectEdition(indexPosts, selection, { today, hubLinks, collectionLinks: collections.links });
+    // Briefings: selected here for the Edition aside, re-selected after the final article pages below (must agree).
+    const { buildBriefingPages, writeBriefingPages } = require('./briefings/pages');
+    const briefingOptions = { today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset } };
+    const briefingLinks = buildBriefingPages(blogPosts, briefingOptions).links;
+    const edition = injectEdition(indexPosts, selection, { today, hubLinks, collectionLinks: collections.links, briefingLinks });
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1208,12 +1212,16 @@ async function processBlogEntries(options = {}) {
     const { injectJourneys } = require('./journeys/pages');
     const journeyArticles = injectJourneys(CONFIG.BLOG_DIR, journeys);
     console.log(`Reading journeys rendered: ${journeyArticles.length} article pages`);
+    const briefings = buildBriefingPages(blogPosts, briefingOptions);
+    if (JSON.stringify(briefings.links) !== JSON.stringify(briefingLinks)) throw new Error('briefings: eligibility changed after the article pages were rendered; rebuild');
+    writeBriefingPages(CONFIG.OUTPUT_HTML_DIR, briefings.pages);
+
     // After the article pages: an author page lists a story only once its page is public.
     checkBodyLinks(blogPosts, { today });
     const authorPages = writeAuthorPages(blogPosts, { today });
     const { writeRaceDeskHubs } = await import('../../scripts/build/race-desk-hubs.mjs');
     const raceDeskPages = await writeRaceDeskHubs(REPO_ROOT, undefined, { posts: blogPosts, today });
-    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...collections.pages, ...raceDeskPages], authorPages);
+    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...collections.pages, ...briefings.pages, ...raceDeskPages], authorPages);
     buildResearchContent(REPO_ROOT, fs.readFileSync(indexPath));
 
     // Standings caches are refreshed only by `npm run build:standings-data`.
