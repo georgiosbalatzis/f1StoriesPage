@@ -34,8 +34,8 @@ for (let i = 0; i < selected.steps.length; i++) {
         assert.match(html, /^<div class="rr-layout" data-article-end><nav class="rr-body"/);
         assert.match(html, /Σειρά &amp; &lt;τίτλος&gt;/);
         assert.match(html, /Περιγραφή &quot;δοκιμή&quot; &amp; &lt;κείμενο&gt;/);
-        if (i === 0) assert.match(html, /Επόμενο: Μετά &amp; &lt;επόμενο&gt;/);
-        if (i === 1) assert.match(html, /Επόμενο: Συνέχεια &quot;τώρα&quot;/);
+        if (i === 0) assert.match(html, /<strong>Επόμενο:<\/strong> Μετά &amp; &lt;επόμενο&gt;/);
+        if (i === 1) assert.match(html, /<strong>Επόμενο:<\/strong> Συνέχεια &quot;τώρα&quot;/);
         if (i === 2) assert.match(html, /<p>Τέλος της σειράς\.<\/p>/);
         assert.equal(html.includes('Επόμενο:'), i < 2);
         assert.equal(html.includes('Τέλος της σειράς.'), i === 2);

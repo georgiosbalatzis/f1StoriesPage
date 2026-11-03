@@ -8,7 +8,7 @@ function journeyHtml(selected, articleId) {
     const items = steps.map((step, i) => i === current
         ? `<li aria-current="step"><strong>${esc(step.title)}</strong> <span>(αυτό το άρθρο)</span></li>`
         : `<li><a href="${esc(new URL(articleUrl(step)).pathname)}">${esc(step.title)}</a></li>`);
-    const ending = current === steps.length - 1 ? 'Τέλος της σειράς.' : `Επόμενο: ${esc(steps[current].transition)}`;
+    const ending = current === steps.length - 1 ? 'Τέλος της σειράς.' : `<strong>Επόμενο:</strong> ${esc(steps[current].transition)}`;
     return `<div class="rr-layout" data-article-end><nav class="rr-body" aria-labelledby="rr-journey-title">\n`
         + `<p class="rr-label">Ανάγνωση με σειρά · Μέρος ${current + 1} από ${steps.length}</p>\n`
         + `<h2 class="rr-subhead" id="rr-journey-title">${esc(journey.title)}</h2>\n`
