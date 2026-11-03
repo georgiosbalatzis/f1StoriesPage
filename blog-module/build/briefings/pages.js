@@ -7,7 +7,8 @@ function buildBriefingPages(articles, options = {}) {
     const selected = model.selectBriefings(inputs.manifest, articles, options);
     const eligible = selected.filter(item => item.eligible);
     const pages = eligible.length ? [render.renderBriefingsIndex(eligible, options), ...eligible.map(item => render.renderBriefing(item, options))] : [];
-    const links = eligible.map(item => ({ href: model.editionPath(item.edition.id), label: item.edition.title }));
+    // The Edition aside links the archive and the newest edition only; the archive lists the rest.
+    const links = eligible.slice(0, 1).map(item => ({ href: model.editionPath(item.edition.id), label: item.edition.title }));
     return { selected, pages, links };
 }
 

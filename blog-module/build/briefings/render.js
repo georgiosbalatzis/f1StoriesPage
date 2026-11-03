@@ -40,14 +40,14 @@ function renderBriefing(selected, { deps, indexPosts = [], origin = SITE, previe
     const body = '<section class="ed-section" aria-labelledby="briefing-title"><header class="ed-section__head">'
         + '<p class="ed-label" lang="en">F1 STORIES — WEEKLY BRIEFING</p>'
         + `<h1 class="ed-section__title" id="briefing-title">${esc(edition.title)}</h1><p class="ed-section__facts ed-num">${esc(periodLabel(period))}</p>`
-        + `${paragraphs(edition.opening)}</header>${sections.map(section => `<section><h2 class="ed-label">${esc(section.heading)}</h2>`
+        + `${paragraphs(edition.opening)}</header><div class="ed-front__side">${sections.map((section, i) => `<section aria-labelledby="briefing-s${i + 1}"><header class="ed-sechead"><h2 class="ed-label" id="briefing-s${i + 1}">${esc(section.heading)}</h2></header>`
             + `${section.intro ? paragraphs([section.intro]) : ''}<ol class="ed-rows">${section.items.map(post => {
                 const image = images.get(post.id);
                 const display = { ...post, url: articleUrl(post), thumbnail: image?.thumbnail,
                     thumbnailWidth: image?.thumbnailWidth, thumbnailHeight: image?.thumbnailHeight };
                 return rowHtml(display, ctx, { level: 3, thumb: true, fullDate: true })
                     .replace('<p class="ed-meta">', meta => `${post.context ? '<p class="ed-section__facts">Για αναδρομή</p>' : ''}<p class="ed-section__facts">${esc(post.rationale)}</p>${meta}`);
-            }).join('')}</ol></section>`).join('')}${paragraphs(edition.closing || [])}</section>`;
+            }).join('')}</ol></section>`).join('')}${edition.closing ? `<section>${paragraphs(edition.closing)}</section>` : ''}</div></section>`;
     return page({ path: editionPath(edition.id), file: `briefing/${edition.id}/index.html`, title: `${edition.title} | F1 Stories`,
         description: edition.description, lastmod, entries: posts.map(post => ({ url: articleUrl(post), name: post.title })), origin, preview, body, detail: edition.title });
 }
