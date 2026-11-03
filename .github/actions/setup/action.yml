@@ -6,6 +6,10 @@ inputs:
     description: The Ecosystem dry run needs the child toolchains before the lock is release-ready.
     required: false
     default: 'false'
+  main-only:
+    description: Skip provisioning child application Node majors when only Main's Node 22 toolchain is needed.
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -21,7 +25,7 @@ runs:
     - name: Read aggregate toolchain
       id: toolchain
       shell: bash
-      run: node scripts/deployment/toolchain.mjs ${{ inputs.rehearsal == 'true' && '--rehearsal' || '' }} >> "$GITHUB_OUTPUT"
+      run: node scripts/deployment/toolchain.mjs ${{ inputs.rehearsal == 'true' && '--rehearsal' || '' }} ${{ inputs.main-only == 'true' && '--main-only' || '' }} >> "$GITHUB_OUTPUT"
 
     - name: Provision Node ${{ steps.toolchain.outputs.extra }} for child builds
       if: steps.toolchain.outputs.extra != ''

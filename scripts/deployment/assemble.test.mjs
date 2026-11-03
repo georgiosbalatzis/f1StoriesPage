@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
-import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, seedImageCache } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, childCacheKey, nodeEnvironment, restoreChildCache, saveChildCache, seedImageCache } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
 import { verifyPublic } from './verify-public.mjs';
@@ -268,6 +268,68 @@ test('image cache seeding copies entries without reports or outside writes', t =
     assert.equal(fs.readFileSync(path.join(source, 'report.json'), 'utf8'), 'stale');
 });
 
+test('verified child artifact cache reuses valid entries and fails closed on pin, data, freshness or file tampering', t => {
+    const cacheRoot = fixture(t, {});
+    const telemetryApp = lock().applications.find(app => app.application === 'telemetry');
+    const telemetryOut = fixture(t, child('telemetry'));
+    const telemetryMeta = {
+        ...telemetryApp,
+        sourceSha: telemetryApp.sha,
+        sourceDigest: 'a'.repeat(64),
+        dirty: false,
+        version: '1.0.0',
+        nodeVersion: 'v22.22.2',
+    };
+    const key = saveChildCache(cacheRoot, telemetryApp, telemetryMeta, telemetryOut);
+    assert.ok(key?.startsWith('telemetry-'));
+    // Valid restore succeeds and produces byte-identical output.
+    const dest1 = path.join(cacheRoot, 'restored-1');
+    const hit = restoreChildCache(cacheRoot, telemetryApp, dest1, { builtAt });
+    assert.ok(hit && hit.cacheHit === true);
+    assert.equal(hit.sourceSha, telemetryApp.sha);
+    assert.equal(fs.readFileSync(path.join(dest1, 'index.html'), 'utf8'), landing('telemetry'));
+
+    // Pin change misses cleanly.
+    const changedPin = { ...telemetryApp, sha: 'f'.repeat(40) };
+    assert.equal(restoreChildCache(cacheRoot, changedPin, path.join(cacheRoot, 'miss-pin'), { builtAt }), null);
+
+    // Tampered file content in cache fails digest verification and returns null.
+    fs.writeFileSync(path.join(cacheRoot, key, 'output/assets/app.js'), 'tampered();');
+    assert.equal(restoreChildCache(cacheRoot, telemetryApp, path.join(cacheRoot, 'miss-tamper'), { builtAt }), null);
+
+    // TYRES cache checks both remote data.sha and 6-hour freshness window.
+    const tyresApp = lock().applications.find(app => app.application === 'tyres');
+    const tyresOut = fixture(t, child('tyres', { '2026/austin/index.html': tyresRace, ...tyresData(builtAt, builtAt) }));
+    const dataSha = 'd'.repeat(40);
+    const tyresMeta = {
+        ...tyresApp,
+        sourceSha: tyresApp.sha,
+        sourceDigest: 'b'.repeat(64),
+        dirty: false,
+        version: '0.1.0',
+        nodeVersion: 'v24.15.0',
+        data: {
+            ref: 'main',
+            paths: ['data'],
+            sha: dataSha,
+            digest: 'c'.repeat(64),
+            refresh: { script: 'weekend:update', at: builtAt, digest: 'e'.repeat(64) },
+        },
+    };
+    const tyresKey = saveChildCache(cacheRoot, tyresApp, tyresMeta, tyresOut, { dataSha });
+    assert.ok(tyresKey?.startsWith('tyres-'));
+    // Fresh TYRES cache with matching dataSha hits.
+    const tyresDest = path.join(cacheRoot, 'restored-tyres');
+    const tyresHit = restoreChildCache(cacheRoot, tyresApp, tyresDest, { dataSha, builtAt });
+    assert.ok(tyresHit && tyresHit.cacheHit === true);
+    assert.equal(tyresHit.data.sha, dataSha);
+    // Different remote dataSha misses.
+    assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-data'), { dataSha: '9'.repeat(40), builtAt }), null);
+    // Stale (>6h) TYRES manifest misses so a fresh build runs weekend:update.
+    const sevenHoursLater = new Date(Date.parse(builtAt) + 7 * 3600000).toISOString();
+    assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-stale'), { dataSha, builtAt: sevenHoursLater }), null);
+});
+
 test('the dry run cannot publish, and the publisher never builds a rehearsal', () => {
     const dryRun = read('.github/workflows/aggregate-dry-run.yml');
     assert.doesNotMatch(dryRun, /uses:\s*actions\/(?:deploy-pages|upload-pages-artifact|configure-pages)|uses:\s*\.\/\.github\/(?:workflows\/deploy-pages|actions\/build-pages)|pages:\s*write|id-token|contents:\s*write/);
@@ -365,6 +427,8 @@ test('CI provisions the TYRES Node toolchain only once aggregation is release-re
     const config = lock();
     assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }), '');
     assert.equal(extraNode({ ...config, releaseReady: true }), '24');
+    assert.equal(extraNode({ ...config, releaseReady: true }, '22', { mainOnly: true }), '');
+    assert.equal(extraNode({ ...config, releaseReady: true }, '22', { mainOnly: true, rehearsal: true }), '24');
     assert.equal(extraNode({ ...config, enabled: false, releaseReady: false }, '22', { rehearsal: true }), '24');
     config.applications[1].node = '20';
     assert.throws(() => extraNode({ ...config, releaseReady: true }), /One extra Node toolchain/);

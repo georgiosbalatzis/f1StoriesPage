@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { assemble, prepareMain } from './assemble.mjs';
-import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, seedImageCache, treeDigest } from './release.mjs';
+import { assertReleasable, buildMode, checkLock, checkScript, checkSource, nodeEnvironment, restoreChildCache, saveChildCache, seedImageCache, treeDigest } from './release.mjs';
 
 const mainRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
@@ -24,6 +24,10 @@ const destination = path.resolve(option('--output') || path.join(mainRoot, '.bui
 const reports = path.resolve(option('--reports') || path.join(destination, '..', 'reports'));
 const existingMain = option('--main-output');
 if (existingMain && !allowDirty) throw new Error('--main-output is a local non-release optimization only');
+// --child-cache <dir>: optional verified cache directory for immutable child application outputs.
+const childCacheArg = option('--child-cache');
+const childCache = childCacheArg ? path.resolve(childCacheArg) : null;
+const refreshData = args.includes('--refresh-data') || process.env.GITHUB_EVENT_NAME === 'schedule';
 // --node-bin 24=/opt/node24/bin: a directory holding the Node major an application declares.
 const nodeBins = Object.fromEntries(args.flatMap((arg, i) => arg === '--node-bin' ? [args[i + 1].split(/=(.*)/s).slice(0, 2)] : []));
 assertReleasable(config, { local, rehearsal });
@@ -40,8 +44,27 @@ const fetchCommit = (cwd, repository, ref) => command('git', ['-c', 'credential.
 const snapshots = [];
 const baseline = option('--baseline');
 const builtAt = new Date().toISOString();
+const stageTimings = {};
 try {
     for (const app of config.applications) {
+        const appStarted = Date.now();
+        const snapshot = path.join(staging, app.application);
+        // Attempt verified child artifact cache restore when configured (never on --baseline or scheduled TYRES refresh).
+        if (!local && !baseline && childCache && app.application !== 'main' && !(app.data && refreshData)) {
+            let remoteDataSha = null;
+            if (app.data) {
+                const head = git(staging, '-c', 'credential.helper=', 'ls-remote', `https://github.com/${app.repository}.git`, `refs/heads/${app.data.ref}`).split('\t')[0];
+                if (!/^[a-f0-9]{40}$/.test(head)) throw new Error(`${app.application}: cannot resolve reviewed data branch ${app.data.ref}`);
+                remoteDataSha = head;
+            }
+            const targetOut = path.join(snapshot, app.output);
+            const restored = restoreChildCache(childCache, app, targetOut, { nodeMajor: app.node, dataSha: remoteDataSha, builtAt });
+            if (restored) {
+                stageTimings[app.application] = { ms: Date.now() - appStarted, cached: true };
+                snapshots.push(restored);
+                continue;
+            }
+        }
         const source = local ? path.join(workspace, app.repository.split('/')[1]) : app.application === 'main' ? mainRoot : path.join(staging, 'checkout-' + app.application);
         if (!local && app.application !== 'main') {
             fs.mkdirSync(source);
@@ -54,8 +77,7 @@ try {
         const dirty = !!git(source, 'status', '--porcelain');
         checkSource(app, { sha, dirty }, { allowDirty });
         const node = nodeEnvironment(app, nodeBins);
-        const snapshot = path.join(staging, app.application);
-        fs.mkdirSync(snapshot);
+        fs.mkdirSync(snapshot, { recursive: true });
         // Only tracked/nonignored source, no node_modules/dist/scratch or environment-local secrets.
         const sourceNames = git(source, 'ls-files', '-z', '--cached', '--others', '--exclude-standard').split('\0').filter(Boolean).sort();
         const digest = createHash('sha256');
@@ -94,8 +116,15 @@ try {
         if (app.application === 'main' && existingMain) {
             fs.cpSync(path.resolve(existingMain), path.join(snapshot, app.output), { recursive: true });
         } else {
-            command('npm', ['ci', '--no-audit', '--no-fund'], snapshot, false, node.env);
+            if (app.application === 'main' && !local && !dirty && fs.existsSync(path.join(mainRoot, 'node_modules'))) {
+                fs.symlinkSync(path.join(mainRoot, 'node_modules'), path.join(snapshot, 'node_modules'), 'dir');
+            } else {
+                command('npm', ['ci', '--no-audit', '--no-fund'], snapshot, false, node.env);
+            }
             if (app.data?.refresh) {
+                if (app.application === 'tyres') {
+                    command('node_modules/.bin/playwright-core', ['install', '--with-deps', 'chromium'], snapshot, false, node.env);
+                }
                 metadata.data.refresh = { script: app.data.refresh, at: new Date().toISOString() };
                 command('npm', ['run', app.data.refresh], snapshot, false, node.env);
                 metadata.data.refresh.digest = treeDigest(snapshot, app.data.paths);
@@ -112,6 +141,9 @@ try {
             }
         }
         metadata.directory = path.join(snapshot, app.output);
+        if (!local && !baseline && childCache && app.application !== 'main' && !dirty) {
+            saveChildCache(childCache, app, metadata, metadata.directory);
+        }
         if (baseline) {
             if (app.application !== 'main') command('npm', ['run', 'build'], snapshot, false, node.env);
             const legacyPath = app.application === 'main' ? '' : app.repository.split('/')[1];
@@ -121,13 +153,17 @@ try {
             if (app.application !== 'main') command('npm', ['run', app.build], snapshot, false, node.env);
         }
         if (app.application === 'main') prepareMain(metadata.directory);
+        stageTimings[app.application] = { ms: Date.now() - appStarted, cached: false };
         snapshots.push(metadata);
     }
+    const assembleStarted = Date.now();
     const sourcesClean = !allowDirty && snapshots.every(app => !app.dirty);
     const run = process.env.GITHUB_RUN_ID ? { buildId: process.env.GITHUB_RUN_ID, runUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`, runner: `${process.env.RUNNER_OS}/${process.env.RUNNER_ARCH} ${process.env.ImageOS || ''} ${process.env.ImageVersion || ''}`.trim() } : { buildId: 'local' };
     const result = assemble(snapshots, destination, { mode, releaseEligible: mode === 'release' && sourcesClean, sourcesClean, lock: { enabled: config.enabled, releaseReady: config.releaseReady }, ...run, builtAt, nodeVersion: process.version }, reports);
-    fs.writeFileSync(path.join(reports, 'build-report.json'), JSON.stringify(result, null, 2) + '\n');
-    console.log(JSON.stringify({ destination, reports, ...result }, null, 2));
+    stageTimings.assemble = { ms: Date.now() - assembleStarted };
+    const fullResult = { ...result, timings: stageTimings };
+    fs.writeFileSync(path.join(reports, 'build-report.json'), JSON.stringify(fullResult, null, 2) + '\n');
+    console.log(JSON.stringify({ destination, reports, ...fullResult }, null, 2));
 } finally {
     fs.rmSync(staging, { recursive: true, force: true });
 }

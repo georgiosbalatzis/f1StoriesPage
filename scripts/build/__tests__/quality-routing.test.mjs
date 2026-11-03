@@ -60,20 +60,21 @@ test('article-only PRs use content checks on scheduled, author and ordinary bran
     f.commit();
     for (const branch of ['author/blog/new', 'author/import/new', 'author/delete/new',
         'author/edit/new', 'editorial/new']) {
-        assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=true', branch);
+        assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=true\nmode=ARTICLE_FAST_PATH', branch);
     }
 });
 
-test('mixed changes require full checks even on author and scheduled branches', t => {
+test('mixed changes and integration-pinned articles require full checks even on author branches', t => {
     const f = fixture(t);
     for (const file of ['package.json', 'package-lock.json', 'scripts/author/generate-page.js',
-        'blog-module/blog/template.html', '.github/workflows/quality.yml', 'README.md']) {
+        'blog-module/blog/template.html', '.github/workflows/quality.yml', 'README.md',
+        'blog-module/blog-entries/20260329G/source.txt', 'blog-module/blog-entries/20261012W/source.txt']) {
         f.git('reset', '--hard', f.base);
         f.write('blog-module/blog-entries/entry/source.txt', 'edited article\n');
         f.write(file, 'changed code or configuration\n');
         f.commit();
         for (const branch of ['author/blog/edit']) {
-            assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=false', `${branch}: ${file}`);
+            assert.equal(f.classify({ GITHUB_HEAD_REF: branch }), 'content_only=false\nmode=FULL_RELEASE', `${branch}: ${file}`);
         }
     }
 });
@@ -82,31 +83,31 @@ test('article deletions and renames within entries use content checks', t => {
     const f = fixture(t);
     f.git('mv', 'blog-module/blog-entries/entry/source.txt', 'blog-module/blog-entries/entry/renamed.txt');
     f.commit();
-    assert.equal(f.classify(), 'content_only=true');
+    assert.equal(f.classify(), 'content_only=true\nmode=ARTICLE_FAST_PATH');
     fs.unlinkSync(path.join(f.repo, 'blog-module/blog-entries/entry/renamed.txt'));
     f.commit();
-    assert.equal(f.classify(), 'content_only=true');
+    assert.equal(f.classify(), 'content_only=true\nmode=ARTICLE_FAST_PATH');
 });
 
 test('renames crossing the content boundary require full checks in both directions', t => {
     const f = fixture(t);
     f.git('mv', 'README.md', 'blog-module/blog-entries/entry/imported.txt');
     f.commit();
-    assert.equal(f.classify(), 'content_only=false');
+    assert.equal(f.classify(), 'content_only=false\nmode=FULL_RELEASE');
     f.git('reset', '--hard', f.base);
     f.git('mv', 'blog-module/blog-entries/entry/source.txt', 'exported.txt');
     f.commit();
-    assert.equal(f.classify(), 'content_only=false');
+    assert.equal(f.classify(), 'content_only=false\nmode=FULL_RELEASE');
 });
 
 test('classification preserves unusual filenames instead of splitting them into fake paths', t => {
     const f = fixture(t);
     f.write('blog-module/blog-entries/entry/space tab\tline\nbreak.txt');
     f.commit();
-    assert.equal(f.classify(), 'content_only=true');
+    assert.equal(f.classify(), 'content_only=true\nmode=ARTICLE_FAST_PATH');
     f.write('scripts/not-content\nblog-module/blog-entries/fake.txt');
     f.commit();
-    assert.equal(f.classify(), 'content_only=false');
+    assert.equal(f.classify(), 'content_only=false\nmode=FULL_RELEASE');
 });
 
 test('new code on main does not turn an unchanged article-only PR into a mixed PR', t => {
@@ -119,7 +120,7 @@ test('new code on main does not turn an unchanged article-only PR into a mixed P
     f.commit();
     // Checkout the synthetic merge just as pull_request checkout does.
     f.git('-c', 'user.name=Quality test', '-c', 'user.email=test@example.invalid', 'merge', '--no-edit', 'article');
-    assert.equal(f.classify({ PR_HEAD_SHA: head }, f.repo, true), 'content_only=true');
+    assert.equal(f.classify({ PR_HEAD_SHA: head }, f.repo, true), 'content_only=true\nmode=ARTICLE_FAST_PATH');
 });
 
 test('large diffs cannot hide a code change behind a changed-file limit', t => {
@@ -127,13 +128,13 @@ test('large diffs cannot hide a code change behind a changed-file limit', t => {
     for (let i = 0; i < 3010; i++) f.write(`blog-module/blog-entries/import/${i}.txt`);
     f.write('scripts/zzz-runtime.js');
     f.commit();
-    assert.equal(f.classify(), 'content_only=false');
+    assert.equal(f.classify(), 'content_only=false\nmode=FULL_RELEASE');
 });
 
 test('manual runs, empty diffs and unavailable comparisons fall back to full checks', t => {
     const f = fixture(t);
     f.git('-c', 'user.name=Quality test', '-c', 'user.email=test@example.invalid', 'commit', '--allow-empty', '-m', 'empty PR');
-    assert.equal(f.classify(), 'content_only=false');
+    assert.equal(f.classify(), 'content_only=false\nmode=FULL_RELEASE');
     f.write('blog-module/blog-entries/entry/source.txt', 'edited article\n');
     f.commit();
     for (const env of [
@@ -141,9 +142,9 @@ test('manual runs, empty diffs and unavailable comparisons fall back to full che
         { PR_HEAD_SHA: '' },
         { PR_HEAD_SHA: '--help' },
         { PR_HEAD_SHA: 'f'.repeat(40) }
-    ]) assert.equal(f.classify(env), 'content_only=false');
-    assert.equal(f.classify({}, f.root), 'content_only=false');
-    assert.equal(f.classify({}, f.repo, true), 'content_only=false');
+    ]) assert.equal(f.classify(env), 'content_only=false\nmode=FULL_RELEASE');
+    assert.equal(f.classify({}, f.root), 'content_only=false\nmode=FULL_RELEASE');
+    assert.equal(f.classify({}, f.repo, true), 'content_only=false\nmode=FULL_RELEASE');
 });
 
 test('depth-two checkout classifies content while missing parents fall back to full checks', t => {
@@ -156,7 +157,7 @@ test('depth-two checkout classifies content while missing parents fall back to f
     for (const depth of [2, 1]) {
         const clone = path.join(f.root, `depth-${depth}`);
         f.git('clone', '--quiet', '--branch', 'ci', '--depth', String(depth), pathToFileURL(f.repo).href, clone);
-        assert.equal(f.classify({ PR_HEAD_SHA: head }, clone, true), `content_only=${depth === 2}`);
+        assert.equal(f.classify({ PR_HEAD_SHA: head }, clone, true), `content_only=${depth === 2}\nmode=${depth === 2 ? 'ARTICLE_FAST_PATH' : 'FULL_RELEASE'}`);
     }
 });
 
@@ -203,6 +204,7 @@ test('every suite job builds before testing; only full checks run packaging gate
     assert.doesNotMatch(workflow, /github.head_ref|startsWith\(|I-06D/);
     for (const id of ['modules', 'built', 'artifact', 'browser']) {
         assert.match(step(id, 'Checkout'), /fetch-depth: 2/);
+        assert.match(step(id, 'Checkout'), /filter: blob:none/);
         assert.match(step(id, 'Classify changed files'), /run: node scripts\/build\/classify-quality.mjs/);
         // Each suite sees the built tree (bundles, indexes, stamped HTML, dist/) it saw in the single job.
         const body = job(id);
@@ -216,19 +218,21 @@ test('every suite job builds before testing; only full checks run packaging gate
         }
     }
     const always = {
-        modules: ['Build public artifact', 'Run race desk contract tests', 'Test isolated research prototype (DEMO and mocked provider only)',
-            'Run standings module tests', 'Run countdown schedule tests', 'Run visual focus capture regression', 'Run security policy tests',
-            'Run dashboard snapshot tests (synthetic data and generated keys only, no network)', 'Run aggregate deployment gate tests',
-            'Run tablet CLS guard tests', 'Run author research notebook browser tests'],
+        modules: ['Build public artifact', 'Run standings module tests', 'Run countdown schedule tests',
+            'Run security policy tests', 'Run aggregate deployment gate tests', 'Run tablet CLS guard tests'],
         built: ['Build public artifact', 'Run author module tests', 'Run publishing regression tests'],
         artifact: ['Build public artifact', 'Run static source guard', 'Verify asset size budgets', 'Verify generated editorial media',
             'Run blog module tests', 'Verify next-race countdown'],
     };
     const full = {
-        modules: ['Run consent and RUM regressions'],
+        modules: ['Run newsletter foundation tests (mock provider only, no network)', 'Run race desk contract tests',
+            'Test isolated research prototype (DEMO and mocked provider only)', 'Run visual focus capture regression',
+            'Run dashboard snapshot tests (synthetic data and generated keys only, no network)',
+            'Run author research notebook browser tests', 'Run consent and RUM regressions'],
         built: ['Verify Race Desk navigation and offline URL compatibility'],
         artifact: ['Verify release media and primary domain', 'Audit runtime dependencies', 'Verify static Grand Prix pilot pages'],
-        browser: ['Restore optimized article images', 'Build public artifact for browser regressions', 'Run Edition discovery regression',
+        browser: ['Setup dependencies for browser regressions', 'Restore optimized article images',
+            'Build public artifact for browser regressions', 'Run Edition discovery regression',
             'Run tablet CLS regression (both themes, edition font swap)'],
     };
     for (const contentOnly of ['true', 'false', undefined]) {
@@ -257,7 +261,7 @@ test('the two author steps together run exactly the test:author files, each once
 test('PRs restore the same image cache key deployment saves, and never save one', () => {
     const restore = fs.readFileSync(new URL('../../../.github/actions/restore-article-images/action.yml', import.meta.url), 'utf8');
     const publisher = fs.readFileSync(new URL('../../../.github/actions/build-pages/action.yml', import.meta.url), 'utf8');
-    const cacheKeys = text => [...text.matchAll(/\n\s+key: (.*)\n\s+restore-keys: \|\n\s+(.*)\n/g)].map(m => [m[1], m[2]]);
+    const cacheKeys = text => [...text.matchAll(/\n\s+path: \.build\/public-images\n\s+key: (.*)\n\s+restore-keys: \|\n\s+(.*)\n/g)].map(m => [m[1], m[2]]);
     assert.equal(cacheKeys(restore).length, 1);
     assert.deepEqual(cacheKeys(publisher), cacheKeys(restore));
     assert.match(restore, /uses: actions\/cache\/restore@/);

@@ -26,9 +26,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
 
       - name: Classify changed files
         id: changes
@@ -42,12 +45,15 @@ jobs:
         run: npm run build:public
 
       - name: Run newsletter foundation tests (mock provider only, no network)
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run test:newsletter
 
       - name: Run race desk contract tests
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run test:race-desk
 
       - name: Test isolated research prototype (DEMO and mocked provider only)
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run test:research
 
       - name: Run standings module tests
@@ -57,15 +63,18 @@ jobs:
         run: node --test scripts/build/__tests__/countdown-schedule.test.mjs scripts/build/__tests__/race-calendar.test.mjs
 
       - name: Run visual focus capture regression
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs
 
       - name: Run security policy tests
         run: npm run test:security
 
       - name: Run dashboard snapshot tests (synthetic data and generated keys only, no network)
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run test:intelligence && npm run test:dashboard:browser
 
       - name: Run author research notebook browser tests
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: node --test scripts/author/__tests__/research-browser.test.mjs
 
       - name: Run aggregate deployment gate tests
@@ -87,9 +96,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
 
       - name: Classify changed files
         id: changes
@@ -131,9 +143,12 @@ jobs:
         with:
           # Compare the tested PR merge with its base parent without full history.
           fetch-depth: 2
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
 
       - name: Classify changed files
         id: changes
@@ -192,15 +207,20 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
+          filter: blob:none
           persist-credentials: false
-
-      - uses: ./.github/actions/setup
 
       - name: Classify changed files
         id: changes
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/build/classify-quality.mjs
+
+      - name: Setup dependencies for browser regressions
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
 
       - name: Restore optimized article images
         if: ${{ steps.changes.outputs.content_only != 'true' }}
