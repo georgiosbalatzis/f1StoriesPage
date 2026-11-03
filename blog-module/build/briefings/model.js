@@ -11,6 +11,7 @@ const MANIFEST_FILE = path.join(ROOT, 'data/audience/briefings.v1.json');
 const BRIEFINGS_PATH = '/blog-module/blog/briefing/';
 const GENERATED = /^briefing\/(?:\d{4}-w\d{2}\/)?index\.html$/;
 const editionPath = id => `${BRIEFINGS_PATH}${id}/`;
+const DAY_FILE = path.join(ROOT, '.build/briefings/publication-day');
 const own = (value, key) => Object.hasOwn(value, key);
 
 function loadBriefingInputs() {
@@ -156,8 +157,24 @@ function selectBriefings(manifest, articles, { today, isPublic = isDirectPublic,
     });
 }
 
+// The Athens day build:blog generated briefings with. Later build stages (allowlist, validation) run as separate
+// processes and reuse it, so a build that crosses midnight stays consistent; absent or invalid → today's Athens day.
+function publicationDay(file = DAY_FILE) {
+    try {
+        const value = fs.readFileSync(file, 'utf8').trim();
+        if (T.isDay(value)) return value;
+    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    return T.athensDay();
+}
+
+function recordPublicationDay(today, file = DAY_FILE) {
+    if (typeof today !== 'string' || !T.isDay(today)) throw new Error('briefings: invalid publication day');
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, `${today}\n`);
+}
+
 function publicBriefingFiles(inputs = loadBriefingInputs(), options = {}) {
-    const selected = selectBriefings(inputs.manifest, inputs.articles, { today: T.athensDay(), ...options }).filter(item => item.eligible);
+    const selected = selectBriefings(inputs.manifest, inputs.articles, { today: publicationDay(), ...options }).filter(item => item.eligible);
     return new Set(selected.length ? [BRIEFINGS_PATH.slice(1) + 'index.html',
         ...selected.map(item => editionPath(item.edition.id).slice(1) + 'index.html')] : []);
 }
@@ -181,4 +198,4 @@ if (require.main === module) {
 }
 
 module.exports = { MANIFEST_FILE, BRIEFINGS_PATH, editionPath, GENERATED, loadBriefingInputs, isoWeekPeriod,
-    validateManifest, contentDigest, isDirectPublic, selectBriefings, publicBriefingFiles };
+    validateManifest, contentDigest, isDirectPublic, selectBriefings, publicBriefingFiles, publicationDay, recordPublicationDay, DAY_FILE };

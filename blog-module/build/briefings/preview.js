@@ -6,6 +6,7 @@ const T = require('../../taxonomy');
 const model = require('./model');
 const { renderBriefing, renderBriefingsIndex } = require('./render');
 const { writeBriefingPages } = require('./pages');
+const { freshDirectory } = require('./export-cli');
 const { buildIndexPosts, storyImage, renderStoryImage } = require('../index');
 const { primeImageDimensions, cardSrcset } = require('../image-sizes');
 const ROOT = path.resolve(__dirname, '../../..');
@@ -41,7 +42,7 @@ async function preview({ port = 4174, serve = true, id } = {}) {
     const origin = `http://127.0.0.1:${port}`;
     const options = { indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }, origin, preview: true };
     const pages = [renderBriefingsIndex(candidates, options), ...candidates.map(item => renderBriefing(item, options))];
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-briefings-preview-'));
+    const directory = freshDirectory('f1-briefings-preview-');
     writeBriefingPages(path.join(directory, 'blog-module/blog'), pages, stripScripts(fs.readFileSync(shellPath, 'utf8')));
     for (const page of pages) {
         const file = path.join(directory, 'blog-module/blog', page.file);

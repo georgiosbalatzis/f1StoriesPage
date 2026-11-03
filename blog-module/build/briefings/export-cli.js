@@ -6,6 +6,20 @@ const model = require('./model');
 const { briefingDocument, exportHtml, exportText } = require('./export');
 const ROOT = fs.realpathSync(path.resolve(__dirname, '../../..'));
 
+// Draft output never lands in the repository: the directory (after symlinks) must resolve outside it.
+function assertOutsideRepository(directory) {
+    const real = fs.realpathSync(directory);
+    if (real === ROOT || real.startsWith(ROOT + path.sep)) throw new Error('Export and preview output must be outside the repository');
+    return real;
+}
+
+function freshDirectory(prefix) {
+    assertOutsideRepository(os.tmpdir());
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+    try { assertOutsideRepository(directory); } catch (error) { fs.rmSync(directory, { recursive: true, force: true }); throw error; }
+    return directory;
+}
+
 function candidate(selected, id) {
     const item = selected.find(entry => entry.edition.id === id);
     if (!item || item.edition.status === 'retired' || item.reasons.some(reason => !['status', 'approval', 'digest'].includes(reason.code))) throw new Error(`Edition ${id} is not available for review`);
@@ -20,10 +34,10 @@ function exportEdition(id, out) {
     if (out) {
         const target = path.resolve(out);
         const parent = fs.realpathSync(path.dirname(target));
-        if (parent === ROOT || parent.startsWith(ROOT + path.sep)) throw new Error('Export destination must be outside the repository');
+        assertOutsideRepository(parent);
         directory = path.join(parent, path.basename(target));
         fs.mkdirSync(directory);
-    } else directory = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-briefing-'));
+    } else directory = freshDirectory('f1-briefing-');
     const doc = briefingDocument(item);
     const html = path.join(directory, 'edition.html'), text = path.join(directory, 'edition.txt');
     fs.writeFileSync(html, exportHtml(doc), { flag: 'wx' });
@@ -40,4 +54,4 @@ if (require.main === module) {
         exportEdition(args[id + 1], out < 0 ? undefined : args[out + 1]);
     } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { candidate, exportEdition };
+module.exports = { candidate, exportEdition, assertOutsideRepository, freshDirectory };

@@ -15,6 +15,7 @@ dist/
 .build/pages/
 .build/public-images/
 .build/race-desk*/
+.build/briefings/
 
 # Node
 node_modules/

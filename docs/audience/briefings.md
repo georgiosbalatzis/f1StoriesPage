@@ -101,7 +101,9 @@ Retired editions keep schema validation and reserve their id, but their articles
 | `revised` | `revised` is after today |
 | `member` | any article is future-dated, unreleased, or its page is missing, not self-canonical, noindex, or a redirect |
 
-One `today` is used for selection, page generation, the public-artifact allowlist and validation.
+One `today` is used for selection, page generation, the public-artifact allowlist and validation: `build:blog` records
+the Athens day it generated with in the ignored `.build/briefings/publication-day`, and the later `build:public` stages
+(separate processes) reuse it, so a build that crosses midnight stays consistent.
 
 ## Public pages
 
@@ -128,13 +130,14 @@ document, so both carry the same text in the same order:
 
 - title, week, opening, section headings and intros, for each article its title, author, date, rationale and absolute
   canonical HTTPS URL, closing;
-- HTML: a minimal document with headings, paragraphs, ordered lists and links only; escaped; no scripts, styles, images,
+- HTML: a minimal complete document (`<!doctype html>`, `lang="el"`, UTF-8, title) so it opens correctly on its own,
+  with headings, paragraphs, ordered lists and links only; escaped; no scripts, styles, images,
   forms, tracking or provider or unsubscribe placeholders;
 - text: UTF-8, LF line endings, same reading order, links written out;
 - an edition that is not eligible is marked «ΠΡΟΣΧΕΔΙΟ — δεν έχει εγκριθεί για δημοσίευση» at the top of both files.
 
-Exports are content only, not send-ready email. They are written to a new directory outside the repository (default: a
-fresh temporary directory), never over an existing file, never into `dist/`. Only editions whose sole blockers are
+Exports are content only, not send-ready email. They are written to a new directory that must resolve outside the repository, symlinks and `TMPDIR` included
+(default: a fresh temporary directory), never over an existing file, never into `dist/`. Only editions whose sole blockers are
 `status`, `approval` or `digest` (or eligible ones) can be exported; retired editions cannot. Nothing is sent anywhere.
 
 ## Draft preview
@@ -175,7 +178,7 @@ statement that the site has no newsletter remains true.
 
 | Question | Existing source | Label |
 | --- | --- | --- |
-| Clicks from an edition to its articles ([KPI 3](measurement-contract.md#3-article-to-article-discovery)) | Plain anchors: the existing consented `internal_page_click` (`link_section=page`); not separable per edition | `PROXY_ONLY` (aggregate); per edition `NOT_VERIFIED` |
+| Clicks from an edition to its articles ([KPI 3](measurement-contract.md#3-article-to-article-discovery)) | The reused article rows are classified by the existing consented `internal_page_click` as `link_section=article_link`, with `source_path` = the edition path; no existing model reports them per edition | `PROXY_ONLY` (aggregate); per edition `NOT_VERIFIED` |
 | Engagement on linked articles ([KPI 2](measurement-contract.md#2-engaged-sessions-and-article-engagement)) | Article engagement events, not attributable to the edition | `PROXY_ONLY` |
 | Reach, completion, returning readers, subscribers, opens, deliveries | None | `NOT_MEASURABLE` |
 | Performance guardrail ([KPI 15](measurement-contract.md#15-core-web-vitals-guardrails)) | Lab measurement; field RUM only where the shell already emits it | `PROXY_ONLY` |

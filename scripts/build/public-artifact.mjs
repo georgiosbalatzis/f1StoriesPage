@@ -101,7 +101,8 @@ const STANDINGS_ROOT_FILES = new Set([
 
 const today = taxonomy.athensDay();
 const COLLECTION_PUBLIC_FILES = collections.publicCollectionFiles(undefined, { today });
-const BRIEFING_PUBLIC_FILES = briefings.publicBriefingFiles(undefined, { today });
+// The day build:blog generated briefings with (a separate process; see briefings/model.js publicationDay).
+const BRIEFING_PUBLIC_FILES = briefings.publicBriefingFiles(undefined, { today: briefings.publicationDay() });
 const ENTITY_PUBLIC_FILES = hubs.publicHubFiles();
 const GP_PUBLIC_FILES = new Set(hubFiles(REPO_ROOT));
 

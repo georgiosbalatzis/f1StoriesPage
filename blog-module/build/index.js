@@ -1184,6 +1184,7 @@ async function processBlogEntries(options = {}) {
     const { buildBriefingPages, writeBriefingPages } = require('./briefings/pages');
     const briefingOptions = { today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset } };
     const briefingLinks = buildBriefingPages(blogPosts, briefingOptions).links;
+    require('./briefings/model').recordPublicationDay(today);
     const edition = injectEdition(indexPosts, selection, { today, hubLinks, collectionLinks: collections.links, briefingLinks });
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);

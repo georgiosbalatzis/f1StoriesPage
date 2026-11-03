@@ -1311,7 +1311,8 @@ function main() {
     const today = taxonomy.athensDay();
     const briefingInputs = briefings.loadBriefingInputs();
     const briefingDigests = briefingInputs.manifest.editions.map(item => item.review && item.review.contentSha256).filter(Boolean);
-    const approvedBriefingFiles = briefings.publicBriefingFiles(briefingInputs, { today });
+    const briefingDay = briefings.publicationDay();
+    const approvedBriefingFiles = briefings.publicBriefingFiles(briefingInputs, { today: briefingDay });
     const files = [];
     const editorialRefs = loadEditorialAssetRefs(errors);
     const sitemapUrls = loadSitemapUrls(errors);
@@ -1372,7 +1373,7 @@ function main() {
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls, { today, approvedBriefingFiles });
     validateCollections(errors, { sitemapUrls, today });
-    validateBriefings(errors, { sitemapUrls, today, approvedFiles: approvedBriefingFiles });
+    validateBriefings(errors, { sitemapUrls, today: briefingDay, approvedFiles: approvedBriefingFiles });
     validateJourneys(errors, { today });
     const currentYear = Number(today.slice(0, 4)), registry = readHubRegistry(REPO_ROOT);
     const { lock, models } = prepareHubModels(REPO_ROOT, { today, currentYear, publicRoot: DIST_ROOT });

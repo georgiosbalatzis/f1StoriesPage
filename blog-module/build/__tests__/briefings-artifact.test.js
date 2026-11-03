@@ -71,3 +71,50 @@ test('artifact validator checks files, order, sitemap, members and leaks', async
     write(`blog-module/blog-entries/a/article.html`, `<link rel="canonical" href="${article('a')}"><meta name="robots" content="noindex">`);
     assert.match(run(), /not a direct published story/);
 });
+
+test('export and preview directories must resolve outside the repository, TMPDIR included', t => {
+    const { assertOutsideRepository, freshDirectory } = require('../briefings/export-cli');
+    const repo = fs.realpathSync(path.resolve(__dirname, '../../..'));
+    assert.throws(() => assertOutsideRepository(path.join(repo, 'blog-module')), /outside the repository/);
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'briefing-out-'));
+    t.after(() => fs.rmSync(outside, { recursive: true, force: true }));
+    assert.equal(assertOutsideRepository(outside), fs.realpathSync(outside));
+    const link = path.join(outside, 'to-repo');
+    fs.symlinkSync(path.join(repo, 'blog-module'), link);
+    assert.throws(() => assertOutsideRepository(link), /outside the repository/);
+    const saved = process.env.TMPDIR;
+    t.after(() => { if (saved === undefined) delete process.env.TMPDIR; else process.env.TMPDIR = saved; });
+    for (const tmp of [path.join(repo, 'blog-module'), link]) {
+        process.env.TMPDIR = tmp;
+        assert.throws(() => freshDirectory('briefing-test-'), /outside the repository/);
+    }
+    process.env.TMPDIR = outside;
+    const fresh = freshDirectory('briefing-test-');
+    assert.ok(fresh.startsWith(outside));
+});
+
+test('publication day: build:blog records it, later stages reuse it across Athens midnight', t => {
+    const model = require('../briefings/model');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'briefing-day-'));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+    const file = path.join(dir, '.build/briefings/publication-day');
+    assert.equal(model.publicationDay(file), require('../../taxonomy').athensDay()); // absent → today
+    model.recordPublicationDay('2026-11-01', file);
+    assert.equal(model.publicationDay(file), '2026-11-01');
+    assert.throws(() => model.recordPublicationDay('2026-13-01', file));
+    fs.writeFileSync(file, 'garbage\n');
+    assert.equal(model.publicationDay(file), require('../../taxonomy').athensDay()); // invalid → today
+    // A w44 edition approved on Monday 2026-11-02: generated on Sunday's day it is withheld, so the allowlist computed
+    // with the recorded Sunday day (not the wall clock after midnight) must also be empty, and vice versa.
+    const articles = [{ id: 'a', date: '2026-10-26' }, { id: 'b', date: '2026-10-27' }];
+    const edition = { id: '2026-w44', status: 'published', title: 'Τ', description: 'Π', opening: ['Α'],
+        sections: [{ heading: 'Ε', items: [{ articleId: 'a', rationale: 'Λ' }, { articleId: 'b', rationale: 'Λ' }] }],
+        revised: '2026-11-01', review: { status: 'approved', kind: 'human', by: 'SYNTHETIC TEST', date: '2026-11-02', contentSha256: '' } };
+    edition.review.contentSha256 = model.contentDigest(edition);
+    const inputs = { manifest: { version: 1, editions: [edition] }, articles };
+    const files = day => [...model.publicBriefingFiles(inputs, { today: day, isPublic: () => true, retired: [] })];
+    model.recordPublicationDay('2026-11-01', file);
+    assert.deepEqual(files(model.publicationDay(file)), []);
+    model.recordPublicationDay('2026-11-02', file);
+    assert.deepEqual(files(model.publicationDay(file)), ['blog-module/blog/briefing/index.html', 'blog-module/blog/briefing/2026-w44/index.html']);
+});
