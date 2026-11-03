@@ -52,7 +52,9 @@ const next = '<section class="rr-next"><p>NEXT UP</p></section>';
 test('inserts, replaces, strips and repeats without changing surrounding bytes', () => {
     const component = journeyHtml(selected, 'first');
     const inserted = withJourney(original, component);
-    assert.ok(inserted.includes(`  <!-- f1s:journey:begin -->\n${component}\n<!-- f1s:journey:end -->\n  <section class="rr-pitwall"`));
+    assert.ok(inserted.includes(`  <!-- f1s:journey:begin -->\n${component}\n  <!-- f1s:journey:end --><section class="rr-pitwall"`));
+    // Every separator is inside the markers: cutting exactly the marker pair restores the page.
+    assert.equal(inserted.replace(/<!-- f1s:journey:begin -->[\s\S]*<!-- f1s:journey:end -->/, ''), original);
     assert.equal(inserted.slice(inserted.indexOf(next)), original.slice(original.indexOf(next)));
     assert.equal(withJourney(inserted, component), inserted);
     const replacement = journeyHtml(selected, 'last');
@@ -66,5 +68,21 @@ test('inserts, replaces, strips and repeats without changing surrounding bytes',
 
 test('requires the pit wall for insertion and rejects incomplete markers', () => {
     assert.throws(() => withJourney('<article></article>', '<div>journey</div>'), /rr-pitwall/);
-    assert.throws(() => withJourney('<!-- f1s:journey:begin -->', ''), /Malformed journey region/);
+    assert.throws(() => withJourney('<section class="rr-pitwall"></section><section class="rr-pitwall"></section>', '<div>j</div>'), /rr-pitwall/);
+    assert.throws(() => withJourney('<article><!-- f1s:journey:end --><section class="rr-pitwall"></section></article>', ''), /Malformed journey region/);
+});
+
+test('marker and anchor strings in comments or raw text stay body text', () => {
+    const page = '<article><textarea><!-- f1s:journey:begin -->kept<!-- f1s:journey:end --></textarea>\n'
+        + '<script>"<section class=\\"rr-pitwall\\">"</script><!-- <section class="rr-pitwall"> -->\n'
+        + '  <section class="rr-pitwall">pit</section></article>';
+    const component = journeyHtml(selected, 'first');
+    const inserted = withJourney(page, component);
+    assert.equal(inserted, page.replace('  <section class="rr-pitwall">pit',
+        `  <!-- f1s:journey:begin -->\n${component}\n  <!-- f1s:journey:end --><section class="rr-pitwall">pit`));
+    assert.equal(withJourney(inserted, component), inserted);
+    assert.equal(withJourney(inserted, ''), page);
+    assert.equal(withJourney(page, ''), page);
+    // No pit wall: nothing to strip, body text with marker strings untouched.
+    assert.equal(withJourney('<p><textarea><!-- f1s:journey:begin --></textarea></p>', ''), '<p><textarea><!-- f1s:journey:begin --></textarea></p>');
 });

@@ -62,7 +62,25 @@ test('artifact validator checks membership, sequence and published direct target
     writeAndReject(one, original.replace(/<a\b[^>]*>[\s\S]*?<\/a>/, 'missing'));
     writeAndReject(two, target.replace('</head>', '<meta name="robots" content="noindex"></head>'));
     writeAndReject(two, target.replace('</head>', '<meta http-equiv="refresh" content="0;url=/"></head>'));
+    // Any drift from the approved wording or the nav/sector-stop attributes, outside the list too.
+    writeAndReject(one, original.replace('>Σειρά</h2>', '>Άλλη σειρά</h2>'));
+    writeAndReject(one, original.replace('<p>Περιγραφή</p>', '<p>Άλλη περιγραφή</p>'));
+    writeAndReject(one, original.replace('>Second</a>', '>Άλλος τίτλος</a>'));
+    writeAndReject(one, original.replace(' aria-labelledby="rr-journey-title"', ''));
+    writeAndReject(one, original.replace('<div class="rr-layout" data-article-end>', '<div class="rr-layout">'));
     const index = path.join(f.root, 'blog-module/blog-index-data.json');
     writeAndReject(index, JSON.stringify({ p: posts.map(p => [p.id, '', '', p.id === 'two' ? '2027-01-01' : p.date]) }));
     assert.notDeepEqual(validate([{ ...selected[0], eligible: false }]), []);
+});
+
+test('artifact validator accepts approved text with internal runs of whitespace', async t => {
+    const { injectJourneys } = require('../journeys/pages');
+    const { validateJourneys } = await import(pathToFileURL(path.resolve(__dirname, '../../../scripts/build/validate-public-artifact.mjs')).href);
+    const f = fixture(t);
+    const spaced = [{ journey: { ...journey, title: 'Σειρά  δύο', steps: [{ ...journey.steps[0], transition: 'Μετά  το πρώτο.' }, ...journey.steps.slice(1)] },
+        steps: [{ ...steps[0], title: 'First  part', transition: 'Μετά  το πρώτο.' }, ...steps.slice(1)], eligible: true }];
+    injectJourneys(f.blog, spaced);
+    const errors = [];
+    validateJourneys(errors, { distRoot: f.root, selected: spaced, today: '2026-11-03' });
+    assert.deepEqual(errors, []);
 });

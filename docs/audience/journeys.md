@@ -40,7 +40,9 @@ Source of truth: [`data/audience/reading-journeys.v1.json`](../../data/audience/
 ```
 
 - Strict keys at every level; strings without surrounding whitespace or control characters.
-- `slug` unique across every record, retired ones included (a retired slug is never reused).
+- `slug` ASCII kebab case (`^[a-z0-9]+(?:-[a-z0-9]+)*$`, ≤60), unique across every record, retired ones included (a
+  retired slug is never reused).
+- `retired` is present if and only if `status` is `retired`.
 - `steps`: 2–6; `position` runs 1..n in array order; `articleId` is a canonical article id (path-safe), unique within the
   journey. Every step except the last has a `transition`; the last has none. Six is the ceiling because the component lists
   the whole series at the end of an article; a longer series should be split.
@@ -57,7 +59,8 @@ Source of truth: [`data/audience/reading-journeys.v1.json`](../../data/audience/
 3. To publish, the reviewer records **their own** approval: `status: "published"` and an approved `review` with their name,
    the real date and the printed digest. Agents never record approvals; no approval is inherited from a collection, hub or
    article review.
-4. `npm run journeys:validate -- --strict` must pass (it fails when a `published` journey would be withheld).
+4. `npm run journeys:validate -- --strict` must pass (it fails when a `published` journey would be withheld). The same PR
+   commits the rebuilt member `article.html` files; `build:check` fails otherwise.
 5. Merge and deployment follow the normal reviewed process.
 
 ## Publication eligibility (fail closed)
@@ -92,9 +95,15 @@ topic links and the prev/next band are written, inserts or replaces the componen
 stale component, so a withdrawn journey disappears on the next build. Files are written only when they change. With no
 eligible journey the public artifact is byte-identical to the base.
 
-`validate-public-artifact` checks the actual `dist/`: the component appears exactly once on each eligible member and nowhere
-else; inside it, n list entries, n−1 links in authored order (whole URLs), one current step in the right place, the right
-wording; every member is a published, direct, indexable article.
+A region is recognised only directly before the real pit-wall tag (located with the shared HTML tokenizer), so marker or
+pit-wall strings inside comments, scripts or textareas are left alone. Every separator sits inside the markers: removing
+the region restores the page byte for byte.
+
+`validate-public-artifact` checks the actual `dist/`, after stamping: the component appears exactly once on each eligible
+member and nowhere else (any marker string on a non-member fails, so the check errs towards a false alarm); inside it, n
+list entries, n−1 links in authored order (whole URLs), one current step in the right place, the right wording; the
+region is byte-identical to the renderer's output for the approved selection; every member is a published, direct,
+indexable article.
 
 Commands: `npm run test:journeys`, `npm run journeys:validate [-- --strict | --digest <slug>]`.
 
@@ -102,10 +111,13 @@ Commands: `npm run test:journeys`, `npm run journeys:validate [-- --strict | --d
 
 - **Withdraw a journey:** `status: "retired"` with a `retired` block (keep the record; it reserves the slug). The next build
   removes the component from every member.
-- **A member must go** (retired, unpublished, noindexed): the journey is withheld until an editor edits it and a reviewer
-  re-approves.
-- **Remove the feature:** revert the A-03 merge commit; the next build strips nothing because no region was written for an
-  unapproved journey, and articles return to their template output.
+- **A member must go:** if it is unpublished or noindexed, the journey is withheld until an editor edits it and a reviewer
+  re-approves. If the article is retired (listed in the retired-articles map), the build stops with a structural error
+  naming the surviving article, so the editor must edit the journey in the same change.
+- **Remove the feature:** member `article.html` files are tracked generated output (`build:check` covers them). While no
+  journey has ever been published, reverting the A-03 merge commit is enough. Otherwise first retire every published
+  journey and commit the rebuilt pages (the strip pass removes the regions), then revert: after the revert nothing strips
+  a region left in a tracked page.
 
 ## Measurement
 

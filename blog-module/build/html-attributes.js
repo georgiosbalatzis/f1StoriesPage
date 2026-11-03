@@ -57,7 +57,7 @@ function readAttributes(html, i) {
     return { attrs, unresolved, end: Math.min(i + 1, n) };
 }
 
-// Opening ({ name, attrs, unresolved }) and closing ({ name, close: true }) tags in document order.
+// Opening ({ name, attrs, unresolved, start: index of `<` }) and closing ({ name, close: true }) tags in document order.
 function tags(html) {
     const out = [];
     const n = html.length;
@@ -80,7 +80,7 @@ function tags(html) {
             const match = /^<([^\s/>]+)/.exec(html.slice(i));
             const name = match[1].toLowerCase();
             const { attrs, unresolved, end } = readAttributes(html, i + match[0].length);
-            out.push({ name, attrs, unresolved });
+            out.push({ name, attrs, unresolved, start: i });
             i = end;
             if (RAW_TEXT.has(name)) {
                 const close = new RegExp(`</${name}(?=[\\s/>])`, 'ig');

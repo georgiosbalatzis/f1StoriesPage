@@ -1,5 +1,6 @@
 const { escapeHtmlAttribute: esc } = require('../shared');
 const { articleUrl } = require('../entities/hubs');
+const { tags } = require('../html-attributes');
 
 function journeyHtml(selected, articleId) {
     const { journey, steps } = selected;
@@ -15,16 +16,31 @@ function journeyHtml(selected, articleId) {
         + `<p>${esc(journey.description)}</p>\n<ol>\n${items.join('\n')}\n</ol>\n<p>${ending}</p>\n</nav></div>`;
 }
 
-function withJourney(html, component) {
-    const begin = '<!-- f1s:journey:begin -->';
-    const end = '<!-- f1s:journey:end -->';
-    const region = /<!-- f1s:journey:begin -->[\s\S]*?<!-- f1s:journey:end -->(?:\r?\n[\t ]*)?/g;
-    const stripped = html.replace(region, () => '');
-    if (stripped.includes(begin) || stripped.includes(end)) throw new Error('Malformed journey region');
-    if (!component) return stripped;
-    const anchor = /(^[\t ]*)?(?=<section class="rr-pitwall")/m;
-    if (!anchor.test(stripped)) throw new Error('Journey requires an rr-pitwall anchor');
-    return stripped.replace(anchor, (_, indent = '') => `${indent}${begin}\n${component}\n${end}\n${indent}`);
+const BEGIN = '<!-- f1s:journey:begin -->';
+const END = '<!-- f1s:journey:end -->';
+
+// The region lives only directly before the real pit-wall tag (found by the tokenizer, so a marker or anchor string in a
+// comment, script or textarea is body text and never touched). Separators sit inside the markers, so removing the
+// region restores the page byte for byte. Returns { at, from } (region start, pit-wall start) or null without a pit wall.
+function journeyRegion(html) {
+    const pits = tags(html).filter(tag => !tag.close && tag.name === 'section' && (tag.attrs.class || '').split(/\s+/).includes('rr-pitwall'));
+    if (pits.length !== 1) return null;
+    const at = pits[0].start;
+    if (!html.slice(0, at).endsWith(END)) return { at, from: at };
+    const from = html.lastIndexOf(BEGIN, at - END.length);
+    if (from < 0) throw new Error('Malformed journey region');
+    return { at, from };
 }
 
-module.exports = { journeyHtml, withJourney };
+function withJourney(html, component) {
+    const region = journeyRegion(html);
+    if (!region) {
+        if (component) throw new Error('Journey requires exactly one rr-pitwall section');
+        return html;
+    }
+    const head = html.slice(0, region.from);
+    const indent = /[\t ]*$/.exec(head)[0];
+    return head + (component ? `${BEGIN}\n${component}\n${indent}${END}` : '') + html.slice(region.at);
+}
+
+module.exports = { BEGIN, END, journeyHtml, journeyRegion, withJourney };

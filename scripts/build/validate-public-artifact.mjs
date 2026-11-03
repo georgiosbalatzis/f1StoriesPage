@@ -13,6 +13,7 @@ import hubs from '../../blog-module/build/entities/hubs.js';
 import htmlAttributes from '../../blog-module/build/html-attributes.js';
 import collections from '../../blog-module/build/collections/model.js';
 import journeys from '../../blog-module/build/journeys/model.js';
+import journeyRender from '../../blog-module/build/journeys/render.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
@@ -1111,7 +1112,9 @@ export function validateJourneys(errors, { distRoot = DIST_ROOT, selected, today
     } catch (error) { errors.push(`journeys: cannot read blog-index-data.json (${error.message})`); }
     const begin = '<!-- f1s:journey:begin -->', end = '<!-- f1s:journey:end -->';
     const seen = new Set();
-    const textContent = value => htmlAttributes.decodeEntities(value.replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+    // Actual and expected text get the same whitespace folding (a double space in an approved title is valid).
+    const fold = value => value.replace(/\s+/g, ' ').trim();
+    const textContent = value => fold(htmlAttributes.decodeEntities(value.replace(/<[^>]*>/g, '')));
     const visit = (abs, file) => {
         if (!/\.html$/i.test(file)) return;
         const html = fs.readFileSync(abs, 'utf8');
@@ -1153,15 +1156,19 @@ export function validateJourneys(errors, { distRoot = DIST_ROOT, selected, today
             && lists.length === posts.length && listMarkup.length === posts.length && links.length === posts.length - 1
             && lists.every((entry, i) => {
                 if (i === index) return entry.tag.attrs['aria-current'] === 'step' && entry.links.length === 0
-                    && textContent(listMarkup[i][1]) === `${posts[i].title} (αυτό το άρθρο)`;
+                    && textContent(listMarkup[i][1]) === fold(`${posts[i].title} (αυτό το άρθρο)`);
                 if (Object.hasOwn(entry.tag.attrs, 'aria-current') || entry.links.length !== 1 || entry.links[0].unresolved.includes('href')) return false;
                 try { return new URL(entry.links[0].attrs.href, `${SITE_ORIGIN}/${file}`).href === hubs.articleUrl(posts[i]); } catch (_) { return false; }
             });
         if (!validList) errors.push(`${file}: journey list does not match selected order and current step`);
         const paragraphs = [...region.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p\s*>/gi)].map(match => textContent(match[1]));
         const label = `Ανάγνωση με σειρά · Μέρος ${index + 1} από ${posts.length}`;
-        const ending = index === posts.length - 1 ? 'Τέλος της σειράς.' : `Επόμενο: ${item.journey.steps[index].transition}`;
+        const ending = fold(index === posts.length - 1 ? 'Τέλος της σειράς.' : `Επόμενο: ${item.journey.steps[index].transition}`);
         if (!paragraphs.includes(label) || !paragraphs.includes(ending)) errors.push(`${file}: journey label or transition does not match selection`);
+        // Byte-exact against the renderer: heading, description, link titles and the nav/sector-stop attributes included.
+        // The structural checks above stay as an independent reading of the same markup.
+        const expected = `\n${journeyRender.journeyHtml(item, posts[index].id)}\n`;
+        if (!region.startsWith(expected) || !/^[\t ]*$/.test(region.slice(expected.length))) errors.push(`${file}: journey component differs from the approved selection`);
     };
     function walkPublic(dir) {
         for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
