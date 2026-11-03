@@ -68,7 +68,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Feature:** provide an ordered reading experience over approved public content.
 
-**Status:** foundation implemented in the A-03 draft PR; contract and approval procedure in [journeys.md](journeys.md). No journey is approved.
+**Status:** foundation merged (#432); contract and approval procedure in [journeys.md](journeys.md). No journey is approved.
 
 **Depends on:** A-01; [entity hubs](../entity-hubs.md), [editorial review](../editorial-review.md), [editorial model](../intelligence/editorial-model.md).
 
@@ -91,6 +91,8 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 ## A-04 — Race Weekend Reader Gateway
 
 **Feature:** use Race Desk context to help readers navigate race-weekend content.
+
+**Status:** technical foundation implemented in the A-04 draft PR; contract, approval procedure and pilot proposals in [race-gateways.md](race-gateways.md). No gateway is approved or published; A-02 collection and A-03 journey pilots remain pending.
 
 **Depends on:** A-01; [Race Desk architecture](../race-desk-architecture.md), [link contract](../race-desk-links.md), [editorial associations](../race-desk-editorial.md), [program](../race-desk-program.md).
 

@@ -141,8 +141,9 @@ try {
     await ready(page);
     await assertResultsPage(page, resultsContexts.get(model.raceId));
     const sections = page.locator('main section.race-desk-section');
-    assert.equal(await sections.count(), 7);
-    assert.deepEqual(await sections.evaluateAll(nodes => nodes.map(node => ({ id: node.getAttribute('aria-labelledby'), headings: [...node.querySelectorAll('h2')].map(h => h.id), kicker: node.querySelector('.race-desk-kicker')?.textContent.trim() }))), [
+    assert.ok([7, 8].includes(await sections.count()));
+    assert.ok(await sections.locator(':scope.race-desk-gateway').count() <= 1);
+    assert.deepEqual(await sections.evaluateAll(nodes => nodes.filter(node => !node.classList.contains('race-desk-gateway')).map(node => ({ id: node.getAttribute('aria-labelledby'), headings: [...node.querySelectorAll('h2')].map(h => h.id), kicker: node.querySelector('.race-desk-kicker')?.textContent.trim() }))), [
       ['schedule-title', '01 / ΠΡΟΓΡΑΜΜΑ'], ['gp-results-title', '02 / ΑΠΟΤΕΛΕΣΜΑΤΑ'], ['gp-timeline-title', '03 / ΧΡΟΝΟΛΟΓΙΟ ΑΓΩΝΑ'], ['gp-pace-title', '04 / ΡΥΘΜΟΣ ΑΓΩΝΑ & STINTS'], ['tools-title', '05 / ΕΡΓΑΛΕΙΑ'], ['related-title', '06 / ΙΣΤΟΡΙΕΣ'], ['sources-title', '07 / ΤΕΚΜΗΡΙΩΣΗ']
     ].map(([id, kicker]) => ({ id, headings: [id], kicker })));
     const allIds = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));

@@ -1,3 +1,5 @@
+import { toolNote } from './hub-presentation.mjs';
+import { renderGatewaySection, applyGatewayTargets } from './gateway-render.mjs';
 import { renderResultsSection } from './results-render.mjs';
 import { renderTimelineSection } from './timeline-render.mjs';
 import { renderPaceSection } from './pace-render.mjs';
@@ -15,10 +17,6 @@ const kinds = { fp1: 'Ελεύθερες δοκιμές 1', fp2: 'Ελεύθερ
 const clock = value => value ? `${escape(value.date)} · ${escape(value.time)}<small>${escape(value.zone)} · ${escape(value.offset)}</small>` : 'Μη διαθέσιμο';
 const sessionNote = result => result?.status === 'available' ? 'Καταγεγραμμένη κατάταξη Jolpica στον πίνακα αποτελεσμάτων παρακάτω.' : ({ 'provider-empty': 'Η καταγεγραμμένη απόκριση της πηγής δεν περιέχει αποτελέσματα.', 'unmapped-race': 'Δεν υπάρχει αντιστοίχιση αποτελεσμάτων για αυτό το Grand Prix.', 'uncaptured-session': 'Δεν υπάρχει καταγεγραμμένη απόκριση για αυτή την περίοδο.' }[result?.reason] ?? 'Δεδομένα περιόδου: μη συνδεδεμένα σε αυτή τη σελίδα.');
 const sessionRow = (session, results) => `<tr><th scope="row">${escape(kinds[session.kind] ?? session.kind)}<small>${sessionNote(results?.classifications?.[session.kind])}</small></th><td>${session.startUtc && session.utcTime ? `<time datetime="${escape(session.startUtc)}">${clock(session.utcTime)}</time>` : 'Μη διαθέσιμο'}</td><td>${clock(session.venueTime)}</td><td>${clock(session.athensTime)}</td></tr>`;
-const toolNote = tool => {
-  const selection = tool.kind === 'generic' ? 'Γενική προβολή · επίλεξε αγώνα μέσα στο εργαλείο.' : tool.kind === 'partial' ? 'Μέρος της επιλογής μεταφέρεται · έλεγξε την επιλογή στο εργαλείο.' : tool.target === 'grid' ? 'Συμπαγής προβολή THE GRID για τον συγκεκριμένο αγώνα.' : 'Σύνδεσμος για τον συγκεκριμένο αγώνα.';
-  return tool.target === 'tyres' ? `${selection} Προεπισκόπηση TYRES, όχι μετρημένα αποτελέσματα αγώνα.` : selection;
-};
 const toolRow = tool => {
   const url = safeUrl(tool.url);
   return `<li><div><h3>${url ? `<a href="${escape(url)}">${escape(tool.label)} <span aria-hidden="true">↗</span></a>` : escape(tool.label)}</h3><p>${url ? escape(toolNote(tool)) : 'Σύνδεσμος μη διαθέσιμος.'}</p></div></li>`;
@@ -60,7 +58,8 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   const local = model.localIdentity;
   const localDetails = local ? `<details><summary>Ονομασίες στο τοπικό μητρώο</summary><span>Αγώνας: ${escape(local.eventName)}</span><span>Ονομασία προβολής: ${escape(local.displayName)}</span><span>Πίστα: ${escape(local.venue?.name)}</span><span>Ζώνη: ${escape(local.venue?.timeZone)}</span></details>` : '';
   const sessions = model.sessions.length ? model.sessions.map(session => sessionRow(session, model.results)).join('\n') : '<tr><td colspan="4">Δεν υπάρχουν καταγεγραμμένες περίοδοι διαθέσιμες σε αυτή τη σελίδα.</td></tr>';
-  return `<!doctype html>
+  const gateway = model.gateway ? renderGatewaySection(model.gateway) : '';
+  const html = `<!doctype html>
 <html lang="el">
 <head>
   <!-- @include partials/head-meta.html -->
@@ -91,7 +90,7 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
         <p class="race-desk-attribution">${attribution}</p>
         <h1>${escape(name)} <span>${escape(model.season)}</span><b aria-hidden="true">.</b></h1>
         <div class="race-desk-hero-foot"><p>${escape(model.venue.name)}</p><p>Ζώνη ώρας τοπικού μητρώου <strong>${escape(model.venue.timeZone)}</strong></p></div>
-      </header>
+      </header>${gateway}
       <section class="race-desk-section" aria-labelledby="schedule-title">
         <div class="race-desk-section-head"><div><p class="race-desk-kicker">01 / ΠΡΟΓΡΑΜΜΑ</p><h2 id="schedule-title">Οι περίοδοι</h2></div><p>Προγραμματισμένες ώρες έναρξης από τα διαθέσιμα καταγεγραμμένα στοιχεία. Η λίστα μπορεί να είναι ελλιπής. Η ζώνη IANA της πίστας προέρχεται από το τοπικό μητρώο· ελέγχθηκε μόνο η συμφωνία της απόκλισης ώρας με την επίσημη πηγή. Η ώρα Ελλάδας εμφανίζεται στη ζώνη Europe/Athens.</p></div>
         <p id="schedule-scroll-hint" class="race-desk-scroll-hint">Κύλησε οριζόντια για όλες τις ώρες · με πληκτρολόγιο, χρησιμοποίησε τα βέλη.</p>
@@ -116,4 +115,5 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   <script src="/scripts/sw-cleanup.js" defer></script>
 </body>
 </html>`;
+  return model.gateway ? applyGatewayTargets(html, model.gateway) : html;
 }

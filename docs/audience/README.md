@@ -29,6 +29,7 @@ Any new event named in these documents is a **recommendation only**.
 | [readiness-gates.md](readiness-gates.md) | Owner-approved A-02..A-09 roadmap, prerequisites, GO / NO-GO conditions and owner decisions | A-01; roadmap A-02 |
 | [collections.md](collections.md) | Curated collections: schema, approval and publication gates, build integration, removal, measurement limits | A-02 |
 | [journeys.md](journeys.md) | Article reading journeys: schema, approval, the in-article component, build integration, removal, measurement limits | A-03 |
+| [race-gateways.md](race-gateways.md) | Race weekend reader gateway on GP Hubs: Race Desk ownership, schema, approval, evidence and tool binding, build integration, rollback, measurement limits, pilots | A-04 |
 
 Authoritative sources stay where they are. Phase 4 links them and never re-defines them:
 Intelligence ([README](../intelligence/README.md), [metrics contract](../intelligence/metrics-contract.md),
@@ -72,8 +73,9 @@ Details and evidence: each linked document. Every claim there cites a repository
 | KPI coverage | See [measurement contract](measurement-contract.md) and [baseline](baseline-evidence.md) |
 | Production validation of any audience KPI | None. Nothing in A-01 is `PRODUCTION_VALIDATED` |
 | A-02 | Curated Collections Foundation: merged (#431), no collection approved; see [collections.md](collections.md) |
-| A-03 | Article Reading Journeys: draft PR, no journey approved; see [journeys.md](journeys.md) |
-| A-04..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
+| A-03 | Article Reading Journeys: merged (#432), no journey approved; see [journeys.md](journeys.md) |
+| A-04 | Race Weekend Reader Gateway: technical foundation in a draft PR, no gateway approved or live; see [race-gateways.md](race-gateways.md) |
+| A-05..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
 
 ## Unresolved owner decisions
 

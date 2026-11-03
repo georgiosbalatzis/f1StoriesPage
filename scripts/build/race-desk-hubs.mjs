@@ -8,6 +8,7 @@ import taxonomy from '../../blog-module/taxonomy.js';
 import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
 import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
 import { readPaceContexts } from '../race-desk/pace-files.mjs';
+import { readGatewaySelection } from '../race-desk/gateway-files.mjs';
 import { renderHub } from '../race-desk/hub-render.mjs';
 import { expandPageIncludes } from './include.mjs';
 
@@ -22,16 +23,27 @@ function safeDestination(root, relativePath) {
   return current;
 }
 
-export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFullYear(), { posts, today = taxonomy.athensDay() } = {}) {
-  root = path.resolve(root);
-  if (fs.lstatSync(root).isSymbolicLink()) throw new Error('Refusing symlinked repository root');
+export function prepareHubModels(root, { posts, today = taxonomy.athensDay(), currentYear = Number(today.slice(0, 4)), publicRoot = root } = {}) {
   const registry = readHubRegistry(root);
-  const stories = readEditorialSelection(root, registry, { posts, today });
+  const stories = readEditorialSelection(root, registry, { posts, today, publicRoot });
   const timelines = readTimelineContexts(root, registry);
   const paces = readPaceContexts(root, registry);
   const lock = JSON.parse(fs.readFileSync(path.join(root, 'scripts/deployment/sources.json'), 'utf8'));
-  const models = createPublicationModels(registry, lock, readHubEvidence(root), { currentYear });
   const results = readResultsContexts(root, registry);
+  const models = createPublicationModels(registry, lock, readHubEvidence(root), { currentYear }).map(model => ({
+    ...model, stories: stories.get(model.raceId), timeline: timelines.get(model.raceId),
+    pace: paces.get(model.raceId), results: results.get(model.raceId)
+  }));
+  return { lock, models };
+}
+
+export async function writeRaceDeskHubs(root, currentYear, { posts, today = taxonomy.athensDay() } = {}) {
+  root = path.resolve(root);
+  if (fs.lstatSync(root).isSymbolicLink()) throw new Error('Refusing symlinked repository root');
+  currentYear ??= Number(today.slice(0, 4));
+  const registry = readHubRegistry(root);
+  const { lock, models } = prepareHubModels(root, { posts, today, currentYear });
+  const gateways = readGatewaySelection(root, registry, models, { today });
   const homePath = safeDestination(root, 'index.html');
   const home = fs.readFileSync(homePath, 'utf8');
   const marker = /<!-- f1s:gp-discovery:begin -->[\s\S]*?<!-- f1s:gp-discovery:end -->/;
@@ -41,7 +53,7 @@ export async function writeRaceDeskHubs(root, currentYear = new Date().getUTCFul
   for (const model of models) {
     const file = model.path.slice(1) + 'index.html';
     const destination = safeDestination(root, file);
-    const html = await expandPageIncludes(renderHub({ ...model, stories: stories.get(model.raceId), timeline: timelines.get(model.raceId), pace: paces.get(model.raceId), results: results.get(model.raceId) }, { origin: lock.origin }), { root, relativePath: file });
+    const html = await expandPageIncludes(renderHub({ ...model, gateway: gateways.get(model.raceId) }, { origin: lock.origin }), { root, relativePath: file });
     prepared.push({ destination, html, page: { file, path: model.path, changefreq: 'monthly', priority: '0.5' } });
   }
   // Only this marked region is generated; the four-product index stays separate.

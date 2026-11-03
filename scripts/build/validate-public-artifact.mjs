@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { prepareHubModels } from './race-desk-hubs.mjs';
+import { readGatewaySelection } from '../race-desk/gateway-files.mjs';
 import { readResultsContexts } from '../race-desk/results-files.mjs';
 import { validateResultsOutput } from '../race-desk/results-validation.mjs';
 // validate-public-artifact.mjs — fail if dist/ contains private/source clutter.
@@ -18,9 +20,6 @@ import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
 import { hubFiles, readHubRegistry, readHubEvidence } from '../race-desk/hub-files.mjs';
-import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
-import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
-import { readPaceContexts } from '../race-desk/pace-files.mjs';
 import { validateHubOutput } from '../race-desk/hub-validation.mjs';
 import { SNAPSHOT_PATH, assertEnvelope } from '../intelligence/snapshot.mjs';
 import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
@@ -1288,8 +1287,11 @@ function main() {
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
     validateCollections(errors, { sitemapUrls });
     validateJourneys(errors);
-    errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
-    errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, readHubRegistry(REPO_ROOT), { today: taxonomy.athensDay(), publicRoot: DIST_ROOT }), readTimelineContexts(REPO_ROOT, readHubRegistry(REPO_ROOT)), readPaceContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
+    const today = taxonomy.athensDay(), currentYear = Number(today.slice(0, 4)), registry = readHubRegistry(REPO_ROOT);
+    const { lock, models } = prepareHubModels(REPO_ROOT, { today, currentYear, publicRoot: DIST_ROOT });
+    const gateways = readGatewaySelection(REPO_ROOT, registry, models, { today });
+    errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, registry), gateways));
+    errors.push(...validateHubOutput(DIST_ROOT, registry, lock, currentYear, readHubEvidence(REPO_ROOT), new Map(models.map(m => [m.raceId, m.stories])), new Map(models.map(m => [m.raceId, m.timeline])), new Map(models.map(m => [m.raceId, m.pace])), gateways));
     for (const file of GP_PUBLIC_FILES) {
         if (!discovery.anchors.has(file)) errors.push(`${file}: GP absent from static discovery graph`);
     }

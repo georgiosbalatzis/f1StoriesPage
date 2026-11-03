@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "gateways": [
+    {
+      "raceId": "2026-mexican-gp",
+      "status": "draft",
+      "title": "Mexico City Grand Prix 2026: η προετοιμασία και το πρόγραμμα",
+      "intro": "Ένας περιορισμένος οδηγός για τον φάκελο του Grand Prix: ένα επιμελημένο άρθρο του F1 Stories, η προεπισκόπηση της πίστας στο TYRES και το καταγεγραμμένο πρόγραμμα των περιόδων.",
+      "perspectives": [
+        {
+          "kind": "before",
+          "text": "Το BetCast #278 γράφτηκε μετά τα δύο πρώτα ελεύθερα δοκιμαστικά και είναι στοιχηματικό άρθρο: περιέχει επιλογές και εκτιμήσεις της σύνταξης, όχι αποτελέσματα ή επαληθευμένη πρόβλεψη. Το TYRES δείχνει τα χαρακτηριστικά της πίστας ως προεπισκόπηση.",
+          "links": [
+            { "ref": "article", "articleId": "20261031J" },
+            { "ref": "tool", "target": "tyres", "kind": "exact" }
+          ]
+        },
+        {
+          "kind": "weekend",
+          "text": "Οι προγραμματισμένες ώρες έναρξης κάθε περιόδου σε UTC, τοπική ώρα και ώρα Ελλάδας. Το THE GRID ανοίγει σε γενική προβολή· ο αγώνας επιλέγεται μέσα στο εργαλείο.",
+          "links": [
+            { "ref": "section", "section": "schedule" },
+            { "ref": "tool", "target": "grid", "kind": "generic" }
+          ]
+        }
+      ],
+      "revised": "2026-11-03",
+      "review": { "status": "pending" }
+    },
+    {
+      "raceId": "2026-singapore-gp",
+      "status": "draft",
+      "title": "Singapore Grand Prix 2026: πριν, κατά τη διάρκεια και μετά",
+      "intro": "Τρεις τρόποι να διαβάσεις τον φάκελο του Grand Prix: η προετοιμασία για την πίστα Marina Bay, το πρόγραμμα του τριημέρου με Sprint και τα καταγεγραμμένα στοιχεία του αγώνα, χωριστά από την ερμηνεία της σύνταξης.",
+      "perspectives": [
+        {
+          "kind": "before",
+          "text": "Το GRIDCAST #02 εξηγεί τι περίμενε η σύνταξη από την πίστα πόλης και το τριήμερο με Sprint. Το TYRES δείχνει τα χαρακτηριστικά και τις απαιτήσεις της πίστας ως προεπισκόπηση, όχι ως μετρημένα αποτελέσματα.",
+          "links": [
+            { "ref": "article", "articleId": "20261008J" },
+            { "ref": "tool", "target": "tyres", "kind": "exact" }
+          ]
+        },
+        {
+          "kind": "weekend",
+          "text": "Οι προγραμματισμένες ώρες έναρξης κάθε περιόδου σε UTC, τοπική ώρα και ώρα Ελλάδας, οι καταγεγραμμένες κατατάξεις και η προβολή του THE GRID για τον συγκεκριμένο γύρο.",
+          "links": [
+            { "ref": "section", "section": "schedule" },
+            { "ref": "section", "section": "results" },
+            { "ref": "tool", "target": "grid", "kind": "exact" }
+          ]
+        },
+        {
+          "kind": "after",
+          "text": "Το χρονολόγιο και η ενότητα ρυθμού παρουσιάζουν καταγεγραμμένες παρατηρήσεις της πηγής και εξηγούν τα όρια της κάλυψής τους. Το άρθρο για τον Max Verstappen είναι ερμηνεία της σύνταξης και διαβάζεται χωριστά από αυτά.",
+          "links": [
+            { "ref": "section", "section": "results" },
+            { "ref": "section", "section": "timeline" },
+            { "ref": "section", "section": "pace" },
+            { "ref": "article", "articleId": "20261012W" }
+          ]
+        }
+      ],
+      "revised": "2026-11-03",
+      "review": { "status": "pending" }
+    }
+  ]
+}

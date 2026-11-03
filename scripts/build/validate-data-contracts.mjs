@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { prepareHubModels } from './race-desk-hubs.mjs';
+import { readGatewaySelection } from '../race-desk/gateway-files.mjs';
 import { readResultsContexts } from '../race-desk/results-files.mjs';
 import { validateResultsOutput } from '../race-desk/results-validation.mjs';
 // validate-data-contracts.mjs - fail builds when generated JSON/XML contracts drift.
@@ -12,7 +14,6 @@ import feed from '../../blog-module/build/feed.js';
 import search from '../../blog-module/search-destinations.js';
 import { validateRegistry } from '../race-desk/core/index.mjs';
 import { createRaceDeskProjection } from '../race-desk/projection.mjs';
-import { readEditorialSelection } from '../race-desk/editorial-files.mjs';
 import { readTimelineContexts } from '../race-desk/timeline-files.mjs';
 import { readPaceContexts } from '../race-desk/pace-files.mjs';
 import { validateHubOutput } from '../race-desk/hub-validation.mjs';
@@ -635,8 +636,11 @@ function main() {
                 const sourceLock = JSON.parse(fs.readFileSync(relAbs('scripts/deployment/sources.json'), 'utf8'));
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
-                validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/results', error));
-                validateHubOutput(REPO_ROOT, registry, sourceLock, new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, registry, { today: taxonomy.athensDay() }), readTimelineContexts(REPO_ROOT, registry), readPaceContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/gp', error));
+                const today = taxonomy.athensDay(), currentYear = Number(today.slice(0, 4));
+                const { models } = prepareHubModels(REPO_ROOT, { today, currentYear });
+                const gateways = readGatewaySelection(REPO_ROOT, registry, models, { today });
+                validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry), gateways).forEach(error => addError('race-desk/results', error));
+                validateHubOutput(REPO_ROOT, registry, sourceLock, currentYear, readHubEvidence(REPO_ROOT), new Map(models.map(m => [m.raceId, m.stories])), new Map(models.map(m => [m.raceId, m.timeline])), new Map(models.map(m => [m.raceId, m.pace])), gateways).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);
             }

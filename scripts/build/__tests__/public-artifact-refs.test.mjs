@@ -188,7 +188,7 @@ function cliFixture(t) {
     const required = source.match(/const REQUIRED_EXACT = \[([\s\S]*?)\n\];/)[1];
     for (const match of required.matchAll(/'([^']+)'/g)) write(dist, match[1]);
     write(root, 'scripts/build/validate-public-artifact.mjs', source);
-    for (const file of ['capture.mjs', 'capture-files.mjs', 'timeline-files.mjs', 'timeline.mjs', 'timeline-render.mjs', 'pace-files.mjs', 'pace.mjs', 'pace-render.mjs', 'results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
+    for (const file of ['capture.mjs', 'capture-files.mjs', 'timeline-files.mjs', 'timeline.mjs', 'timeline-render.mjs', 'pace-files.mjs', 'pace.mjs', 'pace-render.mjs', 'results-files.mjs', 'results.mjs', 'results-render.mjs', 'results-validation.mjs', 'hub-files.mjs', 'hub-model.mjs', 'hub-publication.mjs', 'hub-validation.mjs', 'hub-render.mjs', 'hub-presentation.mjs', 'gateway.mjs', 'gateway-files.mjs', 'gateway-render.mjs', 'editorial.mjs', 'editorial-files.mjs', 'core/index.mjs', 'core/navigation.mjs', 'core/links.mjs']) {
         write(root, `scripts/race-desk/${file}`, fs.readFileSync(new URL(`../../race-desk/${file}`, import.meta.url)));
     }
     write(root, 'scripts/deployment/release.mjs', fs.readFileSync(new URL('../../deployment/release.mjs', import.meta.url)));
@@ -199,6 +199,8 @@ function cliFixture(t) {
     write(root, 'data/race-desk/editorial.v1.json', '{ "schemaVersion": 1, "associations": [] }');
     write(root, 'blog-module/blog-source-cache.json', '{ "posts": [] }');
     for (const round of [2, 3, 14, 15, 16, 17]) write(root, `standings/rounds/2026-${round}.json`, fs.readFileSync(new URL(`../../../standings/rounds/2026-${round}.json`, import.meta.url)));
+    for (const file of ['race-desk-hubs.mjs', 'include.mjs']) write(root, `scripts/build/${file}`, fs.readFileSync(new URL(`../${file}`, import.meta.url)));
+    write(root, 'data/audience/race-gateways.v1.json', '{"version":1,"gateways":[]}');
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));
@@ -261,7 +263,7 @@ function cliFixture(t) {
             ? '<meta name="robots" content="noindex, nofollow">'
             : '<meta name="robots" content="max-image-preview:large"><meta property="og:locale" content="el_GR"><meta property="og:site_name" content="F1 Stories">';
         const escape = value => value.replaceAll('&', '&amp;').replaceAll('\"', '&quot;');
-        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a>${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderResultsSection(resultsContexts.get(gp.raceId))}${renderTimelineSection(timelines.get(gp.raceId), { number: '03' })}${renderPaceSection(paces.get(gp.raceId), { number: '04' })}<section class="race-desk-section race-desk-related" aria-labelledby="related-title"><h2 id="related-title">Σχετικά άρθρα</h2></section>` : '';
+        const gpContent = gp ? `<a href="${gp.scheduleEvidence.url}">Official</a><section class="race-desk-section" aria-labelledby="tools-title">${gp.tools.map(tool => `<a href="${escape(tool.url)}">Tool</a>`).join('')}</section>${gp.sessions.map(session => `<time datetime="${session.startUtc}">Start</time>`).join('')}${renderResultsSection(resultsContexts.get(gp.raceId))}${renderTimelineSection(timelines.get(gp.raceId), { number: '03' })}${renderPaceSection(paces.get(gp.raceId), { number: '04' })}<section class="race-desk-section race-desk-related" aria-labelledby="related-title"><h2 id="related-title">Σχετικά άρθρα</h2></section>` : '';
         write(dist, file, injectSecurityMeta(`<head><meta charset="utf-8">${robots}${links}${canonical}</head>
             <body class="editorial-page home-page archive-page article-page standings-page authors-page${gp ? ' race-desk-page' : ''}">${markers}${gpContent}
             <script src="/blog-module/taxonomy.min.js"></script><script src="/blog-module/blog-index.min.js"></script>
