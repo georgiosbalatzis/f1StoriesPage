@@ -23,7 +23,7 @@ export function validateHubOutput(root, registry, lock, currentYear, evidence, s
   const privateValues = ['editorial.v1.json', 'source.txt', ...manifest.associations.flatMap(({ evidence: item }) => [item.sha256, item.reviewedRevision])];
   const localManifest = path.join(root, 'data/audience/race-gateways.v1.json');
   const gatewayManifest = JSON.parse(fs.readFileSync(fs.existsSync(localManifest) ? localManifest : new URL('../../data/audience/race-gateways.v1.json', import.meta.url), 'utf8'));
-  const gatewayPrivate = ['race-gateways.v1.json', 'data/audience/', ...['contentSha256', 'perspectives', 'review'].flatMap(key => [`"${key}":`, `&quot;${key}&quot;:`]), ...gatewayManifest.gateways.map(item => item.review?.contentSha256).filter(Boolean)];
+  const gatewayPrivate = ['race-gateways.v1.json', 'data/audience/', ...gatewayManifest.gateways.map(item => item.review?.contentSha256).filter(Boolean)];
   const models = createPublicationModels(registry, lock, evidence, { currentYear });
   const read = file => {
     try { return fs.readFileSync(path.join(root, file), 'utf8'); }
@@ -52,7 +52,8 @@ export function validateHubOutput(root, registry, lock, currentYear, evidence, s
         return !section || target.name !== 'section' || !target.attrs.class?.split(/\s+/).includes('race-desk-section') || target.attrs['aria-labelledby'] !== GATEWAY_SECTIONS[section].headingId;
       }) || [...referenced].some(section => targets.filter(target => target.attrs.id === gatewayTargetId(section)).length !== 1)) errors.push(`${file}: gateway targets mismatch`);
     } else if (gatewayTags.length || targets.length || titles.length) errors.push(`${file}: unexpected gateway`);
-    if (gatewayPrivate.some(value => value && (html.includes(value) || html.includes(escape(value))))) errors.push(`${file}: gateway evidence exposed`);
+    // Manifest JSON keys (raw or entity-quoted, any spacing before the colon); copy may still contain the quoted words.
+    if (gatewayPrivate.some(value => value && (html.includes(value) || html.includes(escape(value)))) || /(?:"|&quot;|&#34;)(?:contentSha256|perspectives|review)(?:"|&quot;|&#34;)\s*:/.test(html)) errors.push(`${file}: gateway evidence exposed`);
     const stripTarget = (section, key) => referenced.has(key) ? section.replace(` id="${gatewayTargetId(key)}"`, '') : section;
     const sections = [...html.matchAll(/<section class="race-desk-section race-desk-related"[^>]*>[\s\S]*?<\/section>/g)];
     const expected = stories.get(model.raceId);
