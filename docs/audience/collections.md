@@ -1,6 +1,6 @@
 # Curated collections (A-02)
 
-Status: A-02 foundation, draft PR; base `d8308bf0d` (2026-11-03). **No collection is approved or published.**
+Status: A-02 foundation, merged in #431 (2026-11-03). **No collection is approved or published.**
 The two pilots in the manifest are `draft` with `review.status: "pending"` and are proposals for owner review
 ([pilots](#pilot-proposals)).
 
