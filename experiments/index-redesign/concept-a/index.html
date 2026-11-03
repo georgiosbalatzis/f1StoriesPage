@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- Template for every concept page: copy it, replace CONCEPT-X / the title / the <main> content. Keep the head
+     order (theme-init first, then fonts → editorial tokens → shared shell → concept CSS) and the shell markup
+     verbatim so navigation is identical across the five prototypes. -->
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>THE INDEX — The Paddock Continuation | F1 Stories (πρωτότυπο)</title>
+    <script src="/scripts/theme-init.js"></script>
+    <link rel="stylesheet" href="/styles/fonts.css">
+    <link rel="stylesheet" href="/styles/home-fonts.css">
+    <link rel="stylesheet" href="/styles/editorial.css">
+    <link rel="stylesheet" href="/experiments/index-redesign/shared/shell.css">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="/experiments/index-redesign/shared/shell.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="editorial-page ix-shell concept-a">
+<a class="ix-skip" href="#main">Μετάβαση στο περιεχόμενο</a>
+<header class="ix-nav">
+    <div class="ix-nav-inner">
+        <a class="ix-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="" width="36" height="36"><span class="ix-wordmark">F1 STORIES<b>.</b></span></a>
+        <nav aria-label="Κύρια πλοήγηση">
+            <ul class="ix-links" id="ix-links">
+                <li><a href="/">Αρχική</a></li>
+                <li><a href="/blog-module/blog/" aria-current="page">Άρθρα</a></li>
+                <li><a href="/standings/">Βαθμολογία</a></li>
+                <li><a href="/standings/?tab=tyre-pace">Δεδομένα</a></li>
+                <li><a href="/authors/">Συντάκτες</a></li>
+            </ul>
+        </nav>
+        <div class="ix-nav-tools">
+            <button class="ix-icon-btn" type="button" data-ix-theme aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος"><span class="ix-theme-label-dark">Φωτεινό</span><span class="ix-theme-label-light">Σκούρο</span></button>
+            <button class="ix-icon-btn ix-menu-btn" type="button" data-ix-menu aria-expanded="false" aria-controls="ix-links">Μενού</button>
+        </div>
+    </div>
+</header>
+<main id="main">
+<section class="mast paper" aria-labelledby="page-title"><div class="wrap"><p class="kicker">F1 STORIES / ΟΛΕΣ ΟΙ ΙΣΤΟΡΙΕΣ</p><h1 class="display" id="page-title">THE INDEX<span>.</span></h1><div class="mast-bottom"><p>Οι ιστορίες, οι άνθρωποι και τα θέματα της Formula 1.</p><form class="search" action="/blog-module/blog/index.html" method="get" role="search"><label for="search-q">ΑΝΑΖΗΤΗΣΗ ΑΡΘΡΩΝ</label><div><input id="search-q" type="search" name="q" placeholder="Αναζήτηση τίτλου"><button type="submit" aria-label="Αναζήτηση">→</button></div></form></div><div class="search-results" hidden><h2 aria-live="polite" id="search-status" tabindex="-1"></h2><ul id="search-list"></ul><button type="button" id="search-more" hidden>Περισσότερα αποτελέσματα ↓</button></div><nav class="desks" aria-label="Πλοήγηση στις κατηγορίες"><a href="#desk-news">Ειδήσεις <span aria-hidden="true">↘</span></a><a href="#desk-analysis">Ανάλυση <span aria-hidden="true">↘</span></a><a href="#technical">Τεχνικά <span aria-hidden="true">↘</span></a><a href="#desk-history">Ιστορία <span aria-hidden="true">↘</span></a><a href="#desk-opinion">Άποψη <span aria-hidden="true">↘</span></a><a href="#desk-betting">Στοίχημα <span aria-hidden="true">↘</span></a><a href="#desk-drivers">Οδηγοί <span aria-hidden="true">↘</span></a><a href="#desk-teams">Ομάδες <span aria-hidden="true">↘</span></a></nav></div></section>
+<section class="lead ink" aria-label="Κεντρική ιστορία"><div class="wrap" id="lead-slot"><p>Δείτε τις νεότερες ιστορίες στις <a href="/blog-module/blog/section/news/">Ειδήσεις</a>.</p></div></section>
+<section class="latest paper" aria-labelledby="latest"><div class="wrap"><h2 class="display" id="latest" tabindex="-1">LATEST<span>.</span></h2><div class="chapter-caption"><span>ΟΙ ΝΕΟΤΕΡΕΣ ΙΣΤΟΡΙΕΣ</span><a href="/blog-module/blog/">ΟΛΑ ΤΑ ΑΡΘΡΑ →</a></div><div class="latest-grid"><section aria-labelledby="wire-heading"><h3 class="kicker subheading" id="wire-heading">WIRE · ΠΡΟΣΦΑΤΑ</h3><ol class="wire" id="wire-slot"><li>Δείτε τα <a href="/blog-module/blog/">πρόσφατα άρθρα</a>.</li></ol></section><section aria-labelledby="voices-heading"><h3 class="kicker subheading" id="voices-heading">VOICES · ΑΠΟΨΗ</h3><div id="opinion-slot"><p>Δείτε τα άρθρα <a href="/blog-module/blog/section/opinion/">Άποψης</a>.</p></div></section></div></div></section>
+<section class="technical ink" aria-labelledby="technical"><div class="wrap"><h2 class="display" id="technical" tabindex="-1">TECHNICAL<span>.</span></h2><div class="chapter-caption"><span>ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span><a href="/blog-module/blog/section/technical/">ΟΛΑ ΤΑ ΤΕΧΝΙΚΑ →</a></div><div id="technical-slot"><p>Δείτε τις <a href="/blog-module/blog/section/technical/">τεχνικές αναλύσεις</a>.</p></div></div></section>
+<section class="archive paper" aria-labelledby="archive"><div class="wrap"><h2 class="display" id="archive" tabindex="-1">THE ARCHIVE<span>.</span></h2><div class="chapter-caption"><span>ΑΝΑΚΑΛΥΨΤΕ ΤΟ ΑΡΧΕΙΟ</span><a href="/blog-module/blog/archive/">ΟΛΟ ΤΟ ΑΡΧΕΙΟ →</a></div><div class="directory"><div><h3 class="kicker directory-label">ΚΑΤΗΓΟΡΙΕΣ</h3><div class="desk-row"><h3 id="desk-news" tabindex="-1"><a href="/blog-module/blog/section/news/">Ειδήσεις <span>160</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261102J/article.html">«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής! <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-analysis" tabindex="-1"><a href="/blog-module/blog/section/analysis/">Ανάλυση <span>39</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261102W/article.html">Max Verstappen: Η τέχνη να κερδίζεις <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-technical" tabindex="-1"><a href="/blog-module/blog/section/technical/">Τεχνικά <span>55</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261015G/article.html">Όσο περισσότερο πιέζουν, τόσο πιο αργοί γίνονται; <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-history" tabindex="-1"><a href="/blog-module/blog/section/history/">Ιστορία <span>111</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261101W/article.html">Sete Gibernau: Πλησιάζοντας τον (prime), Rossi <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-opinion" tabindex="-1"><a href="/blog-module/blog/section/opinion/">Άποψη <span>18</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261011J/article.html">Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-betting" tabindex="-1"><a href="/blog-module/blog/section/betting/">Στοίχημα <span>18</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261031J/article.html">BetCast #278: Μεξικάνικη αποστολή... και Checo στους βαθμούς! <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-drivers" tabindex="-1"><a href="/blog-module/blog/section/drivers/">Οδηγοί <span>49</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20260929G/article.html">Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030 <span aria-hidden="true">→</span></a></div>
+<div class="desk-row"><h3 id="desk-teams" tabindex="-1"><a href="/blog-module/blog/section/teams/">Ομάδες <span>20</span></a></h3><a class="desk-latest" href="/blog-module/blog-entries/20261014G/article.html">Ολημερίς το έχτιζαν, το βράδυ γκρεμιζόταν <span aria-hidden="true">→</span></a></div></div><section class="authors"><h3 class="kicker directory-label">ΟΙ ΣΥΝΤΑΚΤΕΣ</h3><ul><li><a href="/blog-module/blog/index.html?author=themis-charvalis"><img src="/images/avatars/AS.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>Θέμης Χαρβάλης</strong><small>Ιστορία · Οδηγοί<br>181 άρθρα</small></span></a></li>
+<li><a href="/blog-module/blog/index.html?author=giannis-poulikidis"><img src="/images/avatars/SV.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>Γιάννης Πουλικίδης</strong><small>Άποψη · Στοίχημα<br>52 άρθρα</small></span></a></li>
+<li><a href="/blog-module/blog/index.html?author=georgios-balatzis"><img src="/images/avatars/FA.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>Γιώργος Μπαλατζής</strong><small>Τεχνικά · Δεδομένα<br>146 άρθρα</small></span></a></li>
+<li><a href="/blog-module/blog/index.html?author=dimitris-keramidiotis"><img src="/images/avatars/dr3R.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>Δημήτρης Κεραμιδιώτης</strong><small>Άποψη<br>12 άρθρα</small></span></a></li>
+<li><a href="/blog-module/blog/index.html?author=thanasis-batalas"><img src="/images/avatars/MV.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>Θανάσης Μπαταλάς</strong><small>Ιστορία · Ανάλυση<br>4 άρθρα</small></span></a></li>
+<li><a href="/blog-module/blog/index.html?author=f1-stories"><img src="/images/avatars/F1S.webp" alt="" width="96" height="96" loading="lazy" decoding="async"><span><strong>F1 Stories</strong><small>Χωρίς πρόσωπο<br>28 άρθρα</small></span></a></li></ul></section><div class="directory-side"><section><h3 class="kicker directory-label">ΘΕΜΑΤΑ</h3><ul class="hub-list"><li><a href="/blog-module/blog/entities/drivers/lando-norris/">Λάντο Νόρις <span>4 άρθρα →</span></a></li></ul></section><section><h3 class="kicker directory-label">ΑΝΑ ΜΗΝΑ</h3><div class="year"><h4>2026</h4><ul><li><a href="/blog-module/blog/archive/2026/11/">Νοέμβριος 2026 <span>4</span></a></li><li><a href="/blog-module/blog/archive/2026/10/">Οκτώβριος 2026 <span>44</span></a></li><li><a href="/blog-module/blog/archive/2026/09/">Σεπτέμβριος 2026 <span>51</span></a></li><li><a href="/blog-module/blog/archive/2026/08/">Αύγουστος 2026 <span>18</span></a></li><li><a href="/blog-module/blog/archive/2026/07/">Ιούλιος 2026 <span>40</span></a></li><li><a href="/blog-module/blog/archive/2026/06/">Ιούνιος 2026 <span>34</span></a></li><li><a href="/blog-module/blog/archive/2026/05/">Μάιος 2026 <span>16</span></a></li><li><a href="/blog-module/blog/archive/2026/04/">Απρίλιος 2026 <span>23</span></a></li><li><a href="/blog-module/blog/archive/2026/03/">Μάρτιος 2026 <span>17</span></a></li><li><a href="/blog-module/blog/archive/2026/02/">Φεβρουάριος 2026 <span>6</span></a></li></ul></div>
+<div class="year"><h4>2025</h4><ul><li><a href="/blog-module/blog/archive/2025/10/">Οκτώβριος 2025 <span>3</span></a></li><li><a href="/blog-module/blog/archive/2025/09/">Σεπτέμβριος 2025 <span>5</span></a></li><li><a href="/blog-module/blog/archive/2025/08/">Αύγουστος 2025 <span>18</span></a></li><li><a href="/blog-module/blog/archive/2025/07/">Ιούλιος 2025 <span>16</span></a></li><li><a href="/blog-module/blog/archive/2025/06/">Ιούνιος 2025 <span>25</span></a></li><li><a href="/blog-module/blog/archive/2025/05/">Μάιος 2025 <span>51</span></a></li><li><a href="/blog-module/blog/archive/2025/04/">Απρίλιος 2025 <span>44</span></a></li><li><a href="/blog-module/blog/archive/2025/03/">Μάρτιος 2025 <span>8</span></a></li></ul></div><a class="archive-link" href="/blog-module/blog/archive/">ΟΛΟ ΤΟ ΑΡΧΕΙΟ →</a></section></div></div></div></section>
+</main>
+<footer class="ix-foot">
+    <div class="ix-foot-inner">
+        <div><div class="ix-foot-word">F1 STORIES<b>.</b></div><p>Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p></div>
+        <ul>
+            <li><a href="/blog-module/blog/">Άρθρα</a></li>
+            <li><a href="/blog-module/blog/archive/">Αρχείο</a></li>
+            <li><a href="/authors/">Συντάκτες</a></li>
+            <li><a href="/standings/">Βαθμολογία</a></li>
+        </ul>
+        <div class="ix-foot-legal"><a href="/privacy/privacy.html">Πολιτική Απορρήτου</a> · <a href="/privacy/terms.html">Όροι Χρήσης</a></div>
+    </div>
+</footer>
+</body>
+</html>

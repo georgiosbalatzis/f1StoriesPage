@@ -1,0 +1,29 @@
+/* Neutral comparison gallery: plain theme surfaces, no concept styling, equal treatment for every entry. */
+.ix-gallery .g-main { max-width: 1440px; margin: 0 auto; padding: 48px 48px 80px; }
+.ix-gallery .g-intro { max-width: 72ch; margin-bottom: 40px; }
+.ix-gallery .g-intro h1 { margin: 0 0 16px; font: 600 clamp(1.75rem, 3vw, 2.5rem)/1.15 var(--font-body); }
+.ix-gallery .g-intro p { margin: 0 0 12px; color: var(--text-secondary); font: 400 1rem/1.6 var(--font-body); }
+.ix-gallery .g-intro a, .ix-gallery .g-open { color: var(--text-primary); }
+.ix-gallery .g-entry { padding: 32px 0 40px; border-top: 1px solid var(--border); scroll-margin-top: 72px; }
+.ix-gallery .g-head { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 8px 24px; align-items: start; margin-bottom: 20px; }
+.ix-gallery .g-head .g-letter { margin: 0; font: 700 2.5rem/1 var(--font-brand); color: var(--text-primary); }
+.ix-gallery .g-head h2 { margin: 0 0 6px; font: 600 1.375rem/1.25 var(--font-body); }
+.ix-gallery .g-head p { margin: 0; max-width: 70ch; color: var(--text-secondary); font: 400 .9375rem/1.55 var(--font-body); }
+.ix-gallery .g-open { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--text-primary); font: 600 .8125rem/1 var(--font-body); text-decoration: none; white-space: nowrap; }
+.ix-gallery .g-open:hover { background: var(--text-primary); color: var(--bg-base); }
+.ix-gallery .g-shots { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.ix-gallery figure { margin: 0; }
+.ix-gallery figcaption { margin-bottom: 8px; color: var(--text-secondary); font: 600 .6875rem/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
+.ix-gallery .g-frame { height: min(78vh, 820px); overflow: auto; border: 1px solid var(--border); background: var(--bg-surface); }
+.ix-gallery .g-frame img { display: block; width: 100%; height: auto; }
+.ix-gallery .g-dark { display: none; }
+html:not([data-theme="light"]) .ix-gallery .g-light { display: none; }
+html:not([data-theme="light"]) .ix-gallery .g-dark { display: block; }
+@media (max-width: 960px) {
+    .ix-gallery .g-main { padding: 32px 22px 56px; }
+    .ix-gallery .g-head { grid-template-columns: 56px minmax(0, 1fr); }
+    .ix-gallery .g-open { grid-column: 1 / -1; justify-self: start; }
+    .ix-gallery .g-shots { grid-template-columns: minmax(0, 1fr); }
+    .ix-gallery .g-mobile .g-frame { max-width: 390px; }
+}
+@media (max-width: 360px) { .ix-gallery .g-main { padding: 28px 17px 48px; } }
