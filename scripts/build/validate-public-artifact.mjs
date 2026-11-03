@@ -922,9 +922,11 @@ const ENTITY_FILE = /^blog-module\/blog\/entities\//;
 const COLLECTION_FILE = /^blog-module\/blog\/collections\//;
 function anchorPaths(html, relPath) {
     const out = [];
-    // The shared quote-aware tokenizer: approval checks must not miss unquoted, entity-encoded or `>`-shadowed hrefs.
-    for (const tag of htmlAttributes.tagAttributes(html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, ''), 'a')) {
-        const href = (tag.href || '').trim();
+    // The shared tokenizer (comments/raw text skipped, references decoded): approval checks must not miss a link a
+    // browser would follow. An href it cannot decode is returned as `unresolved` so the caller fails closed.
+    for (const tag of htmlAttributes.tags(html).filter(tag => !tag.close && tag.name === 'a')) {
+        const href = (tag.attrs.href || '').trim();
+        if (tag.unresolved.includes('href')) { out.push({ unresolved: true, path: href, file: '' }); continue; }
         if (!href || href.startsWith('#')) continue;
         let url;
         try { url = new URL(href, `${SITE_ORIGIN}/${relPath}`); } catch (_) { continue; }
@@ -937,7 +939,11 @@ function anchorPaths(html, relPath) {
     return out;
 }
 export function collectDiscovery(discovery, html, relPath) {
-    const anchors = anchorPaths(html, relPath);
+    const all = anchorPaths(html, relPath);
+    const anchors = all.filter(anchor => !anchor.unresolved);
+    // A <base> would re-target every relative link, and an undecodable href cannot be checked: both fail closed.
+    const unresolved = all.filter(anchor => anchor.unresolved).map(anchor => `undecodable link ${anchor.path}`)
+        .concat(htmlAttributes.tags(html).some(tag => !tag.close && tag.name === 'base') ? ['<base> element'] : []);
     discovery.anchors.set(relPath, anchors.map(anchor => anchor.file));
     const grid = html.indexOf('<div class="rr-next__grid">');
     const nextUp = grid < 0 ? [] : anchorPaths(html.slice(grid, html.indexOf('<div class="article-navigation"', grid)), relPath);
@@ -945,7 +951,7 @@ export function collectDiscovery(discovery, html, relPath) {
     const topicBlocks = [...html.matchAll(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/g)].map(block => anchorPaths(block[0], relPath));
     discovery.pages.set(relPath, {
         nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_FILE.test(anchor.file)), topicBlocks,
-        hubLinks: anchors.filter(anchor => ENTITY_FILE.test(anchor.file)), collectionLinks: anchors.filter(anchor => COLLECTION_FILE.test(anchor.file)), redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
+        hubLinks: anchors.filter(anchor => ENTITY_FILE.test(anchor.file)), collectionLinks: anchors.filter(anchor => COLLECTION_FILE.test(anchor.file)), unresolved, redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
     });
 }
 export function newDiscovery() {
@@ -981,6 +987,7 @@ export function validateDiscoveryGraph(errors, discovery, sitemapUrls, {
             else if (!taxonomy.isDay(date) || date > today) errors.push(`${relPath}: NEXT UP links ${anchor.path}, dated ${date}`);
             else if (discovery.pages.get(anchor.file)?.redirect) errors.push(`${relPath}: NEXT UP links the redirect page ${anchor.path}`);
         }
+        for (const problem of page.unresolved || []) errors.push(`${relPath}: ${problem} cannot be checked against approved destinations`);
         for (const anchor of page.collectionLinks || []) {
             if (!approvedCollectionFiles.has(anchor.file)) errors.push(`${relPath}: links ${anchor.path}, which is not an approved collection`);
         }
@@ -1042,8 +1049,16 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
         const html = fs.readFileSync(path.join(distRoot, file), 'utf8');
         const canonical = SITE_ORIGIN + '/' + file.replace(/index\.html$/, '');
         if (!htmlAttributes.pageIsIndexable(html, canonical, { direct: true })) errors.push(`${file}: invalid canonical or robots policy`);
-        // Whole URLs (query and fragment included) so a member link must be exactly the article canonical.
-        const visible = [...html.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)].flatMap(match => htmlAttributes.tagAttributes(match[0], 'a'))
+        // Links inside real <ol> elements (never commented out or raw text), compared as whole URLs (query and fragment
+        // included) so a member link must be exactly the article canonical.
+        let depth = 0;
+        const inLists = [];
+        for (const tag of htmlAttributes.tags(html)) {
+            if (tag.name === 'ol') depth = Math.max(0, depth + (tag.close ? -1 : 1));
+            else if (depth && !tag.close && tag.name === 'a') inLists.push(tag);
+        }
+        if (inLists.some(tag => tag.unresolved.includes('href'))) errors.push(`${file}: undecodable list link`);
+        const visible = inLists.map(tag => tag.attrs)
             .map(tag => { try { return new URL(tag.href, `${SITE_ORIGIN}/${file}`); } catch (_) { return null; } })
             .filter(url => url && url.origin === SITE_ORIGIN && (articlePage ? /^\/blog-module\/blog-entries\/[^/]+\/article\.html$/.test(url.pathname)
                 : url.pathname.startsWith('/' + prefix) && url.pathname !== '/' + prefix))

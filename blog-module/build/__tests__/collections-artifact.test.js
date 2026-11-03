@@ -82,6 +82,47 @@ test('artifact checks reject unquoted noindex, spaced refresh and non-canonical 
     assert.match(run(), /visible collection order does not match/);
 });
 
+// Sol third re-review: the validator must read links and robots as a browser would, or fail closed.
+test('tokenizer follows HTML parsing and the validator fails closed on what it cannot read', async t => {
+    const { tags, pageIsIndexable } = require('../html-attributes');
+    const { collectDiscovery, newDiscovery, validateDiscoveryGraph, validateCollections } = await import('../../../scripts/build/validate-public-artifact.mjs');
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'collections-artifact-'));
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    write(root, 'blog-module/blog-index-data.json', '{"p":[]}');
+    const linkErrors = html => {
+        const discovery = newDiscovery(); collectDiscovery(discovery, html, 'page.html');
+        const errors = []; validateDiscoveryGraph(errors, discovery, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: new Set(), today: '2026-11-03' });
+        return errors.join('\n');
+    };
+    assert.deepEqual(tags('<A HREF="/x?a=1&amp;b=2">x</A>')[0], { name: 'a', attrs: { href: '/x?a=1&b=2' }, unresolved: [] });
+    // An unknown reference in an attribute that cannot change the decision is not a failure.
+    assert.equal(pageIsIndexable(`<link rel=canonical href=${article('a')}><meta name=description content="Τέλος&hellip;">`, article('a')), true);
+    assert.equal(linkErrors('<a title="&hellip;" href="/">x</a>'), '');
+    // 1. named references outside the table are never guessed
+    assert.match(linkErrors('<a href = &sol;blog-module/blog/collections/pending/>x</a>'), /undecodable link/);
+    assert.match(linkErrors('<a href="/blog-module/blog/collec&Tab;tions/pending/">x</a>'), /undecodable link/);
+    // 2. comment/script boundaries come from parse state, not stripping
+    assert.match(linkErrors('<div data-note="<!--"><a href=/blog-module/blog/collections/pending/>x</a></div><!-- -->'), /not an approved collection/);
+    assert.match(linkErrors('<script>var a;</script\n><a href=/blog-module/blog/collections/pending/>x</a>'), /not an approved collection/);
+    assert.equal(linkErrors('<!-- <a href=/blog-module/blog/collections/pending/>x</a> --><script>"<a href=/blog-module/blog/collections/p/>"</script>'), '');
+    // 3. a quote inside an unquoted value does not hide later attributes
+    const canonical = article('a');
+    assert.equal(pageIsIndexable(`<link rel=canonical href=${canonical}><meta data-note=x" name=robots content=noindex>`, canonical), false);
+    assert.equal(pageIsIndexable(`<link rel=canonical href=${canonical}><meta data-note=x" name=description content=ok>`, canonical), true);
+    // 4. <base> re-targets relative links
+    assert.match(linkErrors('<base href = /blog-module/blog/collections/><a href = pending/>x</a>'), /<base> element/);
+    // 5. a commented-out member list is not a visible list
+    const posts = ['a', 'b', 'c'].map(id => ({ id, date: '2026-01-01' }));
+    write(root, 'blog-module/blog-index-data.json', JSON.stringify({ p: posts.map(post => [post.id, '', '', post.date]) }));
+    for (const post of posts) write(root, `blog-module/blog-entries/${post.id}/article.html`, `<link rel="canonical" href="${article(post.id)}">`);
+    write(root, prefix + 'index.html', page(`${origin}/${prefix}`, [collection('sample')]));
+    write(root, prefix + 'sample/index.html', page(collection('sample'), posts.map(post => article(post.id))).replace(/(<ol>.*<\/ol>)/, '<!--$1-->'));
+    const errors = [];
+    validateCollections(errors, { distRoot: root, approvedFiles: new Set([prefix + 'index.html', prefix + 'sample/index.html']),
+        selected: [{ collection: { slug: 'sample' }, posts, eligible: true }], sitemapUrls: new Set([`${origin}/${prefix}`, collection('sample')]), today: '2026-11-03' });
+    assert.match(errors.join('\n'), /visible collection order does not match/);
+});
+
 test('reason text with replacement tokens stays literal; digest CLI accepts the npm form', () => {
     const { renderCollection } = require('../collections/render');
     const posts = ['x', 'y', 'z'].map((id, i) => ({ id, title: id, date: '2026-01-01', position: i + 1, reason: i ? 'ok' : "A $& B $' C" }));
