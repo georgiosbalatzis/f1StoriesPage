@@ -35,6 +35,8 @@
     "test:blog": "node --test blog-module/build/__tests__/*.test.js blog-module/widgets/betcast/widget.test.cjs && node blog-module/build/__tests__/run-golden.js",
     "test:taxonomy": "node --test blog-module/build/__tests__/taxonomy*.test.js",
     "entities:preview": "node blog-module/build/entities/preview.js",
+    "test:journeys": "node --test blog-module/build/__tests__/journeys*.test.js",
+    "journeys:validate": "node blog-module/build/journeys/model.js --validate",
     "test:collections": "node --test blog-module/build/__tests__/collections*.test.js",
     "collections:validate": "node blog-module/build/collections/model.js --validate",
     "collections:preview": "node blog-module/build/collections/preview.js",

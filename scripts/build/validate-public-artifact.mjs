@@ -12,6 +12,7 @@ import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
 import htmlAttributes from '../../blog-module/build/html-attributes.js';
 import collections from '../../blog-module/build/collections/model.js';
+import journeys from '../../blog-module/build/journeys/model.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
@@ -1090,6 +1091,95 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
     }
 }
 
+export function validateJourneys(errors, { distRoot = DIST_ROOT, selected, today = taxonomy.athensDay() } = {}) {
+    if (!selected) {
+        const inputs = journeys.loadJourneyInputs();
+        selected = journeys.selectJourneys(inputs.manifest, inputs.articles, { today });
+    }
+    const members = new Map();
+    for (const item of selected.filter(item => item.eligible)) {
+        for (const [index, post] of item.steps.entries()) {
+            const file = `blog-module/blog-entries/${post.id}/article.html`;
+            if (members.has(file)) errors.push(`${file}: overlapping eligible journeys`);
+            members.set(file, { item, index });
+        }
+    }
+    const dates = new Map();
+    try {
+        const data = JSON.parse(fs.readFileSync(path.join(distRoot, 'blog-module/blog-index-data.json'), 'utf8'));
+        (data.p || []).forEach(row => dates.set(row[0], row[3]));
+    } catch (error) { errors.push(`journeys: cannot read blog-index-data.json (${error.message})`); }
+    const begin = '<!-- f1s:journey:begin -->', end = '<!-- f1s:journey:end -->';
+    const seen = new Set();
+    const textContent = value => htmlAttributes.decodeEntities(value.replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+    const visit = (abs, file) => {
+        if (!/\.html$/i.test(file)) return;
+        const html = fs.readFileSync(abs, 'utf8');
+        const starts = html.split(begin).length - 1, ends = html.split(end).length - 1;
+        const member = members.get(file);
+        if (!member) {
+            if (starts || ends) errors.push(`${file}: journey region on non-member`);
+            return;
+        }
+        seen.add(file);
+        if (starts !== 1 || ends !== 1 || html.indexOf(end) < html.indexOf(begin)) {
+            errors.push(`${file}: expected exactly one journey region`);
+            return;
+        }
+        const start = html.indexOf(begin), finish = html.indexOf(end) + end.length;
+        const region = html.slice(start + begin.length, finish - end.length);
+        const before = htmlAttributes.tags(html.slice(0, start));
+        let articleDepth = 0;
+        for (const tag of before) if (tag.name === 'article') articleDepth += tag.close ? -1 : 1;
+        const next = /^\s*(<section\b[^>]*>)/i.exec(html.slice(finish));
+        const nextTag = next && htmlAttributes.tags(next[1])[0];
+        if (articleDepth !== 1 || !nextTag?.attrs.class?.split(/\s+/).includes('rr-pitwall')) errors.push(`${file}: journey is not immediately before the pit wall inside article`);
+        if (htmlAttributes.tags(html).some(tag => !tag.close && tag.name === 'base')) errors.push(`${file}: journey page contains base element`);
+        const tags = htmlAttributes.tags(region);
+        const lists = [], links = [];
+        let depth = 0, current = null;
+        for (const tag of tags) {
+            if (tag.name === 'ol') depth += tag.close ? -1 : 1;
+            if (tag.name === 'li' && !tag.close && depth === 1) { current = { tag, links: [] }; lists.push(current); }
+            if (tag.name === 'li' && tag.close && depth === 1) current = null;
+            if (tag.name === 'a' && !tag.close) { links.push(tag); if (current && depth === 1) current.links.push(tag); }
+        }
+        const { item, index } = member;
+        const posts = item.steps;
+        const listMarkup = [...region.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li\s*>/gi)];
+        const validList = depth === 0 && tags.filter(tag => !tag.close && tag.name === 'ol').length === 1
+            && tags.filter(tag => !tag.close && tag.name === 'li').length === posts.length
+            && tags.filter(tag => !tag.close && tag.attrs['aria-current'] === 'step').length === 1
+            && lists.length === posts.length && listMarkup.length === posts.length && links.length === posts.length - 1
+            && lists.every((entry, i) => {
+                if (i === index) return entry.tag.attrs['aria-current'] === 'step' && entry.links.length === 0
+                    && textContent(listMarkup[i][1]) === `${posts[i].title} (αυτό το άρθρο)`;
+                if (Object.hasOwn(entry.tag.attrs, 'aria-current') || entry.links.length !== 1 || entry.links[0].unresolved.includes('href')) return false;
+                try { return new URL(entry.links[0].attrs.href, `${SITE_ORIGIN}/${file}`).href === hubs.articleUrl(posts[i]); } catch (_) { return false; }
+            });
+        if (!validList) errors.push(`${file}: journey list does not match selected order and current step`);
+        const paragraphs = [...region.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p\s*>/gi)].map(match => textContent(match[1]));
+        const label = `Ανάγνωση με σειρά · Μέρος ${index + 1} από ${posts.length}`;
+        const ending = index === posts.length - 1 ? 'Τέλος της σειράς.' : `Επόμενο: ${item.journey.steps[index].transition}`;
+        if (!paragraphs.includes(label) || !paragraphs.includes(ending)) errors.push(`${file}: journey label or transition does not match selection`);
+    };
+    function walkPublic(dir) {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const abs = path.join(dir, entry.name);
+            if (entry.isDirectory()) walkPublic(abs);
+            else if (entry.isFile()) visit(abs, toPosix(path.relative(distRoot, abs)));
+        }
+    }
+    walkPublic(distRoot);
+    for (const [file, { item }] of members) {
+        if (!seen.has(file)) errors.push(`${file}: missing journey member page`);
+        const post = item.steps.find(post => file === `blog-module/blog-entries/${post.id}/article.html`);
+        const date = dates.get(post.id), abs = path.join(distRoot, file);
+        if (!taxonomy.isDay(date) || date > today || !fs.existsSync(abs)
+            || !htmlAttributes.pageIsIndexable(fs.readFileSync(abs, 'utf8'), hubs.articleUrl(post), { direct: true })) errors.push(`${file}: member is not a direct published story`);
+    }
+}
+
 export function validateSearchDestinations(errors, distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles()) {
     const rel = 'blog-module/search-destinations.json';
     try {
@@ -1185,6 +1275,7 @@ function main() {
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
     validateCollections(errors, { sitemapUrls });
+    validateJourneys(errors);
     errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, readHubRegistry(REPO_ROOT), { today: taxonomy.athensDay(), publicRoot: DIST_ROOT }), readTimelineContexts(REPO_ROOT, readHubRegistry(REPO_ROOT)), readPaceContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     for (const file of GP_PUBLIC_FILES) {
