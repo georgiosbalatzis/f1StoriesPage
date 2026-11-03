@@ -29,3 +29,17 @@ test('rejects stale, duplicated and missing static result sections against the v
   fs.unlinkSync(file);
   assert.match(validateResultsOutput(root, contexts).join('\n'), /missing/);
 });
+
+test('accepts the A-04 target id only when an eligible gateway links the results section', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'race-results-gateway-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const file = path.join(root, 'race-desk/gp/2026-japanese-gp/index.html');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const linked = new Map([['2026-japanese-gp', { perspectives: [{ links: [{ type: 'section', section: 'results' }] }] }]]);
+  const targeted = renderResultsSection(context).replace('aria-labelledby="gp-results-title">', 'aria-labelledby="gp-results-title" id="gateway-target-results">');
+  fs.writeFileSync(file, targeted);
+  assert.deepEqual(validateResultsOutput(root, contexts, linked), []);
+  assert.match(validateResultsOutput(root, contexts).join('\n'), /differs/); // No gateway: the id is unexpected.
+  fs.writeFileSync(file, renderResultsSection(context));
+  assert.match(validateResultsOutput(root, contexts, linked).join('\n'), /differs/); // Gateway links results: the id is required.
+});

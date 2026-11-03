@@ -45,7 +45,7 @@ export function renderGatewaySection(view) {
     return `<li><div><a href="${escape(link.url)}" lang="en">${escape(link.label)}</a><span>${escape(toolNote(link))}</span></div></li>`;
   };
   const perspectives = view.perspectives.map(p => `<div class="race-desk-source-group"><h3>${PERSPECTIVE_HEADINGS[p.kind]}</h3><p>${escape(p.text)}</p><ul class="race-desk-sources">${p.links.map(row).join('')}</ul></div>`).join('');
-  return `<section class="race-desk-section race-desk-gateway" aria-labelledby="gateway-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">ΟΔΗΓΟΣ ΑΝΑΓΝΩΣΗΣ</p><h2 id="gateway-title">${escape(view.title)}</h2></div><p>${escape(view.intro)}</p></div>${perspectives}<p>Επιμελημένος οδηγός ανάγνωσης από τη σύνταξη. Δεν δηλώνει την τρέχουσα κατάσταση του αγώνα· τα στοιχεία και οι πηγές κάθε ενότητας τεκμηριώνονται παρακάτω.</p>${view.perspectives.length < 3 ? '<p>Ο οδηγός περιλαμβάνει μόνο τις οπτικές για τις οποίες υπάρχει εγκεκριμένο περιεχόμενο.</p>' : ''}</section>`;
+  return `<section class="race-desk-section race-desk-gateway" aria-labelledby="gateway-title"><div class="race-desk-section-head"><div><p class="race-desk-kicker">ΟΔΗΓΟΣ ΑΝΑΓΝΩΣΗΣ</p><h2 id="gateway-title">${escape(view.title)}</h2></div><p>${escape(view.intro)}</p></div>${perspectives}<div class="race-desk-source-group"><p>Επιμελημένος οδηγός ανάγνωσης από τη σύνταξη. Δεν δηλώνει την τρέχουσα κατάσταση του αγώνα· τα στοιχεία και οι πηγές κάθε ενότητας τεκμηριώνονται παρακάτω.</p>${view.perspectives.length < 3 ? '<p>Ο οδηγός περιλαμβάνει μόνο τις οπτικές για τις οποίες υπάρχει εγκεκριμένο περιεχόμενο.</p>' : ''}</div></section>`;
 }
 
 export function applyGatewayTargets(html, view) {

@@ -636,10 +636,10 @@ function main() {
                 const sourceLock = JSON.parse(fs.readFileSync(relAbs('scripts/deployment/sources.json'), 'utf8'));
                 const expectedLinks = createRaceDeskProjection(registry, sourceLock, new Date().getUTCFullYear());
                 assertCondition(JSON.stringify(raceDeskLinks) === JSON.stringify(expectedLinks), 'standings/core/race-desk-links.generated.js', 'must match the reviewed registry and build year; run npm run build:race-desk-links');
-                validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry)).forEach(error => addError('race-desk/results', error));
                 const today = taxonomy.athensDay(), currentYear = Number(today.slice(0, 4));
                 const { models } = prepareHubModels(REPO_ROOT, { today, currentYear });
                 const gateways = readGatewaySelection(REPO_ROOT, registry, models, { today });
+                validateResultsOutput(REPO_ROOT, readResultsContexts(REPO_ROOT, registry), gateways).forEach(error => addError('race-desk/results', error));
                 validateHubOutput(REPO_ROOT, registry, sourceLock, currentYear, readHubEvidence(REPO_ROOT), new Map(models.map(m => [m.raceId, m.stories])), new Map(models.map(m => [m.raceId, m.timeline])), new Map(models.map(m => [m.raceId, m.pace])), gateways).forEach(error => addError('race-desk/gp', error));
             } catch (error) {
                 addError('standings/core/race-desk-links.generated.js', error.message);

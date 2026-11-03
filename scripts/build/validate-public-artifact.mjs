@@ -1287,10 +1287,10 @@ function main() {
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
     validateCollections(errors, { sitemapUrls });
     validateJourneys(errors);
-    errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     const today = taxonomy.athensDay(), currentYear = Number(today.slice(0, 4)), registry = readHubRegistry(REPO_ROOT);
     const { lock, models } = prepareHubModels(REPO_ROOT, { today, currentYear, publicRoot: DIST_ROOT });
     const gateways = readGatewaySelection(REPO_ROOT, registry, models, { today });
+    errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, registry), gateways));
     errors.push(...validateHubOutput(DIST_ROOT, registry, lock, currentYear, readHubEvidence(REPO_ROOT), new Map(models.map(m => [m.raceId, m.stories])), new Map(models.map(m => [m.raceId, m.timeline])), new Map(models.map(m => [m.raceId, m.pace])), gateways));
     for (const file of GP_PUBLIC_FILES) {
         if (!discovery.anchors.has(file)) errors.push(`${file}: GP absent from static discovery graph`);
