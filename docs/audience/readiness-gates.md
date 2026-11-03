@@ -44,7 +44,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Feature:** organize approved public articles using existing discovery and hub infrastructure.
 
-**Status:** foundation implemented in the A-02 draft PR; contract and approval procedure in [collections.md](collections.md). No collection is approved.
+**Status:** foundation merged (#431); contract and approval procedure in [collections.md](collections.md). No collection is approved.
 
 **Depends on:** A-01; [entity hubs](../entity-hubs.md), [editorial review](../editorial-review.md), [editorial model](../intelligence/editorial-model.md).
 
@@ -67,6 +67,8 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 ## A-03 — Article Reading Journeys
 
 **Feature:** provide an ordered reading experience over approved public content.
+
+**Status:** foundation implemented in the A-03 draft PR; contract and approval procedure in [journeys.md](journeys.md). No journey is approved.
 
 **Depends on:** A-01; [entity hubs](../entity-hubs.md), [editorial review](../editorial-review.md), [editorial model](../intelligence/editorial-model.md).
 

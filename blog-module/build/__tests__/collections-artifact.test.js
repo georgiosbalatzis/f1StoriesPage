@@ -94,7 +94,7 @@ test('tokenizer follows HTML parsing and the validator fails closed on what it c
         const errors = []; validateDiscoveryGraph(errors, discovery, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: new Set(), today: '2026-11-03' });
         return errors.join('\n');
     };
-    assert.deepEqual(tags('<A HREF="/x?a=1&amp;b=2">x</A>')[0], { name: 'a', attrs: { href: '/x?a=1&b=2' }, unresolved: [] });
+    assert.deepEqual(tags('<A HREF="/x?a=1&amp;b=2">x</A>')[0], { name: 'a', attrs: { href: '/x?a=1&b=2' }, unresolved: [], start: 0 });
     // An unknown reference in an attribute that cannot change the decision is not a failure.
     assert.equal(pageIsIndexable(`<link rel=canonical href=${article('a')}><meta name=description content="Τέλος&hellip;">`, article('a')), true);
     assert.equal(linkErrors('<a title="&hellip;" href="/">x</a>'), '');

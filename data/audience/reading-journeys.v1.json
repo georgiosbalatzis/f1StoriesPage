@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "journeys": [
+    {
+      "slug": "mclaren-mcl39-se-tessera-meri",
+      "status": "draft",
+      "title": "McLaren MCL39 σε τέσσερα μέρη",
+      "description": "Η τεχνική ανάλυση του MCL39 γράφτηκε σε τέσσερα μέρη· κάθε μέρος πατάει στο προηγούμενο, από τη φιλοσοφία του μονοθεσίου ως τα φρένα και την εξέλιξη της σεζόν.",
+      "steps": [
+        { "position": 1, "articleId": "20250424-2G", "transition": "Μετά τη συνολική εικόνα, το δεύτερο μέρος ανοίγει την ενσωμάτωση του κινητήρα και τη συσκευασία." },
+        { "position": 2, "articleId": "20250506G", "transition": "Από τη συσκευασία στο σασί: το τρίτο μέρος εξηγεί πώς συμπεριφέρεται η ανάρτηση." },
+        { "position": 3, "articleId": "20250508-3G", "transition": "Το τελευταίο μέρος κλείνει με τα φρένα, το cockpit και την εξέλιξη μέσα στη σεζόν." },
+        { "position": 4, "articleId": "20250514-1G" }
+      ],
+      "revised": "2026-11-03",
+      "review": { "status": "pending" }
+    },
+    {
+      "slug": "antonelli-2026-apo-tin-aporripsi-ston-titlo",
+      "status": "draft",
+      "title": "Antonelli 2026: από την απόρριψη στον τίτλο",
+      "description": "Έξι άρθρα του F1 Stories που ακολούθησαν τη χρονιά του Kimi Antonelli, με τη σειρά που γράφτηκαν: από την ιστορία του ως τον τίτλο.",
+      "steps": [
+        { "position": 1, "articleId": "20260331J", "transition": "Η υπόσχεση γίνεται αποτέλεσμα: ο Καναδάς ως η στιγμή που έπαψε να είναι «το μέλλον»." },
+        { "position": 2, "articleId": "20260525W", "transition": "Μετά το σερί νικών, η Βαρκελώνη ως το πρώτο μεγάλο τεστ της χρονιάς." },
+        { "position": 3, "articleId": "20260614W", "transition": "Η απάντηση στο Silverstone, απέναντι στον Hamilton." },
+        { "position": 4, "articleId": "20260704W", "transition": "Μια αναδρομή στο ντεμπούτο της Monza το 2024, για να φανεί από πού ξεκίνησε η νοοτροπία του." },
+        { "position": 5, "articleId": "20260803W", "transition": "Το τέλος της ιστορίας που άρχισε με την απόρριψη από τη Ferrari." },
+        { "position": 6, "articleId": "20261102J" }
+      ],
+      "revised": "2026-11-03",
+      "review": { "status": "pending" }
+    }
+  ]
+}

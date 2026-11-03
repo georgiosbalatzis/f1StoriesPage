@@ -1202,6 +1202,12 @@ async function processBlogEntries(options = {}) {
     await injectRelatedArticles(blogPosts, { today, subjects: approvedSubjects(entities.hubs) });
     injectTopicLinks(blogPosts, hubLinks);
     injectPrevNextLinks(blogPosts);
+    // Reading journeys: selected against this build's final article pages, injected after every other article pass.
+    const journeyModel = require('./journeys/model');
+    const journeys = journeyModel.selectJourneys(journeyModel.loadJourneyInputs().manifest, blogPosts, { today });
+    const { injectJourneys } = require('./journeys/pages');
+    const journeyArticles = injectJourneys(CONFIG.BLOG_DIR, journeys);
+    console.log(`Reading journeys rendered: ${journeyArticles.length} article pages`);
     // After the article pages: an author page lists a story only once its page is public.
     checkBodyLinks(blogPosts, { today });
     const authorPages = writeAuthorPages(blogPosts, { today });

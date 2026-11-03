@@ -28,6 +28,7 @@ Any new event named in these documents is a **recommendation only**.
 | [privacy-data-flow.md](privacy-data-flow.md) | Consent, storage, processors and personal data today; review items for each future feature; rules for any new instrumentation | A-01 |
 | [readiness-gates.md](readiness-gates.md) | Owner-approved A-02..A-09 roadmap, prerequisites, GO / NO-GO conditions and owner decisions | A-01; roadmap A-02 |
 | [collections.md](collections.md) | Curated collections: schema, approval and publication gates, build integration, removal, measurement limits | A-02 |
+| [journeys.md](journeys.md) | Article reading journeys: schema, approval, the in-article component, build integration, removal, measurement limits | A-03 |
 
 Authoritative sources stay where they are. Phase 4 links them and never re-defines them:
 Intelligence ([README](../intelligence/README.md), [metrics contract](../intelligence/metrics-contract.md),
@@ -70,8 +71,9 @@ Details and evidence: each linked document. Every claim there cites a repository
 | Six A-01 documents | Draft for owner review |
 | KPI coverage | See [measurement contract](measurement-contract.md) and [baseline](baseline-evidence.md) |
 | Production validation of any audience KPI | None. Nothing in A-01 is `PRODUCTION_VALIDATED` |
-| A-02 | Curated Collections Foundation: draft PR, no collection approved; see [collections.md](collections.md) |
-| A-03..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
+| A-02 | Curated Collections Foundation: merged (#431), no collection approved; see [collections.md](collections.md) |
+| A-03 | Article Reading Journeys: draft PR, no journey approved; see [journeys.md](journeys.md) |
+| A-04..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
 
 ## Unresolved owner decisions
 
