@@ -313,3 +313,15 @@ test('article failures write a report before rejecting', async t => {
         assert.ok(report.failures.length, mode);
     }
 });
+
+test('a source symlinked out of its article directory is rejected as source-invalid', async t => {
+    const f = fixture(t);
+    const outside = path.join(f.dir, 'blog-module/blog-entries/other');
+    fs.mkdirSync(outside, { recursive: true });
+    fs.writeFileSync(path.join(outside, 'real.webp'), await source('#abc', 1600, 900));
+    fs.symlinkSync(path.join(outside, 'real.webp'), path.join(f.dir, 'blog-module/blog-entries/story/linked.webp'));
+    fs.writeFileSync(path.join(f.dir, f.article), page.replaceAll('https://f1-stories.gr/blog-module/blog-entries/story/1.webp', 'https://f1-stories.gr/blog-module/blog-entries/story/linked.webp'));
+    const result = await buildSocialCards({ ...f.options, htmlFiles: [f.article] });
+    assert.equal(result.records[0].fallback, 'source-invalid');
+    assert.ok(result.records[0].file);
+});

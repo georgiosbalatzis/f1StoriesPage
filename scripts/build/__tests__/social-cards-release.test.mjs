@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import sharp from 'sharp';
+import shared from '../../../blog-module/build/shared.js';
 import * as socialCards from '../social-cards.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -17,8 +18,13 @@ const jsonLd = html => [...html.matchAll(/<script type="application\/ld\+json">(
 function metaValues(html, attribute, name) {
     return [...html.matchAll(/<meta\b[^>]*>/gi)].filter(([tag]) => {
         return new RegExp(`\\b${attribute}=["']${name}["']`, 'i').test(tag);
-    }).map(([tag]) => /\bcontent=["']([^"']*)["']/i.exec(tag)?.[1]);
+    }).map(([tag]) => { const m = /\bcontent=(?:"([^"]*)"|'([^']*)')/i.exec(tag); return m ? (m[1] ?? m[2]) : undefined; });
 }
+
+// socialMetadata writes the NFC-normalised, whitespace-collapsed title, attribute-escaped.
+const cacheTitles = new Map(JSON.parse(fs.readFileSync(path.join(root, 'blog-module/blog-source-cache.json'))).posts.map(post => [post.id, post.title]));
+const expectedAlt = page => shared.escapeHtmlAttribute(String(cacheTitles.get(page.split('/')[2]) || '').normalize('NFC')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim());
 
 async function checkCard(record, html, prefix) {
     assert.match(record.sha256, /^[a-f0-9]{64}$/);
@@ -32,6 +38,8 @@ async function checkCard(record, html, prefix) {
     const alt = metaValues(html, 'property', 'og:image:alt');
     assert.equal(alt.length, 1, `${record.page}: og:image:alt`);
     assert.ok(alt[0], `${record.page}: empty og:image:alt`);
+    assert.deepEqual(metaValues(html, 'name', 'twitter:image:alt'), alt, `${record.page}: twitter:image:alt`);
+    if (prefix === 'article') assert.equal(alt[0], expectedAlt(record.page), `${record.page}: alt must be the article title`);
     const bytes = fs.readFileSync(path.join(dist, record.file));
     assert.equal(createHash('sha256').update(bytes).digest('hex'), record.sha256);
     assert.ok(bytes.length <= 307200, `${record.page}: JPEG exceeds budget`);

@@ -34,7 +34,8 @@ Review the owner-selected articles and a sample of the archive, including contai
 | Measurement | Result |
 | --- | --- |
 | Base cold render, 424 cards | 34.0 s on the reference machine |
-| Cinematic cold render | To be measured by coordinator |
-| Cinematic warm render | To be measured by coordinator |
+| Cinematic cold render, 423 article cards | 45.2 s (full cold `build:public` 76 s vs 64 s base) |
+| Cinematic warm render, 423 cache hits | 1.65 s |
+| Card bytes, all 424 cards | 33.6 MB (base 32.9 MB); largest card 158,957 B (limit 307,200 B) |
 
 These are local measurements, not CI guarantees. To roll back, revert the renderer and integration changes; caches key on renderer bytes, so an incompatible template is not reused. Social platforms cache previews independently and refresh them on their own schedules, even after a new card is deployed.
