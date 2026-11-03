@@ -209,6 +209,7 @@ function cliFixture(t) {
     write(root, 'blog-module/build/research-content.js', fs.readFileSync(new URL('../../../blog-module/build/research-content.js', import.meta.url)));
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
     write(root, 'blog-module/build/retired.js', fs.readFileSync(new URL('../../../blog-module/build/retired.js', import.meta.url)));
+    write(root, 'blog-module/build/html-attributes.js', fs.readFileSync(new URL('../../../blog-module/build/html-attributes.js', import.meta.url)));
     write(root, 'blog-module/retired-articles.json', '{ "retired": [] }');
     write(root, 'blog-module/taxonomy.js', fs.readFileSync(new URL('../../../blog-module/taxonomy.js', import.meta.url)));
     fs.symlinkSync(fileURLToPath(new URL('../../../node_modules', import.meta.url)), path.join(root, 'node_modules'), 'dir');

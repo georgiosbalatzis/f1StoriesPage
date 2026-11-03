@@ -10,6 +10,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { buildSync } from 'esbuild';
 import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import htmlAttributes from '../../blog-module/build/html-attributes.js';
 import collections from '../../blog-module/build/collections/model.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
@@ -916,12 +917,14 @@ function validateEditorialArticle(errors, html, relPath, editorialRefs) {
 // ── Discovery link graph ─────────────────────────────────
 // Read during the one HTML walk: each page's static anchors (for reachability), its NEXT UP stories, its cover-kicker
 // topic links and any topic-hub links. Checked once the walk is done.
-const ENTITY_HREF = /^\/blog-module\/blog\/entities\//;
+// Matched against the decoded destination file, so %-encoded paths cannot slip past an approval check.
+const ENTITY_FILE = /^blog-module\/blog\/entities\//;
+const COLLECTION_FILE = /^blog-module\/blog\/collections\//;
 function anchorPaths(html, relPath) {
     const out = [];
-    // Quoted and unquoted href values alike: an approval check must not miss <a href=/path/>.
-    for (const match of html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, '').matchAll(/<a\b[^>]*?\shref\s*=\s*(?:(["'])(.*?)\1|([^\s"'=<>`]+))/gi)) {
-        const href = (match[2] ?? match[3]).replace(/&amp;/g, '&').trim();
+    // The shared quote-aware tokenizer: approval checks must not miss unquoted, entity-encoded or `>`-shadowed hrefs.
+    for (const tag of htmlAttributes.tagAttributes(html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, ''), 'a')) {
+        const href = (tag.href || '').trim();
         if (!href || href.startsWith('#')) continue;
         let url;
         try { url = new URL(href, `${SITE_ORIGIN}/${relPath}`); } catch (_) { continue; }
@@ -941,8 +944,8 @@ export function collectDiscovery(discovery, html, relPath) {
     const kicker = (/<p class="rr-kicker">[^\n]*?<span id="reading-time-value">/.exec(html) || [''])[0];
     const topicBlocks = [...html.matchAll(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/g)].map(block => anchorPaths(block[0], relPath));
     discovery.pages.set(relPath, {
-        nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_HREF.test(anchor.path)), topicBlocks,
-        hubLinks: anchors.filter(anchor => ENTITY_HREF.test(anchor.path)), collectionLinks: anchors.filter(anchor => anchor.path.startsWith('/blog-module/blog/collections/')), redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
+        nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_FILE.test(anchor.file)), topicBlocks,
+        hubLinks: anchors.filter(anchor => ENTITY_FILE.test(anchor.file)), collectionLinks: anchors.filter(anchor => COLLECTION_FILE.test(anchor.file)), redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
     });
 }
 export function newDiscovery() {
@@ -1038,10 +1041,10 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
         if (!actual.includes(file)) return;
         const html = fs.readFileSync(path.join(distRoot, file), 'utf8');
         const canonical = SITE_ORIGIN + '/' + file.replace(/index\.html$/, '');
-        if (!hubs.pageIsIndexable(html, canonical, { direct: true })) errors.push(`${file}: invalid canonical or robots policy`);
+        if (!htmlAttributes.pageIsIndexable(html, canonical, { direct: true })) errors.push(`${file}: invalid canonical or robots policy`);
         // Whole URLs (query and fragment included) so a member link must be exactly the article canonical.
-        const visible = [...html.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)].flatMap(match => hubs.tagAttributes(match[0], 'a'))
-            .map(tag => { try { return new URL(tag.href.replace(/&amp;/g, '&'), `${SITE_ORIGIN}/${file}`); } catch (_) { return null; } })
+        const visible = [...html.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)].flatMap(match => htmlAttributes.tagAttributes(match[0], 'a'))
+            .map(tag => { try { return new URL(tag.href, `${SITE_ORIGIN}/${file}`); } catch (_) { return null; } })
             .filter(url => url && url.origin === SITE_ORIGIN && (articlePage ? /^\/blog-module\/blog-entries\/[^/]+\/article\.html$/.test(url.pathname)
                 : url.pathname.startsWith('/' + prefix) && url.pathname !== '/' + prefix))
             .map(url => url.href);
@@ -1067,7 +1070,7 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
             const date = dates.get(post.id);
             const articleFile = path.join(distRoot, 'blog-module/blog-entries', post.id, 'article.html');
             if (!taxonomy.isDay(date) || date > today || !fs.existsSync(articleFile)
-                || !hubs.pageIsIndexable(fs.readFileSync(articleFile, 'utf8'), hubs.articleUrl(post), { direct: true })) errors.push(`${file}: member ${post.id} is not a direct published story`);
+                || !htmlAttributes.pageIsIndexable(fs.readFileSync(articleFile, 'utf8'), hubs.articleUrl(post), { direct: true })) errors.push(`${file}: member ${post.id} is not a direct published story`);
         }
     }
 }

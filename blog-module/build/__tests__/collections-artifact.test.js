@@ -41,13 +41,20 @@ test('collection artifact checks enforce membership, order, sitemap and approved
     validateDiscoveryGraph(errors, discovery, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: approvedFiles, today: options.today });
     assert.match(errors.join('\n'), /not an approved collection/);
     // Sol re-review: an unquoted href with zero eligible collections must still be caught.
-    for (const html of ['<a href=/blog-module/blog/collections/pending/>x</a>', '<a class=x href = /blog-module/blog/collections/>x</a>']) {
+    for (const html of ['<a href=/blog-module/blog/collections/pending/>x</a>', '<a class=x href = /blog-module/blog/collections/>x</a>',
+        // Second re-review: `>` inside a quoted value, %-encoded and character-referenced paths.
+        '<a title=">" href = /blog-module/blog/collections/pending/>x</a>', '<a href = /blog-module/blog/%63ollections/pending/>x</a>',
+        '<a href="&#47;blog-module/blog/collections/pending/">x</a>', '<a href="&#x2F;blog-module&#47;blog/collections/pending/">x</a>']) {
         const unquoted = newDiscovery();
         collectDiscovery(unquoted, html, 'index.html');
         errors = [];
         validateDiscoveryGraph(errors, unquoted, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: new Set(), today: options.today });
         assert.match(errors.join('\n'), /not an approved collection/, html);
     }
+    // `href=` text inside another attribute's quoted value is not the link; the first real href wins.
+    const shadow = newDiscovery();
+    collectDiscovery(shadow, '<a data-note=" href=/blog-module/blog/collections/pending/" href="/">Home</a>', 'x.html');
+    assert.deepEqual(shadow.anchors.get('x.html'), ['index.html']);
 });
 
 // Sol final review counterexamples: unquoted/spaced attributes and URL suffixes must not pass.
