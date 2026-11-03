@@ -119,7 +119,10 @@ function publicCollectionFiles(inputs = loadCollectionInputs(), options = {}) {
 
 if (require.main === module) {
     try {
-        const args = process.argv.slice(2), inputs = loadCollectionInputs();
+        // `npm run collections:validate -- --digest <slug>` arrives as `--validate --digest <slug>`.
+        let args = process.argv.slice(2);
+        if (args[0] === '--validate' && args[1] === '--digest') args = args.slice(1);
+        const inputs = loadCollectionInputs();
         if (args.length === 2 && args[0] === '--digest') {
             validateManifest(inputs.manifest, { articles: inputs.articles });
             const collection = inputs.manifest.collections.find(item => item.slug === args[1]);

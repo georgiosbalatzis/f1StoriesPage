@@ -43,7 +43,8 @@ function renderCollection(selected, { deps, indexPosts = [], origin = SITE, prev
             thumbnailWidth: image?.thumbnailWidth, thumbnailHeight: image?.thumbnailHeight };
         return rowHtml(display, ctx, { thumb: true, level: 2, fullDate: true, date: false })
             .replace(/(<a class="ed-row__link[^>]*>)/, `$1<span class="ed-date ed-num" aria-hidden="true">${String(post.position).padStart(2, '0')}</span>`)
-            .replace('<p class="ed-meta">', `${post.reason ? `<p class="ed-section__facts">${esc(post.reason)}</p>` : ''}<p class="ed-meta">`);
+            // A callback: reason text is literal even when it contains `$&` or `$'`.
+            .replace('<p class="ed-meta">', meta => `${post.reason ? `<p class="ed-section__facts">${esc(post.reason)}</p>` : ''}${meta}`);
     }).join('');
     const intro = collection.introduction.map(text => `<p class="ed-section__facts">${esc(text)}</p>`).join('');
     const body = '<section class="ed-section" aria-labelledby="collection-title"><header class="ed-section__head">'

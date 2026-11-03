@@ -23,18 +23,26 @@ function articleUrl(article) {
     return url.href;
 }
 
+// Each <tag ...> as a lowercase-keyed attribute map; quoted, unquoted and spaced `=` forms alike.
+const tagAttributes = (html, name) => (html.match(new RegExp(`<${name}\\b[^>]*>`, 'gi')) || []).map(tag =>
+    Object.fromEntries([...tag.matchAll(/([a-z][a-z0-9-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)]
+        .map(([, key, double, single, bare]) => [key.toLowerCase(), double ?? single ?? bare])));
+
+// One canonical equal to `canonical`, no robots/googlebot noindex; `direct` also forbids a meta refresh.
+function pageIsIndexable(html, canonical, { direct = false } = {}) {
+    const canonicals = tagAttributes(html, 'link').filter(tag => tag.rel?.toLowerCase().split(/\s+/).includes('canonical'));
+    const metas = tagAttributes(html, 'meta');
+    const blocked = metas.some(tag =>
+        ['robots', 'googlebot'].includes(tag.name?.toLowerCase()) && /(?:^|[,\s])(?:noindex|none)(?:$|[,\s])/i.test(tag.content || ''));
+    const refresh = direct && metas.some(tag => tag['http-equiv']?.toLowerCase() === 'refresh');
+    return canonicals.length === 1 && canonicals[0].href === canonical && !blocked && !refresh;
+}
+
 function articleIsPublic(article, root = ROOT) {
     // Folder ids may be Greek (20260227Τ): the URL carries them percent-encoded, the disk as written.
     const file = path.join(root, decodeURIComponent(new URL(articleUrl(article)).pathname));
     if (!fs.existsSync(file)) return false;
-    const html = fs.readFileSync(file, 'utf8');
-    const attributes = tag => Object.fromEntries([...tag.matchAll(/([a-z][a-z0-9-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)]
-        .map(([, key, double, single, bare]) => [key.toLowerCase(), double ?? single ?? bare]));
-    const canonicals = (html.match(/<link\b[^>]*>/gi) || []).map(attributes)
-        .filter(tag => tag.rel?.toLowerCase().split(/\s+/).includes('canonical'));
-    const blocked = (html.match(/<meta\b[^>]*>/gi) || []).map(attributes).some(tag =>
-        ['robots', 'googlebot'].includes(tag.name?.toLowerCase()) && /(?:^|[,\s])(?:noindex|none)(?:$|[,\s])/i.test(tag.content || ''));
-    return canonicals.length === 1 && canonicals[0].href === articleUrl(article) && !blocked;
+    return pageIsIndexable(fs.readFileSync(file, 'utf8'), articleUrl(article));
 }
 
 // No draft or unpublished status: the story goes out on its date.
@@ -180,4 +188,4 @@ function publicHubFiles(foundation = loadFoundation(), options = {}) {
         Array.from({ length: Math.ceil(hub.posts.length / PAGE_SIZE) }, (_, i) => hubPath(hub.entity, i + 1).slice(1) + 'index.html')));
 }
 const hubSitemap = pages => pages.map(page => sitemapUrl(SITE + page.path, page.changefreq, page.priority, page.lastmod)).join('');
-module.exports = { TYPES, PAGE_SIZE, GENERATED, jsonLd, hubPath, articleUrl, articleIsPublic, isReleased, isPublishedArticle, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };
+module.exports = { TYPES, PAGE_SIZE, GENERATED, jsonLd, hubPath, articleUrl, tagAttributes, pageIsIndexable, articleIsPublic, isReleased, isPublishedArticle, selectHubs, renderHub, buildHubPages, composeHubPage, writeHubPages, publicHubFiles, hubSitemap };

@@ -104,8 +104,10 @@ test('every published collection in the real manifest is eligible today', () => 
     assert.deepEqual(withheld.map(item => [item.collection.slug, item.reasons]), []);
 });
 
-test('real pilots validate and remain withheld', () => {
+// Holds after a later human approval too: only published + approved records can ever be eligible.
+test('real manifest validates and nothing unapproved or unpublished is eligible', () => {
     const f = loadCollectionInputs(); validateManifest(f.manifest, { articles: f.articles });
-    assert.equal(f.manifest.collections.length, 2);
-    assert.ok(selectCollections(f.manifest, f.articles, { ...options, isPublic: () => true }).every(item => !item.eligible && item.collection.review.status === 'pending'));
+    for (const item of selectCollections(f.manifest, f.articles, { ...options, isPublic: () => true })) {
+        if (item.collection.status !== 'published' || item.collection.review.status !== 'approved') assert.equal(item.eligible, false, item.collection.slug);
+    }
 });

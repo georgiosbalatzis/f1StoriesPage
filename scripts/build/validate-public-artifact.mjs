@@ -1037,13 +1037,14 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
         if (!actual.includes(file)) return;
         const html = fs.readFileSync(path.join(distRoot, file), 'utf8');
         const canonical = SITE_ORIGIN + '/' + file.replace(/index\.html$/, '');
-        const tags = findLinkTags(html, 'canonical');
-        if (tags.length !== 1 || attrValue(tags[0], 'href') !== canonical || (html.match(/<meta\b[^>]*>/gi) || []).some(tag =>
-            (['robots', 'googlebot'].includes((attrValue(tag, 'name') || '').toLowerCase()) && /(?:^|[,\s])(?:noindex|none)(?:$|[,\s])/i.test(attrValue(tag, 'content') || ''))
-            || (attrValue(tag, 'http-equiv') || '').toLowerCase() === 'refresh')) errors.push(`${file}: invalid canonical or robots policy`);
-        const visible = [...html.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)].flatMap(match => anchorPaths(match[0], file))
-            .filter(anchor => articlePage ? /^blog-module\/blog-entries\/[^/]+\/article\.html$/.test(anchor.file) : anchor.file.startsWith(prefix) && anchor.file !== file)
-            .map(anchor => SITE_ORIGIN + anchor.path);
+        if (!hubs.pageIsIndexable(html, canonical, { direct: true })) errors.push(`${file}: invalid canonical or robots policy`);
+        // Whole URLs (query and fragment included) so a member link must be exactly the article canonical.
+        const visible = [...html.matchAll(/<ol\b[^>]*>[\s\S]*?<\/ol>/gi)].flatMap(match => hubs.tagAttributes(match[0], 'a'))
+            .map(tag => { try { return new URL(tag.href.replace(/&amp;/g, '&'), `${SITE_ORIGIN}/${file}`); } catch (_) { return null; } })
+            .filter(url => url && url.origin === SITE_ORIGIN && (articlePage ? /^\/blog-module\/blog-entries\/[^/]+\/article\.html$/.test(url.pathname)
+                : url.pathname.startsWith('/' + prefix) && url.pathname !== '/' + prefix))
+            .map(url => url.href);
+        expected = expected.map(url => new URL(url).href);
         let lists = [];
         for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
             try {
@@ -1064,7 +1065,8 @@ export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFile
         for (const post of item.posts) {
             const date = dates.get(post.id);
             const articleFile = path.join(distRoot, 'blog-module/blog-entries', post.id, 'article.html');
-            if (!taxonomy.isDay(date) || date > today || !hubs.articleIsPublic(post, distRoot) || (fs.existsSync(articleFile) && /<meta\b[^>]*http-equiv=["']refresh["']/i.test(fs.readFileSync(articleFile, 'utf8')))) errors.push(`${file}: member ${post.id} is not a direct published story`);
+            if (!taxonomy.isDay(date) || date > today || !fs.existsSync(articleFile)
+                || !hubs.pageIsIndexable(fs.readFileSync(articleFile, 'utf8'), hubs.articleUrl(post), { direct: true })) errors.push(`${file}: member ${post.id} is not a direct published story`);
         }
     }
 }

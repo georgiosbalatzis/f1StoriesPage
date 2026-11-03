@@ -42,6 +42,44 @@ test('collection artifact checks enforce membership, order, sitemap and approved
     assert.match(errors.join('\n'), /not an approved collection/);
 });
 
+// Sol final review counterexamples: unquoted/spaced attributes and URL suffixes must not pass.
+test('artifact checks reject unquoted noindex, spaced refresh and non-canonical member links', async t => {
+    const { validateCollections } = await import('../../../scripts/build/validate-public-artifact.mjs');
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'collections-artifact-'));
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    const posts = ['a', 'b', 'c'].map(id => ({ id, date: '2026-01-01' }));
+    const options = { distRoot: root, approvedFiles: new Set([prefix + 'index.html', prefix + 'sample/index.html']),
+        selected: [{ collection: { slug: 'sample' }, posts, eligible: true }], sitemapUrls: new Set([`${origin}/${prefix}`, collection('sample')]), today: '2026-11-03' };
+    const run = () => { const errors = []; validateCollections(errors, options); return errors.join('\n'); };
+    write(root, 'blog-module/blog-index-data.json', JSON.stringify({ p: posts.map(post => [post.id, '', '', post.date]) }));
+    for (const post of posts) write(root, `blog-module/blog-entries/${post.id}/article.html`, `<link rel="canonical" href="${article(post.id)}">`);
+    write(root, prefix + 'index.html', page(`${origin}/${prefix}`, [collection('sample')]));
+    write(root, prefix + 'sample/index.html', page(collection('sample'), posts.map(post => article(post.id))));
+    assert.equal(run(), '');
+    write(root, prefix + 'sample/index.html', '<meta name=googlebot content=noindex>' + page(collection('sample'), posts.map(post => article(post.id))));
+    assert.match(run(), /sample\/index.html: invalid canonical or robots policy/);
+    write(root, prefix + 'sample/index.html', page(collection('sample'), posts.map(post => article(post.id))));
+    write(root, 'blog-module/blog-entries/b/article.html', `<link rel=canonical href=${article('b')}><meta http-equiv = "refresh" content="0;url=https://example.invalid/">`);
+    assert.match(run(), /member b is not a direct published story/);
+    write(root, 'blog-module/blog-entries/b/article.html', `<link rel="canonical" href="${article('b')}">`);
+    const links = posts.map(post => article(post.id)); links[1] += '?variant=1';
+    write(root, prefix + 'sample/index.html', page(collection('sample'), posts.map(post => article(post.id))).replace(/<ol>.*<\/ol>/, `<ol>${links.map(l => `<li><a href="${l}">x</a></li>`).join('')}</ol>`));
+    assert.match(run(), /visible collection order does not match/);
+});
+
+test('reason text with replacement tokens stays literal; digest CLI accepts the npm form', () => {
+    const { renderCollection } = require('../collections/render');
+    const posts = ['x', 'y', 'z'].map((id, i) => ({ id, title: id, date: '2026-01-01', position: i + 1, reason: i ? 'ok' : "A $& B $' C" }));
+    const html = renderCollection({ collection: { slug: 's', title: 'T', description: 'D', introduction: ['I'] }, posts, lastmod: '2026-01-01' },
+        { deps: { storyImage: () => '', renderStoryImage: () => '' } }).main;
+    assert.match(html, /<p class="ed-section__facts">A \$&amp; B \$' C<\/p><p class="ed-meta">/);
+    assert.equal((html.match(/<p class="ed-meta">/g) || []).length, 3);
+    const { execFileSync } = require('node:child_process');
+    const model = path.join(__dirname, '../collections/model.js');
+    const digest = execFileSync(process.execPath, [model, '--validate', '--digest', '2026-nea-techniki-epochi'], { encoding: 'utf8' }).trim();
+    assert.match(digest, /^[a-f0-9]{64}$/);
+});
+
 test('drift recognizes generated collections and preview rejects invalid members', async () => {
     const { isGeneratedPath } = await import('../../../scripts/build/generated-drift-guard.mjs');
     const { isCollectionDiscoveryPage } = await import('../../../scripts/build/stamp-html.mjs');
