@@ -188,6 +188,7 @@ const FONT_PRELOADS = {
 
 // The Edition Index's generated section and archive pages (blog-module/blog/section, /archive; written by
 // blog-module/build/discovery.js) are the blog index's shell with another <main>: they stamp exactly as it does.
+export const isCollectionDiscoveryPage = rel => /^blog-module\/blog\/collections\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?index\.html$/.test(rel);
 function listDiscoveryPages() {
     const pages = [];
     function walk(dir) {
@@ -197,11 +198,11 @@ function listDiscoveryPages() {
             if (entry.isDirectory()) walk(abs);
             else if (entry.isFile() && entry.name === 'index.html') {
                 const rel = path.relative(REPO_ROOT, abs).split(path.sep).join('/');
-                if (!rel.startsWith('blog-module/blog/entities/') || /^blog-module\/blog\/entities\/(?:drivers|teams|circuits|grands-prix)\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:page\/(?:[2-9]|[1-9]\d+)\/)?index\.html$/.test(rel)) pages.push(rel);
+                if ((!rel.startsWith('blog-module/blog/collections/') || isCollectionDiscoveryPage(rel)) && (!rel.startsWith('blog-module/blog/entities/') || /^blog-module\/blog\/entities\/(?:drivers|teams|circuits|grands-prix)\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:page\/(?:[2-9]|[1-9]\d+)\/)?index\.html$/.test(rel))) pages.push(rel);
             }
         }
     }
-    ['section', 'archive', 'entities'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
+    ['section', 'archive', 'entities', 'collections'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
     return pages.sort();
 }
 // The static author pages (authors/<slug>/, written by blog-module/build/authors-page.js) are the /authors/ shell.
@@ -1385,4 +1386,4 @@ function main() {
     }
 }
 
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) main();

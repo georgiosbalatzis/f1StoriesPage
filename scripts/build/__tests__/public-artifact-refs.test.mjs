@@ -205,6 +205,7 @@ function cliFixture(t) {
     }
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
+    write(root, 'blog-module/build/collections/model.js', "exports.publicCollectionFiles = () => new Set(); exports.loadCollectionInputs = () => ({ manifest: {}, articles: [] }); exports.selectCollections = () => [];");
     write(root, 'blog-module/build/research-content.js', fs.readFileSync(new URL('../../../blog-module/build/research-content.js', import.meta.url)));
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));
     write(root, 'blog-module/build/retired.js', fs.readFileSync(new URL('../../../blog-module/build/retired.js', import.meta.url)));

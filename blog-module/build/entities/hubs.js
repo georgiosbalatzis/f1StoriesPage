@@ -129,7 +129,7 @@ function composeHubPage(shell, page) {
     return composePage(shell, page).replace(/<script\b[^>]*src="\/blog-module\/(?:taxonomy|blog-index)(?:\.min)?\.js[^"']*"[^>]*><\/script>\s*/g, '');
 }
 
-function writeHubPages(blogDir, pages, shell = fs.readFileSync(path.join(blogDir, 'index.html'), 'utf8')) {
+function writeHubPages(blogDir, pages, shell = fs.readFileSync(path.join(blogDir, 'index.html'), 'utf8'), { generated = GENERATED, roots = Object.values(TYPES).map(type => `entities/${type}`), stopAt = 'entities' } = {}) {
     function hasSymlink(file) {
         const parts = path.relative(blogDir, file).split(path.sep);
         let current = blogDir;
@@ -145,7 +145,7 @@ function writeHubPages(blogDir, pages, shell = fs.readFileSync(path.join(blogDir
     }
     // Check every destination before any mutation; output must stay inside the owned tree.
     for (const page of pages) {
-        if (!GENERATED.test(page.file)) throw new Error(`Invalid generated entity path: ${page.file}`);
+        if (!generated.test(page.file)) throw new Error(`Invalid generated entity path: ${page.file}`);
         if (hasSymlink(path.join(blogDir, page.file))) throw new Error(`Refusing symlink entity output: ${page.file}`);
     }
     const keep = new Set(pages.map(page => page.file));
@@ -161,9 +161,9 @@ function writeHubPages(blogDir, pages, shell = fs.readFileSync(path.join(blogDir
             if (entry.isDirectory()) clean(file);
             else if (entry.isFile()) {
                 const rel = path.relative(blogDir, file).split(path.sep).join('/');
-                if (!GENERATED.test(rel) || keep.has(rel)) continue;
+                if (!generated.test(rel) || keep.has(rel)) continue;
                 fs.rmSync(file);
-                for (let parent = path.dirname(file); parent !== blogDir && parent !== path.join(blogDir, 'entities'); parent = path.dirname(parent)) {
+                for (let parent = path.dirname(file); parent !== blogDir && parent !== path.join(blogDir, stopAt); parent = path.dirname(parent)) {
                     if (fs.readdirSync(parent).length) break;
                     fs.rmdirSync(parent);
                 }
@@ -171,7 +171,7 @@ function writeHubPages(blogDir, pages, shell = fs.readFileSync(path.join(blogDir
         }
     }
     // Only the four owned type roots; symlinks and unrelated files are never followed or removed.
-    Object.values(TYPES).forEach(type => clean(path.join(blogDir, 'entities', type)));
+    roots.forEach(root => clean(path.join(blogDir, root)));
 }
 
 function publicHubFiles(foundation = loadFoundation(), options = {}) {
