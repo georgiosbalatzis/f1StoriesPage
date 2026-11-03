@@ -40,6 +40,14 @@ test('collection artifact checks enforce membership, order, sitemap and approved
     errors = [];
     validateDiscoveryGraph(errors, discovery, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: approvedFiles, today: options.today });
     assert.match(errors.join('\n'), /not an approved collection/);
+    // Sol re-review: an unquoted href with zero eligible collections must still be caught.
+    for (const html of ['<a href=/blog-module/blog/collections/pending/>x</a>', '<a class=x href = /blog-module/blog/collections/>x</a>']) {
+        const unquoted = newDiscovery();
+        collectDiscovery(unquoted, html, 'index.html');
+        errors = [];
+        validateDiscoveryGraph(errors, unquoted, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: new Set(), today: options.today });
+        assert.match(errors.join('\n'), /not an approved collection/, html);
+    }
 });
 
 // Sol final review counterexamples: unquoted/spaced attributes and URL suffixes must not pass.

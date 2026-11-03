@@ -919,8 +919,9 @@ function validateEditorialArticle(errors, html, relPath, editorialRefs) {
 const ENTITY_HREF = /^\/blog-module\/blog\/entities\//;
 function anchorPaths(html, relPath) {
     const out = [];
-    for (const match of html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, '').matchAll(/<a\b[^>]*?\shref\s*=\s*(["'])(.*?)\1/gi)) {
-        const href = match[2].replace(/&amp;/g, '&').trim();
+    // Quoted and unquoted href values alike: an approval check must not miss <a href=/path/>.
+    for (const match of html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, '').matchAll(/<a\b[^>]*?\shref\s*=\s*(?:(["'])(.*?)\1|([^\s"'=<>`]+))/gi)) {
+        const href = (match[2] ?? match[3]).replace(/&amp;/g, '&').trim();
         if (!href || href.startsWith('#')) continue;
         let url;
         try { url = new URL(href, `${SITE_ORIGIN}/${relPath}`); } catch (_) { continue; }
