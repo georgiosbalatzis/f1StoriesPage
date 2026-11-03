@@ -61,7 +61,7 @@ The mature end is `asOf − 4 days`; the primary window is at most 28 days, acqu
 
 | Check | Implemented boundary |
 | --- | --- |
-| Execution observed late | Delay strictly greater than 6 h after expected schedule → `DEGRADED`; a delay of 6 h is tolerated. |
+| Execution observed late | Delay strictly greater than 8 h after expected schedule → `DEGRADED`; a delay of 8 h is tolerated. The allowance equals the missing-run grace: GitHub has started the 03:00 Athens schedule 5.4–6.4 h late (#435), and a run arriving inside the grace must not score worse than one not yet seen. |
 | No scheduled or covering manual execution | Under 8 h → `HEALTHY` grace; at 8 h → `DEGRADED`; at 12 h → `CRITICAL`. A new day's grace carries an existing missing-run incident unchanged; only an observed execution can establish recovery. |
 | Refresh still active | `UNKNOWN` through 12 h after expected schedule; strictly beyond 12 h → `DEGRADED`. |
 | Completed refresh not in repository | `DEGRADED`; strictly more than 1 h after recorded refresh evidence → `CRITICAL`. A recorded upload/publish failure is immediately critical. |
@@ -121,7 +121,7 @@ Detection below assumes the watchdog runs and can read its evidence. Incidents o
 | --- | --- | --- | --- | --- |
 | Refresh fails or is cancelled | yes | `refresh` / `refresh-failed` | Critical execution/stage and workflow link | Diagnose the stage; use the recovery cases below. |
 | Expected schedule never starts | yes | `schedule` / `schedule-missing` | Warning at 8 h, critical at 12 h | Check Actions and covering manual runs before dispatch. |
-| Schedule starts late | yes | `schedule` / `schedule-missing` | Degraded beyond 6 h, even if refresh succeeds | Reconcile reporting day; do not rerun a published day. |
+| Schedule starts late | yes | `schedule` / `schedule-missing` | Degraded beyond 8 h, even if refresh succeeds | Reconcile reporting day; do not rerun a published day. |
 | WIF, export table, SQL/schema, query or result validation fails | yes | `bigquery` / `bigquery-failed`; `refresh-failed` | Named structured stage; auth step can identify failure without artifact | Fix the cause; never blindly rerun queries. |
 | Key missing, malformed or rotated | partially | `refresh` / `refresh-failed` on configuration failure; `discovery-overdue` may follow lost carry | Configuration failure, or apparently healthy pipeline with unavailable carry | Owner checks environment/key lifecycle; watchdog cannot establish which key opens the file. |
 | Preflight refusal or observed byte-guard violation | yes | `costGuard` / `cost-preflight` | Critical refusal/guard evidence | Review estimates and caps; keep limits. |
@@ -175,7 +175,7 @@ path above. Never substitute zeros, skip a missing day, or read an immature tabl
 
 ### Schedule delay or missing execution
 
-**Symptoms:** `schedule-missing`, with no run or a delay greater than 6 h. **Diagnosis:** check the 8 h / 12 h missing-run
+**Symptoms:** `schedule-missing`, with no run or a delay greater than 8 h. **Diagnosis:** check the 8 h / 12 h missing-run
 boundaries, Actions enablement, queued runs and successful manual coverage. Compare Athens, LA and UTC clocks.
 **Recovery:** wait within grace if a run is queued; otherwise use the manual path after confirming no covering
 refresh. A delayed successful publication needs no query rerun. A newer LA day can legitimately cover the schedule.
