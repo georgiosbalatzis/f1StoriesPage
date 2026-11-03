@@ -13,10 +13,10 @@ import { readInputs, renderModel } from '../editorial-model.mjs';
 import {
     ACQUISITION_WINDOW_DAYS, DAILY_MAX_BYTES, ENABLED, EXPORT_START, MATURITY_DAYS, MAX_BYTES_BILLED, PROJECT, PROPERTY, REPORT_TIMEZONE, SNAPSHOT_MODELS,
     SNAPSHOT_PATH, WINDOW_DAYS, assertEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh,
-    resultRows, scannedTables, sealSnapshot, snapshotWindow, modelWindow, windowDays, windowFor,
+    propertyDay, resultRows, scannedTables, sealSnapshot, snapshotWindow, modelWindow, windowDays, windowFor,
     DISCOVERY_EVERY_DAYS, DISCOVERY_MAX_AGE_DAYS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY, openSnapshot, schedule
 } from '../snapshot.mjs';
-import { fakeClient, queryResult, syntheticRows } from './snapshot-fixture.mjs';
+import { fakeClient, propertyDaysBefore, queryResult, syntheticRows } from './snapshot-fixture.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const read = rel => fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
@@ -811,4 +811,19 @@ test('the retired I-06A API leaves no code, dependency or route behind', () => {
         && !['scripts/quality/static-source-guard.mjs', 'scripts/build/validate-public-artifact.mjs', 'scripts/build/__tests__/security-policy.test.mjs'].includes(file));
     assert.deepEqual(offenders, []);
     assert.doesNotMatch(read('package.json'), /services\//);
+});
+
+test('fixture day steps are consecutive Los Angeles days across both DST changes', () => {
+    // 2026-11-03T07:32Z failed the dashboard regression: 24 h steps put two refreshes on 2026-11-01.
+    assert.deepEqual([2, 1, 0].map(i => propertyDay(propertyDaysBefore(new Date('2026-11-03T07:32:00Z'), i))),
+        ['2026-10-31', '2026-11-01', '2026-11-02']);
+    for (const start of ['2026-10-30T00:00:00Z', '2027-03-12T00:00:00Z']) {
+        for (let hour = 0; hour < 7 * 24; hour++) {
+            const now = new Date(Date.parse(start) + hour * 3600000);
+            const days = [3, 2, 1, 0].map(i => propertyDay(propertyDaysBefore(now, i)));
+            days.slice(1).forEach((day, i) => assert.equal(Date.parse(day) - Date.parse(days[i]), 86400000, `${now.toISOString()}: ${days}`));
+        }
+    }
+    const now = new Date();
+    assert.equal(propertyDaysBefore(now, 0), now);
 });

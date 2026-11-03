@@ -1,8 +1,14 @@
 // Synthetic stand-ins for BigQuery in the snapshot tests: invented aggregate rows in the REST result format.
 // No real analytics, no network.
-import { modelWindow, windowDays } from '../snapshot.mjs';
+import { modelWindow, propertyDay, windowDays } from '../snapshot.mjs';
 
 const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
+
+// An instant on the property day `days` calendar days before `now`'s. Subtracting 24 h instead can land twice on one
+// Los Angeles day (or skip one) across a DST change. 20:00Z is midday in Los Angeles under both PST and PDT.
+export function propertyDaysBefore(now, days) {
+    return days ? new Date(`${addDays(propertyDay(now), -days)}T20:00:00Z`) : now;
+}
 const TYPES = { p75: 'FLOAT', good_share: 'FLOAT', meets_min_events: 'BOOLEAN', meets_min_observations: 'BOOLEAN',
     core_web_vital: 'BOOLEAN', cohort_truncated: 'BOOLEAN', category: 'STRING', coverage: 'STRING', metric: 'STRING', stage: 'STRING',
     article_id: 'STRING', title: 'STRING', primary_category: 'STRING', author: 'STRING',
