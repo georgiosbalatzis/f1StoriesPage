@@ -10,6 +10,8 @@ import { XMLParser } from 'fast-xml-parser';
 import { buildSync } from 'esbuild';
 import search from '../../blog-module/search-destinations.js';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import htmlAttributes from '../../blog-module/build/html-attributes.js';
+import collections from '../../blog-module/build/collections/model.js';
 import articleDates from '../../blog-module/build/article-dates.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
@@ -129,6 +131,7 @@ function fmtBytes(bytes) {
 }
 
 function forbiddenReason(relPath) {
+    if (relPath.startsWith('data/audience/')) return 'audience editorial source';
     const base = path.posix.basename(relPath);
     if (FORBIDDEN_EXACT.has(relPath) || FORBIDDEN_EXACT.has(base)) return 'internal file';
     if (/\.(?:bak|docx|map|odt)$/i.test(relPath)) return 'source/backup artifact';
@@ -914,11 +917,16 @@ function validateEditorialArticle(errors, html, relPath, editorialRefs) {
 // ── Discovery link graph ─────────────────────────────────
 // Read during the one HTML walk: each page's static anchors (for reachability), its NEXT UP stories, its cover-kicker
 // topic links and any topic-hub links. Checked once the walk is done.
-const ENTITY_HREF = /^\/blog-module\/blog\/entities\//;
+// Matched against the decoded destination file, so %-encoded paths cannot slip past an approval check.
+const ENTITY_FILE = /^blog-module\/blog\/entities\//;
+const COLLECTION_FILE = /^blog-module\/blog\/collections\//;
 function anchorPaths(html, relPath) {
     const out = [];
-    for (const match of html.replace(/<script\b[\s\S]*?<\/script>|<!--[\s\S]*?-->/gi, '').matchAll(/<a\b[^>]*?\shref\s*=\s*(["'])(.*?)\1/gi)) {
-        const href = match[2].replace(/&amp;/g, '&').trim();
+    // The shared tokenizer (comments/raw text skipped, references decoded): approval checks must not miss a link a
+    // browser would follow. An href it cannot decode is returned as `unresolved` so the caller fails closed.
+    for (const tag of htmlAttributes.tags(html).filter(tag => !tag.close && tag.name === 'a')) {
+        const href = (tag.attrs.href || '').trim();
+        if (tag.unresolved.includes('href')) { out.push({ unresolved: true, path: href, file: '' }); continue; }
         if (!href || href.startsWith('#')) continue;
         let url;
         try { url = new URL(href, `${SITE_ORIGIN}/${relPath}`); } catch (_) { continue; }
@@ -931,15 +939,19 @@ function anchorPaths(html, relPath) {
     return out;
 }
 export function collectDiscovery(discovery, html, relPath) {
-    const anchors = anchorPaths(html, relPath);
+    const all = anchorPaths(html, relPath);
+    const anchors = all.filter(anchor => !anchor.unresolved);
+    // A <base> would re-target every relative link, and an undecodable href cannot be checked: both fail closed.
+    const unresolved = all.filter(anchor => anchor.unresolved).map(anchor => `undecodable link ${anchor.path}`)
+        .concat(htmlAttributes.tags(html).some(tag => !tag.close && tag.name === 'base') ? ['<base> element'] : []);
     discovery.anchors.set(relPath, anchors.map(anchor => anchor.file));
     const grid = html.indexOf('<div class="rr-next__grid">');
     const nextUp = grid < 0 ? [] : anchorPaths(html.slice(grid, html.indexOf('<div class="article-navigation"', grid)), relPath);
     const kicker = (/<p class="rr-kicker">[^\n]*?<span id="reading-time-value">/.exec(html) || [''])[0];
     const topicBlocks = [...html.matchAll(/<nav class="ed-aside__block" aria-labelledby="ed-topics-title">[\s\S]*?<\/nav>/g)].map(block => anchorPaths(block[0], relPath));
     discovery.pages.set(relPath, {
-        nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_HREF.test(anchor.path)), topicBlocks,
-        hubLinks: anchors.filter(anchor => ENTITY_HREF.test(anchor.path)), redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
+        nextUp, topics: anchorPaths(kicker, relPath).filter(anchor => ENTITY_FILE.test(anchor.file)), topicBlocks,
+        hubLinks: anchors.filter(anchor => ENTITY_FILE.test(anchor.file)), collectionLinks: anchors.filter(anchor => COLLECTION_FILE.test(anchor.file)), unresolved, redirect: /<meta[^>]+http-equiv=["']refresh["']/i.test(html)
     });
 }
 export function newDiscovery() {
@@ -948,7 +960,7 @@ export function newDiscovery() {
 // Every generated discovery link is a real, published, direct destination; approved hubs only; nothing duplicated
 // within one region; every sitemap page reachable from the homepage through static links.
 export function validateDiscoveryGraph(errors, discovery, sitemapUrls, {
-    distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles(), today = taxonomy.athensDay()
+    distRoot = DIST_ROOT, approvedFiles = hubs.publicHubFiles(), approvedCollectionFiles = collections.publicCollectionFiles(), today = taxonomy.athensDay()
 } = {}) {
     const dates = new Map();
     try {
@@ -975,6 +987,10 @@ export function validateDiscoveryGraph(errors, discovery, sitemapUrls, {
             else if (!taxonomy.isDay(date) || date > today) errors.push(`${relPath}: NEXT UP links ${anchor.path}, dated ${date}`);
             else if (discovery.pages.get(anchor.file)?.redirect) errors.push(`${relPath}: NEXT UP links the redirect page ${anchor.path}`);
         }
+        for (const problem of page.unresolved || []) errors.push(`${relPath}: ${problem} cannot be checked against approved destinations`);
+        for (const anchor of page.collectionLinks || []) {
+            if (!approvedCollectionFiles.has(anchor.file)) errors.push(`${relPath}: links ${anchor.path}, which is not an approved collection`);
+        }
         for (const anchor of page.hubLinks) {
             if (!approvedFiles.has(anchor.file)) errors.push(`${relPath}: links ${anchor.path}, which is not an approved public topic hub`);
         }
@@ -996,6 +1012,81 @@ export function validateDiscoveryGraph(errors, discovery, sitemapUrls, {
         file = file.slice(1);
         if (!file || file.endsWith('/')) file += 'index.html';
         if (discovery.anchors.has(file) && !reached.has(file)) errors.push(`sitemap.xml: ${url} is not reachable from the homepage through static links`);
+    }
+}
+
+
+// Compare the public artifact with the editorial selection, including the visible and structured order.
+export function validateCollections(errors, { distRoot = DIST_ROOT, approvedFiles = collections.publicCollectionFiles(), selected, sitemapUrls = new Set(), today = taxonomy.athensDay() } = {}) {
+    if (!selected) {
+        const inputs = collections.loadCollectionInputs();
+        selected = collections.selectCollections(inputs.manifest, inputs.articles, { today });
+    }
+    const eligible = selected.filter(item => item.eligible);
+    const prefix = 'blog-module/blog/collections/';
+    const actual = [];
+    function walkCollections(dir) {
+        if (!fs.existsSync(dir)) return;
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const file = path.join(dir, entry.name);
+            if (entry.isDirectory()) walkCollections(file);
+            else actual.push(path.relative(distRoot, file).split(path.sep).join('/'));
+        }
+    }
+    walkCollections(path.join(distRoot, prefix));
+    for (const file of actual) if (!approvedFiles.has(file)) errors.push(`${file}: unapproved collection output`);
+    for (const file of approvedFiles) if (!actual.includes(file)) errors.push(`${file}: missing approved collection output`);
+    const urls = new Set([...approvedFiles].map(file => SITE_ORIGIN + '/' + file.replace(/index\.html$/, '')));
+    const sitemapCollections = [...sitemapUrls].filter(url => new URL(url).pathname.startsWith('/' + prefix));
+    if (sitemapCollections.length !== urls.size || sitemapCollections.some(url => !urls.has(url))) errors.push('sitemap.xml: collection URLs do not match approved output');
+    const dates = new Map();
+    try {
+        const data = JSON.parse(fs.readFileSync(path.join(distRoot, 'blog-module/blog-index-data.json'), 'utf8'));
+        (data.p || []).forEach(row => dates.set(row[0], row[3]));
+    } catch (error) { errors.push(`collections: cannot read blog-index-data.json (${error.message})`); }
+    const checkPage = (file, expected, articlePage) => {
+        if (!actual.includes(file)) return;
+        const html = fs.readFileSync(path.join(distRoot, file), 'utf8');
+        const canonical = SITE_ORIGIN + '/' + file.replace(/index\.html$/, '');
+        if (!htmlAttributes.pageIsIndexable(html, canonical, { direct: true })) errors.push(`${file}: invalid canonical or robots policy`);
+        // Links inside real <ol> elements (never commented out or raw text), compared as whole URLs (query and fragment
+        // included) so a member link must be exactly the article canonical.
+        let depth = 0;
+        const inLists = [];
+        for (const tag of htmlAttributes.tags(html)) {
+            if (tag.name === 'ol') depth = Math.max(0, depth + (tag.close ? -1 : 1));
+            else if (depth && !tag.close && tag.name === 'a') inLists.push(tag);
+        }
+        if (inLists.some(tag => tag.unresolved.includes('href'))) errors.push(`${file}: undecodable list link`);
+        const visible = inLists.map(tag => tag.attrs)
+            .map(tag => { try { return new URL(tag.href, `${SITE_ORIGIN}/${file}`); } catch (_) { return null; } })
+            .filter(url => url && url.origin === SITE_ORIGIN && (articlePage ? /^\/blog-module\/blog-entries\/[^/]+\/article\.html$/.test(url.pathname)
+                : url.pathname.startsWith('/' + prefix) && url.pathname !== '/' + prefix))
+            .map(url => url.href);
+        expected = expected.map(url => new URL(url).href);
+        let lists = [];
+        for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+            try {
+                const root = JSON.parse(match[1]);
+                lists.push(...(Array.isArray(root['@graph']) ? root['@graph'] : [root]).filter(node => node['@type'] === 'ItemList'));
+            } catch (_) { errors.push(`${file}: invalid JSON-LD`); }
+        }
+        const structured = lists.length === 1 && Array.isArray(lists[0].itemListElement) ? lists[0].itemListElement.map((item, i) => item.position === i + 1 ? (item.url || item.item) : '') : [];
+        if (JSON.stringify(visible) !== JSON.stringify(expected)) errors.push(`${file}: visible collection order does not match selection`);
+        if (JSON.stringify(structured) !== JSON.stringify(expected)) errors.push(`${file}: ItemList order does not match selection`);
+    };
+    const index = prefix + 'index.html';
+    if (approvedFiles.has(index)) checkPage(index, eligible.map(item => SITE_ORIGIN + collections.collectionPath(item.collection.slug)), false);
+    for (const item of eligible) {
+        const file = collections.collectionPath(item.collection.slug).slice(1) + 'index.html';
+        const expected = item.posts.map(post => hubs.articleUrl(post));
+        checkPage(file, expected, true);
+        for (const post of item.posts) {
+            const date = dates.get(post.id);
+            const articleFile = path.join(distRoot, 'blog-module/blog-entries', post.id, 'article.html');
+            if (!taxonomy.isDay(date) || date > today || !fs.existsSync(articleFile)
+                || !htmlAttributes.pageIsIndexable(fs.readFileSync(articleFile, 'utf8'), hubs.articleUrl(post), { direct: true })) errors.push(`${file}: member ${post.id} is not a direct published story`);
+        }
     }
 }
 
@@ -1093,6 +1184,7 @@ function main() {
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
     validateDiscoveryGraph(errors, discovery, sitemapUrls);
+    validateCollections(errors, { sitemapUrls });
     errors.push(...validateResultsOutput(DIST_ROOT, readResultsContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     errors.push(...validateHubOutput(DIST_ROOT, readHubRegistry(REPO_ROOT), JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scripts/deployment/sources.json'), 'utf8')), new Date().getUTCFullYear(), readHubEvidence(REPO_ROOT), readEditorialSelection(REPO_ROOT, readHubRegistry(REPO_ROOT), { today: taxonomy.athensDay(), publicRoot: DIST_ROOT }), readTimelineContexts(REPO_ROOT, readHubRegistry(REPO_ROOT)), readPaceContexts(REPO_ROOT, readHubRegistry(REPO_ROOT))));
     for (const file of GP_PUBLIC_FILES) {

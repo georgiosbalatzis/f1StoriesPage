@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import hubs from '../../blog-module/build/entities/hubs.js';
+import collections from '../../blog-module/build/collections/model.js';
 import retired from '../../blog-module/build/retired.js';
 import taxonomy from '../../blog-module/taxonomy.js';
 import { cspProfileForPath, injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
@@ -97,6 +98,7 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/race-desk-navigation.min.js'
 ]);
 
+const COLLECTION_PUBLIC_FILES = collections.publicCollectionFiles();
 const ENTITY_PUBLIC_FILES = hubs.publicHubFiles();
 const GP_PUBLIC_FILES = new Set(hubFiles(REPO_ROOT));
 
@@ -387,6 +389,7 @@ function shouldCopy(relPath) {
     if (/^scripts\/author\/research-content\/\d{4}-(?:0[1-9]|1[0-2])\.json$/.test(relPath)) return true;
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
+    if (relPath.startsWith('blog-module/blog/collections/')) return COLLECTION_PUBLIC_FILES.has(relPath);
     if (ENTITY_PUBLIC_FILES.has(relPath)) return true;
     if (GP_PUBLIC_FILES.has(relPath)) return true;
     // The Edition Index's static section and month pages (blog-module/build/discovery.js).

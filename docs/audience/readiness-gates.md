@@ -1,23 +1,29 @@
 # Audience readiness gates
 
-Status: A-01 audit; base `58331f9fb`; investigation 2026-11-03 UTC.
+Status: A-01 audit; base `58331f9fb`; investigation 2026-11-03 UTC. Roadmap numbering reconciled in A-02 (base `d8308bf0d`).
 These are proposed review gates, not authorizations to build, deploy, collect data or choose a provider.
 The [measurement contract](measurement-contract.md) owns KPI definitions and [evidence labels](measurement-contract.md#evidence-labels); Intelligence retains its own [statuses](../intelligence/bigquery-validation.md#statuses) and [validator outcomes](../intelligence/data-quality.md#outcomes-and-severities).
 
-## Provisional order
+## Phase 4 roadmap
 
-**A-02 through A-09 are PROVISIONAL:** the owner must decide the mapping. This order is a planning proposal, not an existing repository assignment.
+**Owner-approved order (recorded in A-02, 2026-11-03).** A-01 proposed a provisional A-02..A-09 mapping; it was never
+the approved roadmap and is superseded. The feature gates below keep their A-01 content under the approved numbers.
 
-| A-number | Feature | Rationale for order |
-| --- | --- | --- |
-| A-02 | Audience intelligence | First establish whether the central returning-audience question can be answered with existing aggregate reporting. |
-| A-03 | Curated collections | Reuse public hubs and existing discovery before adding personal-data operations. |
-| A-04 | Reading paths | Reuse canonical articles and discovery after collection ownership is clear. |
-| A-05 | Race-weekend experience | Reuse Race Desk contracts and resolve reporting boundaries. |
-| A-06 | Reading list | Decide local persistence and removal before measurement. |
-| A-07 | Newsletter | Requires independent consent, subscription states and operational ownership. |
-| A-08 | Notifications / push | Requires permission, delivery and service-worker decisions. |
-| A-09 | Community participation | Requires moderation, abuse and publication responsibilities. |
+| A-number | Feature | Gate | A-01 provisional number |
+| --- | --- | --- | --- |
+| A-01 | Audience Baseline & Measurement Contract | Completed ([README](README.md)) | A-01 |
+| A-02 | Curated Collections Foundation | [A-02](#a-02--curated-collections-foundation) | A-03 |
+| A-03 | Article Reading Journeys | [A-03](#a-03--article-reading-journeys) | A-04 |
+| A-04 | Race Weekend Reader Gateway | [A-04](#a-04--race-weekend-reader-gateway) | A-05 |
+| A-05 | Weekly Briefing Editorial Foundation | [A-05](#a-05--weekly-briefing-editorial-foundation) | none |
+| A-06 | Newsletter Signup, Consent & Preferences | [A-06 and A-07](#a-06-and-a-07--newsletter) | A-07 (first half) |
+| A-07 | Newsletter Delivery & Editorial Approval | [A-06 and A-07](#a-06-and-a-07--newsletter) | A-07 (second half) |
+| A-08 | Reader Questions & Editorial Q&A | [A-08](#a-08--reader-questions--editorial-qa) | A-09 (community) |
+| A-09 | Local Reading List Pilot | [A-09](#a-09--local-reading-list-pilot) | A-06 |
+
+Not in the approved roadmap, gates kept for any later proposal:
+[audience intelligence](#unscheduled--audience-intelligence) (A-01 provisional A-02) and
+[notifications / push](#unscheduled--notifications--push) (A-01 provisional A-08).
 
 ## Global gates
 
@@ -34,31 +40,11 @@ These gates apply to every later A-0x, scaled to the proposed scope.
 Unless a cited existing contract supplies a threshold for that particular measurement, **acceptance threshold: owner to set after baseline**. Do not treat a small-sample flag as proof of impact.
 For existing RUM reports, `min_observations = 30` is a sample flag, not a general launch or significance threshold. [Validation record](../intelligence/bigquery-validation.md), [snapshot data](../intelligence/dashboard-snapshots.md#data).
 
-## A-02 — Audience intelligence
-
-**Feature:** determine whether aggregate reporting can answer returning-audience questions without visitor-level outputs.
-
-**Depends on:** A-01; [Intelligence metrics contract](../intelligence/metrics-contract.md), [data quality](../intelligence/data-quality.md), [snapshot design](../intelligence/dashboard-snapshots.md).
-
-**KPIs:** [KPI 1 Returning readership; KPI 2 Engaged sessions vs article_engaged; KPI 15 Core Web Vitals guardrails](measurement-contract.md).
-
-**Measurement prerequisites:** owner verifies the aggregate GA4 report's availability, definition, population, time zone and privacy-safe reporting grain; validates each existing model actually used against its own production evidence and mature window.
-
-**Missing evidence:** returning-user and engaged-session reports are NOT VERIFIED; no visitor-level joins or event subtraction can establish them. [Metrics contract](../intelligence/metrics-contract.md#data-minimization); [validation statuses](../intelligence/bigquery-validation.md#statuses).
-
-**Privacy/legal items:** [Intelligence minimisation](privacy-data-flow.md#intelligence-minimisation-and-security-boundaries), [review matrix](privacy-data-flow.md#future-feature-review-matrix).
-
-**Acceptance thresholds:** owner to set after baseline; existing RUM sample flag applies only to the relevant observations.
-
-**GO:** owner accepts an aggregate source, bounded disclosure and validation plan; responsible operator and limitations are recorded.
-
-**NO-GO:** visitor-level extract or join proposed, undefined reporting population, or impact claim based only on execution or synthetic fixtures.
-
-**Owner decisions required:** acceptability of aggregate reporting, ownership, permissible aggregate disclosure and validation priority.
-
-## A-03 — Curated collections
+## A-02 — Curated Collections Foundation
 
 **Feature:** organize approved public articles using existing discovery and hub infrastructure.
+
+**Status:** foundation implemented in the A-02 draft PR; contract and approval procedure in [collections.md](collections.md). No collection is approved.
 
 **Depends on:** A-01; [entity hubs](../entity-hubs.md), [editorial review](../editorial-review.md), [editorial model](../intelligence/editorial-model.md).
 
@@ -78,7 +64,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Owner decisions required:** collection selection and maintenance, acceptable proxy, and whether a measurement gap warrants future instrumentation.
 
-## A-04 — Reading paths
+## A-03 — Article Reading Journeys
 
 **Feature:** provide an ordered reading experience over approved public content.
 
@@ -100,7 +86,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Owner decisions required:** path curation, whether progress is stored, and whether its measurement is necessary.
 
-## A-05 — Race-weekend experience
+## A-04 — Race Weekend Reader Gateway
 
 **Feature:** use Race Desk context to help readers navigate race-weekend content.
 
@@ -122,31 +108,18 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Owner decisions required:** scope, acceptable proxies, GP classification gap and whether child measurement is warranted.
 
-## A-06 — Reading list
+## A-05 — Weekly Briefing Editorial Foundation
 
-**Feature:** allow readers to save and reopen articles.
+**Feature:** an editorially written weekly briefing built from published articles. A-01 defined no gate for it.
 
-**Depends on:** A-01; [editorial identity and review](../editorial-review.md), [metrics minimisation](../intelligence/metrics-contract.md#data-minimization).
+**Gate:** not yet written. Before A-05 starts, its gate must be added here in the same form as the others: the
+relevant [KPIs](measurement-contract.md) or a declared gap, the [global gates](#global-gates), editorial ownership and
+approval under [editorial review](../editorial-review.md), and owner decisions. A briefing that is later emailed falls
+under the [newsletter gates](#a-06-and-a-07--newsletter).
 
-**KPIs:** [KPI 11 Reading-list save/open; KPI 12 Saved-article revisits](measurement-contract.md).
+## A-06 and A-07 — Newsletter
 
-**Measurement prerequisites:** identify and validate any future aggregate source for save/open actions; a generic article view cannot establish saved-state revisit. Check existing sources first and document any justified additional measurement as a recommendation.
-
-**Missing evidence:** no current reader reading-list state or save/open source is established in the [event inventory](../intelligence/event-inventory.md); saved-article revisit is not measurable from existing views alone.
-
-**Privacy/legal items:** [review matrix](privacy-data-flow.md#future-feature-review-matrix), including same-origin exposure, shared devices, retention and deletion; [instrumentation restrictions](privacy-data-flow.md#restrictions-on-new-instrumentation).
-
-**Acceptance thresholds:** owner to set after baseline.
-
-**GO:** storage scope, accessible save/open controls, removal, unavailable-storage behaviour and rollback are agreed; any measurement is independently consent-gated.
-
-**NO-GO:** visitor-level joins, unexplained persistent storage, or claiming a save or revisit from an ordinary page view.
-
-**Owner decisions required:** local-only versus other storage, lifecycle, sync needs and whether measurement is necessary.
-
-## A-07 — Newsletter
-
-**Feature:** offer an independently consented newsletter, subject to owner and legal decisions.
+**Feature:** offer an independently consented newsletter, subject to owner and legal decisions. A-06 owns signup, consent and preferences; A-07 owns delivery and editorial approval of each issue. Both must pass this gate; A-07 cannot start before A-06's consent and unsubscribe flow is approved.
 
 **Depends on:** A-01; [privacy flow](privacy-data-flow.md), [acquisition model](../intelligence/audience-model.md), [editorial review](../editorial-review.md).
 
@@ -166,7 +139,73 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Owner decisions required:** provider selection process and criteria, consent and confirmation approach, retention, operator, launch and rollback. No provider is selected here.
 
-## A-08 — Notifications / push
+## A-08 — Reader Questions & Editorial Q&A
+
+**Feature:** enable participation beyond the existing contact form, subject to moderation and publication decisions. A-08 is the narrower case of reader questions answered editorially; this A-01 community gate applies to it in full.
+
+**Depends on:** A-01; [editorial review](../editorial-review.md), [contact implementation](../../scripts/f1-optimized.js), [privacy disclosure](../../privacy/privacy.html).
+
+**KPIs:** [KPI 13 Reader participation](measurement-contract.md).
+
+**Measurement prerequisites:** determine whether a privacy-safe aggregate participation source exists and validate its units; neither form submission acceptance nor a synthetic test establishes substantive participation or a reply.
+
+**Missing evidence:** reliable current participation outcomes, moderation capacity and any future UGC lifecycle are not established by the [contact handler](../../scripts/f1-optimized.js).
+
+**Privacy/legal items:** [review matrix](privacy-data-flow.md#future-feature-review-matrix), covering submitted content, rights, abuse, appeals, deletion, processors and retention.
+
+**Acceptance thresholds:** owner to set after baseline.
+
+**GO:** moderation policy, staffing, reporting, escalation, removal, accessibility and failure/rollback ownership are documented and reviewed.
+
+**NO-GO:** publication without moderation and rights decisions, exposure of submitted personal data, or a participation claim based solely on accepted form requests.
+
+**Owner decisions required:** participation model, moderation and appeals policy, content rights, retention and operator.
+
+## A-09 — Local Reading List Pilot
+
+**Feature:** allow readers to save and reopen articles. The approved roadmap scopes A-09 as a local (on-device) pilot; the storage decisions below still apply.
+
+**Depends on:** A-01; [editorial identity and review](../editorial-review.md), [metrics minimisation](../intelligence/metrics-contract.md#data-minimization).
+
+**KPIs:** [KPI 11 Reading-list save/open; KPI 12 Saved-article revisits](measurement-contract.md).
+
+**Measurement prerequisites:** identify and validate any future aggregate source for save/open actions; a generic article view cannot establish saved-state revisit. Check existing sources first and document any justified additional measurement as a recommendation.
+
+**Missing evidence:** no current reader reading-list state or save/open source is established in the [event inventory](../intelligence/event-inventory.md); saved-article revisit is not measurable from existing views alone.
+
+**Privacy/legal items:** [review matrix](privacy-data-flow.md#future-feature-review-matrix), including same-origin exposure, shared devices, retention and deletion; [instrumentation restrictions](privacy-data-flow.md#restrictions-on-new-instrumentation).
+
+**Acceptance thresholds:** owner to set after baseline.
+
+**GO:** storage scope, accessible save/open controls, removal, unavailable-storage behaviour and rollback are agreed; any measurement is independently consent-gated.
+
+**NO-GO:** visitor-level joins, unexplained persistent storage, or claiming a save or revisit from an ordinary page view.
+
+**Owner decisions required:** local-only versus other storage, lifecycle, sync needs and whether measurement is necessary.
+
+## Unscheduled — Audience intelligence
+
+**Feature:** determine whether aggregate reporting can answer returning-audience questions without visitor-level outputs.
+
+**Depends on:** A-01; [Intelligence metrics contract](../intelligence/metrics-contract.md), [data quality](../intelligence/data-quality.md), [snapshot design](../intelligence/dashboard-snapshots.md).
+
+**KPIs:** [KPI 1 Returning readership; KPI 2 Engaged sessions vs article_engaged; KPI 15 Core Web Vitals guardrails](measurement-contract.md).
+
+**Measurement prerequisites:** owner verifies the aggregate GA4 report's availability, definition, population, time zone and privacy-safe reporting grain; validates each existing model actually used against its own production evidence and mature window.
+
+**Missing evidence:** returning-user and engaged-session reports are NOT VERIFIED; no visitor-level joins or event subtraction can establish them. [Metrics contract](../intelligence/metrics-contract.md#data-minimization); [validation statuses](../intelligence/bigquery-validation.md#statuses).
+
+**Privacy/legal items:** [Intelligence minimisation](privacy-data-flow.md#intelligence-minimisation-and-security-boundaries), [review matrix](privacy-data-flow.md#future-feature-review-matrix).
+
+**Acceptance thresholds:** owner to set after baseline; existing RUM sample flag applies only to the relevant observations.
+
+**GO:** owner accepts an aggregate source, bounded disclosure and validation plan; responsible operator and limitations are recorded.
+
+**NO-GO:** visitor-level extract or join proposed, undefined reporting population, or impact claim based only on execution or synthetic fixtures.
+
+**Owner decisions required:** acceptability of aggregate reporting, ownership, permissible aggregate disclosure and validation priority.
+
+## Unscheduled — Notifications / push
 
 **Feature:** offer optional notifications with explicit browser permission and operational controls.
 
@@ -188,31 +227,9 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Owner decisions required:** notification purpose and frequency, provider selection process, service-worker compatibility and revocation ownership.
 
-## A-09 — Community participation
-
-**Feature:** enable participation beyond the existing contact form, subject to moderation and publication decisions.
-
-**Depends on:** A-01; [editorial review](../editorial-review.md), [contact implementation](../../scripts/f1-optimized.js), [privacy disclosure](../../privacy/privacy.html).
-
-**KPIs:** [KPI 13 Reader participation](measurement-contract.md).
-
-**Measurement prerequisites:** determine whether a privacy-safe aggregate participation source exists and validate its units; neither form submission acceptance nor a synthetic test establishes substantive participation or a reply.
-
-**Missing evidence:** reliable current participation outcomes, moderation capacity and any future UGC lifecycle are not established by the [contact handler](../../scripts/f1-optimized.js).
-
-**Privacy/legal items:** [review matrix](privacy-data-flow.md#future-feature-review-matrix), covering submitted content, rights, abuse, appeals, deletion, processors and retention.
-
-**Acceptance thresholds:** owner to set after baseline.
-
-**GO:** moderation policy, staffing, reporting, escalation, removal, accessibility and failure/rollback ownership are documented and reviewed.
-
-**NO-GO:** publication without moderation and rights decisions, exposure of submitted personal data, or a participation claim based solely on accepted form requests.
-
-**Owner decisions required:** participation model, moderation and appeals policy, content rights, retention and operator.
-
 ## Owner decision register
 
-1. Confirm or change the provisional A-02–A-09 mapping and sequencing.
+1. ~~Confirm or change the provisional A-02–A-09 mapping and sequencing.~~ Resolved 2026-11-03: owner-approved [roadmap](#phase-4-roadmap) recorded in A-02.
 2. Decide whether an aggregate GA4 returning-user report is acceptable, how its definition and privacy-safe availability will be verified, and who may see it.
 3. Assign KPI and validation owners, baseline windows and impact thresholds after adequate evidence exists.
 4. Set collection and reading-path editorial ownership, approval and maintenance rules.

@@ -239,13 +239,13 @@ function injectTopicLinks(blogPosts, hubLinks) {
 
 // The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
 // pages are static files; blog-index.js only renders the ?category= / ?author= / ?q= views on top of them.
-function injectEdition(indexPosts, selection = {}, { today = athensDay(), hubLinks = [] } = {}) {
+function injectEdition(indexPosts, selection = {}, { today = athensDay(), hubLinks = [], collectionLinks = [] } = {}) {
     const blogDir = CONFIG.OUTPUT_HTML_DIR;
     if (!fs.existsSync(path.join(blogDir, 'index.html'))) {
         console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
         return null;
     }
-    const edition = buildPages(indexPosts, { today, selection, hubLinks, deps: { storyImage, renderStoryImage, cardSrcset } });
+    const edition = buildPages(indexPosts, { today, selection, hubLinks, collectionLinks, deps: { storyImage, renderStoryImage, cardSrcset } });
     edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
     writeDiscoveryPages(blogDir, edition);
     console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
@@ -1176,9 +1176,11 @@ async function processBlogEntries(options = {}) {
     const entities = buildHubPages(registry, manifest, blogPosts, {
         today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset }
     });
+    const { buildCollectionPages, writeCollectionPages } = require('./collections/pages');
+    const collections = buildCollectionPages(blogPosts, { today, indexPosts, deps: { storyImage, renderStoryImage, cardSrcset } });
     const selection = loadEditorialSelection();
     const hubLinks = buildHubLinks(entities);
-    const edition = injectEdition(indexPosts, selection, { today, hubLinks });
+    const edition = injectEdition(indexPosts, selection, { today, hubLinks, collectionLinks: collections.links });
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1191,6 +1193,8 @@ async function processBlogEntries(options = {}) {
     await injectHomePanels(undefined, blogPosts);
 
     writeHubPages(CONFIG.OUTPUT_HTML_DIR, entities.pages);
+    writeCollectionPages(CONFIG.OUTPUT_HTML_DIR, collections.pages);
+    console.log(`Collections rendered: ${collections.pages.length} approved public pages`);
     writeSearchDestinations(entities);
     console.log(`Entity hubs rendered: ${entities.pages.length} approved public pages`);
     generateFeed(blogPosts);
@@ -1203,7 +1207,7 @@ async function processBlogEntries(options = {}) {
     const authorPages = writeAuthorPages(blogPosts, { today });
     const { writeRaceDeskHubs } = await import('../../scripts/build/race-desk-hubs.mjs');
     const raceDeskPages = await writeRaceDeskHubs(REPO_ROOT, undefined, { posts: blogPosts, today });
-    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...raceDeskPages], authorPages);
+    generateSitemap(blogPosts, [...(edition ? edition.pages.filter(page => page.file !== 'index.html') : []), ...entities.pages, ...collections.pages, ...raceDeskPages], authorPages);
     buildResearchContent(REPO_ROOT, fs.readFileSync(indexPath));
 
     // Standings caches are refreshed only by `npm run build:standings-data`.

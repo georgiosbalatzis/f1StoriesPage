@@ -26,7 +26,8 @@ Any new event named in these documents is a **recommendation only**.
 | [measurement-contract.md](measurement-contract.md) | The 15 audience KPIs: definition, population, source, limits, evidence label. Also defines the [evidence labels](measurement-contract.md#evidence-labels) | A-01 |
 | [baseline-evidence.md](baseline-evidence.md) | Which production evidence exists, which windows are mature, sample-size limits, what is still missing | A-01 |
 | [privacy-data-flow.md](privacy-data-flow.md) | Consent, storage, processors and personal data today; review items for each future feature; rules for any new instrumentation | A-01 |
-| [readiness-gates.md](readiness-gates.md) | Provisional A-02..A-09 order, prerequisites, GO / NO-GO conditions and owner decisions | A-01 |
+| [readiness-gates.md](readiness-gates.md) | Owner-approved A-02..A-09 roadmap, prerequisites, GO / NO-GO conditions and owner decisions | A-01; roadmap A-02 |
+| [collections.md](collections.md) | Curated collections: schema, approval and publication gates, build integration, removal, measurement limits | A-02 |
 
 Authoritative sources stay where they are. Phase 4 links them and never re-defines them:
 Intelligence ([README](../intelligence/README.md), [metrics contract](../intelligence/metrics-contract.md),
@@ -69,13 +70,15 @@ Details and evidence: each linked document. Every claim there cites a repository
 | Six A-01 documents | Draft for owner review |
 | KPI coverage | See [measurement contract](measurement-contract.md) and [baseline](baseline-evidence.md) |
 | Production validation of any audience KPI | None. Nothing in A-01 is `PRODUCTION_VALIDATED` |
-| A-02..A-09 | Not started. Numbering is **provisional**; see [readiness gates](readiness-gates.md) |
+| A-02 | Curated Collections Foundation: draft PR, no collection approved; see [collections.md](collections.md) |
+| A-03..A-09 | Not started. Owner-approved order in the [roadmap](readiness-gates.md#phase-4-roadmap) |
 
 ## Unresolved owner decisions
 
 The full numbered register is in [readiness-gates.md](readiness-gates.md#owner-decision-register). In summary:
 
-1. Confirm or change the provisional A-02..A-09 mapping.
+1. ~~Confirm or change the provisional A-02..A-09 mapping.~~ Resolved: the owner-approved
+   [roadmap](readiness-gates.md#phase-4-roadmap) replaces the provisional A-01 mapping (recorded in A-02).
 2. Decide whether an aggregate GA4 returning-users report, reviewed privately, satisfies the returning-readership
    question. Record its definition and limits without publishing private values.
 3. Run the existing I-06C4 owner-local validation on a real snapshot (the
