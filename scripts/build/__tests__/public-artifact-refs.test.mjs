@@ -209,6 +209,7 @@ function cliFixture(t) {
     write(root, 'blog-module/build/entities/hubs.js', 'exports.publicHubFiles = () => new Set();');
     write(root, 'blog-module/build/journeys/model.js', "exports.loadJourneyInputs = () => ({ manifest: {}, articles: [] }); exports.selectJourneys = () => [];");
     write(root, 'blog-module/build/journeys/render.js', 'exports.journeyHtml = () => ""; exports.journeyRegions = () => [];');
+    write(root, 'blog-module/build/briefings/model.js', "exports.publicBriefingFiles = () => new Set(); exports.loadBriefingInputs = () => ({ manifest: { editions: [] }, articles: [] }); exports.selectBriefings = () => []; exports.publicationDay = () => '2026-01-01';");
     write(root, 'blog-module/build/collections/model.js', "exports.publicCollectionFiles = () => new Set(); exports.loadCollectionInputs = () => ({ manifest: {}, articles: [] }); exports.selectCollections = () => [];");
     write(root, 'blog-module/build/research-content.js', fs.readFileSync(new URL('../../../blog-module/build/research-content.js', import.meta.url)));
     write(root, 'blog-module/build/article-dates.js', fs.readFileSync(new URL('../../../blog-module/build/article-dates.js', import.meta.url)));

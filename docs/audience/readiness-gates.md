@@ -92,7 +92,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Feature:** use Race Desk context to help readers navigate race-weekend content.
 
-**Status:** technical foundation implemented in the A-04 draft PR; contract, approval procedure and pilot proposals in [race-gateways.md](race-gateways.md). No gateway is approved or published; A-02 collection and A-03 journey pilots remain pending.
+**Status:** technical foundation merged (#433); contract, approval procedure and pilot proposals in [race-gateways.md](race-gateways.md). No gateway is approved or published; A-02 collection and A-03 journey pilots remain pending.
 
 **Depends on:** A-01; [Race Desk architecture](../race-desk-architecture.md), [link contract](../race-desk-links.md), [editorial associations](../race-desk-editorial.md), [program](../race-desk-program.md).
 
@@ -114,12 +114,77 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 ## A-05 — Weekly Briefing Editorial Foundation
 
-**Feature:** an editorially written weekly briefing built from published articles. A-01 defined no gate for it.
+**Feature:** a human-written weekly editorial edition of selected, already published articles: an opening, ordered
+sections, a written reason for every article and an optional closing, published as static web pages after named human
+approval, and exportable as content-only HTML and plain text for a later, separately approved newsletter.
 
-**Gate:** not yet written. Before A-05 starts, its gate must be added here in the same form as the others: the
-relevant [KPIs](measurement-contract.md) or a declared gap, the [global gates](#global-gates), editorial ownership and
-approval under [editorial review](../editorial-review.md), and owner decisions. A briefing that is later emailed falls
-under the [newsletter gates](#a-06-and-a-07--newsletter).
+**Status:** gate defined in A-05 (2026-11-03); contract and procedure in [briefings.md](briefings.md). Technical
+acceptance of the foundation is separate from editorial approval of any edition: no edition is approved or published.
+
+**Scope:** in scope — versioned manifest, validation, approval digest, static archive and edition pages, local preview,
+content exports, withdrawal. Out of scope — signup, subscriber data, email sending, providers, unsubscribe, scheduling,
+automatic selection or summarisation, AI-written claims, new analytics.
+
+**Depends on:** A-01; the A-02 [collections](collections.md) publication pattern (manifest → generator → artifact
+allowlist → sitemap → dist validation); [editorial review](../editorial-review.md) for article publication itself.
+
+**Editorial ownership:** the editorial owner (or a named human they delegate) writes, orders and approves each edition.
+Agents may draft candidate editions as `draft` / `pending` only and never record an approval.
+
+**Data sources:** the manifest `data/audience/briefings.v1.json` (editorial text and choices only) and existing
+authoritative article metadata: `blog-source-cache.json` (title, author, date), canonical article URLs and the rendered
+public article page (canonical, indexability). No private drafts, research notebooks, claim ledgers, analytics or AI output.
+
+**Article eligibility:** every linked article must be published (not future-dated), not retired, self-canonical, indexable
+and a direct story (no redirect) on the build's Athens day. An article published inside the edition's ISO week is ordinary; an older
+article may appear only as explicit context with a written reason; a newer article is a structural error. Membership is
+never derived from tags, categories, titles or publication week.
+
+**Approval requirements:** named human review (`kind: human`, `by`, `date`), dated on or after the revision and after
+the edition week has ended (its following Monday or later), not in the future, bound to a SHA-256 of the full editorial content (title, description, opening,
+sections, membership, order, reasons, closing). Any change invalidates the approval.
+
+**Public publication requirements:** only eligible editions produce pages, archive entries and sitemap URLs; the whole
+edition is withheld if any check fails; with zero eligible editions the public artifact is byte-identical to the base
+(paths and SHA-256). Pages have one H1, canonical, Open Graph, breadcrumbs and structured data, and work without JavaScript.
+
+**HTML/plain-text export boundaries:** content-only, deterministic, derived from the same approved content; absolute
+canonical HTTPS links; no scripts, forms, tracking pixels, provider footers or invented unsubscribe links; written only to
+a new directory outside the repository, never to `dist/` or any repository path, and never over an existing file. Unapproved exports are
+marked as drafts. An export is not a send-ready email.
+
+**KPIs:** [KPI 2 Engaged sessions and article engagement; KPI 3 Article-to-article discovery; KPI 15 Core Web Vitals
+guardrails](measurement-contract.md). KPI 4 is the closest existing proxy for curated surfaces. Newsletter KPIs 7–10 do
+not apply: A-05 has no subscribers, deliveries or email traffic.
+
+**Measurement prerequisites:** none new. Edition pages are plain discovery pages: existing consented clicks are intent;
+per-edition reach, completion and returning readers are not measurable without a separate, privacy-reviewed proposal.
+
+**Privacy/legal items:** none new while no data is collected; the privacy page's statement that the site has no newsletter
+stays true. A-06 owns consent, signup, retention and processors.
+
+**Failure behaviour:** structural manifest errors stop the build; any eligibility failure withholds the whole edition with
+a reason code; `briefings:validate --strict` fails CI when a published edition would be withheld.
+
+**Withdrawal:** set the edition to `retired` (id stays reserved); the next build removes its page, archive entry and
+sitemap URL; the archive disappears when no edition is eligible.
+
+**Rollback:** while no edition has been published, revert the merge commit. Afterwards, retire every edition, deploy, then
+revert. Article URLs, feed and other discovery surfaces are unaffected.
+
+**A-06/A-07 dependencies:** A-07 may reuse the approved edition content and the content exports; it must add consent,
+delivery, unsubscribe, provider and its own approval of each issue. A-05 grants none of these.
+
+**Acceptance thresholds:** owner to set after baseline.
+
+**GO:** editorial ownership, approval binding, eligibility, zero-approval byte identity, exports without tracking, preview
+isolation, withdrawal and rollback are implemented and documented.
+
+**NO-GO:** an unapproved or partially valid edition reaching public output; automatic selection or generated claims;
+any subscriber data, email or provider integration; wording that implies an active newsletter.
+
+**Owner decisions required:** edition cadence and ownership, approval of each candidate edition, whether the Edition front
+links the archive, and when (if ever) A-06/A-07 start.
 
 ## A-06 and A-07 — Newsletter
 

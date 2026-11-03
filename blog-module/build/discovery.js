@@ -244,6 +244,13 @@ function topicsHtml(links) {
     return '<nav class="ed-aside__block" aria-labelledby="ed-topics-title"><h2 class="ed-label" id="ed-topics-title">Θέματα</h2>'
         + `<ul class="ed-aside__list">${topics.map(topic => `<li><a href="${esc(topic.href)}"><span>${esc(topic.label)}</span><span class="ed-num">${esc(T.plural(topic.count, 'άρθρο', 'άρθρα'))}</span></a></li>`).join('')}</ul></nav>`;
 }
+// Approved weekly briefings (blog-module/build/briefings/), newest first; nothing at all while none is published.
+function briefingsAsideHtml(links = []) {
+    if (!links.length) return '';
+    return '<nav class="ed-aside__block" aria-labelledby="ed-briefings-title"><h2 class="ed-label" id="ed-briefings-title">Εβδομαδιαία ενημέρωση</h2>'
+        + `<ul class="ed-aside__list"><li><a href="${BLOG}/briefing/"><span>Όλες οι εκδόσεις</span></a></li>${links.map(link => `<li><a href="${esc(link.href)}"><span>${esc(link.label)}</span></a></li>`).join('')}</ul></nav>`;
+}
+
 // Approved curated collections (blog-module/build/collections/); nothing at all while none is published.
 function collectionsAsideHtml(links = []) {
     if (!links.length) return '';
@@ -289,7 +296,7 @@ function indexBody(ctx) {
         + sechead('ed-cal-title', 'Το αρχείο ανά μήνα', '', `<a class="ed-sechead__more" href="${route.archive}">Άνοιγμα αρχείου →</a>`)
         + yearsOf(model).map(year => calendarYear(model, year, '')).join('') + '</section>';
     return `<div class="ed-front" id="journal-edition" data-story-ids="${esc(weekPosts.map(post => post.id).join(' '))}" data-total="${model.posts.length}">`
-        + `<div class="ed-front__grid">${week}<div class="ed-front__side">${table}${topicsHtml(ctx.hubLinks)}${collectionsAsideHtml(ctx.collectionLinks)}${yearAgo}</div></div>${bylines}${calendar}</div>`
+        + `<div class="ed-front__grid">${week}<div class="ed-front__side">${table}${topicsHtml(ctx.hubLinks)}${collectionsAsideHtml(ctx.collectionLinks)}${briefingsAsideHtml(ctx.briefingLinks)}${yearAgo}</div></div>${bylines}${calendar}</div>`
         + `<section class="ed-view" id="journal-archive" aria-labelledby="journal-archive-title" data-view="all" data-category="" data-author="" data-query="" data-sort="newest" data-page="1" data-total="${model.posts.length}">`
         + '<div id="journal-view"></div></section>';
 }
@@ -377,9 +384,9 @@ function headHtml({ title, description, path: pagePath, canonical = SITE + pageP
 const mainHtml = (className, inner, attrs = '') => `<main id="main" class="edition ${className}"${attrs}>\n    <div class="container">\n${inner}\n    </div>\n</main>`;
 
 // The Edition Index's pages as { file, path, head, main }. `deps` supplies story images (build/index.js owns them).
-function buildPages(posts, { today, selection = {}, deps, preload = '', hubLinks = [], collectionLinks = [] }) {
+function buildPages(posts, { today, selection = {}, deps, preload = '', hubLinks = [], collectionLinks = [], briefingLinks = [] }) {
     const model = buildModel(posts, today, selection);
-    const ctx = { model, deps, hubLinks, collectionLinks };
+    const ctx = { model, deps, hubLinks, collectionLinks, briefingLinks };
     const pages = [];
     const rail = current => railHtml(ctx, current);
     const leadImage = model.lead ? deps.storyImage(model.lead) : '';
@@ -488,5 +495,5 @@ function writeDiscoveryPages(blogDir, pagesResult) {
 
 module.exports = {
     BLOG, SITE, route, buildModel, buildPages, composePage, writeDiscoveryPages, listGeneratedFiles,
-    sectionPageCount, pagination, rowHtml, leadHtml, monthGroups, kicker, headHtml, collectionsAsideHtml
+    sectionPageCount, pagination, rowHtml, leadHtml, monthGroups, kicker, headHtml, collectionsAsideHtml, briefingsAsideHtml
 };
