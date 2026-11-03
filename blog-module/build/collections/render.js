@@ -37,10 +37,12 @@ function renderCollection(selected, { deps, indexPosts = [], origin = SITE, prev
     } } };
     const rows = posts.map(post => {
         const image = images.get(post.id);
-        const display = { ...post, url: articleUrl(post), thumbnail: image?.thumbnail,
+        // The editorial reason takes the row's excerpt slot (never the article's own excerpt); the date column shows the
+        // reading order instead (decorative: the <ol> carries it), the publication date stays in the meta line.
+        const display = { ...post, excerpt: post.reason || '', url: articleUrl(post), thumbnail: image?.thumbnail,
             thumbnailWidth: image?.thumbnailWidth, thumbnailHeight: image?.thumbnailHeight };
-        return rowHtml(display, ctx, { thumb: true, level: 2, fullDate: true }).replace('</li>',
-            `${post.reason ? `<p class="ed-section__facts">${esc(post.reason)}</p>` : ''}</li>`);
+        return rowHtml(display, ctx, { thumb: true, level: 2, fullDate: true, date: false, excerpt: true })
+            .replace(/(<a class="ed-row__link[^>]*>)/, `$1<span class="ed-date ed-num" aria-hidden="true">${String(post.position).padStart(2, '0')}</span>`);
     }).join('');
     const intro = collection.introduction.map(text => `<p class="ed-section__facts">${esc(text)}</p>`).join('');
     const body = '<section class="ed-section" aria-labelledby="collection-title"><header class="ed-section__head">'
