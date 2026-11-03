@@ -199,8 +199,10 @@ function cliFixture(t) {
     write(root, 'data/race-desk/editorial.v1.json', '{ "schemaVersion": 1, "associations": [] }');
     write(root, 'blog-module/blog-source-cache.json', '{ "posts": [] }');
     for (const round of [2, 3, 14, 15, 16, 17]) write(root, `standings/rounds/2026-${round}.json`, fs.readFileSync(new URL(`../../../standings/rounds/2026-${round}.json`, import.meta.url)));
-    for (const file of ['race-desk-hubs.mjs', 'include.mjs']) write(root, `scripts/build/${file}`, fs.readFileSync(new URL(`../${file}`, import.meta.url)));
+    for (const file of ['race-desk-hubs.mjs', 'include.mjs', 'newsletter-gate.mjs']) write(root, `scripts/build/${file}`, fs.readFileSync(new URL(`../${file}`, import.meta.url)));
     write(root, 'data/audience/race-gateways.v1.json', '{"version":1,"gateways":[]}');
+    // The committed disabled newsletter config: the validator rejects anything else.
+    write(root, 'data/audience/newsletter.v1.json', fs.readFileSync(new URL('../../../data/audience/newsletter.v1.json', import.meta.url)));
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
     for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));

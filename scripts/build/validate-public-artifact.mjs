@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { loadNewsletterConfig, validateNewsletterConfig, validateNewsletterArtifact } from './newsletter-gate.mjs';
 import { prepareHubModels } from './race-desk-hubs.mjs';
 import { readGatewaySelection } from '../race-desk/gateway-files.mjs';
 import { readResultsContexts } from '../race-desk/results-files.mjs';
@@ -1308,6 +1309,14 @@ function main() {
     }
 
     const errors = [];
+    try {
+        const config = loadNewsletterConfig();
+        errors.push(...validateNewsletterConfig(config).errors.map(error => `newsletter: ${error.code}: ${error.detail}`));
+        if (config.enabled !== false) errors.push('newsletter: enabled must be false');
+        errors.push(...validateNewsletterArtifact({ distRoot: DIST_ROOT }).errors.map(error => `newsletter: ${error.code}: ${error.detail}`));
+    } catch (error) {
+        errors.push(`newsletter: ${error.message}`);
+    }
     const today = taxonomy.athensDay();
     const briefingInputs = briefings.loadBriefingInputs();
     const briefingDigests = briefingInputs.manifest.editions.map(item => item.review && item.review.contentSha256).filter(Boolean);
