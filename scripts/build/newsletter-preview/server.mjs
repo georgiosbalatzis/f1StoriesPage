@@ -23,11 +23,11 @@ export async function route({ method, url, headers = {}, body = '' }, ctx) {
         if (parsed.pathname === '/') return html(200, renderSignupPage({ theme }));
         if (parsed.pathname === '/mock/inbox') return html(200, renderInboxPage({ messages: ctx.provider.outbox, theme }));
         if (parsed.pathname === '/robots.txt') return response(200, 'User-agent: *\nDisallow: /\n');
-        const staticFiles = { '/ui/styles.css': 'scripts/build/newsletter-preview/ui/styles.css', '/ui/client.js': 'scripts/build/newsletter-preview/ui/client.js', '/styles/editorial.css': 'styles/editorial.css', '/styles/fonts.css': 'styles/fonts.css' };
+        const staticFiles = { '/ui/styles.css': 'scripts/build/newsletter-preview/ui/styles.css', '/ui/client.js': 'scripts/build/newsletter-preview/ui/client.js', '/styles/editorial.css': 'styles/editorial.css', '/styles/fonts.css': 'styles/fonts.css', '/privacy/privacy.html': 'privacy/privacy.html' };
         let rel = staticFiles[parsed.pathname];
         if (/^\/assets\/fonts\/[a-zA-Z0-9._-]+\.woff2$/.test(parsed.pathname)) rel = parsed.pathname.slice(1);
         if (rel) {
-            try { return response(200, fs.readFileSync(path.join(root, rel)), rel.endsWith('.css') ? 'text/css; charset=utf-8' : rel.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'font/woff2'); } catch { return response(404, 'Not found'); }
+            try { return response(200, fs.readFileSync(path.join(root, rel)), rel.endsWith('.css') ? 'text/css; charset=utf-8' : rel.endsWith('.html') ? 'text/html; charset=utf-8' : rel.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'font/woff2'); } catch { return response(404, 'Not found'); }
         }
         return response(404, 'Not found');
     }

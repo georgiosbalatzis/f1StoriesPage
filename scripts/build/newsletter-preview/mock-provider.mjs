@@ -54,7 +54,12 @@ export function createMockProvider({ now = () => 0, rateLimit = { max: 5 } } = {
     }
     function expireAll() {
         now();
-        for (const [key, value] of records) if (value === 'pending') change(key, 'expire');
+        for (const [key, value] of records) {
+            if (value !== 'pending') continue;
+            change(key, 'expire');
+            // An expired request loses its confirmation authority: a later re-signup must be confirmed with its own token.
+            for (const [token, entry] of tokens) if (entry.key === key && entry.kind === 'confirmation') tokens.delete(token);
+        }
     }
     return { adapter, outbox, confirm, expireAll, state, isManagementToken: token => tokens.get(token)?.kind === 'management' };
 }

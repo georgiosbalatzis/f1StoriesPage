@@ -7,7 +7,7 @@ Status: **engineering foundation, production-disabled.** Base `origin/main` `8af
 | A-06 engineering foundation | Completed in this PR: domain contract, activation gate, local mock preview, tests |
 | Provider | **Not selected.** Research only: [provider evaluation](newsletter-provider-evaluation.md) |
 | Signup | **Not activated.** No public form, endpoint, script, CSP origin or privacy-page change |
-| Subscribers | **None collected.** No email address is processed anywhere in production |
+| Subscribers | **None collected.** No newsletter address is processed anywhere in production (the separate TEAM RADIO contact form still sends its messages via Formspree, unchanged) |
 | Emails | **None sent.** The mock provider has an in-memory outbox and no network access |
 | A-07 (delivery) | **Not started.** Blocked by this gate and the [activation checklist](newsletter-activation-checklist.md) |
 

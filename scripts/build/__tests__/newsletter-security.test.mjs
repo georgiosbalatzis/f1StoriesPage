@@ -14,6 +14,11 @@ test('preview enforces host, origin, size and response headers', async () => {
     const response = await route(request, ctx);
     for (const name of ['cache-control', 'x-robots-tag', 'content-security-policy', 'referrer-policy']) assert.ok(response.headers[name]);
     await assert.rejects(startPreview({ host: 'localhost' }));
+    // The consent label links the privacy notice; the preview serves the unchanged source page read-only.
+    const privacy = await route({ method: 'GET', url: '/privacy/privacy.html', headers: { host: '127.0.0.1:1234' } }, ctx);
+    assert.equal(privacy.status, 200);
+    assert.match(privacy.headers['content-type'], /^text\/html/);
+    assert.equal(String(privacy.body), fs.readFileSync('privacy/privacy.html', 'utf8'));
 });
 test('publication wiring excludes preview', () => {
     const pkg = JSON.parse(fs.readFileSync('package.json'));
