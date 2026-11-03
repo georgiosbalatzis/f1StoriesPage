@@ -1,7 +1,8 @@
 # Audience infrastructure audit
 
-**Status:** A-01 documentation; no runtime change.  
-**Base:** `58331f9fb` · **Investigation:** 2026-11-03 UTC.  
+**Status:** A-01 documentation; no runtime change.
+**Base:** `58331f9fb` · **Investigation:** 2026-11-03 UTC.
+
 **Evidence labels:** see [measurement contract](measurement-contract.md#evidence-labels). Source references below describe repository capability, not proof of deployment or audience impact.
 
 ## Analytics and consent
@@ -53,7 +54,7 @@ All rows below are **PRODUCTION_EXECUTED**, none **PRODUCTION_VALIDATED**, as re
 | 32 | How do vitals change over time? Navigation day or week × coverage × metric. | `docs/intelligence/sql/models/32-cwv-trend.sql` |
 | 33 | What survives each RUM pipeline stage? Stage × coverage/integrity category. | `docs/intelligence/sql/models/33-rum-coverage.sql` |
 
-The scheduled snapshot pipeline runs via `.github/workflows/intelligence-snapshot.yml` and `scripts/intelligence/snapshot.mjs`; the dashboard reads its encrypted snapshot through `scripts/intelligence/dashboard-browser.mjs`, and `.github/workflows/intelligence-health.yml` invokes `scripts/intelligence/health-check.mjs`. See [snapshot contract](../intelligence/dashboard-snapshots.md), [operations](../intelligence/operations.md) and [validator outcomes](../intelligence/data-quality.md#outcomes-and-severities). Healthy operation is not analytical correctness; no snapshot was inspected here.
+The scheduled snapshot pipeline runs via `.github/workflows/intelligence-snapshot.yml` and `scripts/intelligence/snapshot.mjs`; the dashboard reads its encrypted snapshot through `dashboard/dashboard.js` and `dashboard/snapshot-crypto.js`, and `.github/workflows/intelligence-health.yml` invokes `scripts/intelligence/health-check.mjs`. See [snapshot contract](../intelligence/dashboard-snapshots.md), [operations](../intelligence/operations.md) and [validator outcomes](../intelligence/data-quality.md#outcomes-and-severities). Healthy operation is not analytical correctness; no snapshot was inspected here.
 
 ## Phase 2: discovery and editorial
 

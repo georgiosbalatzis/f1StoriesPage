@@ -51,9 +51,12 @@ Intelligence ([README](../intelligence/README.md), [metrics contract](../intelli
    *intent*, not confirmed loads. Entity hubs already behave like approval-gated collections. NEXT UP is not an
    isolated placement, and GP hub paths fall into `other`, so article→GP-hub navigation cannot be isolated today.
    Clicks into standalone Race Desk tools are not verified tool usage.
-5. **Newsletter, reading list, notifications and community do not exist**, so their KPIs are `NOT_MEASURABLE` today.
-   The privacy policy states that the site has no newsletter. TEAM RADIO is a private contact form sent to Formspree,
-   and the site emits no analytics outcome for it.
+5. **Newsletter and reading-list actions are `NOT_MEASURABLE`; audience notification outcomes have no established
+   source.** The privacy policy states that the site has no newsletter. Email-classified traffic remains `PROXY_ONLY`
+   (KPI 10). TEAM RADIO is an implemented private Formspree contact form: its mechanism is `VERIFIED_CODE`, while
+   accepted-submission counts are `NOT_VERIFIED` (KPI 13). No custom GA4 submission outcome is emitted; automatic GA4
+   form measurement settings are unverified ([measurement contract](measurement-contract.md#13-reader-participation),
+   [contact handler](../../scripts/f1-optimized.js)).
 6. **The privacy-respecting order is reuse first, personal data last.** Features that reuse existing consented
    aggregates and approval-gated content come before features that need new consent, storage, email or moderation.
 

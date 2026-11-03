@@ -22,6 +22,15 @@ third parties may use other storage.
 | Video and social embeds: YouTube and relevant social providers | Loading or playing embedded content may contact the provider and expose technical request data. [Privacy section 4](../../privacy/privacy.html); [CSP frame and script sources](../../scripts/build/security-policy.mjs). | Not governed by the analytics toggle as an embed gate; provider storage may be used. Exact names and retention: not stated in repo. | Not stated in repo; provider policy applies. [Privacy sections 4–6](../../privacy/privacy.html). |
 | F1 data: Jolpica F1 and OpenF1 | Requests for public race data support Βαθμολογία & Στατιστικά. [Privacy section 4](../../privacy/privacy.html); [CSP connect sources](../../scripts/build/security-policy.mjs). | Functional requests are not analytics-consent gated; provider storage names not stated in repo. | Not stated in repo. |
 
+Other first-party browser storage, none of it transmitted by these flows:
+
+| Storage | Key and purpose | Source |
+| --- | --- | --- |
+| `localStorage` | `f1stories-theme`: theme preference | `scripts/shared-nav.js:6–10` |
+| `sessionStorage` | `f1stories-audio`: podcast URL, playing state and position carried between pages | `scripts/shared-nav.js:119,162–172` |
+| `sessionStorage` | `f1s-err-count`: per-tab error counter, incremented before the send-time consent check (the `js_error` send itself is consent-gated) | `scripts/perf/error-beacon.js:6,45–56` |
+| IndexedDB `f1s-standings`, `sessionStorage` fallback | Cached public standings API responses | `standings/core/cache.js:1–14` |
+
 CSP permission is not evidence that a request occurred, and the presence of a third-party
 frame does not establish that a visitor interacted with it.
 GA4 measures only its consented population; no absence of data proves zero readership.

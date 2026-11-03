@@ -79,7 +79,7 @@ Event counts are event-grain, not deduplicated people or sessions; use only comp
 
 - **Product question:** Are collection-like hubs used for discovery?
 - **Numerator:** Entity-hub-source clicks to article destinations.
-- **Denominator:** None; no hub exposure count.
+- **Denominator:** None. Aggregate `entity_hub` page-view events exist in [model 21](../intelligence/sql/models/21-site-sections.sql), but no collection or link impression count exists, so they cannot supply per-collection reach or placement CTR.
 - **Unit & grain:** Click events by surface, destination and section.
 - **Source & model:** [13](../intelligence/sql/models/13-article-discovery.sql), [28](../intelligence/sql/models/28-internal-navigation.sql); [entity hubs](../entity-hubs.md).
 - **Population & consent bias:** Consented site population, not all readers.
@@ -110,7 +110,7 @@ Event counts are event-grain, not deduplicated people or sessions; use only comp
 ## 6. Race-weekend behaviour
 
 - **Product question:** How does activity vary around a race weekend?
-- **Numerator:** Daily consented site or article page-view events during a defined race window.
+- **Numerator:** Daily consented site page-view events ([model 20](../intelligence/sql/models/20-daily-activity.sql)) during a defined race window. Model 21 returns section totals over its query period, so daily article or section counts would need separate one-day model-21 executions.
 - **Denominator:** None; a comparison period must be stated separately.
 - **Unit & grain:** Events per LA property day, optionally grouped over an explicitly named race window.
 - **Source & model:** [20](../intelligence/sql/models/20-daily-activity.sql), [21](../intelligence/sql/models/21-site-sections.sql); registry session `startUtc` in [registry](../../data/race-desk/registry.v1.json).
@@ -119,7 +119,7 @@ Event counts are event-grain, not deduplicated people or sessions; use only comp
 - **Window, timezone & maturity:** For a reproducible proxy use LA calendar days containing first through last listed registry session starts, inclusive; missing session times mean window `NOT_VERIFIED`. Convert UTC explicitly; Athens scheduler dates differ. Apply shared maturity.
 - **Freshness/cadence:** 20 daily; 21 Console-executed, outside snapshot list.
 - **Identity rules:** Daily event counts; no race attribution or returner identity.
-- **Limitations:** Site activity during the window is not necessarily race-related; session-start bounds omit activity after the last start.
+- **Limitations:** Site activity during the window is not necessarily race-related; the window omits days after the final session-start day.
 - **Evidence label + status:** `PROXY_ONLY`; 20/21 `PRODUCTION_EXECUTED`.
 - **New instrumentation needed?:** Recommendation only: aggregate race context if race-specific activity is needed; daily site totals lack a race dimension.
 
