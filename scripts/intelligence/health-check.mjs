@@ -13,7 +13,9 @@ import {
 const HOUR = 3600000;
 const DAY = 24 * HOUR;
 export const CONFIG = Object.freeze({
-    scheduleDelayMs: 6 * HOUR, scheduleGraceMs: 8 * HOUR, scheduleCriticalMs: 12 * HOUR,
+    // Late-run allowance equals the missing-run grace: observed GitHub starts reach 6.4 h (issue #435), and a run that
+    // arrives inside the grace must not score worse than one that has not arrived yet.
+    scheduleDelayMs: 8 * HOUR, scheduleGraceMs: 8 * HOUR, scheduleCriticalMs: 12 * HOUR,
     publicationGraceMs: HOUR, pagesGraceMs: HOUR, pagesCriticalMs: 3 * HOUR,
     futureToleranceMs: 5 * 60000, staleMs: STALE_MS,
     costInfo: 0.5, costWarning: 0.8, costCritical: 1,

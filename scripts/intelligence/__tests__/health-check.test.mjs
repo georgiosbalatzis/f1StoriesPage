@@ -185,9 +185,16 @@ test('duplicate as_of skip reuses only matching published telemetry; no query wo
 
 test('a delayed but successful schedule degrades only schedule; observed 5.5h delay is tolerated', () => {
     const value = evidence();
+    const later = '2026-11-20T15:00:00Z';
+    // 6.5 h late, like the 6 h 23 min start that opened issue #435: inside the 8 h grace, so still healthy.
     value.runs.value[0].run_started_at = '2026-11-20T07:30:00Z';
-    assert.equal(state(assess(value), 'schedule'), 'DEGRADED');
-    assert.equal(state(assess(value), 'publication'), 'HEALTHY');
+    assert.equal(state(assess(value, later), 'schedule'), 'HEALTHY');
+    // Exactly the grace is tolerated; beyond it the late run degrades schedule only.
+    value.runs.value[0].run_started_at = '2026-11-20T09:00:00Z';
+    assert.equal(state(assess(value, later), 'schedule'), 'HEALTHY');
+    value.runs.value[0].run_started_at = '2026-11-20T09:30:00Z';
+    assert.equal(state(assess(value, later), 'schedule'), 'DEGRADED');
+    assert.equal(state(assess(value, later), 'publication'), 'HEALTHY');
     assert.equal(state(assess(), 'schedule'), 'HEALTHY');
 });
 
