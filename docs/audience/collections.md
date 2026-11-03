@@ -107,7 +107,15 @@ collection cannot pass quality checks.
 - `validate-public-artifact` recomputes the allowed set and checks the actual `dist/`: exact file set, exact sitemap URLs,
   every collection link targets an eligible page, each detail page lists exactly its members in curated order (visible
   list and `ItemList`) and each member is a published, self-canonical, indexable article page; the index lists exactly
-  the eligible collections.
+  the eligible collections. Markup is read by a small dependency-free tokenizer shaped on HTML parsing
+  (`blog-module/build/html-attributes.js`, shared with the entity hub gate): comments and script/style raw text are
+  skipped, attribute quoting follows the HTML states and character references are decoded. Anything it cannot decode
+  where it matters (a link `href`, a canonical, a robots meta), and any `<base>` element, fails the build instead of
+  being guessed. Known limits (validator fidelity, not publication: the copy allowlist and sitemap come from the
+  eligibility gate alone): it is a subset of HTML parsing, so hand-written markup can still disagree with a browser —
+  links inside `<template>`, `<noscript>` or `<xmp>` count as present, the `ItemList` is read from any JSON-LD script, and
+  whitespace follows JavaScript's definition. Write `&` in URLs as `&amp;` (a bare `&name;` with an unknown name fails
+  the check). Generated pages never contain these forms.
 - Presentation reuses the Edition row: the left column shows the reading order (`01`, `02`…, decorative; the `<ol>`
   carries the order for assistive technology), the row shows category, title, the human reason (unclamped), author,
   publication date and reading time, and the existing card thumbnail (first eager, the rest lazy). The index lists each

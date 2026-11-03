@@ -98,6 +98,14 @@ test('tokenizer follows HTML parsing and the validator fails closed on what it c
     // An unknown reference in an attribute that cannot change the decision is not a failure.
     assert.equal(pageIsIndexable(`<link rel=canonical href=${article('a')}><meta name=description content="Τέλος&hellip;">`, article('a')), true);
     assert.equal(linkErrors('<a title="&hellip;" href="/">x</a>'), '');
+    // Sol fourth re-review (nonblocking): a bare `&name=` in a URL is literal; `<!-->` closes the comment at once.
+    assert.equal(tags('<a href="https://example.invalid/?x=1&foo=2">x</a>')[0].attrs.href, 'https://example.invalid/?x=1&foo=2');
+    assert.deepEqual(tags('<a href="/?x=1&foo=2">x</a>')[0].unresolved, []);
+    const canonicalA = article('a');
+    for (const opener of ['<!-->', '<!--->']) {
+        assert.equal(pageIsIndexable(`<link rel=canonical href=${canonicalA}>${opener}<meta name=robots content=noindex>`, canonicalA), false, opener);
+    }
+    assert.equal(pageIsIndexable(`<link rel=canonical href=${canonicalA}><!-- <meta name=robots content=noindex> -->`, canonicalA), true);
     // 1. named references outside the table are never guessed
     assert.match(linkErrors('<a href = &sol;blog-module/blog/collections/pending/>x</a>'), /undecodable link/);
     assert.match(linkErrors('<a href="/blog-module/blog/collec&Tab;tions/pending/">x</a>'), /undecodable link/);

@@ -8,11 +8,13 @@ const RAW_TEXT = new Set(['script', 'style', 'textarea', 'title']);
 
 function decode(value) {
     let ambiguous = false;
-    const text = value.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z][a-z0-9]*));?/gi, (match, dec, hex, name) => {
+    const text = value.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z][a-z0-9]*))(;?)/gi, (match, dec, hex, name, semi, offset, all) => {
         try {
             if (dec || hex) return String.fromCodePoint(dec ? Number(dec) : parseInt(hex, 16));
         } catch (_) { ambiguous = true; return match; }
-        if (Object.hasOwn(ENTITIES, name.toLowerCase()) && name === name.toLowerCase()) return ENTITIES[name];
+        // In an attribute, `&name` without `;` before `=` or an alphanumeric stays literal (`?x=1&foo=2`).
+        if (!semi && /[=a-z0-9]/i.test(all[offset + match.length] || '')) return match;
+        if (Object.hasOwn(ENTITIES, name)) return ENTITIES[name];
         ambiguous = true; // a named reference outside the table (e.g. &sol;, &Tab;): never guess
         return match;
     });
@@ -62,8 +64,10 @@ function tags(html) {
     let i = 0;
     while ((i = html.indexOf('<', i)) >= 0) {
         if (html.startsWith('<!--', i)) {
-            const end = html.indexOf('-->', i + 4);
-            i = end < 0 ? n : end + 3;
+            // `<!-->` and `<!--->` close at once, as in HTML.
+            const abrupt = /^<!---?>/.exec(html.slice(i, i + 6));
+            const end = abrupt ? -1 : html.indexOf('-->', i + 4);
+            i = abrupt ? i + abrupt[0].length : end < 0 ? n : end + 3;
         } else if (/^<[!?]/.test(html.slice(i, i + 2)) || /^<\/[^a-z]/i.test(html.slice(i, i + 3))) {
             const end = html.indexOf('>', i); // doctype and bogus comments
             i = end < 0 ? n : end + 1;
