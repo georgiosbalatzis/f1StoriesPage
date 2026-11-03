@@ -52,8 +52,8 @@ export function validateHubOutput(root, registry, lock, currentYear, evidence, s
         return !section || target.name !== 'section' || !target.attrs.class?.split(/\s+/).includes('race-desk-section') || target.attrs['aria-labelledby'] !== GATEWAY_SECTIONS[section].headingId;
       }) || [...referenced].some(section => targets.filter(target => target.attrs.id === gatewayTargetId(section)).length !== 1)) errors.push(`${file}: gateway targets mismatch`);
     } else if (gatewayTags.length || targets.length || titles.length) errors.push(`${file}: unexpected gateway`);
-    // Manifest JSON keys (raw or entity-quoted, any spacing before the colon); copy may still contain the quoted words.
-    if (gatewayPrivate.some(value => value && (html.includes(value) || html.includes(escape(value)))) || /(?:"|&quot;|&#34;)(?:contentSha256|perspectives|review)(?:"|&quot;|&#34;)\s*:/.test(html)) errors.push(`${file}: gateway evidence exposed`);
+    // Manifest JSON keys (raw, entity- or double-escaped quotes, any spacing before the colon); copy may still contain the quoted words.
+    if (gatewayPrivate.some(value => value && (html.includes(value) || html.includes(escape(value)))) || /(?:"|&(?:amp;)?quot;|&(?:amp;)?#34;)(?:contentSha256|perspectives|review)(?:"|&(?:amp;)?quot;|&(?:amp;)?#34;)\s*:/.test(html)) errors.push(`${file}: gateway evidence exposed`);
     const stripTarget = (section, key) => referenced.has(key) ? section.replace(` id="${gatewayTargetId(key)}"`, '') : section;
     const sections = [...html.matchAll(/<section class="race-desk-section race-desk-related"[^>]*>[\s\S]*?<\/section>/g)];
     const expected = stories.get(model.raceId);
