@@ -97,7 +97,7 @@ async function cinematicHeader() {
         const domain = await textLayer('f1-stories.gr', { size: 23, width: 400, color: '#ffffff' });
         const baseline = 36 + Math.round((72 + word.height) / 2);
         const headerBottom = Math.max(baseline, 108);
-        const scrim = Buffer.from(`<svg width="1200" height="${headerBottom + 60}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x2="0" y2="1"><stop offset="${(headerBottom + 12) / (headerBottom + 60)}" stop-color="black" stop-opacity=".6"/><stop offset="1" stop-color="black" stop-opacity="0"/></linearGradient></defs><rect width="1200" height="100%" fill="url(#g)"/></svg>`);
+        const scrim = ramp(0, headerBottom + 84, [[0, 0.6], [headerBottom + 4, 0.6], [headerBottom + 84, 0]]);
         headerLayers = { word, domain, baseline, layers: [
             { input: scrim, left: 0, top: 0 }, { input: black, left: 48, top: 38 },
             { input: icon, left: 48, top: 36 }, { input: word.data, left: 136, top: baseline - word.height },
@@ -106,6 +106,21 @@ async function cinematicHeader() {
         ] };
     }
     return headerLayers;
+}
+
+function ramp(top, bottom, points) {
+    const height = bottom - top;
+    const stops = [];
+    for (let i = 0; i < points.length - 1; i++) {
+        const [y0, a0] = points[i], [y1, a1] = points[i + 1];
+        const steps = Math.max(1, Math.ceil(Math.abs(a1 - a0) / 0.01));
+        for (let k = 0; k <= steps; k++) {
+            const t = k / steps, eased = t * t * (3 - 2 * t);
+            stops.push([(y0 + (y1 - y0) * t - top) / height, a0 + (a1 - a0) * eased]);
+        }
+    }
+    const svg = stops.map(([offset, alpha]) => `<stop offset="${Math.min(1, Math.max(0, offset)).toFixed(4)}" stop-color="black" stop-opacity="${alpha.toFixed(4)}"/>`).join('');
+    return Buffer.from(`<svg width="1200" height="${height}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x2="0" y2="1">${svg}</linearGradient></defs><rect width="1200" height="100%" fill="url(#g)"/></svg>`);
 }
 
 async function coverImage(image, focus) {
@@ -175,8 +190,9 @@ export async function renderSocialCard({ title, author = '', image, disclosure =
     const headlineBottom = accentTop - 28;
     const headline = await headlineLayer(title, Math.min(300, headlineBottom - (contained ? 348 : 150)));
     const headlineTop = headlineBottom - headline.height;
-    const start = Math.max(0, headlineTop - 24);
-    const footer = Buffer.from(`<svg width="1200" height="${630 - start}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="black" stop-opacity=".6"/><stop offset="1" stop-color="black" stop-opacity=".9"/></linearGradient></defs><rect width="1200" height="100%" fill="url(#g)"/></svg>`);
+    const start = contained ? 332 : Math.max(0, headlineTop - 140);
+    const floorAt = contained ? Math.max(headlineTop + 40, start + 60) : headlineTop - 8;
+    const footer = ramp(start, 630, [[start, 0], [floorAt, 0.6], [Math.max(floorAt + 1, accentTop), 0.78], [630, 0.9]]);
     const header = await cinematicHeader();
     layers.push({ input: footer, left: 0, top: start }, ...header.layers);
     layers.push({ input: headline.data, left: 48, top: headlineTop });
