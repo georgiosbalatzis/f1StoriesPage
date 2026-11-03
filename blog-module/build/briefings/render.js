@@ -57,7 +57,7 @@ function renderBriefingsIndex(eligible, { origin = SITE, preview = false } = {})
     const lastmod = selections.map(item => item.lastmod).sort().pop() || '';
     const body = '<section class="ed-section" aria-labelledby="briefings-title"><header class="ed-section__head">'
         + '<h1 class="ed-section__title" id="briefings-title">Εβδομαδιαία ενημέρωση</h1></header><ol class="ed-rows">'
-        + selections.map(({ edition, period }) => `<li class="ed-row"><a class="ed-row__link" href="${esc(editionPath(edition.id))}"><div class="ed-row__text"><h2 class="ed-headline">${esc(edition.title)}</h2><p class="ed-section__facts ed-num">${esc(periodLabel(period))}</p><p class="ed-section__facts">${esc(edition.description)}</p></div></a></li>`).join('') + '</ol></section>';
+        + selections.map(({ edition, period }) => `<li class="ed-row"><a class="ed-row__link" href="${esc(editionPath(edition.id))}"><span class="ed-date ed-num" aria-hidden="true">${String(period.week).padStart(2, '0')}</span><div class="ed-row__text"><h2 class="ed-headline">${esc(edition.title)}</h2><p class="ed-section__facts ed-num">${esc(periodLabel(period))}</p><p class="ed-section__facts">${esc(edition.description)}</p></div></a></li>`).join('') + '</ol></section>';
     return page({ path: INDEX, file: 'briefing/index.html', title: 'Εβδομαδιαία ενημέρωση | F1 Stories',
         description: 'Εβδομαδιαίες εκδόσεις από το F1 Stories.', lastmod,
         entries: selections.map(({ edition }) => ({ url: origin + editionPath(edition.id), name: edition.title })), origin, preview, body });
