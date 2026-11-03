@@ -65,6 +65,10 @@ runs:
       shell: bash
       run: npm run test:race-desk:hubs -- --site dist ${{ steps.assembly.outputs.enabled == 'true' && '--assembled' || '' }} --reports .build/race-desk-r03
 
+    - name: Verify newsletter remains disabled
+      shell: bash
+      run: npm run newsletter:check -- --artifact dist
+
     - name: Configure Pages
       uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 

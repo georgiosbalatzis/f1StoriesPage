@@ -1,0 +1,64 @@
+{
+    "version": 1,
+    "enabled": false,
+    "provider": null,
+    "review": {
+        "status": "pending"
+    },
+    "evidence": {
+        "provider-approval": {
+            "status": "open"
+        },
+        "provider-account-configuration": {
+            "status": "open"
+        },
+        "processor-dpa-transfer-review": {
+            "status": "open"
+        },
+        "dpia-decision": {
+            "status": "open"
+        },
+        "legal-review-consent-privacy": {
+            "status": "open"
+        },
+        "privacy-notice-update": {
+            "status": "open"
+        },
+        "retention-deletion": {
+            "status": "open"
+        },
+        "double-opt-in-verified": {
+            "status": "open"
+        },
+        "unsubscribe-suppression-verified": {
+            "status": "open"
+        },
+        "preference-management-verified": {
+            "status": "open"
+        },
+        "csp-endpoint-review": {
+            "status": "open"
+        },
+        "domain-authentication": {
+            "status": "open"
+        },
+        "operator-incident-owner": {
+            "status": "open"
+        },
+        "security-abuse-tests": {
+            "status": "open"
+        },
+        "accessibility-no-js": {
+            "status": "open"
+        },
+        "aggregate-reporting": {
+            "status": "open"
+        },
+        "rollback-plan": {
+            "status": "open"
+        },
+        "launch-authorization": {
+            "status": "open"
+        }
+    }
+}

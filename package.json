@@ -29,7 +29,7 @@
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
     "check:assets": "node scripts/build/check-generated-assets.mjs",
     "preview": "npm run build:assets && npm run check:assets && node scripts/serve-site.mjs",
-    "build:public": "npm run pages:guard && npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
+    "build:public": "npm run pages:guard && npm run newsletter:check && npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
     "build:data-contracts": "node scripts/build/validate-data-contracts.mjs",
     "build:check": "node scripts/build/generated-drift-guard.mjs",
     "test:blog": "node --test blog-module/build/__tests__/*.test.js blog-module/widgets/betcast/widget.test.cjs && node blog-module/build/__tests__/run-golden.js",
@@ -92,7 +92,10 @@
     "test:deployment": "node --test scripts/deployment/*.test.mjs",
     "test:integration": "node scripts/deployment/smoke.mjs",
     "gateways:validate": "node scripts/race-desk/gateway-report.mjs --validate",
-    "test:gateways": "node --test scripts/race-desk/__tests__/gateway*.test.mjs"
+    "test:gateways": "node --test scripts/race-desk/__tests__/gateway*.test.mjs",
+    "newsletter:check": "node scripts/build/newsletter-gate.mjs",
+    "newsletter:preview": "node scripts/build/newsletter-preview/server.mjs",
+    "test:newsletter": "node --test blog-module/build/__tests__/newsletter-*.test.js scripts/build/__tests__/newsletter-*.test.mjs"
   },
   "dependencies": {
     "adm-zip": "^0.6.1",
