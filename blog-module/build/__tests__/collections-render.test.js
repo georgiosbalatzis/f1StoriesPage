@@ -28,7 +28,7 @@ test('collection renders curated articles, safe text, metadata and schema', () =
     assert.match(result.head, /rel="canonical" href="https:\/\/f1-stories.gr\/blog-module\/blog\/collections\/fixture\/"/);
     assert.match(result.main, /&lt;Εισαγωγή&gt; &amp; κείμενο/);
     assert.match(result.main, /&lt;Πρώτο&gt; &amp; ιστορία/);
-    assert.match(result.main, /<p class="ed-excerpt ed-excerpt--row">&lt;Γιατί&gt; &amp; εδώ<\/p>/);
+    assert.match(result.main, /<p class="ed-section__facts">&lt;Γιατί&gt; &amp; εδώ<\/p><p class="ed-meta">/);
     assert.match(result.main, /<span class="ed-date ed-num" aria-hidden="true">01<\/span>/);
     assert.ok(!/<time class="ed-date/.test(result.main), 'curated order replaces the date column');
     assert.ok(!result.main.includes('ARTICLE-OWN-EXCERPT'), 'only human reasons are shown');
@@ -36,7 +36,7 @@ test('collection renders curated articles, safe text, metadata and schema', () =
     assert.equal((result.main.match(/loading="lazy"/g) || []).length, 2);
     const listHtml = result.main.match(/<ol class="ed-rows">(.*?)<\/ol>/)[1];
     assert.equal((listHtml.match(/<li\b/g) || []).length, 3);
-    assert.equal((listHtml.match(/<p class="ed-excerpt ed-excerpt--row">/g) || []).length, 2, 'no fallback to article excerpts');
+    assert.equal((listHtml.match(/<p class="ed-section__facts">/g) || []).length, 2, 'reasons only where written');
     const list = graph(result.head, 'ItemList');
     assert.deepEqual(list.itemListElement.map(item => item.url), posts.map(articleUrl));
     assert.deepEqual(list.itemListElement.map(item => item.position), [1, 2, 3]);
@@ -66,6 +66,8 @@ test('index lists only passed selections in slug order with collection schema', 
     assert.ok(result.main.indexOf('/collections/alpha/') < result.main.indexOf('/collections/fixture/'));
     assert.deepEqual(graph(result.head, 'BreadcrumbList').itemListElement.map(item => item.name), ['Αρχική', 'Άρθρα', 'Συλλογές']);
     assert.match(result.main, /3 άρθρα/);
+    // The ed-row grid expects its first cell; without it the text falls into the narrow date column.
+    assert.equal((result.main.match(/<a class="ed-row__link"[^>]*><span class="ed-date ed-num" aria-hidden="true">\d\d<\/span>/g) || []).length, 2);
 });
 
 test('aside is absent without links and escapes supplied links', () => {

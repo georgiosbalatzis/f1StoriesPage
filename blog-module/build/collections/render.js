@@ -37,12 +37,13 @@ function renderCollection(selected, { deps, indexPosts = [], origin = SITE, prev
     } } };
     const rows = posts.map(post => {
         const image = images.get(post.id);
-        // The editorial reason takes the row's excerpt slot (never the article's own excerpt); the date column shows the
-        // reading order instead (decorative: the <ol> carries it), the publication date stays in the meta line.
-        const display = { ...post, excerpt: post.reason || '', url: articleUrl(post), thumbnail: image?.thumbnail,
+        // The editorial reason sits in the text column above the meta line, unclamped (excerpt rows clamp to two lines on
+        // phones); the date column shows the reading order (decorative: the <ol> carries it), the date stays in the meta.
+        const display = { ...post, url: articleUrl(post), thumbnail: image?.thumbnail,
             thumbnailWidth: image?.thumbnailWidth, thumbnailHeight: image?.thumbnailHeight };
-        return rowHtml(display, ctx, { thumb: true, level: 2, fullDate: true, date: false, excerpt: true })
-            .replace(/(<a class="ed-row__link[^>]*>)/, `$1<span class="ed-date ed-num" aria-hidden="true">${String(post.position).padStart(2, '0')}</span>`);
+        return rowHtml(display, ctx, { thumb: true, level: 2, fullDate: true, date: false })
+            .replace(/(<a class="ed-row__link[^>]*>)/, `$1<span class="ed-date ed-num" aria-hidden="true">${String(post.position).padStart(2, '0')}</span>`)
+            .replace('<p class="ed-meta">', `${post.reason ? `<p class="ed-section__facts">${esc(post.reason)}</p>` : ''}<p class="ed-meta">`);
     }).join('');
     const intro = collection.introduction.map(text => `<p class="ed-section__facts">${esc(text)}</p>`).join('');
     const body = '<section class="ed-section" aria-labelledby="collection-title"><header class="ed-section__head">'
@@ -59,7 +60,7 @@ function renderCollectionsIndex(eligibleSelections, { origin = SITE, preview = f
     const lastmod = selections.map(item => item.lastmod).sort().pop() || '';
     const body = '<section class="ed-section" aria-labelledby="collections-title"><header class="ed-section__head">'
         + '<h1 class="ed-section__title" id="collections-title">Συλλογές</h1></header>'
-        + `<ol class="ed-rows">${selections.map(({ collection, posts }) => `<li class="ed-row"><a class="ed-row__link" href="${esc(collectionPath(collection.slug))}"><div class="ed-row__text"><h2 class="ed-headline">${esc(collection.title)}</h2><p class="ed-section__facts">${esc(collection.description)}</p><p class="ed-section__facts ed-num">${esc(T.plural(posts.length, 'άρθρο', 'άρθρα'))}</p></div></a></li>`).join('')}</ol></section>`;
+        + `<ol class="ed-rows">${selections.map(({ collection, posts }, i) => `<li class="ed-row"><a class="ed-row__link" href="${esc(collectionPath(collection.slug))}"><span class="ed-date ed-num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><div class="ed-row__text"><h2 class="ed-headline">${esc(collection.title)}</h2><p class="ed-section__facts">${esc(collection.description)}</p><p class="ed-section__facts ed-num">${esc(T.plural(posts.length, 'άρθρο', 'άρθρα'))}</p></div></a></li>`).join('')}</ol></section>`;
     return page({ path: INDEX, file: 'collections/index.html', title: 'Συλλογές | F1 Stories',
         description: 'Επιλεγμένες συλλογές άρθρων από το F1 Stories.', lastmod,
         entries: selections.map(({ collection }) => ({ url: origin + collectionPath(collection.slug), name: collection.title })),
