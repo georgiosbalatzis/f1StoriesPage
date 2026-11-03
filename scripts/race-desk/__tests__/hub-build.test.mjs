@@ -20,6 +20,8 @@ function fixture(t) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.cpSync(path.join(sourceRoot, rel), path.join(root, rel), { recursive: true });
   }
+  fs.mkdirSync(path.join(root, 'data/audience'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'data/audience/race-gateways.v1.json'), JSON.stringify({ version: 1, gateways: [] }));
   fs.writeFileSync(path.join(root, 'index.html'), `<p>before</p>${marker}<p>after</p>`);
   return root;
 }

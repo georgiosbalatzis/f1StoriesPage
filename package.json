@@ -86,7 +86,9 @@
     "test:incremental": "node scripts/build/incremental-build-check.mjs",
     "build:ecosystem": "node scripts/deployment/build.mjs",
     "test:deployment": "node --test scripts/deployment/*.test.mjs",
-    "test:integration": "node scripts/deployment/smoke.mjs"
+    "test:integration": "node scripts/deployment/smoke.mjs",
+    "gateways:validate": "node scripts/race-desk/gateway-report.mjs --validate",
+    "test:gateways": "node --test scripts/race-desk/__tests__/gateway*.test.mjs"
   },
   "dependencies": {
     "adm-zip": "^0.6.1",
