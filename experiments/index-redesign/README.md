@@ -48,6 +48,7 @@ leads, and the primary interaction.
 | C | The Reading Desk | The article reading environment applied to discovery: narrow measure, search first | Title search | None above the fold; authors band |
 | D | The Newsroom | A dense, ranked front page: lead / reporting / analysis columns, archive band, departments | Department disclosures | One lead image, small archive images |
 | E | The Chronicle | Publishing history as the architecture: recent feature, month ledger by day, year index | Choose a month | One interlude per month |
+| F | The Edition (owner hybrid, added 2026-11-04) | A's ink lead and LATEST. wire (no TECHNICAL.), E's month chronicle, and today's INDEX furniture: category colour inks, "ΝΕΟ" marks, crumb line, section rail with counts | Section rail + choose a month | Lead, VOICES, one interlude per month |
 
 All five use the same shared shell (`shared/`) and the same real content (`shared/content.json`, built by
 `build-content.cjs` from the tracked published metadata). Only the page design differs between them.
