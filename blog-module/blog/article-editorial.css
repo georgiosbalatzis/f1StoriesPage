@@ -1193,7 +1193,9 @@
 .article-page .rr .rr-layout:has(.rr-body > .gallery-carousel:last-child, .rr-body > .rr-data:nth-last-child(2)) + .rr-pitwall { margin-top: 0; }
 
 /* Pit wall: author, sharing and the editorial record, on ink. ---------------------------------------------- */
-.article-page .rr-pitwall { margin-top: clamp(56px, 6vw, 96px); padding: clamp(40px, 5vw, 72px) var(--gutter); }
+/* border-top: 0 on both bands: the legacy `section` hairline (styles.css, white at 6%) vanished on paper and is
+ * redundant on ink — the change of surface already marks the boundary. */
+.article-page .rr-pitwall { margin-top: clamp(56px, 6vw, 96px); padding: clamp(40px, 5vw, 72px) var(--gutter); border-top: 0; }
 .article-page .rr-pitwall__inner { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px 72px; max-width: 1240px; margin: 0 auto; }
 .article-page .rr-pitwall__author { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 28px; align-items: start; }
 .article-page .rr-pitwall__author--plain { grid-template-columns: minmax(0, 1fr); }
@@ -1268,7 +1270,7 @@
 @media (max-width: 767px) { .article-page .rr-partners__layout { padding: 0 22px; overflow-x: clip; } }
 
 /* NEXT UP. ------------------------------------------------------------------------------------- */
-.article-page .rr-next { max-width: 1476px; margin: 0 auto; padding: 72px var(--gutter) 104px; }
+.article-page .rr-next { max-width: 1476px; margin: 0 auto; padding: 72px var(--gutter) 104px; border-top: 0; }
 .article-page .rr-next__mast { margin: 0 0 28px; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); color: var(--text-primary); font: 700 clamp(4rem, 11vw, 10rem)/.8 var(--cond); letter-spacing: -.012em; }
 .article-page .rr-next__mast span { color: var(--signal); }
 .article-page .rr-next__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: auto 1fr; gap: 0 40px; }

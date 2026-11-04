@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 const { cardSrcset } = require('./image-sizes');
 const { authorLabel, formatDate, formatReadingTime } = require('../taxonomy');
-const { mediaAttributes, cardDisclosureHtml } = require('./media-meta');
+const { mediaAttributes, cardDisclosureHtml, mediaFor, slotOf } = require('./media-meta');
 const { scoreRelatedPosts, approvedSubjects } = require('./related-score');
 
 // Content hashes of the post's cover file and card source (byte-identical reuse across stories counts as the same picture).
@@ -28,7 +28,9 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
         const srcset = escapeHtmlAttribute(cardSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`, lead));
         const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
-        const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
+        // A neutral stand-in card is not a picture of the story: the row reads as text, like a story without an image.
+        const placeholder = mediaFor(related.id, slotOf(relatedImagePath))?.placeholder === true;
+        const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions && !placeholder);
         const size = imageDimensions ? ` width="${imageDimensions.width}" height="${imageDimensions.height}"` : '';
         const image = hasImage
             ? `<img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${srcset ? ` srcset="${srcset}" sizes="${lead ? '(max-width: 1099px) 100vw, 56vw' : '140px'}"` : ''} alt="" loading="lazy" decoding="async"${size}${mediaAttributes(related.id, relatedImagePath)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`

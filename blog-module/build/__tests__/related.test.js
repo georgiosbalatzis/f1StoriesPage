@@ -90,3 +90,18 @@ test('approved subjects come from the gate selection, pending entities included,
     assert.deepEqual([...subjects.keys()].sort(), ['x', 'y']);
     assert.deepEqual([...subjects.get('y')].sort(), ['driver:a', 'team:b']);
 });
+
+test('a neutral stand-in card is listed as text, never as the story picture', async () => {
+    const { buildRelatedPostsHtml } = require('../related');
+    const { validateRegister } = require('../media-meta');
+    await require('../image-sizes').primeImageDimensions();
+    // 20261007F's card is a recorded placeholder (blog-module/media-metadata.json); 20261102J has a real photograph.
+    const entry = id => ({ id, image: `/blog-module/blog-entries/${id}/1.webp`, url: `/blog-module/blog-entries/${id}/article.html`, title: id, date: '2026-10-07', readingTime: '3 min', author: 'Writer' });
+    const html = await buildRelatedPostsHtml([entry('20261102J'), entry('20261007F')]);
+    const row = html.slice(html.indexOf('<li>'));
+    assert.match(html, /class="rr-next__lead"><img src="\/blog-module\/blog-entries\/20261102J\//);
+    assert.match(row, /class="rr-next__noimg"/);
+    assert.doesNotMatch(row, /<img/);
+    assert.deepEqual(validateRegister({ images: { 'x/1': { placeholder: true } } }).errors, []);
+    assert.match(validateRegister({ images: { 'x/1': { placeholder: 'yes' } } }).errors.join(), /placeholder can only be true/);
+});
