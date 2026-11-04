@@ -489,3 +489,30 @@ test('pages are written into the shell and pages that no longer exist are remove
         fs.rmSync(dir, { recursive: true, force: true });
     }
 });
+
+test('THE EDITION front page: ink lead, LATEST. wire, the newest month day by day, then THE DESKS', () => {
+    const posts = [
+        post('lead', '2026-10-12', ['News'], { thumbnail: '/lead.webp' }),
+        post('pic', '2026-10-12', ['History'], { thumbnail: '/pic.webp' }),
+        post('view', '2026-10-09', ['Opinion'], { thumbnail: '/view.webp' }),
+        post('sep', '2026-09-30')
+    ];
+    const html = build(posts).pages[0].main;
+    const order = ['class="ed-ink"', 'id="ed-latest-title"', 'id="ed-chronicle-title"', 'id="ed-desks-title"', 'id="journal-archive"'].map(s => html.indexOf(s));
+    assert.ok(order.every((at, i) => at > 0 && (i === 0 || at > order[i - 1])), 'blocks in order');
+    assert.match(html, /<article class="ed-lead ed-lead--ink" data-kind="news">[\s\S]*?ed-cta" aria-hidden="true">Διάβασε την ιστορία →/);
+    // The newest month only, grouped by day with Greek weekdays and zero-padded numerals; September stays in its month page.
+    const chronicle = html.slice(html.indexOf('id="ed-chronicle-title"'), html.indexOf('id="ed-desks-title"'));
+    assert.match(chronicle, /<h3 class="ed-chronicle__title">Οκτώβριος 2026<\/h3>/);
+    assert.match(chronicle, /id="ed-day-2026-10-12"><span class="ed-day__num ed-num">12<\/span><span class="ed-day__name">Δευτέρα<\/span>/);
+    assert.match(chronicle, /id="ed-day-2026-10-09"><span class="ed-day__num ed-num">09<\/span><span class="ed-day__name">Παρασκευή<\/span>/);
+    assert.ok(!links(chronicle).has('sep'));
+    assert.ok(chronicle.includes(`href="${route.month('2026-09')}">← Σεπτέμβριος 2026`), 'a step back to the previous month');
+    // One photograph for the month, never the lead's; ΝΕΟ stays on the lead and the wire, once per story.
+    assert.equal((chronicle.match(/class="ed-interlude /g) || []).length, 1);
+    assert.match(chronicle, /class="ed-interlude blog-card-link" href="\/blog-module\/blog-entries\/pic\/article.html" data-kind="history"/);
+    assert.doesNotMatch(chronicle, /ed-new/);
+    assert.match(html, /<time class="ed-date ed-date--big" datetime="2026-10-09"><span class="ed-date__day ed-num">09<\/span>/);
+    // VOICES: the newest opinion not already in the wire (here every story is in the wire, so there is none).
+    assert.doesNotMatch(html, /ed-voices/);
+});

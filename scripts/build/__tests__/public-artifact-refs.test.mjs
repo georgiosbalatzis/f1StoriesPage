@@ -230,7 +230,8 @@ function cliFixture(t) {
     const common = ['styles/home-fonts.css', 'styles/editorial.css'];
     const pages = {
         'index.html': [...common, 'home.css'],
-        'blog-module/blog/index.html': [...common, 'blog-module/blog/archive-editorial.css'],
+        // The Index front page alone also loads THE EDITION's front-page stylesheet.
+        'blog-module/blog/index.html': [...common, 'blog-module/blog/archive-front.css', 'blog-module/blog/archive-editorial.css'],
         'standings/index.html': [...common, 'standings/standings-editorial.css'],
         'authors/index.html': [...common, 'styles/authors.css'],
         '404.html': [], 'generate.html': [], 'housekeeping.html': [], 'dashboard/index.html': [],
@@ -238,7 +239,7 @@ function cliFixture(t) {
     };
     for (const model of gpModels) pages[model.path.slice(1) + 'index.html'] = [];
     for (const route of ['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/']) {
-        pages[`blog-module/blog/${route}index.html`] = pages['blog-module/blog/index.html'];
+        pages[`blog-module/blog/${route}index.html`] = [...common, 'blog-module/blog/archive-editorial.css'];
     }
     // The static author pages (required: one per AUTHORS record) share the directory's shell.
     for (const author of taxonomy.AUTHORS) pages[`${taxonomy.authorPath(author).slice(1)}index.html`] = pages['authors/index.html'];

@@ -12,6 +12,7 @@ export const CSS_INPUTS = [
     'styles/authors.css',
     'styles/race-desk.css',
     'blog-module/blog/archive-editorial.css',
+    'blog-module/blog/archive-front.css',
     'blog-module/blog/article-editorial.css',
     'standings/standings-editorial.css',
     'styles/vendor/bootstrap.slim.css',

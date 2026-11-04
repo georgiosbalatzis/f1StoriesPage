@@ -1,0 +1,67 @@
+/* THE EDITION: the Index front page (owner choice 2026-11-04; prototype experiments/index-redesign/concept-f).
+ * Loaded by blog-module/blog/index.html only (discovery.js puts it in that page's head), so the section and month
+ * pages, which inline archive-editorial.css, carry none of it. It loads before archive-editorial.css: every rule here
+ * is more specific than the base rule it adjusts. */
+/* The homepage's rhythm: an ink lead, then LATEST. / THE CHRONICLE. / THE DESKS. under Barlow display words with the red
+ * full stop. Ink and the chronicle's surface run full width; their content keeps the container's edges. */
+.archive-page .edition.ed-index { overflow-x: clip; }
+.edition :is(.ed-ink, .ed-chronicle) { margin-inline: calc(50% - 50vw); padding-inline: calc(50vw - 50%); }
+.edition .ed-display { margin-bottom: 24px; }
+.edition .ed-display__word { font: 700 clamp(3rem, 1.4rem + 6vw, 9rem)/.8 var(--font-brand); letter-spacing: -.012em; color: var(--text-primary); overflow-wrap: anywhere; }
+.edition .ed-display__bar { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--ed-strong); }
+.edition :is(.ed-latest, .ed-desks) { margin-top: clamp(56px, 7vw, 104px); }
+/* The ink lead: fixed ink in both themes (as the homepage hero); category ink stays a fill, never text. */
+.edition .ed-ink { padding-block: clamp(28px, 4vw, 52px); background: var(--ink); color: var(--paper); }
+.edition .ed-lead--ink .ed-lead__link { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); padding: 0; align-items: center; }
+.edition .ed-lead--ink .ed-lead__media { aspect-ratio: 16 / 9; background: var(--ink); }
+.edition .ed-lead--ink :is(.ed-headline, .ed-kicker, .ed-new) { color: var(--paper); }
+.edition .ed-lead--ink .ed-headline--lead { font-size: clamp(1.875rem, 1rem + 2.2vw, 3.25rem); line-height: 1.06; letter-spacing: -.02em; }
+.edition .ed-lead--ink .ed-kicker::before { content: ''; width: 8px; height: 8px; background: var(--kind); }
+.edition .ed-lead--ink :is(.ed-excerpt, .ed-meta) { color: var(--text-inverse-secondary); }
+.edition .ed-lead--ink :focus-visible, .edition .ed-lead--ink .ed-lead__link:focus-visible { outline-color: var(--paper); }
+.edition .ed-cta { display: inline-flex; margin-top: 22px; padding: 14px 18px; background: var(--signal); color: var(--signal-ink); font: 700 .75rem/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
+.edition .ed-lead--ink .ed-lead__link:hover .ed-cta { background: var(--paper); }
+/* LATEST.: the wire with the homepage's large day numerals, VOICES beside it. */
+.edition .ed-latest__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 56px; }
+.edition :is(.ed-latest__wire, .ed-voices) > .ed-label { padding-bottom: 10px; border-bottom: 1px solid var(--ed-strong); }
+.edition .ed-rows--wire .ed-row__link { grid-template-columns: 72px minmax(0, 1fr); padding: 18px 0; }
+.edition .ed-date.ed-date--big { display: grid; align-content: start; color: var(--text-secondary); font: 600 .6875rem/1.4 var(--font-body); letter-spacing: .12em; }
+.edition .ed-date__day { color: var(--text-primary); font: 700 2.75rem/.85 var(--font-brand); letter-spacing: -.01em; }
+.edition .ed-lead--voice .ed-lead__link { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-top: 16px; }
+.edition .ed-lead--voice .ed-lead__media { aspect-ratio: 4 / 3; }
+.edition .ed-lead--voice .ed-headline--lead { font-size: clamp(1.375rem, 1rem + .9vw, 1.875rem); }
+/* THE CHRONICLE.: the newest month day by day on its own surface, one photograph, then every month. */
+.edition .ed-chronicle { margin-top: clamp(56px, 7vw, 104px); padding-block: clamp(48px, 6vw, 88px); background: var(--bg-surface); }
+.edition .ed-chronicle__month { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 10px 24px; padding-bottom: 14px; border-bottom: 1px solid var(--ed-strong); }
+.edition .ed-chronicle__title { font: 600 clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem)/1.1 var(--font-body); letter-spacing: -.02em; }
+.edition .ed-chronicle__nav { display: flex; flex-wrap: wrap; gap: 0 20px; font-size: .875rem; font-weight: 600; }
+.edition .ed-chronicle__nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-decoration-color: var(--accent-readable); text-underline-offset: .25em; }
+.edition .ed-day { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 0 24px; padding: 18px 0; border-bottom: 1px solid var(--ed-rule); }
+.edition .ed-day__head { display: grid; align-content: start; gap: 6px; }
+.edition .ed-day__num { font: 700 3rem/.85 var(--font-brand); }
+.edition .ed-day__name { color: var(--text-secondary); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
+.edition .ed-day .ed-row__link { grid-template-columns: minmax(0, 1fr); padding: 0 0 16px; }
+.edition .ed-day .ed-rows > li + li .ed-row__link { padding-top: 16px; }
+.edition .ed-interlude { display: block; max-width: 34rem; margin: 6px 0 12px; }
+.edition .ed-interlude .ed-media { aspect-ratio: 16 / 9; }
+.edition .ed-interlude[data-kind="history"] img { filter: grayscale(1) contrast(1.06); }
+.edition .ed-interlude__caption { display: block; margin-top: 8px; color: var(--text-secondary); font-size: .8125rem; }
+.edition .ed-chronicle__years { margin-top: 48px; }
+/* THE DESKS.: the former side column whole and in order, as a table beside its asides. */
+.edition .ed-desks__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: 56px; row-gap: 40px; align-items: start; }
+.edition .ed-desks__grid.ed-front__side > * { grid-column: 2; margin-top: 0; }
+.edition .ed-desks__grid > .ed-table { grid-column: 1; grid-row: 1 / span 6; }
+@media (max-width: 991px) {
+    .edition :is(.ed-latest__grid, .ed-desks__grid) { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .edition .ed-desks__grid.ed-front__side > *, .edition .ed-desks__grid > .ed-table { grid-column: 1; grid-row: auto; }
+}
+@media (max-width: 767px) {
+    .edition .ed-lead--ink .ed-lead__link { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .edition .ed-cta { margin-top: 18px; }
+    .edition .ed-rows--wire .ed-row__link { grid-template-columns: 58px minmax(0, 1fr); padding: 16px 0; }
+    .edition .ed-date__day { font-size: 2.25rem; }
+    /* The chronicle's day numerals become inline headings above their stories on phones. */
+    .edition .ed-day { grid-template-columns: minmax(0, 1fr); }
+    .edition .ed-day__head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .edition .ed-day__num { font-size: 2.25rem; }
+}

@@ -86,6 +86,7 @@ const REQUIRED_EXACT = [
     'styles/home-fonts.min.css',
     'styles/authors.min.css',
     'blog-module/blog/archive-editorial.min.css',
+    'blog-module/blog/archive-front.min.css',
     'blog-module/blog/article-editorial.min.css',
     'standings/standings-editorial.min.css',
     'styles/layers.css',
@@ -690,6 +691,7 @@ function loadEditorialAssetRefs(errors) {
         'styles/editorial.css',
         'styles/authors.css',
         'blog-module/blog/archive-editorial.css',
+        'blog-module/blog/archive-front.css',
         'blog-module/blog/article-editorial.css',
         'standings/standings-editorial.css'
     ];
@@ -829,7 +831,7 @@ function validateRouteMarkers(errors, editorialRefs) {
             relPath: 'blog-module/blog/index.html',
             label: 'blog index',
             patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']journal-archive["']/i, /class=["']ed-lead\b/i, /class=["']ed-row\b/i, /class=["']ed-contents\b/i],
-            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-front.css', 'blog-module/blog/archive-editorial.css']
         },
         // The Edition Index's static routes: every public section page, the newest month and the archive hub.
         ...['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/'].map(route => ({
