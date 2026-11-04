@@ -11,13 +11,14 @@
 //   alt         verified alt text (replaces the generated "<title>: εικόνα N")
 //   synthetic   "confirmed" when the image is documented as AI-generated
 //   rights      "documented" when a licence/permission is on file (internal; unresolved cases live in the audit)
+//   placeholder true for a neutral stand-in card (not a picture of the story): story lists show the story as text
 const { fs, path, escapeHtmlAttribute } = require('./shared');
 
 const REGISTER_PATH = path.join(__dirname, '..', 'media-metadata.json');
 const TYPES = new Set(['photo', 'archival', 'poster', 'graphic', 'diagram', 'chart', 'illustration', 'render']);
 // Artwork that carries printed type or a drawing, and archival prints: shown whole, never cropped to a photo frame.
 const CONTAINED = new Set(['archival', 'poster', 'graphic', 'diagram', 'chart', 'illustration']);
-const FIELDS = new Set(['type', 'focus', 'caption', 'captionLang', 'credit', 'source', 'license', 'alt', 'synthetic', 'rights', 'note']);
+const FIELDS = new Set(['type', 'focus', 'caption', 'captionLang', 'credit', 'source', 'license', 'alt', 'synthetic', 'rights', 'note', 'placeholder']);
 const AI_LABEL = 'Εικονογράφηση δημιουργημένη με AI';
 
 function validateRegister(data) {
@@ -31,6 +32,7 @@ function validateRegister(data) {
         if (entry.focus !== undefined && !/^(?:100|\d{1,2})% (?:100|\d{1,2})%$/.test(entry.focus)) errors.push(`${key}: focus must look like "50% 30%"`);
         if (entry.synthetic !== undefined && entry.synthetic !== 'confirmed') errors.push(`${key}: synthetic can only be "confirmed" (suspicions belong in the editorial audit)`);
         if (entry.rights !== undefined && entry.rights !== 'documented') errors.push(`${key}: rights can only be "documented"`);
+        if (entry.placeholder !== undefined && entry.placeholder !== true) errors.push(`${key}: placeholder can only be true`);
         for (const field of ['caption', 'credit', 'alt', 'source', 'license', 'captionLang', 'note']) {
             if (entry[field] !== undefined && (typeof entry[field] !== 'string' || !entry[field].trim())) errors.push(`${key}: ${field} must be non-empty text`);
         }

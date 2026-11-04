@@ -987,7 +987,11 @@
 .article-page .rr-edition { display: flex; gap: 10px; margin: 0; padding: 14px var(--gutter) 12px; color: var(--on-deep-2); font: 700 .9375rem/1.1 var(--cond); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-edition a { color: var(--on-deep); text-decoration: none; }
 .article-page .rr-crumbs ol { display: flex; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.article-page .rr-edition__date { margin-left: auto; font-variant-numeric: tabular-nums; }
+/* The stats strip below the headline shows the date and reading time, so their cover duplicates are hidden
+ * (owner decision 2026-11-04). The elements stay in the markup: the <time> carries the exact publication instant,
+ * and the reading-time span anchors topic links, reading-time updates and the artifact validator. */
+.article-page .rr-edition__date,
+.article-page .rr-kicker > #reading-time-value { display: none; }
 .article-page .rr-cover__media { margin: 0; overflow: hidden; }
 .article-page .rr-cover__media picture { display: contents; }
 .article-page .rr-cover__media img { display: block; width: 100%; height: 100%; max-width: none; margin: 0; border-radius: 0; object-fit: cover; object-position: var(--focus, 50% 50%); }
@@ -1034,6 +1038,9 @@
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-title { font-size: clamp(2.4rem, 4.4vw, 4.6rem); }
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-title--long { font-size: clamp(2.1rem, 3.5vw, 3.6rem); }
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__side { margin-top: 32px; }
+/* An inset photo is never enlarged past its own pixels (159 covers, most 400–999px wide), so the band hugs its
+ * content instead of keeping the split cover's tall minimum, which left small photos in a mostly empty field. */
+.article-page .rr-cover--inset .rr-cover__grid { min-height: 0; }
 .article-page .rr-cover--inset .rr-cover__media { display: grid; place-items: center; align-content: center; padding: clamp(16px, 3vw, 48px); }
 .article-page .rr-cover--inset .rr-cover__media img { width: min(100%, var(--cover-w, 100%)); height: auto; max-height: min(560px, 70vh); object-fit: contain; outline: 1px solid rgba(238, 232, 223, .16); outline-offset: -1px; }
 /* Split: the whole photograph in its half, on the ink, with its caption under it (no crop to the column). */
@@ -1186,11 +1193,13 @@
 .article-page .rr .rr-layout:has(.rr-body > .gallery-carousel:last-child, .rr-body > .rr-data:nth-last-child(2)) + .rr-pitwall { margin-top: 0; }
 
 /* Pit wall: author, sharing and the editorial record, on ink. ---------------------------------------------- */
-.article-page .rr-pitwall { margin-top: clamp(56px, 6vw, 96px); padding: clamp(40px, 5vw, 72px) var(--gutter); }
+/* border-top: 0 on both bands: the legacy `section` hairline (styles.css, white at 6%) vanished on paper and is
+ * redundant on ink — the change of surface already marks the boundary. */
+.article-page .rr-pitwall { margin-top: clamp(56px, 6vw, 96px); padding: clamp(40px, 5vw, 72px) var(--gutter); border-top: 0; }
 .article-page .rr-pitwall__inner { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px 72px; max-width: 1240px; margin: 0 auto; }
 .article-page .rr-pitwall__author { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 28px; align-items: start; }
 .article-page .rr-pitwall__author--plain { grid-template-columns: minmax(0, 1fr); }
-.article-page .rr-pitwall__author img { width: 132px; height: 132px; margin: 0; border-radius: 0; background: var(--deep-2); object-fit: cover; }
+.article-page .rr-pitwall__author img { width: 132px; height: 132px; margin: 0; border-radius: 0; background: var(--deep); object-fit: cover; }
 .article-page .rr-pitwall__name { margin: 0; color: var(--on-deep); font: 600 clamp(2rem, 3.6vw, 3.25rem)/1 var(--font-body); letter-spacing: -.04em; }
 .article-page .rr-pitwall__name a { color: var(--on-deep); text-decoration: underline transparent 2px; text-underline-offset: .12em; }
 .article-page .rr-pitwall__name a:hover { text-decoration-color: var(--signal); }
@@ -1211,14 +1220,15 @@
 .article-page .rr-pitwall .article-trust strong { color: var(--on-deep); }
 .article-page .rr-pitwall .article-trust a { color: var(--on-deep); text-decoration: underline 1px var(--signal); }
 
-/* Partners: the homepage's night-edition strip (home.css #home-sponsors) in BOTH article themes, by owner
- * decision (P3B-R2). Its dark-theme tokens are resolved here as fixed values so the light theme cannot reach
- * them; geometry follows the homepage container (1476px, 48/32/22px gutters). */
+/* Partners: the homepage's night-edition strip layout (home.css #home-sponsors) in BOTH article themes (P3B-R2).
+ * Its surface, rule and label grey are the article's own ink (--deep, --deep-rule, --on-deep-2), so it reads as
+ * one band with the pit wall above it (owner decision 2026-11-04); geometry follows the homepage container
+ * (1476px, 48/32/22px gutters). */
 .article-page .rr-partners {
-    --partner-surface: #181a1c;
+    --partner-surface: var(--deep);
     --partner-text: #eee7dc;
-    --partner-muted: #bcb8b0;
-    --partner-rule: #47494a;
+    --partner-muted: var(--on-deep-2);
+    --partner-rule: var(--deep-rule);
     --partner-chip: #e9e3d6;
     --partner-chip-text: #17191b;
     --partner-focus: #ff826b;
@@ -1238,14 +1248,16 @@
 }
 .article-page .rr-partners__layout { box-sizing: border-box; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--partner-gutter); align-items: center; width: 100%; max-width: 1476px; margin: 0 auto; padding: 0 48px; }
 .article-page .rr-partners__layout::before { content: ''; grid-column: 1 / -1; height: 1px; margin-bottom: 28px; background: var(--partner-rule); }
-.article-page .rr-partners__label { position: relative; grid-column: 1 / 3; margin: 0; padding: 0; border: 0; color: var(--partner-muted); font: 600 .75rem/1.4 var(--font-body); letter-spacing: .13em; text-transform: none; }
+.article-page .rr-partners__label { position: relative; grid-column: 1 / 3; margin: 0; padding: 0; border: 0; color: var(--partner-muted); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-partners .sponsor-logos { grid-column: 3 / 13; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; align-items: normal; gap: 0 var(--partner-gutter); margin: 0; padding: 10px 16px; list-style: none; border: 0; border-radius: 2px; background: transparent; color: inherit; color-scheme: light; overflow: hidden; }
 .article-page .rr-partners .sponsor-logos > li { margin: 0; padding: 0; }
-.article-page .rr-partners .sponsor-logo { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; align-self: auto; gap: 6px; overflow: visible; min-width: 0; height: auto; min-height: 0; padding: 6px 0; border: 0; border-radius: 2px; background: none; box-shadow: none; transform: none; text-decoration: none; transition: background-color .2s; }
+/* Logos start at the top of their cell, so a caption that wraps ("ADVERTISING PARTNER" on phones) cannot lift its logo out of the row. */
+.article-page .rr-partners .sponsor-logo { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; align-self: auto; gap: 6px; overflow: visible; min-width: 0; height: auto; min-height: 0; padding: 6px 0; border: 0; border-radius: 2px; background: none; box-shadow: none; transform: none; text-decoration: none; transition: background-color .2s; }
 .article-page .rr-partners .sponsor-logo::before,
 .article-page .rr-partners .sponsor-logo::after { content: none; }
-.article-page .rr-partners .sponsor-logo img { display: block; width: 100%; max-width: 150px; height: auto; max-height: none; margin: 0; border-radius: 0; object-fit: contain; mix-blend-mode: normal; filter: grayscale(1) invert(1); opacity: .68; transform: none; transition: filter .35s var(--ease-editorial), opacity .35s var(--ease-editorial); }
-.article-page .rr-partners .sponsor-logo span { color: var(--partner-muted); font: 500 .6875rem/1.6 var(--font-body); letter-spacing: .12em; text-align: center; }
+.article-page .rr-partners .sponsor-logo img { display: block; width: 100%; max-width: 150px; height: auto; max-height: none; margin: 0; border-radius: 0; object-fit: contain; mix-blend-mode: normal; filter: grayscale(1) invert(1); opacity: .86; transform: none; transition: filter .35s var(--ease-editorial), opacity .35s var(--ease-editorial); }
+/* The label style of the bands, at .12em: "ADVERTISING PARTNER" must fit one logo column at 1440. */
+.article-page .rr-partners .sponsor-logo span { color: var(--partner-muted); font: 600 .6875rem/1.6 var(--font-body); letter-spacing: .12em; text-transform: uppercase; text-align: center; }
 .article-page .rr-partners .sponsor-logo:is(:hover, :focus-visible) { background: var(--partner-chip); transform: none; box-shadow: none; }
 .article-page .rr-partners .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; transform: none; }
 .article-page .rr-partners .sponsor-logo:is(:hover, :focus-visible) span { color: var(--partner-chip-text); }
@@ -1258,7 +1270,7 @@
 @media (max-width: 767px) { .article-page .rr-partners__layout { padding: 0 22px; overflow-x: clip; } }
 
 /* NEXT UP. ------------------------------------------------------------------------------------- */
-.article-page .rr-next { max-width: 1476px; margin: 0 auto; padding: 72px var(--gutter) 104px; }
+.article-page .rr-next { max-width: 1476px; margin: 0 auto; padding: 72px var(--gutter) 104px; border-top: 0; }
 .article-page .rr-next__mast { margin: 0 0 28px; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); color: var(--text-primary); font: 700 clamp(4rem, 11vw, 10rem)/.8 var(--cond); letter-spacing: -.012em; }
 .article-page .rr-next__mast span { color: var(--signal); }
 .article-page .rr-next__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: auto 1fr; gap: 0 40px; }
@@ -1281,6 +1293,8 @@
 .article-page .rr-next .article-navigation { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin: 0; padding: 0; border: 0; background: none; }
 .article-page .rr-next .article-nav-link { display: grid; align-content: start; gap: 6px; min-width: 0; width: auto; max-width: none; justify-self: stretch; margin: 0; padding: 18px 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: none; color: var(--text-primary); box-shadow: none; text-align: left; text-decoration: none; transform: none; }
 .article-page .rr-next .article-nav-link.next { grid-column: 2; text-align: right; }
+/* Fill the link: an older rule centres the grid's content, which indented a narrow "previous" by half its slack. */
+.article-page .rr-next .article-nav-link { justify-content: stretch; }
 .article-page .rr-next .article-nav-label { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-next .article-nav-link.next .article-nav-label { justify-content: flex-end; }
 .article-page .rr-next .article-nav-title { display: block; overflow: visible; color: var(--text-primary); font: 600 1.0625rem/1.25 var(--font-body); letter-spacing: -.015em; white-space: normal; text-decoration: underline transparent 2px; text-underline-offset: .12em; }

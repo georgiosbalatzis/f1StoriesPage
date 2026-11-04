@@ -250,7 +250,8 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         const sync = () => {
             const fragment = document.documentElement.getAttribute('data-theme') === 'light' ? '#light' : '#dark';
             frames.forEach(frame => {
-                const next = frame.src.split('#')[0] + fragment;
+                // A data band is ink in both site themes, so the tool inside it stays dark.
+                const next = frame.src.split('#')[0] + (frame.closest('.rr-data') ? '#dark' : fragment);
                 if (frame.src !== next) frame.src = next;
             });
         };
