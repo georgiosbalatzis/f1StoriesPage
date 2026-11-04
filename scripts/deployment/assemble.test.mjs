@@ -328,6 +328,17 @@ test('verified child artifact cache reuses valid entries and fails closed on pin
     // Stale (>6h) TYRES manifest misses so a fresh build runs weekend:update.
     const sevenHoursLater = new Date(Date.parse(builtAt) + 7 * 3600000).toISOString();
     assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-stale'), { dataSha, builtAt: sevenHoursLater }), null);
+
+    // .build/child-artifacts/ must be gitignored so restored caches never dirty main or trip rendering-sink-guard.
+    const repoRoot = path.join(here, '../..');
+    const probeDir = path.join(repoRoot, '.build/child-artifacts/telemetry-probe/output/assets');
+    t.after(() => fs.rmSync(path.join(repoRoot, '.build/child-artifacts/telemetry-probe'), { recursive: true, force: true }));
+    fs.mkdirSync(probeDir, { recursive: true });
+    fs.writeFileSync(path.join(probeDir, 'vendor.js'), ['element', '.inner', 'HTML = "<p>vendor</p>";\n'].join(''));
+    const ignoreCheck = spawnSync('git', ['check-ignore', '-q', '.build/child-artifacts/telemetry-probe/output/assets/vendor.js'], { cwd: repoRoot });
+    assert.equal(ignoreCheck.status, 0, '.build/child-artifacts/ must be ignored by git');
+    const sinkGuard = spawnSync(process.execPath, [path.join(repoRoot, 'scripts/quality/rendering-sink-guard.mjs')], { cwd: repoRoot, encoding: 'utf8' });
+    assert.equal(sinkGuard.status, 0, sinkGuard.stderr || sinkGuard.stdout);
 });
 
 test('the dry run cannot publish, and the publisher never builds a rehearsal', () => {
