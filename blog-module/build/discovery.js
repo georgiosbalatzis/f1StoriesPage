@@ -109,9 +109,9 @@ function buildModel(posts, today, selection = {}) {
 }
 
 // ── Pieces ───────────────────────────────────────────────
-function kicker(post, ctx) {
+function kicker(post, ctx, { mark = true } = {}) {
     const primary = (post.categories && post.categories[0]) || 'News';
-    const fresh = T.isNewStory(dayOf(post), ctx.model.reference)
+    const fresh = mark && T.isNewStory(dayOf(post), ctx.model.reference)
         ? `<span class="ed-new" data-new-until="${T.newUntil(dayOf(post))}">ΝΕΟ</span>` : '';
     return `<span class="ed-kicker">${esc(T.greekUpper(T.categoryLabel(primary)))}${fresh}</span>`;
 }
@@ -131,21 +131,30 @@ function dateCell(post) {
 const kindOf = post => T.categoryKind((post.categories && post.categories[0]) || 'News');
 const headline = (post, level, lead = false) => `<h${level} class="ed-headline${lead ? ' ed-headline--lead' : ''}"><span class="ed-title-link">${esc(post.title)}</span></h${level}>`;
 
-function leadHtml(post, ctx, { level = 3, sizes, eager = false, cls = '' } = {}) {
+function leadHtml(post, ctx, { level = 3, sizes, eager = false, cls = '', cta = false } = {}) {
     const image = ctx.deps.storyImage(post);
     return `<article class="ed-lead${cls ? ` ${cls}` : ''}${image ? '' : ' ed-lead--text'}" data-kind="${kindOf(post)}">`
         + `<a class="ed-lead__link blog-card-link" href="${esc(route.story(post))}">`
         + (image ? `<span class="ed-media ed-lead__media">${ctx.deps.renderStoryImage(post, image, { sizes, full: false, eager })}</span>` : '')
         + `<div class="ed-lead__text">${kicker(post, ctx)}${headline(post, level, true)}`
         + (post.excerpt ? `<p class="ed-excerpt">${esc(post.excerpt)}</p>` : '')
-        + `${meta(post, { fullDate: true })}</div></a></article>`;
+        + `${meta(post, { fullDate: true })}`
+        // The homepage's red call to action; the whole card is already the link, so it is not announced twice.
+        + (cta ? '<span class="ed-cta" aria-hidden="true">Διάβασε την ιστορία →</span>' : '')
+        + '</div></a></article>';
 }
-function rowHtml(post, ctx, { level = 3, thumb = false, date = true, kickerOn = true, excerpt = false, author = true, fullDate = false } = {}) {
+// The front page's wire date: a large day numeral over the month, as on the homepage.
+function bigDateCell(post) {
+    const date = T.isDay(dayOf(post)) ? T.ledgerDate(dayOf(post)) : null;
+    if (!date) return '<span class="ed-date" aria-hidden="true"></span>';
+    return `<time class="ed-date ed-date--big" datetime="${dayOf(post)}"><span class="ed-date__day ed-num">${dayOf(post).slice(8, 10)}</span> ${date.month}<span class="visually-hidden"> ${date.year}</span></time>`;
+}
+function rowHtml(post, ctx, { level = 3, thumb = false, date = true, bigDate = false, kickerOn = true, mark = true, excerpt = false, author = true, fullDate = false } = {}) {
     const image = thumb ? ctx.deps.storyImage(post) : '';
     return `<li class="ed-row${image ? ' ed-row--thumb' : ''}" data-kind="${kindOf(post)}">`
         + `<a class="ed-row__link blog-card-link" href="${esc(route.story(post))}">`
-        + (date ? dateCell(post) : '')
-        + `<div class="ed-row__text">${kickerOn ? kicker(post, ctx) : ''}${headline(post, level)}`
+        + (date ? (bigDate ? bigDateCell(post) : dateCell(post)) : '')
+        + `<div class="ed-row__text">${kickerOn ? kicker(post, ctx, { mark }) : ''}${headline(post, level)}`
         + (excerpt && post.excerpt ? `<p class="ed-excerpt ed-excerpt--row">${esc(post.excerpt)}</p>` : '')
         + `${meta(post, { fullDate, author })}</div>`
         + (image ? `<span class="ed-media ed-row__media">${ctx.deps.renderStoryImage(post, image, { sizes: T.CARD_SIZES.editionThumb })}</span>` : '')
@@ -259,18 +268,60 @@ function collectionsAsideHtml(links = []) {
         + `<ul class="ed-aside__list"><li><a href="${BLOG}/collections/"><span>Όλες οι συλλογές</span></a></li>${sorted.map(link => `<li><a href="${esc(link.href)}"><span>${esc(link.label)}</span><span class="ed-num">${esc(T.plural(link.count, 'άρθρο', 'άρθρα'))}</span></a></li>`).join('')}</ul></nav>`;
 }
 
+// THE EDITION (owner choice, 2026-11-04; prototype experiments/index-redesign/concept-f): the homepage's ink lead and
+// LATEST. wire, the month told day by day (THE CHRONICLE.) and the desks, in the Index's own inks and ΝΕΟ marks.
+const WIRE_SIZE = 8;
+const WEEKDAYS = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
+const weekday = day => WEEKDAYS[new Date(`${day}T12:00:00Z`).getUTCDay()];
+// An English display word with the red full stop (as THE PADDOCK. on the homepage), then a ruled Greek caption.
+const display = (id, word, note, more = '') => `<header class="ed-display"><h2 id="${id}" class="ed-display__word">${word}<span class="ed-dot" aria-hidden="true">.</span></h2>`
+    + `<div class="ed-display__bar"><p class="ed-label">${esc(note)}</p>${more}</div></header>`;
+
+function chronicleHtml(ctx, lead) {
+    const { model } = ctx;
+    const key = model.newestKey;
+    const posts = model.months.get(key) || [];
+    if (!posts.length) return '';
+    const days = [];
+    posts.forEach(post => {
+        if (!days.length || days[days.length - 1].day !== dayOf(post)) days.push({ day: dayOf(post), posts: [] });
+        days[days.length - 1].posts.push(post);
+    });
+    // One photograph per month, never the lead's again; archive material keeps its grayscale print.
+    const interlude = posts.find(post => post !== lead && ctx.deps.storyImage(post));
+    const interludeHtml = interlude
+        ? `<a class="ed-interlude blog-card-link" href="${esc(route.story(interlude))}" data-kind="${kindOf(interlude)}"><span class="ed-media">${ctx.deps.renderStoryImage(interlude, ctx.deps.storyImage(interlude), { sizes: T.CARD_SIZES.editionWeek, full: false })}</span>`
+            + `<span class="ed-interlude__caption">${esc(interlude.title)}</span></a>` : '';
+    const dayHtml = ({ day, posts: dayPosts }, index) => `<section class="ed-day" aria-labelledby="ed-day-${day}">`
+        + `<h4 class="ed-day__head" id="ed-day-${day}"><span class="ed-day__num ed-num">${day.slice(8, 10)}</span><span class="ed-day__name">${weekday(day)}</span></h4>`
+        // The chronicle repeats the newest stories: their ΝΕΟ mark stays on the lead and the wire, once per story.
+        + `<div class="ed-day__stories"><ol class="ed-rows">${dayPosts.map(post => rowHtml(post, ctx, { level: 5, date: false, mark: false })).join('')}</ol>`
+        + (index === 0 ? interludeHtml : '') + '</div></section>';
+    const previous = model.monthKeys[1];
+    const nav = `<nav class="ed-chronicle__nav" aria-label="Μήνες">`
+        + (previous ? `<a href="${route.month(previous)}">← ${esc(T.monthName(previous))}</a>` : '')
+        + `<a href="${route.month(key)}">Όλος ο μήνας →</a><a href="${route.archive}">Όλο το αρχείο →</a></nav>`;
+    return '<section class="ed-chronicle" aria-labelledby="ed-chronicle-title">'
+        + display('ed-chronicle-title', 'THE CHRONICLE', 'Το χρονικό · ανά μήνα')
+        + `<div class="ed-chronicle__month"><h3 class="ed-chronicle__title">${esc(T.monthName(key))}</h3>${nav}</div>`
+        + days.map(dayHtml).join('')
+        + `<div class="ed-calendar ed-chronicle__years"><h3 class="ed-label">Οι μήνες</h3>${yearsOf(model).map(year => calendarYear(model, year, '')).join('')}</div>`
+        + '</section>';
+}
+
 function indexBody(ctx) {
     const { model } = ctx;
-    const weekPosts = model.week.slice(0, T.EDITION_LAYOUT.weekMax);
-    const lead = model.lead && weekPosts.includes(model.lead) ? model.lead : weekPosts[0];
-    const weekRest = weekPosts.filter(post => post !== lead);
-    const more = model.week.length - weekPosts.length;
-    const week = lead ? '<section class="ed-week" aria-labelledby="ed-week-title">'
-        + sechead('ed-week-title', 'Τελευταία εβδομάδα', `${T.formatDate(model.weekFrom)} – ${T.formatDate(model.reference)} · ${T.plural(model.week.length, 'ιστορία', 'ιστορίες')}`)
-        + leadHtml(lead, ctx, { level: 3, sizes: T.CARD_SIZES.editionWeek, eager: true })
-        + (weekRest.length ? `<ol class="ed-rows ed-rows--week">${weekRest.map(post => rowHtml(post, ctx)).join('')}</ol>` : '')
-        + (more > 0 ? `<p class="ed-more"><a href="${route.month(monthOf(lead))}">Και ${T.plural(more, 'ακόμη ιστορία', 'ακόμη ιστορίες')} στο αρχείο του μήνα →</a></p>` : '')
-        + '</section>' : '';
+    // The editor's lead (editorial-selection.json) when it is one of the week's stories, otherwise the newest.
+    const lead = model.lead || model.newest;
+    const wire = model.published.filter(post => post !== lead).slice(0, WIRE_SIZE);
+    const voice = model.published.find(post => post !== lead && !wire.includes(post) && (post.categories || []).includes('Opinion'));
+    const front = lead ? '<section class="ed-ink" aria-labelledby="ed-ink-title"><h2 class="visually-hidden" id="ed-ink-title">Το πρωτοσέλιδο</h2>'
+        + leadHtml(lead, ctx, { level: 3, sizes: T.CARD_SIZES.editionWeek, eager: true, cls: 'ed-lead--ink', cta: true }) + '</section>' : '';
+    const latest = wire.length ? '<section class="ed-latest" aria-labelledby="ed-latest-title">'
+        + display('ed-latest-title', 'LATEST', 'Οι νεότερες ιστορίες', `<a class="ed-sechead__more" href="${route.month(model.newestKey)}">Όλος ο μήνας →</a>`)
+        + `<div class="ed-latest__grid"><div class="ed-latest__wire"><h3 class="ed-label">Wire · Πρόσφατα</h3><ol class="ed-rows ed-rows--wire">${wire.map(post => rowHtml(post, ctx, { level: 4, bigDate: true })).join('')}</ol></div>`
+        + (voice ? `<aside class="ed-voices" aria-labelledby="ed-voices-title"><h3 class="ed-label" id="ed-voices-title">Voices · Άποψη</h3>${leadHtml(voice, ctx, { level: 4, sizes: T.CARD_SIZES.editionWeek, cls: 'ed-lead--voice' })}</aside>` : '')
+        + '</div></section>' : '';
     const table = '<section class="ed-table" aria-labelledby="ed-table-title">'
         + sechead('ed-table-title', 'Οι ενότητες', 'Η πιο πρόσφατη ιστορία κάθε ενότητας')
         + `<ol class="ed-table__list">${model.sections.map(section => {
@@ -292,11 +343,12 @@ function indexBody(ctx) {
                 + `<span class="ed-bylines__name">${esc(author.label)}</span><span class="ed-bylines__desk">${esc(author.desk)}</span>`
                 + `<span class="ed-bylines__count ed-num">${esc(T.plural(posts.length, 'ιστορία', 'ιστορίες'))}${last ? ` · τελευταία ${esc(T.formatDate(dayOf(last)))}` : ''}</span></a></li>`;
         }).join('')}</ul></section>`;
-    const calendar = '<section class="ed-calendar" aria-labelledby="ed-cal-title">'
-        + sechead('ed-cal-title', 'Το αρχείο ανά μήνα', '', `<a class="ed-sechead__more" href="${route.archive}">Άνοιγμα αρχείου →</a>`)
-        + yearsOf(model).map(year => calendarYear(model, year, '')).join('') + '</section>';
-    return `<div class="ed-front" id="journal-edition" data-story-ids="${esc(weekPosts.map(post => post.id).join(' '))}" data-total="${model.posts.length}">`
-        + `<div class="ed-front__grid">${week}<div class="ed-front__side">${table}${topicsHtml(ctx.hubLinks)}${collectionsAsideHtml(ctx.collectionLinks)}${briefingsAsideHtml(ctx.briefingLinks)}${yearAgo}</div></div>${bylines}${calendar}</div>`
+    // THE DESKS keep the former side column whole and in order (table, topics, collections, briefings, a year ago).
+    const desks = '<section class="ed-desks" aria-labelledby="ed-desks-title">'
+        + display('ed-desks-title', 'THE DESKS', 'Οι ενότητες και οι συντάκτες')
+        + `<div class="ed-front__side ed-desks__grid">${table}${topicsHtml(ctx.hubLinks)}${collectionsAsideHtml(ctx.collectionLinks)}${briefingsAsideHtml(ctx.briefingLinks)}${yearAgo}</div>${bylines}</section>`;
+    return `<div class="ed-front" id="journal-edition" data-story-ids="${esc([lead, ...wire].filter(Boolean).map(post => post.id).join(' '))}" data-total="${model.posts.length}">`
+        + `${front}${latest}${chronicleHtml(ctx, lead)}${desks}</div>`
         + `<section class="ed-view" id="journal-archive" aria-labelledby="journal-archive-title" data-view="all" data-category="" data-author="" data-query="" data-sort="newest" data-page="1" data-total="${model.posts.length}">`
         + '<div id="journal-view"></div></section>';
 }
@@ -362,7 +414,7 @@ function archiveBody(ctx) {
 
 // ── Pages ────────────────────────────────────────────────
 // Each page: head block (title, description, canonical, previews) + main block, inside the markers of index.html.
-function headHtml({ title, description, path: pagePath, canonical = SITE + pagePath, prev = '', next = '', preload = '' }) {
+function headHtml({ title, description, path: pagePath, canonical = SITE + pagePath, prev = '', next = '', preload = '', stylesheet = '' }) {
     return [
         `    <title>${esc(title)}</title>`,
         `    <meta name="description" content="${esc(description)}">`,
@@ -378,7 +430,8 @@ function headHtml({ title, description, path: pagePath, canonical = SITE + pageP
         `    <link rel="canonical" href="${esc(canonical)}">`,
         prev && `    <link rel="prev" href="${esc(SITE + prev)}">`,
         next && `    <link rel="next" href="${esc(SITE + next)}">`,
-        preload && `    ${preload}`
+        preload && `    ${preload}`,
+        stylesheet && `    <link rel="stylesheet" href="${esc(stylesheet)}">`
     ].filter(Boolean).join('\n');
 }
 const mainHtml = (className, inner, attrs = '') => `<main id="main" class="edition ${className}"${attrs}>\n    <div class="container">\n${inner}\n    </div>\n</main>`;
@@ -389,14 +442,18 @@ function buildPages(posts, { today, selection = {}, deps, preload = '', hubLinks
     const ctx = { model, deps, hubLinks, collectionLinks, briefingLinks };
     const pages = [];
     const rail = current => railHtml(ctx, current);
-    const leadImage = model.lead ? deps.storyImage(model.lead) : '';
+    // The front page's lead (indexBody): the editor's or the week's lead, otherwise the newest story.
+    const frontLead = model.lead || model.newest;
+    const leadImage = frontLead ? deps.storyImage(frontLead) : '';
     const leadSrcset = leadImage ? (deps.cardSrcset || T.cardImageSrcset)(leadImage, false) : '';
     pages.push({
         file: 'index.html', path: route.index, canonical: `${SITE}${route.index}`, lastmod: model.reference,
         head: headHtml({
             title: 'Άρθρα Formula 1, Αναλύσεις & Ιστορίες | F1 Stories', path: BLOG + '/', canonical: `${SITE}${route.index}`,
             description: 'Διαβάστε νέα, τεχνικές αναλύσεις, γνώμες και ιστορικά αφιερώματα. Περιηγηθείτε στα άρθρα του F1 Stories ανά ενότητα, συντάκτη ή μήνα.',
-            preload: preload || (leadImage ? `<link rel="preload" as="image" href="${esc(leadImage)}"${leadSrcset ? ` imagesrcset="${esc(leadSrcset)}" imagesizes="${T.CARD_SIZES.editionWeek}"` : ''} fetchpriority="high">` : '')
+            preload: preload || (leadImage ? `<link rel="preload" as="image" href="${esc(leadImage)}"${leadSrcset ? ` imagesrcset="${esc(leadSrcset)}" imagesizes="${T.CARD_SIZES.editionWeek}"` : ''} fetchpriority="high">` : ''),
+            // THE EDITION's front-page styles: this page only, so section and month pages never inline them.
+            stylesheet: '/blog-module/blog/archive-front.min.css'
         }),
         // The rail stays hidden here; blog-index.js shows it for a ?category= view (a section on a phone).
         main: mainHtml('ed-index', mastheadHtml(ctx, 'index', true) + '\n' + rail('') + '\n' + indexBody(ctx))
