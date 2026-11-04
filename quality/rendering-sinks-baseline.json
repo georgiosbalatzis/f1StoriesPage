@@ -3,6 +3,7 @@
   "updated": "2026-06-30",
   "description": "Reviewed raw HTML rendering sink counts. Lower this baseline as sinks move to DOM construction or trusted rendering helpers.",
   "ignoredPrefixes": [
+    ".build/",
     "archive/",
     "blog-module/blog-entries/",
     "dist/",

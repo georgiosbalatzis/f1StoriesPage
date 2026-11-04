@@ -12,6 +12,7 @@ const BASELINE_PATH = path.join(REPO_ROOT, 'quality', 'rendering-sinks-baseline.
 const UPDATE = process.argv.includes('--update');
 
 const EXCLUDED_PREFIXES = [
+    '.build/',
     'archive/',
     'blog-module/blog-entries/',
     'dist/',
