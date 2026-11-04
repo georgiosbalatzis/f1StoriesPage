@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Mon, 02 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 03 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Aston Martin AMR23: H πράσινη δύναμη</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261104W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261104W/article.html</guid>
+      <pubDate>Tue, 03 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Η Aston Martin AMR23: η τεχνική φιλοσοφία, η αεροδυναμική και η εντυπωσιακή επιστροφή του Fernando Alonso στα βάθρα της Formula 1.</description>
+      <category>Τεχνικά</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Gigi Galli: όταν η επιθετικότητα γίνεται τέχνη</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261103W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Ο George Russell είχε ένα καλό επιχείρημα όταν τον ρώτησαν γιατί η Mercedes αποφάσισε να γυρίσει πίσω στο παλιό της αεροδυναμικό πακέτο.</description>
       <category>Τεχνικά</category>
       <dc:creator>Γιώργος Μπαλατζής</dc:creator>
-    </item>
-    <item>
-      <title>Max Verstappen: Ακριβής, πειθαρχημένος και ικανότατος  διαχειριστής της μεγάλης φθοράς των ελαστικών στην Σιγκαπούρη.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261012W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261012W/article.html</guid>
-      <pubDate>Sun, 11 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Verstappen είχε ήδη δώσει δείγματα της ανταγωνιστικότητας της Red Bull κατακτώντας τη νίκη στο Sprint του Σαββάτου, σε έναν αγώνα που επηρεάστηκε…</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

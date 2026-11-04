@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261104W",
+      "title": "Aston Martin AMR23: H πράσινη δύναμη",
+      "author": "Themis Charvalis",
+      "date": "2026-11-04",
+      "dateISO": "2026-11-04",
+      "displayDate": "4 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261104W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261104W/2.webp",
+      "excerpt": "Η Aston Martin AMR23: η τεχνική φιλοσοφία, η αεροδυναμική και η εντυπωσιακή επιστροφή του Fernando Alonso στα βάθρα της Formula 1.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261104W/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Aston Martin",
+        "AMR23",
+        "Fernando Alonso",
+        "Lance Stroll"
+      ],
+      "wordCount": 790,
+      "readingTime": "4 min",
+      "imageWidth": 1080,
+      "imageHeight": 782,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 650,
+      "inputDigest": "ffea54350df973e6ff92ca248dc4d1856795867bdee54cf9bc1337b727b381b5"
+    },
+    {
       "id": "20261103W",
       "title": "Gigi Galli: όταν η επιθετικότητα γίνεται τέχνη",
       "author": "Themis Charvalis",
@@ -11535,5 +11567,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-03T20:43:30.128Z"
+  "lastUpdated": "2026-11-04T21:22:23.879Z"
 }
