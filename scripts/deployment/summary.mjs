@@ -1,5 +1,5 @@
-// Markdown summary of an aggregate build for the dry run's step summary: provenance, sizes, freshness,
-// browser smoke and live reads. Usage: node summary.mjs --site <site> --reports <reports>
+// Markdown summary of an aggregate build for the step summary: provenance, sizes, freshness,
+// stage timings, browser smoke and live reads. Usage: node summary.mjs --site <site> --reports <reports>
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -8,18 +8,26 @@ const option = name => args.includes(name) ? path.resolve(args[args.indexOf(name
 const read = file => fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
 const site = option('--site'), reports = option('--reports');
 const manifest = site && read(path.join(site, 'deployment-manifest.json'));
+const buildReport = reports && read(path.join(reports, 'build-report.json'));
 const smoke = reports && read(path.join(reports, 'smoke-report.json'));
 const live = reports && read(path.join(reports, 'live-read.json'));
 const integrity = reports && read(path.join(reports, 'public-integrity.json'));
+const publishMode = process.env.F1S_PUBLISH_MODE || 'FULL_RELEASE';
 const out = [];
 if (!manifest) out.push('**No deployment manifest: the aggregate build did not complete.**');
 else {
     const mb = bytes => (bytes / 1e6).toFixed(1);
-    out.push(`### Aggregate (${manifest.mode})`, '', `Built ${manifest.builtAt} on ${manifest.runner ?? 'local'} with Node ${manifest.nodeVersion}. Lock: enabled=${manifest.lock?.enabled}, releaseReady=${manifest.lock?.releaseReady}; sources clean: ${manifest.sourcesClean}; release-eligible: ${manifest.releaseEligible}. Output digest \`${manifest.outputDigest}\`.`, '');
-    out.push('| Application | Source | Node | Files | MB | Data |', '|---|---|---|---:|---:|---|');
-    for (const app of manifest.applications) out.push(`| ${app.application} | \`${app.sourceSha}\` | ${app.nodeVersion} | ${app.files} | ${mb(app.bytes)} | ${app.data ? `\`${app.data.sha}\` (${app.data.ref}) digest \`${app.data.digest.slice(0, 12)}\`; refreshed ${app.data.refresh?.at ?? 'no'}, digest after \`${app.data.refresh?.digest.slice(0, 12)}\`` : ''} |`);
+    const timings = buildReport?.timings || {};
+    out.push(`### Aggregate (${manifest.mode}, publish mode: ${publishMode})`, '', `Built ${manifest.builtAt} on ${manifest.runner ?? 'local'} with Node ${manifest.nodeVersion}. Lock: enabled=${manifest.lock?.enabled}, releaseReady=${manifest.lock?.releaseReady}; sources clean: ${manifest.sourcesClean}; release-eligible: ${manifest.releaseEligible}. Output digest \`${manifest.outputDigest}\`.`, '');
+    out.push('| Application | Source | Node | Files | MB | Build / Cache | Data |', '|---|---|---|---:|---:|---|---|');
+    for (const app of manifest.applications) {
+        const t = timings[app.application];
+        const timingCell = t ? `${(t.ms / 1000).toFixed(1)}s (${t.cached ? 'cache hit' : 'built'})` : 'n/a';
+        out.push(`| ${app.application} | \`${app.sourceSha}\` | ${app.nodeVersion} | ${app.files} | ${mb(app.bytes)} | ${timingCell} | ${app.data ? `\`${app.data.sha}\` (${app.data.ref}) digest \`${app.data.digest.slice(0, 12)}\`; refreshed ${app.data.refresh?.at ?? 'no'}, digest after \`${app.data.refresh?.digest.slice(0, 12)}\`` : ''} |`);
+    }
     const files = manifest.applications.reduce((sum, app) => sum + app.files, 0) + 1;
-    out.push('', `Total ${files} files, ${mb(manifest.applications.reduce((sum, app) => sum + app.bytes, 0))} MB. TYRES data generated ${manifest.freshness?.dataGeneratedAt}; stale forecasts: ${manifest.freshness?.warnings.length ? manifest.freshness.warnings.join('; ') : 'none'}.`);
+    const assembleSec = timings.assemble ? ` Assemble + validate: ${(timings.assemble.ms / 1000).toFixed(1)}s.` : '';
+    out.push('', `Total ${files} files, ${mb(manifest.applications.reduce((sum, app) => sum + app.bytes, 0))} MB.${assembleSec} TYRES data generated ${manifest.freshness?.dataGeneratedAt}; stale forecasts: ${manifest.freshness?.warnings.length ? manifest.freshness.warnings.join('; ') : 'none'}.`);
 }
 if (integrity) out.push('', '### Public URL integrity', '', `${integrity.problems.length ? `**${integrity.problems.length} problem(s)**: ${integrity.problems.slice(0, 5).join('; ')}` : 'No problems'}. ${Object.entries(integrity.counts).filter(([, v]) => typeof v === 'number').map(([k, v]) => `${k} ${v}`).join(', ')}.`, ...integrity.notes.map(note => `- Note (inherited): ${note}`));
 if (smoke) out.push('', '### Browser smoke (deterministic fixtures)', '', `${smoke.failures.length ? `**${smoke.failures.length} failure(s)**` : 'No failures'}: ${smoke.themes.length} theme cases, ${smoke.directLoads.length} direct loads, ${smoke.navigation.length} navigation edges, ${smoke.visuals.length} captures, ${smoke.flows.length} interaction records.`, ...smoke.failures.slice(0, 5).map(f => `- \`${JSON.stringify(f).slice(0, 300)}\``));

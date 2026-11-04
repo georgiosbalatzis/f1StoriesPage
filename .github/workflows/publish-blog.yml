@@ -50,6 +50,7 @@ jobs:
       contents: read
     outputs:
       blog: ${{ steps.paths.outputs.blog }}
+      mode: ${{ steps.paths.outputs.mode }}
     steps:
       - name: Detect blog changes
         id: paths
@@ -62,6 +63,7 @@ jobs:
           set -eu
           # A new branch or unavailable/truncated comparison conservatively rebuilds.
           blog=true
+          mode=FULL_RELEASE
           if [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
             if gh api "repos/$REPO/compare/$BEFORE...$AFTER" > comparison.json; then
               blog="$(jq -r '
@@ -70,9 +72,21 @@ jobs:
                   [.filename, (.previous_filename // "")]
                   | any(test("^(blog-module/blog-entries/|blog-module/blog-processor\\.js$|blog-module/build/(?!__tests__/)|blog-module/taxonomy\\.js$|blog-module/editorial-selection\\.json$|blog-module/blog/template\\.html$|\\.github/workflows/publish-blog\\.yml$)"))
                 )' comparison.json)"
+              fast="$(jq -r '
+                (.files | length) > 0 and (.files | length) < 300 and
+                all(.files[];
+                  ([.filename, (.previous_filename // empty)] | all(
+                    test("^blog-module/blog-entries/[^/]+/.+$") and
+                    (test("^blog-module/blog-entries/(20260329G|20260331J|20261008J|20261012W|20261031J)/") | not)
+                  ))
+                )' comparison.json)"
+              if [ "$fast" = "true" ]; then
+                mode=ARTICLE_FAST_PATH
+              fi
             fi
           fi
           echo "blog=$blog" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
 
   publish_blog:
     name: Publish blog artifacts
@@ -94,15 +108,45 @@ jobs:
       queue: max
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
+      mode: ${{ steps.mode.outputs.mode }}
     steps:
       - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
+
+      - name: Classify blog publish mode
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_MODE: ${{ needs.changes.outputs.mode }}
+        run: |
+          set -eu
+          mode=FULL_RELEASE
+          if [ "$EVENT_NAME" = "push" ]; then
+            if [ "$PUSH_MODE" = "ARTICLE_FAST_PATH" ]; then
+              mode=ARTICLE_FAST_PATH
+            fi
+          elif [ "$EVENT_NAME" = "workflow_run" ]; then
+            if git rev-parse --verify -q HEAD^2 >/dev/null; then
+              files="$(git diff --no-renames --name-only HEAD^1 HEAD --)"
+              if [ -n "$files" ] && printf '%s\n' "$files" | awk '
+                !/^blog-module\/blog-entries\/[^/]+\/.+$/ { exit 1 }
+                /^blog-module\/blog-entries\/(20260329G|20260331J|20261008J|20261012W|20261031J)\// { exit 1 }
+              '; then
+                mode=ARTICLE_FAST_PATH
+              fi
+            fi
+          fi
+          echo "Publish mode: $mode"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
 
       - name: Run blog processor
         run: node blog-module/blog-processor.js
@@ -147,9 +191,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+        with:
+          main-only: 'true'
 
       - name: Refresh standings data
         run: npm run build:standings-data
@@ -203,6 +250,7 @@ jobs:
           ref: main
           # Three-way application needs the patch's original blobs if main moved.
           fetch-depth: 0
+          filter: blob:none
           persist-credentials: false
 
       # The artifact ID also works when only a failed publishing job is rerun later.
@@ -252,3 +300,5 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/deploy-pages.yml
+    with:
+      mode: ${{ needs.publish_blog.outputs.mode == 'ARTICLE_FAST_PATH' && needs.publish_data.outputs.changed != 'true' && 'ARTICLE_FAST_PATH' || 'FULL_RELEASE' }}

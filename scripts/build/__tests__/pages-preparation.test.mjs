@@ -29,7 +29,8 @@ test('article generation runs straight from a plain checkout, with unchanged tri
     // Skip decisions compare content digests (blog-module/build/input-digest.js), so no step restores file times.
     assert.equal(/mtime|touch -m|utimes/i.test(maintenance), false, 'no step restores file times');
     const steps = publisher.split('\n    steps:\n')[1];
-    assert.match(steps, /^      - name: Checkout main\n.*\n        with:\n          ref: main\n          fetch-depth: 0\n          persist-credentials: false\n\n      - uses: \.\/\.github\/actions\/setup\n\n      - name: Run blog processor\n        run: node blog-module\/blog-processor\.js\n/);
+    assert.match(steps, /^      - name: Checkout main\n.*\n        with:\n          ref: main\n          fetch-depth: 0\n          filter: blob:none\n          persist-credentials: false\n\n      - uses: \.\/\.github\/actions\/setup\n        with:\n          main-only: 'true'\n/);
+    assert.match(steps, /- name: Run blog processor\n        run: node blog-module\/blog-processor\.js\n/);
     assert.match(maintenance, /\non:\n  schedule:\n[\s\S]*\n  push:\n    branches: \[main\]\n  workflow_call:\n[\s\S]*\n  workflow_dispatch:\n/);
     assert.match(maintenance, /\npermissions: \{\}\n/);
     assert.match(publisher, /^    needs: changes\n    permissions:\n      contents: write\n    if: >-\n/m);
@@ -60,8 +61,8 @@ test('both preparation modes retain validation and upload only validated dist', 
     assert.match(preparation, /run: npm run build:public/);
     assert.match(preparation, /run: npm run quality:static/);
     assert.match(preparation, /run: npm run audit:runtime/);
-    assert.match(preparation, /run: npm run test:integration -- --site dist/);
+    assert.match(preparation, /npm run test:integration -- --site dist/);
     assert.match(preparation, /path: dist/);
     assert.ok(preparation.indexOf('run: npm run audit:runtime') < preparation.indexOf('name: Upload Pages artifact'));
-    assert.ok(preparation.indexOf('run: npm run test:integration') < preparation.indexOf('name: Upload Pages artifact'));
+    assert.ok(preparation.indexOf('npm run test:integration') < preparation.indexOf('name: Upload Pages artifact'));
 });

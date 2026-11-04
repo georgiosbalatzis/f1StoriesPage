@@ -25,25 +25,28 @@ test('push routing detects mixed changes, deletions and renames without overlook
     const comparison = path.join(root, 'fixture.json');
     const output = path.join(root, 'output');
     const cases = [
-        { files: [{ filename: 'styles.css' }], blog: false },
-        { files: [{ filename: 'blog-module/blog-entries/entry/source.txt' }], blog: true },
-        { files: [{ filename: 'styles.css' }, { filename: 'blog-module/blog/template.html' }], blog: true },
-        { files: [{ filename: 'blog-module/blog-entries/deleted/article.html', status: 'removed' }], blog: true },
-        { files: [{ filename: 'archive/source.txt', previous_filename: 'blog-module/blog-entries/moved/source.txt' }], blog: true },
-        { files: [{ filename: 'blog-module/blog-processor.js' }], blog: true },
+        { files: [{ filename: 'styles.css' }], blog: false, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/blog-entries/entry/source.txt' }], blog: true, mode: 'ARTICLE_FAST_PATH' },
+        { files: [{ filename: 'blog-module/blog-entries/20260329G/source.txt' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/blog-entries/20261012W/source.txt' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'styles.css' }, { filename: 'blog-module/blog/template.html' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/blog-entries/deleted/article.html', status: 'removed' }], blog: true, mode: 'ARTICLE_FAST_PATH' },
+        { files: [{ filename: 'archive/source.txt', previous_filename: 'blog-module/blog-entries/moved/source.txt' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/blog-processor.js' }], blog: true, mode: 'FULL_RELEASE' },
         // The generator itself decides article order and markup, so changing it must regenerate; its tests need not.
-        { files: [{ filename: 'blog-module/build/index.js' }], blog: true },
-        { files: [{ filename: 'blog-module/build/publish-order.js' }], blog: true },
-        { files: [{ filename: 'blog-module/build/__tests__/publish-order.test.js' }], blog: false },
+        { files: [{ filename: 'blog-module/build/index.js' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/build/publish-order.js' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/build/__tests__/publish-order.test.js' }], blog: false, mode: 'FULL_RELEASE' },
         // The category vocabulary shapes every card, filter and article masthead.
-        { files: [{ filename: 'blog-module/taxonomy.js' }], blog: true },
-        { files: [{ filename: 'blog-module/taxonomy.min.js' }], blog: false },
+        { files: [{ filename: 'blog-module/taxonomy.js' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: 'blog-module/taxonomy.min.js' }], blog: false, mode: 'FULL_RELEASE' },
         // Editing the hand-picked Journal front must regenerate the archive page it feeds.
-        { files: [{ filename: 'blog-module/editorial-selection.json' }], blog: true },
-        { files: [{ filename: '.github/workflows/publish-blog.yml' }], blog: true },
-        { files: Array.from({ length: 300 }, (_, i) => ({ filename: `docs/${i}.md` })), blog: true },
-        { files: [], apiFailure: true, blog: true },
-        { files: [], before: '0'.repeat(40), blog: true }
+        { files: [{ filename: 'blog-module/editorial-selection.json' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: [{ filename: '.github/workflows/publish-blog.yml' }], blog: true, mode: 'FULL_RELEASE' },
+        { files: Array.from({ length: 300 }, (_, i) => ({ filename: `docs/${i}.md` })), blog: true, mode: 'FULL_RELEASE' },
+        { files: Array.from({ length: 300 }, (_, i) => ({ filename: `blog-module/blog-entries/entry/${i}.webp` })), blog: true, mode: 'FULL_RELEASE' },
+        { files: [], apiFailure: true, blog: true, mode: 'FULL_RELEASE' },
+        { files: [], before: '0'.repeat(40), blog: true, mode: 'FULL_RELEASE' }
     ];
     for (const c of cases) {
         fs.writeFileSync(comparison, JSON.stringify({ files: c.files }));
@@ -54,7 +57,7 @@ test('push routing detects mixed changes, deletions and renames without overlook
                 COMPARISON_FILE: comparison, GITHUB_OUTPUT: output, API_FAILURE: String(Boolean(c.apiFailure)) }
         });
         assert.equal(result.status, 0, result.stderr);
-        assert.equal(fs.readFileSync(output, 'utf8').trim(), `blog=${c.blog}`);
+        assert.equal(fs.readFileSync(output, 'utf8').trim(), `blog=${c.blog}\nmode=${c.mode}`);
     }
 });
 

@@ -2,6 +2,12 @@ name: Deploy Pages
 
 on:
   workflow_call:
+    inputs:
+      mode:
+        description: 'Publishing mode (ARTICLE_FAST_PATH or FULL_RELEASE)'
+        required: false
+        default: 'FULL_RELEASE'
+        type: string
   # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
   # Each aggregate build refreshes TYRES schedules and forecasts. Owner cadence (2026-11-02): every 6 h
@@ -38,6 +44,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          fetch-depth: 1
+          filter: blob:none
           persist-credentials: false
           sparse-checkout: scripts/deployment/sources.json
           sparse-checkout-cone-mode: false
@@ -54,11 +62,15 @@ jobs:
     permissions:
       contents: read
       pages: read # configure-pages reads the Pages site (GET /repos/{repo}/pages)
+    env:
+      F1S_PUBLISH_MODE: ${{ inputs.mode == 'ARTICLE_FAST_PATH' && 'ARTICLE_FAST_PATH' || 'FULL_RELEASE' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          fetch-depth: 1
+          filter: blob:none
           persist-credentials: false
 
       - uses: ./.github/actions/setup

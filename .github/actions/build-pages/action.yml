@@ -7,7 +7,13 @@ runs:
     - name: Read assembly mode
       id: assembly
       shell: bash
-      run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
+      run: |
+        node -e '
+          const fs = require("node:fs");
+          const c = require("./scripts/deployment/sources.json");
+          const mode = process.env.F1S_PUBLISH_MODE === "ARTICLE_FAST_PATH" ? "ARTICLE_FAST_PATH" : "FULL_RELEASE";
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\nmode=" + mode + "\n");
+        '
 
     - name: Reuse optimized article images
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -17,24 +23,33 @@ runs:
         restore-keys: |
           public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
 
+    - name: Reuse verified child application artifacts
+      if: steps.assembly.outputs.enabled == 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .build/child-artifacts
+        key: child-artifacts-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/deployment/sources.json', 'scripts/deployment/build.mjs', 'scripts/deployment/assemble.mjs', 'scripts/deployment/release.mjs') }}-${{ github.run_id }}
+        restore-keys: |
+          child-artifacts-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/deployment/sources.json', 'scripts/deployment/build.mjs', 'scripts/deployment/assemble.mjs', 'scripts/deployment/release.mjs') }}-
+          child-artifacts-v1-${{ runner.os }}-${{ runner.arch }}-
+
     - name: Build public artifact
       if: steps.assembly.outputs.enabled != 'true'
       shell: bash
       run: npm run build:public
 
-    # Before the build: TYRES renders its social cards and panel images with Chromium.
-    - name: Install integration browser
-      if: steps.assembly.outputs.enabled == 'true'
-      shell: bash
-      run: node_modules/.bin/playwright-core install --with-deps chromium
-
     - name: Build pinned aggregate artifact
       if: steps.assembly.outputs.enabled == 'true'
       shell: bash
       run: |
-        node scripts/deployment/build.mjs --node-bin "$F1S_NODE_BIN" --output .build/priority6/site --reports .build/priority6/reports
+        node scripts/deployment/build.mjs --node-bin "$F1S_NODE_BIN" --child-cache .build/child-artifacts --output .build/priority6/site --reports .build/priority6/reports
         rm -rf dist
         mv .build/priority6/site dist
+
+    - name: Verify public URL integrity
+      if: steps.assembly.outputs.enabled == 'true'
+      shell: bash
+      run: node scripts/deployment/verify-public.mjs --site dist | tee .build/priority6/reports/public-integrity.json
 
     - name: Run static source guard
       shell: bash
@@ -53,21 +68,30 @@ runs:
       run: npm run audit:runtime
 
     - name: Smoke test canonical artifact
-      if: steps.assembly.outputs.enabled == 'true'
+      if: steps.assembly.outputs.enabled == 'true' && steps.assembly.outputs.mode != 'ARTICLE_FAST_PATH'
       shell: bash
-      run: npm run test:integration -- --site dist --reports .build/priority6/reports
+      run: |
+        node_modules/.bin/playwright-core install --with-deps chromium
+        npm run test:integration -- --site dist --reports .build/priority6/reports
 
     - name: Verify Race Desk navigation before publication
+      if: steps.assembly.outputs.mode != 'ARTICLE_FAST_PATH'
       shell: bash
       run: npm run test:race-desk:browser -- --site dist ${{ steps.assembly.outputs.enabled == 'true' && '--assembled' || '' }} --reports .build/race-desk-r02c
 
     - name: Verify Grand Prix pilot pages before publication
+      if: steps.assembly.outputs.mode != 'ARTICLE_FAST_PATH'
       shell: bash
       run: npm run test:race-desk:hubs -- --site dist ${{ steps.assembly.outputs.enabled == 'true' && '--assembled' || '' }} --reports .build/race-desk-r03
 
     - name: Verify newsletter remains disabled
       shell: bash
       run: npm run newsletter:check -- --artifact dist
+
+    - name: Write deployment summary
+      if: ${{ !cancelled() && steps.assembly.outputs.enabled == 'true' }}
+      shell: bash
+      run: node scripts/deployment/summary.mjs --site dist --reports .build/priority6/reports >> "$GITHUB_STEP_SUMMARY"
 
     - name: Configure Pages
       uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
