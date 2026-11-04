@@ -8,7 +8,7 @@ import test from 'node:test';
 import sharp from 'sharp';
 import { XMLParser } from 'fast-xml-parser';
 import media from '../../../blog-module/build/media-meta.js';
-import { buildSocialCards, renderSocialCard, socialMetadata } from '../social-cards.mjs';
+import { buildSocialCards, HOME_SOCIAL_ALT, HOME_SOCIAL_IMAGE, renderSocialCard, socialMetadata } from '../social-cards.mjs';
 import { examples } from '../social-card-examples.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -41,9 +41,18 @@ function assertLayout(layout, minTop = 150) {
     }
 }
 
-test('home bytes remain identical on the recorded environment', async t => {
-    if (process.platform !== 'darwin' || process.arch !== 'arm64') return t.skip('Home digest is specific to the recorded darwin/arm64 sharp environment');
-    assert.equal(digest((await renderSocialCard({ home: true })).data), '14d541e377e16e2113189041fed03045969db47e4c1069510e05cc4e2755e383');
+test('home bytes remain identical on the recorded environment', async () => {
+    const { data, layout } = await renderSocialCard({ home: true });
+    assert.equal(digest(data), '6aadb4e1bf315dbb30905d5ea528169165b98b85bacec62729358eb7ff05d8e5');
+    assert.equal(HOME_SOCIAL_IMAGE, `images/social/home-${digest(data).slice(0, 20)}.jpg`);
+    assert.equal(HOME_SOCIAL_ALT, 'F1 Stories — Η Formula 1 στα ελληνικά. Νέα, ανάλυση, δεδομένα και Race Desk εργαλεία.');
+    assert.equal(layout.displayText, 'Η Formula 1 στα ελληνικά.');
+    assert.equal(layout.truncated, false);
+    const info = await sharp(data).metadata();
+    assert.equal(info.format, 'jpeg');
+    assert.equal(info.width, 1200);
+    assert.equal(info.height, 630);
+    assert.ok(data.length <= 307200);
 });
 
 test('Greek, punctuation and long titles fit a cinematic JPEG', async () => {
