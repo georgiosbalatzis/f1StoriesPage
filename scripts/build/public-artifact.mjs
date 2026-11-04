@@ -380,6 +380,8 @@ function shouldCopyStandings(relPath) {
 
 function shouldCopyPublicImage(relPath) {
     if (!/\.(?:avif|webp|png|jpe?g|svg)$/i.test(relPath)) return false;
+    // Social cards are emitted and accounted for by buildSocialCards.
+    if (relPath.startsWith('images/social/')) return false;
     if (PUBLIC_IMAGE_REFS.has(relPath)) return true;
     if (/^images\/drivers\/[^/]+\.webp$/i.test(relPath)) return true;
     if (/^images\/teams\/[^/]+\.webp$/i.test(relPath)) return true;

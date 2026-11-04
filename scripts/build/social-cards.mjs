@@ -14,12 +14,15 @@ const FONT = fileURLToPath(new URL('./assets/IBMPlexSans-SemiBold.ttf', import.m
 // Only the pinned face participates in shaping, including on machines with no system Fontconfig.
 process.env.FONTCONFIG_FILE = fileURLToPath(new URL('./assets/fontconfig.conf', import.meta.url));
 const logo = fs.readFileSync(path.join(ROOT, 'images/logo-256.webp'));
+export const HOME_SOCIAL_IMAGE = 'images/social/home-6aadb4e1bf315dbb3090.jpg';
+export const HOME_SOCIAL_ALT = 'F1 Stories — Η Formula 1 στα ελληνικά. Νέα, ανάλυση, δεδομένα και Race Desk εργαλεία.';
+const homeCard = fs.readFileSync(path.join(ROOT, HOME_SOCIAL_IMAGE));
 const themes = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/design-tokens.json'))).themes;
 const tokens = themes.light;
 export const TEMPLATE = 'cinematic-v1';
 const hash = data => createHash('sha256').update(data).digest('hex');
 export const rendererKey = hash(Buffer.concat([
-    fs.readFileSync(fileURLToPath(import.meta.url)), fs.readFileSync(path.join(ROOT, 'blog-module/build/media-meta.js')), fs.readFileSync(FONT), fs.readFileSync(process.env.FONTCONFIG_FILE), logo,
+    fs.readFileSync(fileURLToPath(import.meta.url)), fs.readFileSync(path.join(ROOT, 'blog-module/build/media-meta.js')), fs.readFileSync(FONT), fs.readFileSync(process.env.FONTCONFIG_FILE), logo, homeCard,
     Buffer.from(JSON.stringify({ themes, template: TEMPLATE, node: process.versions.node, icu: process.versions.icu, versions: sharp.versions, platform: process.platform, arch: process.arch }))
 ]));
 const clean = value => String(value || '').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -47,38 +50,12 @@ async function textLayer(text, { size, width, height = Infinity, color = tokens[
     }
 }
 
-async function renderLegacyCard({ title, category = '', author = '', image, disclosure = '', home = false }, maxBytes = 300 * 1024) {
-    fs.mkdirSync(path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'fontconfig'), { recursive: true });
-    const layers = [];
-    const addText = async (text, left, top, options) => {
-        const layer = await textLayer(text, options);
-        layers.push({ input: layer.data, left, top });
-        return layer;
-    };
-    const brand = await sharp(logo).resize(home ? 256 : 64).png().toBuffer();
-    layers.push({ input: brand, left: home ? 900 : 40, top: home ? 240 : 32 });
-    await addText('F1 STORIES.', home ? 40 : 120, 46, { size: 40, width: 600 });
-    await addText('f1-stories.gr', 954, 55, { size: 23, width: 206 });
-    layers.push({ input: await sharp({ create: { width: 1120, height: 6, channels: 3, background: tokens['--accent'] } }).png().toBuffer(), left: 40, top: 118 });
-    let titleLayout;
-    if (home) {
-        titleLayout = await addText('Formula 1.\nΑναλύσεις, νέα\nκαι podcast.', 40, 186, { size: 80, minSize: 44, width: 810, height: 350 });
-    } else {
-        // Contain the whole image: archival prints, diagrams and printed captions must survive the adaptation.
-        const picture = await sharp(image).rotate().resize(440, 366, { fit: 'contain', background: tokens['--bg-surface'] }).flatten({ background: tokens['--bg-surface'] }).png().toBuffer();
-        layers.push({ input: picture, left: 40, top: 154 });
-        if (category) await addText(category, 528, 160, { size: 23, width: 632, height: 36 });
-        titleLayout = await addText(title, 528, 210, { size: 56, minSize: 28, width: 632, height: 310 });
-        if (author) await addText(author, 528, 556, { size: 23, width: 632, height: 36 });
-        if (disclosure) await addText(disclosure, 40, 542, { size: 17, width: 440, height: 48 });
-    }
-    const canvas = sharp({ create: { width: SOCIAL_WIDTH, height: SOCIAL_HEIGHT, channels: 3, background: tokens['--bg-base'] } }).composite(layers);
-    for (const quality of [86, 78, 68, 58]) {
-        const data = await canvas.clone().jpeg({ quality, mozjpeg: true, chromaSubsampling: '4:4:4' }).toBuffer();
-        if (data.length <= maxBytes) {
-            const { width, height, fontSize, displayText, truncated } = titleLayout;
-            return { data, layout: { width, height, fontSize, displayText, truncated } };
-        }
+async function renderHomeCard(maxBytes = 300 * 1024) {
+    const layout = { width: SOCIAL_WIDTH, height: SOCIAL_HEIGHT, fontSize: 62, lines: 1, displayText: 'Η Formula 1 στα ελληνικά.', truncated: false };
+    if (homeCard.length <= maxBytes) return { data: homeCard, layout };
+    for (const quality of [78, 68, 58]) {
+        const data = await sharp(homeCard).jpeg({ quality, mozjpeg: true, chromaSubsampling: '4:4:4' }).toBuffer();
+        if (data.length <= maxBytes) return { data, layout };
     }
     throw new Error(`Social card exceeds ${maxBytes} bytes`);
 }
@@ -163,7 +140,7 @@ async function headlineLayer(title, height) {
 }
 
 export async function renderSocialCard({ title, author = '', image, disclosure = '', home = false, media: imageMeta = {}, fallback = null, category = '' }, maxBytes = 300 * 1024) {
-    if (home) return renderLegacyCard({ title, author, image, disclosure, home, category }, maxBytes);
+    if (home) return renderHomeCard(maxBytes);
     fs.mkdirSync(path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'fontconfig'), { recursive: true });
     const timings = {};
     let mark = performance.now();
@@ -306,7 +283,7 @@ export async function buildSocialCards({ repoRoot = ROOT, distRoot, htmlFiles, c
                 }
                 if (reason) { record.fallback = reason; report.fallbacks.push({ page, reason }); }
             }
-            const title = home ? 'F1 Stories — Formula 1, αναλύσεις, νέα και podcast' : clean(post.title);
+            const title = home ? HOME_SOCIAL_ALT : clean(post.title);
             const author = home ? '' : taxonomy.findAuthor(post.author)?.label || '';
             const disclosure = meta?.synthetic === 'confirmed' ? media.AI_LABEL : '';
             record.sourceSha256 = image ? hash(image) : '';
