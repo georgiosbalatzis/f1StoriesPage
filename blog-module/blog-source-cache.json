@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20261105W",
+      "title": "Alan Jones: Αυτός που έκανε την Williams πρωταθλήτρια",
+      "author": "Themis Charvalis",
+      "date": "2026-11-05",
+      "dateISO": "2026-11-05",
+      "displayDate": "5 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261105W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261105W/2.webp",
+      "excerpt": "Ο Alan Jones, ο Αυστραλός πρωταθλητής του 1980, που χάρισε στη Williams τον πρώτο της παγκόσμιο τίτλο και άφησε ανεξίτηλο το στίγμα του στη Formula 1.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261105W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Alan Jones",
+        "Williams",
+        "F1",
+        "F1 champion",
+        "Racing legend"
+      ],
+      "wordCount": 1421,
+      "readingTime": "8 min",
+      "imageWidth": 512,
+      "imageHeight": 325,
+      "backgroundImageWidth": 1024,
+      "backgroundImageHeight": 576,
+      "inputDigest": "ef2c7a8a85edc1666886328539d72ab9bbf93e4d03312c58e449ba65b789b9b4"
+    },
+    {
       "id": "20261104W",
       "title": "Aston Martin AMR23: H πράσινη δύναμη",
       "author": "Themis Charvalis",
@@ -11567,5 +11600,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-04T21:22:23.879Z"
+  "lastUpdated": "2026-11-05T19:18:22.562Z"
 }
