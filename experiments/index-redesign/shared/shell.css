@@ -1,0 +1,49 @@
+/* Shared shell for the five INDEX prototypes: one simplified replica of the production nav and footer, so the
+ * navigation is never the variable being compared. Scoped under .ix-shell; tokens come from styles/editorial.css
+ * (body.editorial-page, light overrides under [data-theme="light"]). Exploration only — never published. */
+.ix-shell { margin: 0; min-height: 100vh; }
+.ix-shell .ix-skip { position: absolute; left: 16px; top: -60px; z-index: 20; padding: 10px 16px; background: var(--signal); color: var(--signal-ink); font: 600 .875rem var(--font-body); text-decoration: none; }
+.ix-shell .ix-skip:focus { top: 12px; }
+.ix-shell :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.ix-shell .ix-nav { position: sticky; top: 0; z-index: 10; background: var(--bg-base); border-bottom: 1px solid var(--border); }
+.ix-shell .ix-nav-inner { display: flex; align-items: center; gap: 28px; max-width: 1440px; margin: 0 auto; padding: 0 48px; min-height: 64px; }
+.ix-shell .ix-brand { display: flex; align-items: center; gap: 10px; color: var(--text-primary); text-decoration: none; }
+.ix-shell .ix-brand img { width: 36px; height: 36px; }
+.ix-shell .ix-wordmark { font: 700 1.6rem/1 var(--font-brand); letter-spacing: -.01em; }
+.ix-shell .ix-wordmark b, .ix-shell .ix-foot-word b { color: var(--signal); font-weight: 700; }
+.ix-shell .ix-links { display: flex; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.ix-shell .ix-links a { display: inline-block; padding: 22px 0 20px; color: var(--text-secondary); font: 500 .875rem/1 var(--font-body); text-decoration: none; border-bottom: 2px solid transparent; }
+.ix-shell .ix-links a:hover { color: var(--text-primary); }
+.ix-shell .ix-links a[aria-current="page"] { color: var(--text-primary); border-bottom-color: var(--signal); }
+.ix-shell .ix-nav-tools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.ix-shell .ix-icon-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius-control); background: transparent; color: var(--text-primary); font: 600 .75rem/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.ix-shell .ix-icon-btn:hover { border-color: var(--text-primary); }
+.ix-shell .ix-menu-btn { display: none; }
+.ix-shell .ix-theme-label-light { display: none; }
+[data-theme="light"] .ix-shell .ix-theme-label-light { display: inline; }
+[data-theme="light"] .ix-shell .ix-theme-label-dark { display: none; }
+
+.ix-shell .ix-foot { margin-top: 0; background: var(--ink); color: var(--paper); }
+.ix-shell .ix-foot-inner { display: grid; grid-template-columns: 1fr auto; gap: 24px 48px; max-width: 1440px; margin: 0 auto; padding: 56px 48px 40px; }
+.ix-shell .ix-foot-word { font: 700 2rem/1 var(--font-brand); }
+.ix-shell .ix-foot p { margin: 10px 0 0; color: var(--text-inverse-secondary); font: 400 .875rem/1.5 var(--font-body); }
+.ix-shell .ix-foot ul { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; align-self: end; }
+.ix-shell .ix-foot a { color: var(--paper); font: 600 .75rem/2 var(--font-body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; }
+.ix-shell .ix-foot a:hover { text-decoration: underline; }
+.ix-shell .ix-foot-legal { grid-column: 1 / -1; padding-top: 20px; border-top: 1px solid var(--border-inverse); }
+.ix-shell .ix-foot-legal a { text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+@media (max-width: 960px) {
+    .ix-shell .ix-nav-inner { padding: 0 22px; gap: 12px; }
+    .ix-shell .ix-links { display: none; }
+    .ix-shell .ix-menu-btn { display: inline-flex; }
+    .ix-shell .ix-nav[data-open] .ix-links { display: flex; flex-direction: column; gap: 0; position: absolute; top: 100%; left: 0; right: 0; padding: 8px 22px 16px; background: var(--bg-base); border-bottom: 1px solid var(--border); }
+    .ix-shell .ix-nav[data-open] .ix-links a { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .ix-shell .ix-foot-inner { grid-template-columns: 1fr; padding: 40px 22px 32px; }
+}
+@media (max-width: 360px) {
+    .ix-shell .ix-nav-inner { padding: 0 17px; }
+    .ix-shell .ix-wordmark { font-size: 1.35rem; }
+    .ix-shell .ix-foot-inner { padding: 36px 17px 28px; }
+}

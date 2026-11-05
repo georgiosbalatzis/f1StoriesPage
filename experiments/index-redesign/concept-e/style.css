@@ -1,0 +1,148 @@
+.concept-e { background: var(--bg-base); color: var(--text-primary); }
+.concept-e * { box-sizing: border-box; }
+.concept-e .wrap { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: 48px; }
+.concept-e a { color: inherit; }
+.concept-e a:hover { color: var(--accent-readable); }
+.concept-e button, .concept-e select, .concept-e input { font: inherit; }
+.concept-e button { cursor: pointer; }
+.concept-e button:disabled { cursor: default; opacity: .45; }
+.concept-e [hidden] { display: none; }
+.concept-e .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.concept-e .eyebrow { margin: 0 0 18px; font: 600 .7rem/1.4 var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
+.concept-e .mast { padding-top: 32px; padding-bottom: 44px; }
+.concept-e .mast > .eyebrow { padding-bottom: 15px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.concept-e .mast-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .65fr); gap: 48px; align-items: end; }
+.concept-e h1 { margin: 12px 0 22px; font: 700 clamp(5rem, 10.7vw, 9.7rem)/.78 var(--font-brand); letter-spacing: -.012em; }
+.concept-e h1 span { color: var(--signal); }
+.concept-e .deck { margin: 0; max-width: 34rem; font-size: 1rem; line-height: 1.5; color: var(--text-secondary); }
+.concept-e .search { padding-bottom: 3px; }
+.concept-e .search label { display: block; margin-bottom: 8px; font: 600 .7rem/1.4 var(--font-body); letter-spacing: .13em; text-transform: uppercase; }
+.concept-e .search-row { display: flex; border-bottom: 1px solid var(--text-primary); }
+.concept-e .search input { min-width: 0; flex: 1; min-height: 48px; padding: 8px 0; color: var(--text-primary); background: transparent; border: 0; font-size: 1rem; }
+.concept-e .search button, .concept-e .month-actions button, .concept-e .month-actions select, .concept-e #more { min-height: 44px; border: 0; background: transparent; color: var(--text-primary); }
+.concept-e .search-row button { padding: 0 0 0 14px; font-size: .75rem; font-weight: 600; }
+.concept-e .result-count { margin: 12px 0 4px; font-size: .8rem; color: var(--text-secondary); }
+.concept-e .results { padding: 0; margin: 0; list-style: none; }
+.concept-e .results li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: .875rem; }
+.concept-e .results small { flex-shrink: 0; color: var(--text-secondary); }
+.concept-e #more { padding: 0; text-decoration: underline; }
+.concept-e .feature { padding-block: 38px 48px; background: var(--ink); color: var(--paper); }
+.concept-e .feature > .wrap > .eyebrow { color: var(--text-inverse-secondary); padding-bottom: 15px; border-bottom: 1px solid var(--border-inverse); }
+.concept-e .feature-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 42px; align-items: center; }
+.concept-e .feature-image { display: block; aspect-ratio: 16 / 9; }
+.concept-e .feature-image img, .concept-e .interlude img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.concept-e .feature-body { display: grid; grid-template-columns: 110px 1fr; gap: 25px; }
+.concept-e .feature-date span { display: block; font: 700 3.8rem/.82 var(--font-brand); }
+.concept-e .feature-date small { display: block; margin-top: 10px; font: 700 1.5rem/1 var(--font-brand); color: var(--text-inverse-secondary); }
+.concept-e .feature-copy .eyebrow { color: var(--text-inverse-secondary); }
+.concept-e .feature-title { margin: 0 0 16px; font: 600 clamp(1.6rem, 2.5vw, 2.65rem)/1.12 var(--font-body); letter-spacing: -.025em; }
+.concept-e .feature-excerpt { color: var(--text-inverse-secondary); line-height: 1.55; }
+.concept-e .feature-meta { color: var(--text-inverse-secondary); font-size: .8rem; }
+.concept-e .chronology { padding-block: 82px 90px; }
+.concept-e .month-top { display: flex; justify-content: space-between; align-items: end; gap: 30px; border-bottom: 2px solid var(--text-primary); padding-bottom: 23px; }
+.concept-e .month-top .eyebrow { color: var(--text-secondary); }
+.concept-e .month-top h2 { margin: 0; font: 600 clamp(2rem, 4vw, 3.8rem)/1.05 var(--font-body); letter-spacing: -.035em; }
+.concept-e .month-top h2 span { font: 700 1.1em/.9 var(--font-brand); }
+.concept-e .month-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: end; gap: 0 15px; font-size: .8rem; }
+.concept-e .month-actions #recent { order: -1; }
+.concept-e .month-actions button { min-width: 44px; padding: 0 10px; border: 1px solid var(--border); font-weight: 600; }
+.concept-e .month-actions button:disabled { color: var(--text-tertiary); border-color: var(--border); opacity: .6; }
+.concept-e .month-actions label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+.concept-e .month-actions select { max-width: 180px; border-bottom: 1px solid var(--border); font-size: 1rem; }
+.concept-e .month-actions a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; }
+.concept-e .ledger-layout { display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 55px; padding-top: 30px; }
+.concept-e .month-rail .eyebrow { color: var(--text-secondary); }
+.concept-e .month-rail ul, .concept-e .directory ul { list-style: none; padding: 0; margin: 0; }
+.concept-e .month-rail li { display: flex; align-items: center; border-top: 1px solid var(--border); }
+.concept-e .month-rail a { flex: 1; display: flex; justify-content: space-between; align-items: center; min-height: 44px; font-size: .75rem; font-weight: 600; }
+.concept-e .month-rail a span { color: var(--text-secondary); font-weight: 400; }
+.concept-e .month-rail button { min-width: 44px; min-height: 44px; border: 0; background: transparent; color: var(--text-secondary); }
+.concept-e .month-rail button[aria-pressed="true"] { color: var(--accent-readable); }
+.concept-e .day-group { display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 28px; border-top: 1px solid var(--border); padding: 22px 0 8px; }
+.concept-e .day-heading { margin: 0; }
+.concept-e .day-number { display: block; font: 700 3.4rem/.82 var(--font-brand); }
+.concept-e .weekday { display: block; margin-top: 10px; color: var(--text-secondary); font: 600 .7rem/1.3 var(--font-body); letter-spacing: .13em; text-transform: uppercase; }
+.concept-e .entry { padding: 0 0 22px; margin-bottom: 22px; border-bottom: 1px solid var(--border); }
+.concept-e .entry:last-child { border: 0; margin-bottom: 0; }
+.concept-e .entry .eyebrow { margin-bottom: 8px; color: var(--accent-readable); }
+.concept-e .entry h4 { margin: 0 0 9px; font: 600 clamp(1.15rem, 1.7vw, 1.55rem)/1.2 var(--font-body); }
+.concept-e .entry-meta { margin: 0; color: var(--text-secondary); font-size: .8rem; }
+.concept-e .interlude { display: block; margin: 15px 0 35px 173px; max-width: 560px; }
+.concept-e .interlude img { aspect-ratio: 16 / 9; }
+.concept-e .interlude.history img { filter: grayscale(1) contrast(1.06); }
+.concept-e .interlude span { display: block; padding-top: 9px; color: var(--text-secondary); font-size: .75rem; }
+.concept-e .year-index { padding-block: 65px 75px; background: var(--bg-surface-alt); }
+.concept-e .section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; border-bottom: 1px solid var(--text-primary); padding-bottom: 18px; margin-bottom: 28px; }
+.concept-e .section-head .eyebrow { color: var(--text-secondary); margin-bottom: 10px; }
+.concept-e .section-head h2 { margin: 0; font: 600 2rem/1.1 var(--font-body); }
+.concept-e .section-head > a { display: inline-flex; align-items: center; min-height: 44px; font-size: .8rem; text-decoration: underline; }
+.concept-e .year-row { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 25px; margin-top: 26px; }
+.concept-e .year-row h3 { margin: 0; font: 700 2.6rem/.9 var(--font-brand); }
+.concept-e .month-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.concept-e .month-cell { min-width: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); padding: 0 6px; }
+.concept-e .month-cell:last-child { border-right: 1px solid var(--border); }
+.concept-e .month-cell a { display: flex; min-height: 50px; flex-direction: column; justify-content: center; gap: 3px; }
+.concept-e .month-cell span, .concept-e .month-cell b { font-size: .7rem; }
+.concept-e .month-cell button { padding: 0; min-height: 44px; border: 0; background: transparent; color: var(--accent-readable); font-size: .65rem; text-decoration: underline; }
+.concept-e .month-cell button[aria-pressed="true"] { font-weight: 600; }
+.concept-e .month-cell.empty { display: flex; flex-direction: column; justify-content: center; gap: 3px; color: var(--text-tertiary); }
+.concept-e .directory { padding-block: 75px 90px; }
+.concept-e .directory-grid { display: grid; grid-template-columns: 1fr 1.5fr .7fr; gap: 50px; }
+.concept-e .directory h3 { margin: 0 0 15px; font: 600 .75rem/1.4 var(--font-body); letter-spacing: .13em; text-transform: uppercase; }
+.concept-e .directory-list li, .concept-e .authors li { border-top: 1px solid var(--border); }
+.concept-e .directory-list a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; font-size: .9rem; }
+.concept-e .directory-list b { font: 700 1.25rem/1 var(--font-brand); }
+.concept-e .authors a { display: flex; align-items: center; gap: 14px; padding: 10px 0; min-height: 64px; }
+.concept-e .authors img { width: 48px; height: 48px; object-fit: cover; }
+.concept-e .authors strong, .concept-e .authors small { display: block; }
+.concept-e .authors strong { font-size: .875rem; }
+.concept-e .authors small { margin-top: 4px; color: var(--text-secondary); font-size: .75rem; }
+@media (max-width: 1199px) {
+ .concept-e .wrap { padding-inline: 32px; }
+ .concept-e .feature-body { grid-template-columns: 80px 1fr; gap: 16px; }
+ .concept-e .feature-date span { font-size: 3rem; }
+ .concept-e .year-row { grid-template-columns: 70px minmax(0, 1fr); gap: 15px; }
+ .concept-e .month-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+ .concept-e .month-cell { border-bottom: 1px solid var(--border); }
+}
+@media (max-width: 767px) {
+ .concept-e .wrap { padding-inline: 22px; }
+ .concept-e .mast { padding-block: 26px 32px; }
+ .concept-e .mast-grid { display: block; }
+ .concept-e h1 { font-size: clamp(4rem, 15.5vw, 6.6rem); margin-top: 20px; }
+ .concept-e .search { margin-top: 32px; }
+ .concept-e .feature { padding-block: 30px 38px; }
+ .concept-e .feature-grid { display: flex; flex-direction: column; align-items: stretch; gap: 25px; }
+ .concept-e .feature-body { grid-template-columns: 76px 1fr; }
+ .concept-e .feature-title { font-size: 1.55rem; }
+ .concept-e .chronology { padding-block: 55px 60px; }
+ .concept-e .month-top { display: block; }
+ .concept-e .month-actions { justify-content: start; margin-top: 20px; }
+ .concept-e .ledger-layout { display: block; padding-top: 22px; }
+ .concept-e .month-rail { display: none; }
+ .concept-e .day-group { grid-template-columns: 80px minmax(0, 1fr); gap: 16px; }
+ .concept-e .day-heading { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 12px; }
+ .concept-e .day-entries { grid-column: 1 / -1; }
+ .concept-e .interlude { margin: 8px 0 30px; }
+ .concept-e .year-index { padding-block: 50px; }
+ .concept-e .year-row { display: block; }
+ .concept-e .year-row h3 { margin-bottom: 16px; }
+ .concept-e .month-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+ .concept-e .directory { padding-block: 55px; }
+ .concept-e .directory-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+@media (max-width: 389px) {
+ .concept-e .wrap { padding-inline: 17px; }
+ .concept-e h1 { font-size: 15.3vw; }
+ .concept-e .month-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+ .concept-e .month-actions #recent { order: 0; }
+ .concept-e .month-actions select { grid-column: 1 / -1; width: 100%; max-width: none; }
+ .concept-e .feature-body { grid-template-columns: 1fr; }
+ .concept-e .feature-date { display: flex; align-items: baseline; gap: 8px; }
+ .concept-e .feature-date small { margin: 0; }
+ .concept-e .day-heading { display: flex; }
+ .concept-e .month-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+ .concept-e * { scroll-behavior: auto; }
+}

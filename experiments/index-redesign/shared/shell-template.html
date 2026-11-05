@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Template for every concept page: copy it, replace CONCEPT-X / the title / the <main> content. Keep the head
+     order (theme-init first, then fonts → editorial tokens → shared shell → concept CSS) and the shell markup
+     verbatim so navigation is identical across the five prototypes. -->
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>THE INDEX — Concept X | F1 Stories (πρωτότυπο)</title>
+    <script src="/scripts/theme-init.js"></script>
+    <link rel="stylesheet" href="/styles/fonts.css">
+    <link rel="stylesheet" href="/styles/home-fonts.css">
+    <link rel="stylesheet" href="/styles/editorial.css">
+    <link rel="stylesheet" href="/experiments/index-redesign/shared/shell.css">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="/experiments/index-redesign/shared/shell.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="editorial-page ix-shell concept-x">
+<a class="ix-skip" href="#main">Μετάβαση στο περιεχόμενο</a>
+<header class="ix-nav">
+    <div class="ix-nav-inner">
+        <a class="ix-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="" width="36" height="36"><span class="ix-wordmark">F1 STORIES<b>.</b></span></a>
+        <nav aria-label="Κύρια πλοήγηση">
+            <ul class="ix-links" id="ix-links">
+                <li><a href="/">Αρχική</a></li>
+                <li><a href="/blog-module/blog/" aria-current="page">Άρθρα</a></li>
+                <li><a href="/standings/">Βαθμολογία</a></li>
+                <li><a href="/standings/?tab=tyre-pace">Δεδομένα</a></li>
+                <li><a href="/authors/">Συντάκτες</a></li>
+            </ul>
+        </nav>
+        <div class="ix-nav-tools">
+            <button class="ix-icon-btn" type="button" data-ix-theme aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος"><span class="ix-theme-label-dark">Φωτεινό</span><span class="ix-theme-label-light">Σκούρο</span></button>
+            <button class="ix-icon-btn ix-menu-btn" type="button" data-ix-menu aria-expanded="false" aria-controls="ix-links">Μενού</button>
+        </div>
+    </div>
+</header>
+<main id="main">
+    <!-- concept content -->
+</main>
+<footer class="ix-foot">
+    <div class="ix-foot-inner">
+        <div><div class="ix-foot-word">F1 STORIES<b>.</b></div><p>Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p></div>
+        <ul>
+            <li><a href="/blog-module/blog/">Άρθρα</a></li>
+            <li><a href="/blog-module/blog/archive/">Αρχείο</a></li>
+            <li><a href="/authors/">Συντάκτες</a></li>
+            <li><a href="/standings/">Βαθμολογία</a></li>
+        </ul>
+        <div class="ix-foot-legal"><a href="/privacy/privacy.html">Πολιτική Απορρήτου</a> · <a href="/privacy/terms.html">Όροι Χρήσης</a></div>
+    </div>
+</footer>
+</body>
+</html>
