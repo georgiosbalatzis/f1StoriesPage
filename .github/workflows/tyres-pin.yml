@@ -1,0 +1,82 @@
+name: TYRES pin update
+
+# Follows Tyres' Pirelli check (Wed + Thu 23:59 Athens), which merges new race data into Tyres main.
+# When Tyres main moved past the pinned revision, this opens the pin PR, runs Site Quality and the
+# Ecosystem dry run on it, merges when both pass and deploys. A failing check leaves the PR open.
+on:
+  schedule:
+    # Thu + Fri 01:59 Athens (EET); 02:59 during EEST.
+    - cron: '59 23 * * 4,5'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: tyres-pin
+  cancel-in-progress: false
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      actions: write # dispatch the PR checks and the Pages deploy (GITHUB_TOKEN PRs trigger nothing)
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Bump the TYRES pin
+        id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          lock=scripts/deployment/sources.json
+          old=$(jq -r '.applications[] | select(.application == "tyres") | .sha' "$lock")
+          new=$(gh api repos/georgiosbalatzis/Tyres/commits/main --jq .sha)
+          [[ "$new" =~ ^[0-9a-f]{40}$ ]] || { echo "unexpected Tyres sha: $new"; exit 1; }
+          if [[ "$new" == "$old" ]]; then echo "TYRES pin already at $new."; exit 0; fi
+          # The race desk test locks the reviewed pin as well.
+          sed -i "s/$old/$new/" "$lock" scripts/race-desk/__tests__/links.test.mjs
+          branch=chore/tyres-pin-auto
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git commit -am "chore(tyres): pin Tyres ${new:0:7}"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$branch"
+          if ! gh pr view "$branch" --json state -q .state 2>/dev/null | grep -q OPEN; then
+            gh pr create --head "$branch" --base main --title "chore(tyres): pin Tyres ${new:0:7}" \
+              --body "Automated TYRES pin bump ${old:0:7} → ${new:0:7} ([changes](https://github.com/georgiosbalatzis/Tyres/compare/$old...$new)). Merged automatically when Site Quality and the Ecosystem dry run pass."
+          fi
+          {
+            echo "branch=$branch"
+            echo "sha=$(git rev-parse HEAD)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run the PR checks and merge when they pass
+        if: ${{ steps.bump.outputs.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.bump.outputs.branch }}
+          SHA: ${{ steps.bump.outputs.sha }}
+        run: |
+          set -euo pipefail
+          for wf in quality.yml aggregate-dry-run.yml; do gh workflow run "$wf" --ref "$BRANCH"; done
+          for wf in quality.yml aggregate-dry-run.yml; do
+            run=""
+            for _ in $(seq 1 30); do
+              sleep 10
+              run=$(gh run list --workflow "$wf" --branch "$BRANCH" --event workflow_dispatch --commit "$SHA" \
+                --limit 1 --json databaseId -q '.[0].databaseId // empty')
+              [[ -n "$run" ]] && break
+            done
+            [[ -n "$run" ]] || { echo "$wf run for $SHA not found"; exit 1; }
+            gh run watch "$run" --interval 30 --exit-status > /dev/null
+          done
+          gh pr merge "$BRANCH" --merge --delete-branch --match-head-commit "$SHA"
+          # GITHUB_TOKEN merges do not trigger the normal push deployment.
+          gh workflow run deploy-pages.yml --ref main
