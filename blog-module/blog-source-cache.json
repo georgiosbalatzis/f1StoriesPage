@@ -1,6 +1,40 @@
 {
   "posts": [
     {
+      "id": "20261107W",
+      "title": "Έκπτωτες αυτοκρατορίες",
+      "author": "Themis Charvalis",
+      "date": "2026-11-07",
+      "dateISO": "2026-11-07",
+      "displayDate": "7 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261107W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261107W/2.webp",
+      "excerpt": "Ford, Ferrari και Repsol Honda: τρεις αγωνιστικές αυτοκρατορίες που γνώρισαν την απόλυτη κυριαρχία και σήμερα η κορυφή ανήκει αλλού.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261107W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "WRC",
+        "Ford",
+        "F1",
+        "Ferrari",
+        "Motogp",
+        "Repsol Honda"
+      ],
+      "wordCount": 1199,
+      "readingTime": "6 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "b79fc82fba0e6d594fbdd913725d741a5d7c0bc6d039778059f27e0e35417755"
+    },
+    {
       "id": "20261105W",
       "title": "Alan Jones: Αυτός που έκανε την Williams πρωταθλήτρια",
       "author": "Themis Charvalis",
@@ -11600,5 +11634,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-05T19:18:22.562Z"
+  "lastUpdated": "2026-11-06T22:37:16.479Z"
 }
