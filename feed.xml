@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Fri, 06 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>This is Brazil... BetCast #279</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261107-2J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107-2J/article.html</guid>
+      <pubDate>Fri, 06 Nov 2026 22:00:00 GMT</pubDate>
+      <description>BetCast #279 και οι επιλογές της Βραζιλίας.</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
+    <item>
       <title>GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Η επιστροφή του Vettel στον τόπο ενός από τα πιο οδυνηρά λάθη της καριέρας του. Ιούλιος του 2018.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Amber Alert :  Safety Car !</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261014F/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261014F/article.html</guid>
-      <pubDate>Tue, 13 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Η Σιγκαπούρη ξεσυνήθισε το Safety Car Για δεκατέσσερις αγώνες, στη Σιγκαπούρη μπορούσες να είσαι σίγουρος για ένα πράγμα πριν καν σβήσουν τα φώτα: κάποια…</description>
-      <category>Ιστορία</category>
-      <dc:creator>F1 Stories</dc:creator>
     </item>
   </channel>
 </rss>

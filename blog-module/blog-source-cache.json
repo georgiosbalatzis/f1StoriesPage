@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261107-2J",
+      "title": "This is Brazil... BetCast #279",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-07",
+      "dateISO": "2026-11-07",
+      "displayDate": "7 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261107-2J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261107-2J/1.webp",
+      "excerpt": "BetCast #279 και οι επιλογές της Βραζιλίας.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261107-2J/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Brazil",
+        "BetCast",
+        "Bet",
+        "Tipster"
+      ],
+      "wordCount": 240,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "dd40f6ff64c8b6a6aad172a6edd03829909aec8bfa1911d4f3145d702cf75ae9"
+    },
+    {
       "id": "20261107J",
       "title": "GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή",
       "author": "Giannis Poulikidis",
@@ -11664,5 +11696,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-07T09:54:38.079Z"
+  "lastUpdated": "2026-11-07T13:20:59.632Z"
 }
