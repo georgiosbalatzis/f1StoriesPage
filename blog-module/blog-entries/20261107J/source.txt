@@ -1,0 +1,137 @@
+---
+category: Analysis
+tags: GridCast, Ανάλυση
+title: GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή
+excerpt: Ανάλυση του Grand Prix της Βραζιλίας
+---
+
+20ός αγώνας για φέτος και το πρωτάθλημα του 2026 έχει τελειώσει, όσον αφορά τουλάχιστον το πρωτάθλημα οδηγών, με τον Andrea Kimi Antonelli να τελειώνει από νωρίς τη συζήτηση για κάτι διαφορετικό. Τώρα έχουμε τις υπόλοιπες μάχες, όπου εκεί είναι και το ζουμί. Έξτρα δωράκι στην τούρτα και το πρωτάθλημα των κατασκευαστών, όπου και αυτό... τελειωμένη υπόθεση, με τη Mercedes να περιμένει το double.
+
+Φτάσαμε στη Βραζιλία, στο Interlagos, όπου το όνομα της πίστας σημαίνει «ανάμεσα σε δύο λίμνες». Μία πίστα όπου ευδοκιμούν οι προσπεράσεις, οπότε προσμένουμε αλλαγές κινητήρων και διάφορων parts, ώστε με τις ποινές που θα δεχτούν να μπορέσουν να ανακάμψουν. Τι έχουμε όμως εμείς για αυτό το διήμερο; GridCast #04 και πάμε να ξεκινήσουμε.
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/interlagos/circuit-info/" title="Στοιχεία πίστας: Brazilian Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="1213" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/interlagos/demands/" title="Απαιτήσεις πίστας: Brazilian Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="370" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+
+Οι απαιτήσεις της πίστας δεν είναι τρομερές, ωστόσο ένα καλό balance θα είναι το κλειδί της υπόθεσης. Κυρίως, οι οδηγοί δυσκολεύονται με το εμπρός μέρος των μονοθεσίων. **Η κάθετη δύναμη με το ελάχιστο drag θα είναι μεγάλος παράγοντας, αφού η πίστα βρίσκεται στα 765 μέτρα πάνω από τη στάθμη της θάλασσας και παρουσιάζει περίπου 56 μέτρα υψομετρικής διαφοράς μεταξύ του υψηλότερου και του χαμηλότερου σημείου** .
+
+#Στην προϊστορία τώρα:
+
+2025 | Pole position: Lando Norris | Νικητής: Lando Norris  
+2024 | Pole position: Lando Norris | Νικητής: Max Verstappen  
+2023 | Pole position: Max Verstappen | Νικητής: Max Verstappen  
+2022 | Pole position: Kevin Magnussen | Νικητής: George Russell  
+2021 | Pole position: Max Verstappen | Νικητής: Lewis Hamilton
+
+Είναι μία πίστα όπου ο Pole Man δεν έχει μεγάλο πλεονέκτημα. Ας δούμε όμως και μερικά ακόμα στοιχεία για τη Βραζιλία.
+
+**Μερικά ενδιαφέροντα στατιστικά**
+
+1. Ο Michael Schumacher παραμένει ο πολυνίκης της πίστας με 4 νίκες.
+2. Στις pole positions, οι Ayrton Senna, Mika Häkkinen, Felipe Massa, Rubens Barrichello, Lewis Hamilton και Max Verstappen έχουν από 3.
+3. Το 2022, ο Kevin Magnussen κατέκτησε την pole position για το Sprint, γράφοντας ιστορία για τη Haas.
+4. Το 2021, ο Lewis Hamilton ξεκίνησε το Sprint από την 20ή θέση και κατάφερε να φτάσει στην 5η, πριν πάρει τη νίκη την Κυριακή.
+5. Μόνο ένα από τα τελευταία εννέα GP στο Interlagos ολοκληρώθηκε χωρίς Safety Car, Virtual Safety Car ή κόκκινη σημαία — το 2018.
+
+#Στα ελαστικά τώρα, η Pirelli θα προμηθεύσει τις ομάδες με τις εξής γόμες:
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/interlagos/summary/" title="Ελαστικά αγώνα: Brazilian Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="446" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Το δύσκολο κομμάτι, όμως, θα είναι οι αλλαγές στον ασφαλτοτάπητα. Η εξέλιξή του προβλέπεται να είναι μεγάλη, ωστόσο ο καιρός μπορεί να αλλάξει τα δεδομένα γρήγορα. Και όπως είναι αναμενόμενο, θα έχουμε...
+
+
+<iframe src="https://f1-stories.gr/tyres/embed/el/2026/interlagos/weather/" title="Καιρός τριημέρου: Brazilian Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="784" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Τα πρώτα δύο ελεύθερα δοκιμαστικά ήταν κάπως χαοτικά, θα λέγαμε, με τις ομάδες να είναι στο «ψάξιμο» για το ιδανικό setup. Σε ρυθμό αγώνα είχαμε 4 ομάδες να παλεύουν σχεδόν στο 0,1, με τη Mercedes να δίνει τον ρυθμό και τις Red Bull, McLaren και Ferrari να ακολουθούν. Σε ρυθμό κατατακτήριων, όμως, η Mercedes ανοίγει τη διαφορά από τη Red Bull σχεδόν στα 0,2 δευτερόλεπτα. Σίγουρα προσμένουμε αλλαγές, με τις ομάδες να βελτιώνονται στο FP3. Ας δούμε τα αποτελέσματα από τα πρώτα δύο δοκιμαστικά.
+
+#FP1 
+
+1	Lando Norris	McLaren	1:11.717	33
+
+2	Kimi Antonelli	Mercedes	+0.082	32
+
+3	Max Verstappen	Red Bull Racing	+0.236	29
+
+4	Lewis Hamilton	Ferrari	+0.324	31
+
+5	George Russell	Mercedes	+0.386	30
+
+6	Isack Hadjar	Red Bull Racing	+0.439	25
+
+7	Gabriele Mini	Alpine	+0.852	28
+
+8	Gabriel Bortoleto	Audi	+0.897	30
+
+9	Franco Colapinto	Alpine	+0.937	34
+
+10	Liam Lawson	Racing Bulls	+0.998	32
+
+11	Leonardo Fornaroli	McLaren	+1.116	28
+
+12	Oliver Bearman	Haas	+1.120	27
+
+13	Fernando Alonso	Aston Martin	+1.300	26
+
+14	Arvid Lindblad	Racing Bulls	+1.321	32
+
+15	Valtteri Bottas	Cadillac	+1.654	16
+
+16	Alexander Albon	Williams	+1.794	18
+
+17	Luke Browning	Williams	+1.874	12
+
+18	Rafael Câmara	Haas	+1.979	30
+
+19	Lance Stroll	Aston Martin	+2.043	28
+
+20	Colton Herta	Cadillac	+2.558	31
+
+21	Dino Beganovic	Ferrari	+2.640	11
+
+22	Freddie Slater	Audi	+3.249	7
+
+#FP2
+
+1	Kimi Antonelli	Mercedes	1:10.763	37
+
+2	Lando Norris	McLaren	+0.253	31
+
+3	Max Verstappen	Red Bull Racing	+0.259	23
+
+4	George Russell	Mercedes	+0.273	35
+
+5	Oscar Piastri	McLaren	+0.321	32
+
+6	Lewis Hamilton	Ferrari	+0.450	35
+
+7	Charles Leclerc	Ferrari	+0.720	33
+
+8	Gabriel Bortoleto	Audi	+1.017	33
+
+9	Isack Hadjar	Red Bull Racing	+1.076	33
+
+10	Oliver Bearman	Haas	+1.228	36
+
+11	Franco Colapinto	Alpine	+1.233	33
+
+12	Arvid Lindblad	Racing Bulls	+1.245	36
+
+13	Liam Lawson	Racing Bulls	+1.279	36
+
+14	Pierre Gasly	Alpine	+1.346	37
+
+15	Fernando Alonso	Aston Martin	+1.775	34
+
+16	Rafael Câmara	Haas	+1.798	30
+
+17	Carlos Sainz	Williams	+1.979	33
+
+18	Lance Stroll	Aston Martin	+2.179	31
+
+19	Alexander Albon	Williams	+2.190	37
+
+20	Sergio Perez	Cadillac	+2.553	34
+
+21	Valtteri Bottas	Cadillac	+2.620	33
