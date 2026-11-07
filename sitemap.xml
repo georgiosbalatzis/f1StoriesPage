@@ -50,13 +50,13 @@
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/analysis/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog/section/analysis/page/2/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -327,6 +327,12 @@
     <lastmod>2026-09-09</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://f1-stories.gr/blog-module/blog-entries/20261107W/article.html</loc>

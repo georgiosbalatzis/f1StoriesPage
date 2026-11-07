@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Fri, 06 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</guid>
+      <pubDate>Fri, 06 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ανάλυση του Grand Prix της Βραζιλίας</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
+    <item>
       <title>Έκπτωτες αυτοκρατορίες</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261107W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Η Σιγκαπούρη ξεσυνήθισε το Safety Car Για δεκατέσσερις αγώνες, στη Σιγκαπούρη μπορούσες να είσαι σίγουρος για ένα πράγμα πριν καν σβήσουν τα φώτα: κάποια…</description>
       <category>Ιστορία</category>
       <dc:creator>F1 Stories</dc:creator>
-    </item>
-    <item>
-      <title>Ολημερίς το έχτιζαν, το βράδυ γκρεμιζόταν</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261014G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261014G/article.html</guid>
-      <pubDate>Tue, 13 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Τρία Q3 και κανένας βαθμός για την Alpine Θα το πω από την αρχή, γιατί τα νούμερα το λένε ήδη: η Alpine δεν έχει πια πρόβλημα το Σάββατο, έχει πρόβλημα…</description>
-      <category>Ομάδες</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>

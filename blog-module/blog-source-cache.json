@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261107J",
+      "title": "GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-07",
+      "dateISO": "2026-11-07",
+      "displayDate": "7 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261107J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261107J/1.webp",
+      "excerpt": "Ανάλυση του Grand Prix της Βραζιλίας",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261107J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "GridCast",
+        "Ανάλυση"
+      ],
+      "wordCount": 763,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "47978f94007eebb9c0cf3dc5f0e5b6240d0ad956d686faa234b029a5b540abbc"
+    },
+    {
       "id": "20261107W",
       "title": "Έκπτωτες αυτοκρατορίες",
       "author": "Themis Charvalis",
@@ -11634,5 +11664,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-06T22:37:16.479Z"
+  "lastUpdated": "2026-11-07T09:54:38.079Z"
 }
