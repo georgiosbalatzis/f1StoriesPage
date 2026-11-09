@@ -44,7 +44,7 @@ The repo shows that code and placements exist. It cannot show whether any busine
 ## 3. Contact flow
 
 - There is a single homepage form posting to Formspree. It collects name, email and message, uses a honeypot field, and says replies "usually" come within 48 hours. A mailto address is also shown [R18].
-- The form already receives partnership ("συνεργασία") enquiries. This is enough for a first commercial conversation, so no new intake system is needed.
+- The form invites partnership ("συνεργασία") enquiries. Whether such enquiries have been received is UNVERIFIED. The existing form provides an intake route; no new intake system is evidenced as necessary.
 - **Gap:** there is no purpose or privacy notice at the point of collection. The privacy link is in the footer only [R18]. Whether the current notice is adequate is `REQUIRES_LEGAL_REVIEW` [U06].
 
 ## 4. Analytics coverage

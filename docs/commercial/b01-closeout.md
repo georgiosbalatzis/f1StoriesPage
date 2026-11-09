@@ -38,7 +38,7 @@ The orchestrator then spot-checked the key facts and synthesised the findings. A
   - in baseline source for Telemetry, Ghost Car and BetCast; on 2026-11-09 TYRES source and served HTML also showed the six-logo strip including ADVERTISING PARTNER. Telemetry and Ghost Car suppress it in embed mode [R09, R34].
 - **Logo pipeline.** It trims and resizes the logos; it does not recolour them [R11].
 - **Analytics.** Consent-gated GA4 with all advertising signals denied [R13]. A partner-click event exists [R14]. There is no impression tracking [R16] and no ad tech [R17].
-- **Contact.** A Formspree contact form that already receives partnership enquiries [R18].
+- **Contact.** A Formspree contact form invites partnership enquiries [R18]; receipt of actual enquiries is UNVERIFIED.
 - **Policies.** A privacy notice that mentions sponsors, a corrections process, and an optional editorial review [R19, R36, R37].
 - **Rights records.** A media-rights register, which is sparse [R22]. A race-data rights record, which holds owner acceptance only [R26].
 
