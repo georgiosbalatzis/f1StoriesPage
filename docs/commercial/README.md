@@ -4,6 +4,8 @@ This folder is the evidence-based foundation for selling sponsorships on F1 Stor
 
 > These documents describe commercial readiness and open legal questions. They do **not** establish legal clearance, grant usage rights, authorise a commercial campaign or activate sponsorship functionality. Passing CI does not close any legal-review item.
 
+**The B-01 audit identified commercial, licensing and legal risks. It did not establish a verified contractual breach, regulatory violation, or judicial finding of unlawful conduct by F1 Stories.** See the [evidence, risk and clearance distinction](rights-matrix.md).
+
 ## Scope
 
 **Covered:**
@@ -43,7 +45,7 @@ This folder is the evidence-based foundation for selling sponsorships on F1 Stor
 
 ## Commercial activation boundaries
 
-Until the conditions in [b01-closeout.md](b01-closeout.md) are met, do not do any of the following:
+Until the applicable and triggered gates for the selected scenario in the [X1–X4 matrix](rights-matrix.md#4-scenario-comparison) and [b01-closeout.md](b01-closeout.md) are met, do not do any of the following:
 - sell or offer a new placement, series, weekend, tool or BetCast sponsorship;
 - place a sponsor inside a data tool;
 - combine F1, team or driver marks or imagery with a sponsor;

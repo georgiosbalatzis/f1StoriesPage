@@ -7,7 +7,7 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Severity is not confidence.** *Potential impact* describes what could happen if the risk materialised. *Evidence confidence* describes how well the underlying facts are established. The two are reported separately.
 - **No numeric scores.** No established scoring method exists for this site, so likelihood is given as a short qualitative judgement with its limits stated.
 - **Likelihood is an `INFERENCE` throughout.** It is the auditors' reasoning, not a legal assessment.
-- **Blocking status** says which of the scenarios S1–S6 the risk blocks. The scenarios are defined in [rights-matrix.md §4](rights-matrix.md#4-scenario-comparison).
+- **Blocking status** records governance gates for the described scenario; apply the X1–X4 applicability matrix in [rights-matrix.md §4](rights-matrix.md#4-scenario-comparison), including its conditional triggers.
 - **Two kinds of risk:**
   - `CR-` risks exist **today**, with no new sponsor. Recording one here is not a decision to change the live site; every change is a separate owner decision.
   - `BR-` risks arise only if new commercial activity starts.
@@ -16,21 +16,21 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 
 | ID | Risk | Potential impact | Evidence confidence | Blocks | Decision-maker |
 |---|---|---|---|---|---|
-| CR-01 | "F1" in the brand, logo, domain and handles while paid-looking partners are shown | High | High (facts) / open (law) | S1–S6 | Site owner + counsel |
-| CR-02 | Existing partner strip: undefined labels, no relationship or permission records, shown everywhere | Medium–High | High | S1–S6 | Site owner |
-| CR-03 | Non-commercial data licences next to the partner strip inside data tools | High | High (facts) / open (law) | S3, S4 | Site owner + counsel; providers |
+| CR-01 | "F1" in the brand, logo, domain and handles while paid-looking partners are shown | High | High (facts) / open (law) | S1–S6: scenario-specific identity/association assessment (X1) | Site owner + counsel |
+| CR-02 | Existing partner strip: undefined labels, no relationship or permission records, shown on recorded surfaces | Medium–High | High | S1 strip use; S2–S6 where existing marks/relationships or relevant co-placement obligations are included (X2) | Site owner |
+| CR-03 | Non-commercial data licences next to the partner strip inside data tools | High | High (facts) / open (law) | S3/S4 affected uses; S1 distribution into tools; S2/S5 where data or tools are incorporated | Site owner + counsel; providers |
 | CR-04 | Betting content: operator "favourites", enrichment wording, no age or responsible-gaming notices | High | High (facts) / open (law) | S6, and S1 near betting pages | Site owner + counsel |
 | CR-05 | Article images and F1 assets with no rights record | Medium (editorial) / High (commercial reuse) | High | S1–S5 | Site owner + counsel |
-| CR-06 | Old domain `f1stories.gr` resolves under unknown control | Medium | Medium | S1 (brand confusion) | Site owner |
-| CR-07 | No published publisher or provider identity | Medium | High (facts) / open (law) | S1–S6 | Counsel |
-| CR-08 | No separation between paid content and editorial approval (auto-merge) | Medium–High | High | S2, S3, S5 | Site owner |
-| CR-09 | Data attribution gaps, mislabelled sources, committed derivatives without licence notice | Low–Medium | High | S4 | Site owner |
+| CR-06 | Old-domain redirect and separate domain-rights uncertainty | Medium | Medium | Advisory; separate identity/association assessment remains open (X1) | Site owner |
+| CR-07 | No published publisher or provider identity | Medium | High (facts) / open (law) | S1–S6: publisher-information assessment; format-specific disclosures vary (X3) | Counsel |
+| CR-08 | No separation between paid content and editorial approval (auto-merge) | Medium–High | High | S2/S5 paid editorial; S3/S6 where paid editorial is commissioned (X4) | Site owner |
+| CR-09 | Data attribution gaps, mislabelled sources, committed derivatives without licence notice | Low–Medium | High | Affected provider uses, including S1 distribution and S2–S5 where relevant | Site owner |
 | CR-10 | Contact-form and privacy-notice gaps for commercial processing | Medium | High (facts) / open (law) | S1–S6 | Counsel |
-| CR-11 | Open-Meteo free tier excludes sites that show ads, and the site already shows an "ADVERTISING PARTNER" listing | Medium | High (facts) / open (law) | S4 (TYRES) | Site owner + counsel |
+| CR-11 | Open-Meteo free tier excludes sites that show ads, and the site already shows an "ADVERTISING PARTNER" listing | Medium | High (facts) / open (law) | S4 on TYRES; S1 distribution into TYRES | Site owner + counsel |
 | CR-12 | 3D car model in Ghost Car without the CC BY credit | Low–Medium | Medium | S4 | Site owner |
 | BR-11 | Sponsor reporting overstating audience | Medium | High | S1, S4 | Site owner |
 | BR-12 | Sponsor-category conflicts (official F1 partners, gambling, Pirelli, related parties) | Medium–High | Medium | S1–S6 | Site owner + counsel |
-| BR-13 | Business registration, invoicing, VAT and contracts not set up | High | Medium | S1–S6 (any payment) | Tax adviser + counsel |
+| BR-13 | Business registration, invoicing, VAT and contracts not documented in the repo | High | Medium | S1–S6 (any payment) | Tax adviser + counsel |
 | BR-14 | Terms pages are undated and may change | Medium | High | All | Site owner |
 
 ## Detail
@@ -51,11 +51,11 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Uncertainty.** Two points are unsettled: whether the guidelines are enforceable, and whether EU or Greek trademark exceptions (descriptive or referential use) cover the name [U07].
 - **Mitigation options.**
   - Counsel opinion on the brand and domain.
-  - The owner decides whether to add the P01 disclaimer (it does not cure commercial use).
+  - The owner decides whether to add the P01 disclaimer (a disclaimer is not permission and does not resolve remaining rights questions).
   - Option to approach Formula 1 brand protection for a licence or comfort; owner decision only.
   - Contingency rebrand assessment.
 - **Decision-maker.** Site owner, on counsel advice.
-- **Blocking status.** Blocks offering any new commercial package (S1–S6).
+- **Blocking status.** Scenario-specific brand/domain assessment remains required for use of the current identity in S1–S6 (X1). It does not predetermine that every format needs the same permission, or that descriptive editorial references are prohibited. CR-06 domain control is separate.
 - **Residual risk.** Remains medium even with a disclaimer, until counsel advises.
 
 ### CR-02: Existing partner strip
@@ -63,10 +63,10 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Description.** The six listings carry undefined role labels that mix Greek and English, and nothing tells readers whether a listing is paid [R07].
   - The repo has no relationship record or logo permission [R10].
   - One logo file contains a third-party mark [R12].
-  - The strip renders on every article and inside Telemetry, Ghost Car and BetCast [R08, R09].
+  - The baseline records the strip on rendered articles and in Telemetry, Ghost Car and BetCast. On 2026-11-09 TYRES source and served HTML also showed it; Telemetry and Ghost Car suppress it in embed mode [R08, R09].
   - Any undisclosed consideration, money or in kind, could bring the placements within the commercial-communication rules [P12, P14, P15, P18]. Whether it does, under Greek law, is `REQUIRES_LEGAL_REVIEW` [U01].
   - The owner must also confirm whether any listing is a related party.
-- **Affected surface.** Homepage, all articles, Telemetry, Ghost Car, BetCast.
+- **Affected surface.** Homepage, rendered articles, TYRES, BetCast, and non-embed Telemetry and Ghost Car [R08, R09].
 - **Likelihood and limits.** It depends on facts only the owner holds.
 - **Potential impact.** Consumer-law exposure for unclear labelling. Logo-permission disputes. Sponsors appearing next to gambling content without having agreed to it.
 - **Verified evidence.** R07–R12, P11–P15, P18.
@@ -79,26 +79,26 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 
   Each runtime change is a separate PR.
 - **Decision-maker.** Site owner.
-- **Blocking status.** Blocks S1–S6.
-- **Residual risk.** Low once the relationship records and labels exist.
+- **Blocking status.** Gates S1's use of the existing strip and any actual reuse of existing partner marks or relevant placement obligations in S2–S6. Missing records for an unrelated existing partner do not automatically block a new sponsorship. New sponsor logo/placement permission remains required separately.
+- **Residual risk.** Reassess after the relevant relationship records, permissions and labels are evidenced.
 
 ### CR-03: Non-commercial data licences next to commercial placements
 
 - **Description.** OpenF1 and Jolpica license their data for non-commercial use only and ask commercial users to make contact [P03, P05, P06].
-  - The partner strip already renders inside Telemetry and Ghost Car, which call OpenF1 directly, and on every page that calls Jolpica through the countdown in the navigation [R09, R28]. One of its listings is labelled "ADVERTISING PARTNER" [R07].
+  - The partner strip already renders inside Telemetry and Ghost Car, which call OpenF1 directly, and on recorded site surfaces that also use Jolpica through the navigation countdown [R09, R28]. One of its listings is labelled "ADVERTISING PARTNER" [R07].
   - The repo's OpenF1 "approved" status is the site owner's acceptance of the non-commercial licence for one session. It is not a provider authorisation [R26].
   - FOM separately claims database rights in timing data [P01].
 - **Affected surface.** THE GRID, the hubs, Telemetry, Ghost Car, the countdown in the navigation, and the committed caches and captures.
 - **Likelihood and limits.** Unknown. No provider enforcement history was researched.
-- **Potential impact.** Under CC BY-NC-SA §6(a), the licence terminates automatically on breach. It is reinstated if the breach is cured within 30 days of discovery, or if the licensor reinstates it expressly [P06]. Loss of data access. Takedown requests.
+- **Potential impact.** If an applicable licence condition were breached, P06 §6(a) provides automatic termination; §6(b)(1)–(2) addresses reinstatement. B-01 did not establish that these provisions were triggered. Possible consequences include loss of licensed rights, access or takedown demands, subject to the actual terms and professional assessment.
 - **Verified evidence.** R26–R31, P01, P03–P06.
-- **Uncertainty.** Whether a sponsor-carrying free site is "primarily intended for commercial advantage" has never been adjudicated. FOM's reach over data obtained through intermediaries is also unsettled.
+- **Uncertainty.** B-01 did not establish how NonCommercial applies to these uses and did not conduct an exhaustive case-law search. FOM’s underlying-rights claim and application to intermediary data also require professional assessment.
 - **Mitigation options.**
   - Counsel opinion.
   - Written provider terms (owner contact only).
   - Owner decision on whether the strip belongs inside data tools.
 - **Decision-maker.** Site owner, on counsel advice and provider replies.
-- **Blocking status.** Blocks S3 (where tools are used) and S4.
+- **Blocking status.** Gates affected provider uses in S3/S4, S1 distribution into data tools, and S2/S5 if provider data or tools are incorporated. Existing navigation and placement exposure remains a current-state assessment; assess actual dependencies, including Jolpica in navigation.
 - **Residual risk.** Medium until providers reply in writing.
 
 ### CR-04: Betting content
@@ -140,31 +140,23 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Blocking status.** Blocks image reuse in S1–S5.
 - **Residual risk.** Medium for the archive. Low for new sponsored work that follows the ledger.
 
-### CR-06: Old domain under unknown control
+### CR-06: Old-domain redirect and domain-rights uncertainty
 
-- **Description.** `f1stories.gr` returned NXDOMAIN on 2026-10-24 and now resolves to Cloudflare addresses [N02]. The repo says it is not owned [N02].
-- **Affected surface.** The brand, and search confusion. Telemetry also still treats `f1stories.gr` links as trusted [R50].
-- **Likelihood and limits.** Unknown. The domain could be the owner's own new registration or a third party's.
-- **Potential impact.** Impersonation or confusion while sponsors are being pitched.
-- **Verified evidence.** N02.
-- **Uncertainty.** The registrant [U13].
-- **Mitigation options.** The owner checks the registry. Counsel advises before any recovery attempt.
-- **Decision-maker.** Site owner.
-- **Blocking status.** Not blocking. Advisory for S1.
-- **Residual risk.** Low once identified.
+- **2026-11-09 reconciliation.** The owner reports reacquisition and control of `f1stories.gr` through a registrar (OWNER_REPORTED). HTTP/HTTPS 301 checks preserved tested paths and queries (LIVE_VERIFIED). Registry details remain independently UNVERIFIED [N02, U13]. The historical 2026-11-05 DNS observation and unverified 2026-10-24 NXDOMAIN report remain in N02; Cloudflare DNS does not establish ownership.
+- **Affected surface and risk.** Brand and possible confusion; Telemetry still trusts old-domain links [R50]. Domain control and redirect do not settle trademark or commercial domain-use permissions [CR-01].
+- **Action.** Retain owner confirmation and redirect evidence; verify registry details independently if needed and seek counsel on domain and trademark use.
+- **Decision-maker.** Site owner and counsel. **Blocking status.** Advisory for S1; separate brand rights remain unresolved.
 
 ### CR-07: No publisher or provider identity
 
-- **Description.** Neither the privacy page nor the terms name a legal entity or person [R19]. The E-Commerce Directive requires provider identity for information-society services, and EMFA imposes ownership transparency on media service providers [P15, P17].
-- **Affected surface.** Privacy, terms, any sponsor contract.
-- **Likelihood and limits.** Whether these regimes apply to F1 Stories is unsettled [U02].
-- **Potential impact.** Non-compliance once the site is remunerated. Sponsors unable to contract with an identifiable party.
-- **Verified evidence.** R19, P15, P17.
-- **Uncertainty.** The applicability tests: "normally provided for remuneration" (ECD) and "professional activity" (EMFA).
-- **Mitigation options.** Counsel advice, then a publisher-identity statement (a separate PR).
+- **Description.** The baseline policies name no publisher legal entity or person [R19]. P15 and P17 record potential publisher/provider-information requirements. Their applicability, scope and Greek implementation remain professional questions [U02]; the 2026-11-09 EUR-Lex reads were blocked.
+- **Affected surface.** General publisher/provider information and identification of the contracting party, potentially independent of a particular paid-content format.
+- **Potential impact.** Possible information-duty exposure if an applicable requirement is unmet, and inability to evidence the party contracting with a sponsor. A free-to-read site is not automatically outside the assessment.
+- **Uncertainty.** Do not assume either present applicability or that duties begin only with the next sponsorship. Have counsel verify the scope and timing, including the different EMFA Art. 6 duties.
+- **Mitigation options.** Obtain advice and complete the resulting information requirements in a separately approved implementation. Separately assess format-specific commercial disclosures under X3; policy adoption alone is not evidence of compliance.
 - **Decision-maker.** Site owner, on counsel advice.
-- **Blocking status.** Blocks S1–S6.
-- **Residual risk.** Low after advice.
+- **Blocking status.** Publisher-information and contracting-party assessment remains relevant to S1–S6. The required disclosures depend on the actual format; no single full policy/disclosure page is asserted here as a universal statutory prerequisite.
+- **Residual risk.** Requires reassessment after the applicable requirements and resulting actions are evidenced; advice alone does not close it.
 
 ### CR-08: Paid content not separated from editorial approval
 
@@ -175,11 +167,11 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Verified evidence.** R36, P12, P13.
 - **Uncertainty.** —
 - **Mitigation options.**
-  - The policy (§6) requires explicit human approval for paid content.
-  - A later implementation PR would exclude paid content from auto-merge.
+  - The draft policy (§6), which is not approved, proposes separate commercial and human editorial approval for paid editorial content.
+  - A later implementation PR would exclude paid editorial content from auto-merge and provide evidence of the approval step.
 - **Decision-maker.** Site owner.
-- **Blocking status.** Blocks S2, S3 and S5.
-- **Residual risk.** Low after the policy is in place and the workflow is changed.
+- **Blocking status.** Applies to S2 and S5, and S3/S6 where paid editorial is commissioned. Article auto-merge is not a direct blocker for a static S1 or S4 logo/link alone; those placements still need owner approval and their other gates.
+- **Residual risk.** Reassess after the relevant approval process is approved and implemented; adopting a draft alone does not establish implementation.
 
 ### CR-09: Attribution and licence-notice gaps
 
@@ -187,16 +179,16 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
   - THE GRID, Telemetry and Ghost Car name their sources without the licence, and two THE GRID source labels are swapped [R31, R32].
   - Committed captures and derivatives carry no licence notice, and no repo has a LICENSE file [R30, R33].
   - Telemetry's footer says "all rights reserved" above OpenF1-derived output, which may conflict with ShareAlike [R49].
-  - CC BY-NC-SA requires attribution and ShareAlike on shared adaptations [P06]. OpenF1's FAQ says credit is optional [P03].
+  - P06 contains attribution and adaptation conditions; OpenF1’s optional-credit FAQ [P03] needs provider clarification for the actual sharing and datasets. Do not infer a waiver or verified breach.
 - **Affected surface.** THE GRID, Telemetry, Ghost Car, the public repos.
-- **Likelihood and limits.** Low enforcement likelihood (`INFERENCE`).
-- **Potential impact.** Licence breach, which compounds CR-03.
+- **Likelihood and limits.** Unknown; no provider enforcement history or use-specific licence determination was established.
+- **Potential impact.** Possible non-compliance with an applicable notice or adaptation condition, subject to assessment; this may add to CR-03 but is not an established breach.
 - **Verified evidence.** R30–R33, P03, P06.
 - **Uncertainty.** Whether the derivatives are "Adapted Material" or unprotected facts.
 - **Mitigation options.** A separate copy-fix PR for the attribution and labels, and counsel on ShareAlike.
 - **Decision-maker.** Site owner.
-- **Blocking status.** Blocks S4.
-- **Residual risk.** Low.
+- **Blocking status.** Gates affected provider uses, including S1 distribution into tools and S2–S5 where data or tools are incorporated.
+- **Residual risk.** Reassess for the actual use and applicable licence conditions.
 
 ### CR-10: Contact form and privacy notice
 
@@ -217,23 +209,23 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 
 ### CR-11: Open-Meteo free tier while advertising is shown
 
-- **Description.** Open-Meteo's free API is for non-commercial use, and its terms count "websites or apps that … display advertisements" as commercial [P07]. TYRES uses the free tier [R34]. The domain already shows a partner strip, one of whose listings is labelled "ADVERTISING PARTNER" [R07]. TYRES itself shows no strip [R34].
-- **Affected surface.** TYRES.
-- **Likelihood and limits.** Unknown. Whether a strip elsewhere on the domain affects a separate app is `REQUIRES_LEGAL_REVIEW`.
-- **Potential impact.** Breach of the provider's terms. Loss of access.
-- **Verified evidence.** R07, R34, P07.
-- **Uncertainty.** Whether the clause applies site-wide or per app.
-- **Mitigation options.** Counsel opinion. A paid plan before any sponsor appears in TYRES (owner decision).
-- **Decision-maker.** Site owner, on counsel advice.
-- **Blocking status.** Blocks S4 on TYRES.
-- **Residual risk.** Low with a paid plan.
+- **Description.** P07 records a non-commercial free-service restriction. On 2026-11-09, TYRES's pinned source and served HTML were checked and showed the six-logo partner strip, including ADVERTISING PARTNER [R09, R34]. This supersedes the baseline claim that TYRES had no strip and the associated elsewhere-only premise. The source still uses public Open-Meteo endpoints for eligible non-held records.
+- **Operational limit.** See the [REC-02 weather-hold reconciliation](evidence-ledger.md#rec-02-reconciliation-2026-11-09).
+- **Affected surface.** TYRES and any S1/S4 placement distributed into it, including existing weather output.
+- **Likelihood and limits.** No enforcement history, contractual breach or regulatory violation was established. Actual service/use, applicable terms and possible current exposure require assessment.
+- **Potential impact.** Possible service-terms/licensing exposure or loss of access. CC BY data reuse and free-API service conditions are separate.
+- **Verified evidence.** P07 historical terms checked 2026-11-05; R09/R34 reconciliation notes for source, served HTML and the limited request hold.
+- **Required action.** Assess present usage and the proposed commercial scope; obtain suitable commercial access or provider confirmation where required, retain attribution, and separately assess any historical issue. No provider configuration or WEATHER_HOLD change is authorised by B-01.
+- **Decision-maker.** Site owner, with counsel and provider input as required.
+- **Blocking status.** Remains a gate for S4 on TYRES and S1 distribution into TYRES; the limited hold does not clear it.
+- **Residual risk.** A suitable access arrangement can address future service access only within its scope; it does not by itself resolve historical usage, attribution, Pirelli/FOM rights or other scenario gates.
 
 ### CR-12: 3D car model credit missing in Ghost Car
 
-- **Description.** TYRES credits a CC BY 4.0 car model. Ghost Car loads an `f1car.glb` with no credit found anywhere in the repo. That the two are the same model is `INFERENCE`; the files were not compared [R47].
+- **Description.** TYRES credits a CC BY 4.0 car model. Ghost Car loads an `f1car.glb`. Reconciled 2026-11-09: deployed files differ in bytes; common provenance remains unverified, and no Ghost Car model credit or licence was found in the inspected README and licence paths [R47].
 - **Affected surface.** Ghost Car.
-- **Likelihood and limits.** Low enforcement likelihood (`INFERENCE`).
-- **Potential impact.** Breach of the attribution licence for that asset.
+- **Likelihood and limits.** Unknown; model provenance, applicable terms and deployed credit require verification.
+- **Potential impact.** Possible attribution or licensing exposure if the identified model requires a credit that is absent; identity and licence must first be established.
 - **Verified evidence.** R47.
 - **Uncertainty.** The file's identity, and whether the credit exists at the deployed pin.
 - **Mitigation options.** Compare the files, then add the credit in a separate Ghost Car PR (owner decision).
@@ -246,7 +238,7 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 - **Description.** GA4 covers consenting visitors only [R15].
   - There are no impressions [R16].
   - Clicks are a floor [R14]. Listings are identifiable only by domain plus role label, and there is no placement ID [R14].
-  - The tool apps have no GA4 at all.
+  - The historical inventory found no GA4 in the inspected tool snapshots; current tool coverage was not re-audited.
 - **Mitigation options.** Any sponsor report states "consented visitors only, click intent, no impressions, no total audience". No audience-size claims.
 - **Decision-maker.** Site owner.
 - **Blocking status.** Blocks any S1 or S4 reporting promise.
@@ -268,7 +260,7 @@ Last verified 2026-11-05 at baseline `a2f89c71`. Bracketed IDs point to [evidenc
 
 ### BR-13: Business, tax and contract set-up
 
-- **Description.** No business-registration, invoicing, VAT or contract arrangements are documented. That is correct for a public repo, but it means nothing is in place. The questions are in the [legal-counsel-brief.md](legal-counsel-brief.md) tax section.
+- **Description.** Reconciled 2026-11-09: No business-registration, invoicing, VAT or contract arrangements are documented in this public repo; whether arrangements exist outside it is UNVERIFIED. The questions are in the [legal-counsel-brief.md](legal-counsel-brief.md) tax section.
 - **Mitigation options.** A tax adviser and counsel before the first payment or in-kind deal.
 - **Decision-maker.** Tax adviser + site owner.
 - **Blocking status.** Blocks accepting any consideration.

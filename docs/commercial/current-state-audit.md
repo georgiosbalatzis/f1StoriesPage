@@ -19,13 +19,13 @@ The repo shows that code and placements exist. It cannot show whether any busine
   | P6 | ΣΥΝΕΡΓΑΤΗΣ | — |
 
 - Every link opens in a new tab with `rel="noopener sponsored"`. Google says this is the correct markup for paid placements [P11]. That guidance concerns search engines only; it does not make the placement visible to readers as advertising.
-- The strip appears in four places beyond the homepage:
+- At the 2026-11-05 baseline the strip was recorded in these places beyond the homepage:
   - every rendered article [R08];
-  - Telemetry [R09];
+  - Telemetry, when not embedded [R09];
   - Ghost Car, when not embedded [R09];
   - BetCast [R09].
 
-  It therefore appears next to OpenF1 data and next to betting content.
+  On 2026-11-09, the six-logo strip including ADVERTISING PARTNER was also verified in TYRES pinned source and served HTML [R09, R34]. Telemetry and Ghost Car suppress it in embed mode; their and BetCast’s bundles were checked without a browser render. The placements raise OpenF1, Open-Meteo and betting-context questions.
 
 **What is missing**
 - **No plain-language label.** The four role words (ΧΟΡΗΓΟΣ, ΣΥΝΕΡΓΑΤΗΣ, POWERED BY, ADVERTISING PARTNER) are undefined and mix Greek and English. Nothing tells a reader whether any of these is a paid relationship.
@@ -54,9 +54,9 @@ The repo shows that code and placements exist. It cannot show whether any busine
   - `link_text` captures the role label, not the brand.
   - P1 and P3 share a destination domain, so listings are identifiable only by domain plus role label. That breaks if the labels change, and there is no placement ID.
   - Modified clicks (Ctrl/Cmd, middle button) are not counted.
-- No impression measurement exists for any placement [R16].
-- **Coverage boundary:** every metric describes consenting visitors only. There is no denominator for all visitors [R15].
-  - Telemetry, Ghost Car, TYRES and BetCast carry no GA4 at all (`docs/intelligence/event-inventory.md#L93-L98`).
+- The inspected runtime event inventory has no impression event; specified discovery placements lack exposure denominators [R16].
+- **Coverage boundary:** GA4 metrics describe consenting main-site visitors only, with no all-visitor denominator; other sources have their own populations [R15].
+  - The 2026-11-05 inventory records no GA4 in inspected Telemetry, Ghost Car, TYRES and BetCast snapshots; this does not establish their present state (`docs/intelligence/event-inventory.md#L91-L98`).
   - Any sponsor-facing number is therefore a floor of consented click intent. It is not audience size, reach or delivered visits.
 - No ad server, ad network, tracking pixel, heatmap or affiliate tracking exists [R17].
 
@@ -69,7 +69,7 @@ The repo shows that code and placements exist. It cannot show whether any busine
 | Corrections | A structured record plus a per-article "Στείλε διόρθωση" link [R37] |
 | Complaints | No separate process [R37] |
 | Editorial approval | Two-editor review is optional. Author PRs auto-merge once CI passes, and CI is explicitly "not editorial approval" [R36] |
-| Media policy | Exists and separates credit from permission. The rights register is sparse (126 of about 1,076 images, with no licence values) [R22, R23] |
+| Media policy | Exists and separates credit from permission. The rights register is sparse (126 records for 1,084 numbered originals at deployed 786765799, with no licence values) [R22, R23] |
 | Brand disclaimer | No site-level "unofficial / not associated with Formula 1" notice exists [R05]. The Race Desk OpenF1 sections describe their data *source* as unofficial; that is not a site disclaimer [R06]. The TYRES app carries its own app-level disclaimer [R34] |
 | Commercial policy, sponsor contract template, rate card, media kit, sponsor reporting definition | None exist [R10] |
 | Newsletter | Production-disabled, with no subscribers [R21] |
@@ -80,15 +80,15 @@ The full provider × product matrix is in [rights-matrix.md §3](rights-matrix.m
 
 - **OpenF1** (CC BY-NC-SA 4.0, non-commercial) feeds THE GRID tabs, the debrief and dirty-air caches, the hub timeline and pace sections, Telemetry and Ghost Car [R28, R29, P03].
 - **Jolpica** (CC BY-NC-SA 4.0, non-commercial) feeds THE GRID standings and pit stops, the hub results, and the countdown in the site navigation on every page [R28, P05].
-- **TYRES** depends on Pirelli press graphics (facts transcribed), Open-Meteo (non-commercial free tier) and formula1.com schedules [R34, P07, P08].
+- **TYRES** depends on Pirelli press graphics (facts transcribed), Open-Meteo (non-commercial free tier) and formula1.com schedules [R34, P07, P08]. The limited weather hold and existing-use rights are reconciled in [the REC-02 evidence](evidence-ledger.md#rec-02-reconciliation-2026-11-09).
 - **BetCast** uses only the owner's own spreadsheet [R35].
-- **Rights record:** `publication-rights.v1.json` holds the site owner's acceptance of the OpenF1 non-commercial licence for one session. It holds no provider authorisation. Jolpica is `unresolved` there, even though Jolpica's terms are now verified [R26, P05]. Only the timeline and pace builders are gated by this record [R27].
+- **Rights record:** `publication-rights.v1.json` holds the site owner's acceptance of the OpenF1 non-commercial licence for one session. It holds no provider authorisation. Jolpica remains `unresolved` in that record [R26]; verifying published terms [P05] does not resolve publication rights or establish commercial authorisation. Only the timeline and pace builders are gated by this record [R27].
 - **Committed data:** raw API captures and derived datasets are committed to the public repos. No repo has a LICENSE file [R29, R30, R33].
 
 ## 7. Brand and domains
 
 - **Brand:** the name, the logo wordmark, the domain `f1-stories.gr` and the social handles all contain "F1" [R01–R04].
-- **Old domain:** `f1stories.gr` returned NXDOMAIN on 2026-10-24. On 2026-11-05 it resolves to Cloudflare addresses, and its controller is unknown [N02].
+- **Old domain:** N02 retains the 2026-11-05 DNS observation and unverified earlier NXDOMAIN report. On 2026-11-09 the owner reported reacquisition and control through a registrar (OWNER_REPORTED); HTTP/HTTPS checks verified 301 redirects preserving tested paths and queries (LIVE_VERIFIED). Registry details remain UNVERIFIED [N02, U13]. Domain control does not resolve trademark or commercial domain-use permissions.
 - F1's published guidelines address domains, brand identity and disclaimers [P01]. The analysis is in [risk-register.md](risk-register.md) CR-01 and [rights-matrix.md §1](rights-matrix.md#1-brand-domains-and-formula-1-marks).
 
 ## 8. Betting content
@@ -103,13 +103,13 @@ The full provider × product matrix is in [rights-matrix.md §3](rights-matrix.m
 
 | Missing | Needed for |
 |---|---|
-| Plain-language commercial labels and one defined set of relationship types | S1–S6 |
-| Public "Χορηγοί & συνεργασίες" disclosure page and publisher identity | S1–S6 (subject to counsel) |
-| Separate commercial approval, and a human editorial approval step for paid content (no auto-merge) | S2, S3, S5 |
-| A content or metadata flag for sponsored items | S2, S3, S5 |
-| Rights ledger with a "commercial use" column (images, logos, F1 and team assets, avatars, site logo) | S1–S5 |
-| Provider register for every data source, with written commercial authorisations | S3, S4 |
-| Sponsor report definition (consented-cohort caveat, click floor, no impressions) | S1, S4 |
-| Per-placement identifier in the existing click event | S1, S4 |
+| Visible relationship/format disclosures | Assess the selected S1–S6 format under X3; wording and legal sufficiency require review |
+| General publisher/provider information and identifiable contracting party | Separate applicability/scope assessment [CR-07, U02]; do not infer that only paid editorial triggers it |
+| Proposed public disclosure page and full draft policy | Owner governance choice, with counsel review; not asserted as a universal statutory prerequisite |
+| Separate commercial and human editorial approval, plus paid-content identification | S2/S5 and S3/S6 where paid editorial is commissioned [CR-08]; article auto-merge is not automatically a static-logo blocker |
+| Use-specific media/logo rights records | Every scenario using those assets; no archive-wide clearance inferred [CR-02, CR-05] |
+| Provider permission/scope evidence | Actual affected provider uses, including S1 distributed into tools and S2/S5 incorporating data [CR-03, CR-09, CR-11] |
+| Reporting scope and privacy review | Any scenario promising reports; only evidenced consented-click claims [CR-10, BR-11] |
+| Per-placement click identifier | Needed only for a reporting promise the current event cannot support; not required merely to render a static placement |
 
-Everything in this table is a later decision that needs owner approval. No item requires a commercial backend: each fits the existing static site, the existing click event and the existing contact form.
+Assess the selected scenario using the [X1–X4 applicability matrix](rights-matrix.md#4-scenario-comparison). Any implementation is a later owner decision; these assessments do not require a commercial backend.
