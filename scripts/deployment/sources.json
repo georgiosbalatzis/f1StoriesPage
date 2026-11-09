@@ -23,7 +23,7 @@
     {
       "application": "ghostcar",
       "repository": "georgiosbalatzis/ghostcar",
-      "sha": "4d7a783d9866bce917f61ae6546e48bc0d38b622",
+      "sha": "3e5ed97ff734669e7274b8d909f8cf8c58c76b00",
       "path": "/ghostcar/",
       "output": "dist",
       "build": "build:f1stories",
