@@ -76,6 +76,7 @@ assert.deepEqual(uncertainDrivers, [6, 14, 18]);
 const formatTime = seconds => `${new Intl.NumberFormat('el-GR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(Math.floor(seconds * 1000 + 0.5 + 1e-9) / 1000)} s`;
 const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 // TYRES override circuit.name at code/data snapshot 249aa796a1981be4f70213c9f1973b4418faf3ca.
+// This pin adds WEATHER_HOLD for las-vegas/lusail; existing native selections are unchanged.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
 const nativeTyres = {
   '2026-japanese-gp': ['Suzuka Circuit', '67158dbf7d4c4632c3733420a38648ab6171f319'],
