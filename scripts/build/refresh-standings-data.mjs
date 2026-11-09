@@ -116,7 +116,16 @@ async function updateMainStandingsSnapshot(options, { write = true } = {}) {
         constructorStandings
     };
 
+    const drivers = (driverLists[0] || {}).DriverStandings;
+    const constructors = (constructorLists[0] || {}).ConstructorStandings;
+    const driverCount = Array.isArray(drivers) ? drivers.length : 0;
+    const constructorCount = Array.isArray(constructors) ? constructors.length : 0;
+
     if (write) {
+        // Preserve an existing table when upstream returns no standings.
+        if ((!driverCount || !constructorCount) && await hasCachedStandings()) {
+            throw new Error(`Refusing to replace ${options.year} standings with empty standings (${driverCount} drivers, ${constructorCount} constructors)`);
+        }
         await fs.mkdir(path.dirname(STANDINGS_OUTPUT_PATH), { recursive: true });
         await fs.writeFile(STANDINGS_OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
     }
@@ -124,10 +133,23 @@ async function updateMainStandingsSnapshot(options, { write = true } = {}) {
     return {
         payload,
         outputPath: STANDINGS_OUTPUT_PATH,
-        driverCount: ((driverLists[0] || {}).DriverStandings || []).length,
-        constructorCount: ((constructorLists[0] || {}).ConstructorStandings || []).length,
+        driverCount,
+        constructorCount,
         round: (driverLists[0] && driverLists[0].round) || ''
     };
+}
+
+async function hasCachedStandings() {
+    try {
+        const cached = JSON.parse(await fs.readFile(STANDINGS_OUTPUT_PATH, 'utf8'));
+        return [['driverStandings', 'DriverStandings'], ['constructorStandings', 'ConstructorStandings']].some(([table, rows]) => {
+            const list = cached?.[table]?.MRData?.StandingsTable?.StandingsLists?.[0];
+            return Array.isArray(list?.[rows]) && list[rows].length > 0;
+        });
+    } catch (error) {
+        if (error.code !== 'ENOENT') console.warn(`Could not read cached standings: ${error.message}`);
+        return false;
+    }
 }
 
 async function fetchRaceName(year, round) {
@@ -207,18 +229,46 @@ async function main() {
         `Round snapshots in ${ROUND_SNAPSHOT_DIR} (${roundResult.written} written, ${roundResult.kept} kept, ${roundResult.failed} failed, latest round ${roundResult.latestRound})`
     );
 
-    const dirtyAirResult = await updateDirtyAirCache(options);
-    console.log(
-        `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
-        `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ` +
-        `${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
-    );
+    const problems = [];
+    if (roundResult.failed) problems.push(`round-snapshots: ${roundResult.failed} failed`);
 
-    const debriefResult = await updateDebriefCache(options);
-    console.log(
-        `Debrief cache saved to ${debriefResult.outputPath} ` +
-        `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
-    );
+    await runOptionalStage('dirty-air', problems, async () => {
+        const dirtyAirResult = await updateDirtyAirCache(options);
+        console.log(
+            `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
+            `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ` +
+            `${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
+        );
+        if (dirtyAirResult.failedCount) problems.push(`dirty-air: ${dirtyAirResult.failedCount} session failed`);
+    });
+
+    await runOptionalStage('debrief', problems, async () => {
+        const debriefResult = await updateDebriefCache(options);
+        console.log(
+            `Debrief cache saved to ${debriefResult.outputPath} ` +
+            `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
+        );
+    });
+
+    if (problems.length) {
+        const summary = `Standings refresh PARTIAL, failed stages: ${problems.join('; ')}`;
+        const annotation = summary.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+        console.log(`::warning title=Standings refresh PARTIAL::${annotation}`);
+        console.log(summary);
+    } else {
+        console.log('Standings refresh complete: all stages succeeded');
+    }
+}
+
+// Exit 0 on an optional failure: publish-blog.yml only publishes the patch from a successful job,
+// so throwing here would discard standings already written.
+async function runOptionalStage(name, problems, stage) {
+    try {
+        await stage();
+    } catch (error) {
+        console.error(error && error.stack ? error.stack : error);
+        problems.push(`${name}: ${error && error.message ? error.message : error}`);
+    }
 }
 
 main().catch(error => {

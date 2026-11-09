@@ -183,6 +183,12 @@ function readExistingCache(expectedYear) {
     }
 }
 
+function populatedRounds(cache) {
+    return ((cache && cache.rounds) || []).filter(function(round) {
+        return round && (round.singleLap || []).some(function(row) { return row && row.lapTime; });
+    });
+}
+
 function sameJsonExceptKey(left, right, key) {
     if (!left || !right) return false;
     var a = Object.assign({}, left);
@@ -1204,6 +1210,17 @@ async function updateDebriefCache(options) {
     };
     if (sameJsonExceptKey(existing, payload, 'generatedAt') && existing.generatedAt) {
         payload.generatedAt = existing.generatedAt;
+    }
+
+    // Every round is rebuilt on each run, so an upstream gap would otherwise blank rounds already published.
+    var populated = populatedRounds(payload);
+    var missing = populatedRounds(existing).filter(function(oldRound) {
+        return !populated.some(function(newRound) {
+            return oldRound.grandPrix ? newRound.grandPrix === oldRound.grandPrix : newRound.round === oldRound.round;
+        });
+    });
+    if (missing.length) {
+        throw new Error('debrief: refusing to remove populated rounds: ' + missing.map(function(round) { return round.grandPrix || round.round; }).join(', '));
     }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });

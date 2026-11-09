@@ -762,13 +762,19 @@ function buildDirtyAirSessionPayload(session, drivers, laps, results, raceContro
 const SPLIT_DIR = path.join(__dirname, '..', 'standings', 'dirty-air');
 const INDEX_SESSION_FIELDS = ['session_key', 'meeting_name', 'circuit_short_name', 'location', 'country_name', 'session_name', 'session_type', 'date_start', 'date_end', 'maxLaps'];
 
+function populatedSessions(bundle) {
+    return ((bundle && bundle.sessions) || []).filter(session => session && session.rows && session.rows.length);
+}
+
 function writeDirtyAirSplit(bundle) {
-    const sessions = (bundle.sessions || []).filter(session => session && session.rows && session.rows.length);
+    const sessions = populatedSessions(bundle);
+    // session_key comes from OpenF1 and becomes a file name: numeric only. Checked before any write.
+    sessions.forEach(session => {
+        if (!/^\d+$/.test(String(session.session_key))) throw new Error(`dirty-air: unexpected session_key ${JSON.stringify(session.session_key)}`);
+    });
     fs.mkdirSync(SPLIT_DIR, { recursive: true });
     const keep = new Set(['index.json']);
     sessions.forEach(session => {
-        // session_key comes from OpenF1 and becomes a file name: numeric only.
-        if (!/^\d+$/.test(String(session.session_key))) throw new Error(`dirty-air: unexpected session_key ${JSON.stringify(session.session_key)}`);
         const name = `${session.session_key}.json`;
         keep.add(name);
         fs.writeFileSync(path.join(SPLIT_DIR, name), JSON.stringify(session));
@@ -842,7 +848,8 @@ function shouldRebuildCachedSession(session, cachedSession, force) {
 async function updateDirtyAirCache(options) {
     const force = !!(options && options.force);
     const year = parseInt(options && options.year, 10) || new Date().getFullYear();
-    const existing = force ? null : readExistingCache(year);
+    const onDisk = readExistingCache(year);
+    const existing = force ? null : onDisk;
     const existingMap = new Map(((existing && existing.sessions) || []).map(session => [String(session.session_key), session]));
 
     const sessions = await getCompletedRaceSessions(year);
@@ -884,9 +891,16 @@ async function updateDirtyAirCache(options) {
         bundle.generatedAt = existing.generatedAt;
     }
 
+    // An upstream gap must not unpublish sessions: writeDirtyAirSplit deletes every file it does not rewrite.
+    const populatedAfter = new Set(populatedSessions(bundle).map(session => String(session.session_key)));
+    const missing = populatedSessions(onDisk).filter(session => !populatedAfter.has(String(session.session_key)));
+    if (missing.length) {
+        throw new Error(`dirty-air: refusing to remove populated sessions: ${missing.map(session => session.session_key).join(', ')}`);
+    }
+
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(bundle));
     writeDirtyAirSplit(bundle);
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(bundle));
 
     return {
         outputPath: OUTPUT_PATH,
