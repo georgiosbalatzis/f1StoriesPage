@@ -44,4 +44,4 @@ Privately establish relationships and possible release, choose a preparation sco
 
 ## Handoff and verification
 
-Documentation checks cover links, citations, matrix alignment, formulas, sensitive-content scans and change scope; their results must be established by the actual validation run. Private permissions, capacity, costs, deployed behavior and sponsor reporting remain unverified. B-03 validates evidence; B-06 scope remains an owner decision.
+2026-11-09: Links and anchors, citation paths and lines, matrix cells, formula grid and change scope passed; sensitive-content scan matches were reviewed. CI evidence is the check results on the PR head; passing checks authorize no sale. Private permissions, capacity, costs, deployed behavior and sponsor reporting remain unverified. B-03 validates evidence; B-06 scope remains an owner decision.
