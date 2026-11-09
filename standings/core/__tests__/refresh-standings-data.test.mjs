@@ -43,7 +43,7 @@ function sandbox(t, extraDirtyAirSessions = []) {
     write('standings/rounds/2026-1.json', { seed: true });
     write(DIRTY_AIR, { version: 1, year: 2026, generatedAt: 'seed', minisectors: 30, sessions: [cachedSession(9001), ...extraDirtyAirSessions] });
     write(DIRTY_AIR_SPLIT, cachedSession(9001));
-    write(DIRTY_AIR_INDEX, { version: 1, year: 2026, generatedAt: 'seed', sessions: [{ session_key: 9001 }] });
+    write(DIRTY_AIR_INDEX, { version: 1, year: 2026, generatedAt: 'seed', minisectors: 30, sessions: [{ session_key: 9001, date_start: '2026-03-01T14:00:00Z', maxLaps: 50 }] });
     write(DEBRIEF, { version: 2, season: 2026, generatedAt: 'seed', rounds: [{ round: 1, singleLap: [{ code: 'OLD', lapTime: '1:30.000' }] }] });
     return root;
 }
@@ -230,11 +230,12 @@ test('empty new season replaces previous season standings', t => {
 test('optional cache write failures preserve targets and clean temporary files', t => {
     for (const [target, stage] of [[DIRTY_AIR_SPLIT, 'dirty-air'], [DIRTY_AIR_INDEX, 'dirty-air'], [DIRTY_AIR, 'dirty-air'], [DEBRIEF, 'debrief']]) {
         const root = sandbox(t);
-        const before = read(root, target);
+        const files = stage === 'dirty-air' ? [DIRTY_AIR, DIRTY_AIR_SPLIT, DIRTY_AIR_INDEX] : [target];
+        const before = snapshot(root, files);
         const result = refresh(root, { STUB_WRITE_FAIL: path.basename(target) });
         assertPartial(result, stage);
-        assert.equal(read(root, target), before);
-        assert.ok(!fs.readdirSync(path.dirname(path.join(root, target))).some(name => name.endsWith('.tmp')));
+        assert.deepEqual(snapshot(root, files), before);
+        for (const file of files) assert.ok(!fs.readdirSync(path.dirname(path.join(root, file))).some(name => name.endsWith('.tmp')));
     }
 });
 
@@ -265,7 +266,7 @@ test('empty round standings are rejected even with force and rounds-only', t => 
 });
 
 test('malformed primary rows fail without replacing standings', t => {
-    for (const failure of ['driver-row', 'constructor-row']) {
+    for (const failure of ['driver-row', 'constructor-row', 'driver-empty', 'constructor-empty']) {
         const root = sandbox(t);
         const before = read(root, STANDINGS);
         const result = refresh(root, { STUB_FAIL: failure });

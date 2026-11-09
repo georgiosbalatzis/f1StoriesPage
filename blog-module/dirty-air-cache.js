@@ -766,16 +766,6 @@ function populatedSessions(bundle) {
     return ((bundle && bundle.sessions) || []).filter(session => session && session.rows && session.rows.length);
 }
 
-function writeAtomic(file, data) {
-    const temp = `${file}.${process.pid}.tmp`;
-    try {
-        fs.writeFileSync(temp, data);
-        fs.renameSync(temp, file);
-    } finally {
-        if (fs.existsSync(temp)) fs.unlinkSync(temp);
-    }
-}
-
 function writeDirtyAirSplit(bundle) {
     const sessions = populatedSessions(bundle);
     // session_key comes from OpenF1 and becomes a file name: numeric only. Checked before any write.
@@ -784,10 +774,10 @@ function writeDirtyAirSplit(bundle) {
     });
     fs.mkdirSync(SPLIT_DIR, { recursive: true });
     const keep = new Set(['index.json']);
-    sessions.forEach(session => {
+    const files = sessions.map(session => {
         const name = `${session.session_key}.json`;
         keep.add(name);
-        writeAtomic(path.join(SPLIT_DIR, name), JSON.stringify(session));
+        return [path.join(SPLIT_DIR, name), JSON.stringify(session)];
     });
     const index = {
         version: bundle.version,
@@ -796,7 +786,15 @@ function writeDirtyAirSplit(bundle) {
         minisectors: bundle.minisectors,
         sessions: sessions.map(session => Object.fromEntries(INDEX_SESSION_FIELDS.filter(key => key in session).map(key => [key, session[key]])))
     };
-    writeAtomic(path.join(SPLIT_DIR, 'index.json'), JSON.stringify(index));
+    files.push([path.join(SPLIT_DIR, 'index.json'), JSON.stringify(index)], [OUTPUT_PATH, JSON.stringify(bundle)]);
+    const staged = files.map(([file, data]) => ({ file, data, temp: `${file}.${process.pid}.tmp` }));
+    try {
+        staged.forEach(({ temp, data }) => fs.writeFileSync(temp, data));
+        // shortcut: rename failures can leave a mixed set; add rollback if that must be supported.
+        staged.forEach(({ temp, file }) => fs.renameSync(temp, file));
+    } finally {
+        staged.forEach(({ temp }) => { if (fs.existsSync(temp)) fs.unlinkSync(temp); });
+    }
     fs.readdirSync(SPLIT_DIR).filter(name => !keep.has(name)).forEach(name => fs.unlinkSync(path.join(SPLIT_DIR, name)));
 }
 
@@ -913,7 +911,6 @@ async function updateDirtyAirCache(options) {
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     writeDirtyAirSplit(bundle);
-    writeAtomic(OUTPUT_PATH, JSON.stringify(bundle));
 
     return {
         outputPath: OUTPUT_PATH,

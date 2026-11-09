@@ -126,7 +126,7 @@ async function updateMainStandingsSnapshot(options, { write = true } = {}) {
         if ((!driverCount || !constructorCount) && await hasCachedStandings(options.year)) {
             throw new Error(`Refusing to replace ${options.year} standings with empty standings (${driverCount} drivers, ${constructorCount} constructors)`);
         }
-        if ((Array.isArray(drivers) && drivers.some(row => !row || !row.Driver)) || (Array.isArray(constructors) && constructors.some(row => !row || !row.Constructor))) {
+        if ((Array.isArray(drivers) && drivers.some(row => typeof row?.Driver?.driverId !== 'string' || !row.Driver.driverId.trim())) || (Array.isArray(constructors) && constructors.some(row => typeof row?.Constructor?.constructorId !== 'string' || !row.Constructor.constructorId.trim()))) {
             throw new Error('Malformed primary standings rows');
         }
         await fs.mkdir(path.dirname(STANDINGS_OUTPUT_PATH), { recursive: true });

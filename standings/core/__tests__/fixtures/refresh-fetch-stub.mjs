@@ -39,11 +39,11 @@ const noStandings = () => ({ MRData: { StandingsTable: { season: '2026', Standin
 function jolpica(url) {
     if (url.pathname.endsWith('/driverstandings.json')) {
         if (fail.has('primary')) return notFound();
-        return json(empty.has('primary') ? noStandings() : standings('DriverStandings', empty.has('drivers') ? [] : [{ position: '1', points: '25', ...(fail.has('driver-row') ? {} : { Driver: { driverId: 'stub' } }) }]));
+        return json(empty.has('primary') ? noStandings() : standings('DriverStandings', empty.has('drivers') ? [] : [{ position: '1', points: '25', ...(fail.has('driver-row') ? {} : { Driver: fail.has('driver-empty') ? {} : { driverId: 'stub' } }) }]));
     }
     if (url.pathname.endsWith('/constructorstandings.json')) {
         if (fail.has('primary')) return notFound();
-        return json(empty.has('primary') ? noStandings() : standings('ConstructorStandings', empty.has('constructors') ? [] : [{ position: '1', points: '25', ...(fail.has('constructor-row') ? {} : { Constructor: { constructorId: 'stub' } }) }]));
+        return json(empty.has('primary') ? noStandings() : standings('ConstructorStandings', empty.has('constructors') ? [] : [{ position: '1', points: '25', ...(fail.has('constructor-row') ? {} : { Constructor: fail.has('constructor-empty') ? {} : { constructorId: 'stub' } }) }]));
     }
     if (empty.has('race-name')) return json({ MRData: { RaceTable: { Races: [] } } });
     return json({ MRData: { RaceTable: { Races: [{ raceName: 'Stub Grand Prix' }] } } });
