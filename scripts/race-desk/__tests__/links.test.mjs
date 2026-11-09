@@ -396,7 +396,7 @@ test("source lock matches reviewed origin, application paths and pinned revision
   const expected = {
     main: ["/", undefined],
     telemetry: ["/telemetry/", "38c3dd2018b810a5dce1add1f7663bcb199c845a"],
-    ghostcar: ["/ghostcar/", "3e5ed97ff734669e7274b8d909f8cf8c58c76b00"],
+    ghostcar: ["/ghostcar/", "e8cc55eee36a39db5a47d1e4069183323b3f0d9f"],
     tyres: ["/tyres/", "cd87460bd51d86114b32d0d64556b1393d3f3aed"],
   };
   for (const [name, [path, sha]] of Object.entries(expected)) {
