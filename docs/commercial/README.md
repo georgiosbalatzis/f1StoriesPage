@@ -42,6 +42,10 @@ This folder is the evidence-based foundation for selling sponsorships on F1 Stor
 | [legal-counsel-brief.md](legal-counsel-brief.md) | Questions for a lawyer and a tax adviser |
 | [evidence-ledger.md](evidence-ledger.md) | The source of every material claim, with dates |
 | [b01-closeout.md](b01-closeout.md) | Owner-facing answers and next steps |
+| [inventory.md](inventory.md) | B-02 inventory and capacity |
+| [packages.md](packages.md) | B-02 package proposals and scenario gates |
+| [pricing-methodology.md](pricing-methodology.md) | B-02 pricing method and measurement |
+| [b02-closeout.md](b02-closeout.md) | B-02 owner decisions and handoff |
 
 ## Commercial activation boundaries
 
@@ -67,7 +71,7 @@ Software agents prepare evidence only. They cannot approve anything.
 
 ## Relationship to later work
 
-- **B-02.** Its scope is not defined in this repository. B-01 supports B-02 starting as **planning and documentation only**; see the closeout, Q7. Activating any commercial offer is a separate decision with separate preconditions.
+- **B-02 (2026-11-09).** B-01 supported planning and documentation only; the [B-02 closeout](b02-closeout.md) now documents that scope. The inventory, packages and pricing documents are an internal proposal; nothing is approved for commercial offer and every scenario stays `UNRESOLVED`. Two concepts are for preparation, with no confirmed available capacity. B-03 is evidence validation; B-06 remains owner-defined. Activation requires separate decisions and preconditions.
 - **Later implementation PRs**, if the owner approves them, each as its own PR:
   - disclaimer and labels;
   - a disclosure page;
