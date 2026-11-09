@@ -123,8 +123,11 @@ async function updateMainStandingsSnapshot(options, { write = true } = {}) {
 
     if (write) {
         // Preserve an existing table when upstream returns no standings.
-        if ((!driverCount || !constructorCount) && await hasCachedStandings()) {
+        if ((!driverCount || !constructorCount) && await hasCachedStandings(options.year)) {
             throw new Error(`Refusing to replace ${options.year} standings with empty standings (${driverCount} drivers, ${constructorCount} constructors)`);
+        }
+        if ((Array.isArray(drivers) && drivers.some(row => !row || !row.Driver)) || (Array.isArray(constructors) && constructors.some(row => !row || !row.Constructor))) {
+            throw new Error('Malformed primary standings rows');
         }
         await fs.mkdir(path.dirname(STANDINGS_OUTPUT_PATH), { recursive: true });
         await fs.writeFile(STANDINGS_OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
@@ -139,12 +142,12 @@ async function updateMainStandingsSnapshot(options, { write = true } = {}) {
     };
 }
 
-async function hasCachedStandings() {
+async function hasCachedStandings(year) {
     try {
         const cached = JSON.parse(await fs.readFile(STANDINGS_OUTPUT_PATH, 'utf8'));
         return [['driverStandings', 'DriverStandings'], ['constructorStandings', 'ConstructorStandings']].some(([table, rows]) => {
             const list = cached?.[table]?.MRData?.StandingsTable?.StandingsLists?.[0];
-            return Array.isArray(list?.[rows]) && list[rows].length > 0;
+            return String(cached?.[table]?.MRData?.StandingsTable?.season || list?.season) === String(year) && Array.isArray(list?.[rows]) && list[rows].length > 0;
         });
     } catch (error) {
         if (error.code !== 'ENOENT') console.warn(`Could not read cached standings: ${error.message}`);
@@ -188,8 +191,11 @@ async function updateRoundSnapshots(options, mainResult) {
                 : [await fetchJSON(driverStandingsUrl), await fetchJSON(constructorStandingsUrl), await fetchRaceName(options.year, round)];
             // A snapshot is immutable once written, so don't write one that is missing its race name.
             if (!raceName) throw new Error('race name unavailable');
-            getStandingsLists(driverStandings, `Round ${round} driver standings`);
-            getStandingsLists(constructorStandings, `Round ${round} constructor standings`);
+            const drivers = getStandingsLists(driverStandings, `Round ${round} driver standings`)[0]?.DriverStandings;
+            const constructors = getStandingsLists(constructorStandings, `Round ${round} constructor standings`)[0]?.ConstructorStandings;
+            if (!Array.isArray(drivers) || !drivers.length || !Array.isArray(constructors) || !constructors.length) {
+                throw new Error('empty standings');
+            }
             const snapshot = {
                 generatedAt: new Date().toISOString(),
                 raceName,

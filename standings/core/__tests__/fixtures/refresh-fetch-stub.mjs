@@ -1,6 +1,17 @@
 // Preloaded with `node --import` so the refresh script never reaches the network.
 import fs from 'node:fs';
 
+if (process.env.STUB_WRITE_FAIL) {
+    const original = fs.writeFileSync;
+    fs.writeFileSync = function(file, ...args) {
+        if (String(file).includes(process.env.STUB_WRITE_FAIL) && String(file).endsWith('.tmp')) {
+            original.call(this, file, 'partial');
+            throw new Error('stubbed write failure');
+        }
+        return original.call(this, file, ...args);
+    };
+}
+
 const list = name => (process.env[name] || '').split(',').filter(Boolean);
 const fail = new Set(list('STUB_FAIL'));
 const empty = new Set(list('STUB_EMPTY'));
@@ -28,11 +39,11 @@ const noStandings = () => ({ MRData: { StandingsTable: { season: '2026', Standin
 function jolpica(url) {
     if (url.pathname.endsWith('/driverstandings.json')) {
         if (fail.has('primary')) return notFound();
-        return json(empty.has('primary') ? noStandings() : standings('DriverStandings', [{ position: '1', points: '25' }]));
+        return json(empty.has('primary') ? noStandings() : standings('DriverStandings', empty.has('drivers') ? [] : [{ position: '1', points: '25', ...(fail.has('driver-row') ? {} : { Driver: { driverId: 'stub' } }) }]));
     }
     if (url.pathname.endsWith('/constructorstandings.json')) {
         if (fail.has('primary')) return notFound();
-        return json(empty.has('primary') ? noStandings() : standings('ConstructorStandings', [{ position: '1', points: '25' }]));
+        return json(empty.has('primary') ? noStandings() : standings('ConstructorStandings', empty.has('constructors') ? [] : [{ position: '1', points: '25', ...(fail.has('constructor-row') ? {} : { Constructor: { constructorId: 'stub' } }) }]));
     }
     if (empty.has('race-name')) return json({ MRData: { RaceTable: { Races: [] } } });
     return json({ MRData: { RaceTable: { Races: [{ raceName: 'Stub Grand Prix' }] } } });

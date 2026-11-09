@@ -48,11 +48,11 @@ function sandbox(t, extraDirtyAirSessions = []) {
     return root;
 }
 
-function refresh(root, stub = {}) {
+function refresh(root, stub = {}, args = []) {
     const calls = path.join(root, 'calls.log');
     const result = spawnSync(
         process.execPath,
-        ['--import', STUB, path.join(root, SOURCES[0]), '--year', '2026'],
+        ['--import', STUB, path.join(root, SOURCES[0]), '--year', '2026', ...args],
         { encoding: 'utf8', env: { ...process.env, STUB_DIRTY_AIR_KEYS: '9001', STUB_CALLS: calls, ...stub } }
     );
     const lines = result.stdout.trim().split('\n');
@@ -214,4 +214,87 @@ test('repeated runs are safe after success and after partial failure', t => {
         assertPartial(refresh(root, { STUB_FAIL: 'dirty-air,debrief' }), 'dirty-air', 'debrief');
         assert.deepEqual(snapshot(root, OPTIONAL_CACHES), afterFirst);
     }
+});
+
+
+test('empty new season replaces previous season standings', t => {
+    const root = sandbox(t);
+    const cache = JSON.parse(read(root, STANDINGS));
+    for (const table of [cache.driverStandings, cache.constructorStandings]) table.MRData.StandingsTable.season = '2025';
+    fs.writeFileSync(path.join(root, STANDINGS), JSON.stringify(cache));
+    const result = refresh(root, { STUB_EMPTY: 'primary' });
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(read(root, STANDINGS)).driverStandings.MRData.StandingsTable.StandingsLists, []);
+});
+
+test('optional cache write failures preserve targets and clean temporary files', t => {
+    for (const [target, stage] of [[DIRTY_AIR_SPLIT, 'dirty-air'], [DIRTY_AIR_INDEX, 'dirty-air'], [DIRTY_AIR, 'dirty-air'], [DEBRIEF, 'debrief']]) {
+        const root = sandbox(t);
+        const before = read(root, target);
+        const result = refresh(root, { STUB_WRITE_FAIL: path.basename(target) });
+        assertPartial(result, stage);
+        assert.equal(read(root, target), before);
+        assert.ok(!fs.readdirSync(path.dirname(path.join(root, target))).some(name => name.endsWith('.tmp')));
+    }
+});
+
+test('Debrief retains each populated metric when stints disappear', t => {
+    for (const [metric, row] of [['longRun', { avgLap: '1:30.000' }], ['tyreDeg', { deg: '0.000' }]]) {
+        const root = sandbox(t);
+        const cache = JSON.parse(read(root, DEBRIEF));
+        cache.rounds[0][metric] = [row];
+        fs.writeFileSync(path.join(root, DEBRIEF), JSON.stringify(cache));
+        const before = read(root, DEBRIEF);
+        const result = refresh(root);
+        assertPartial(result, 'debrief');
+        assert.match(result.stderr, new RegExp(metric));
+        assert.equal(read(root, DEBRIEF), before);
+    }
+});
+
+test('empty round standings are rejected even with force and rounds-only', t => {
+    for (const empty of ['drivers', 'constructors']) {
+        const root = sandbox(t);
+        const file = 'standings/rounds/2026-1.json';
+        const before = read(root, file);
+        const result = refresh(root, { STUB_EMPTY: empty }, ['--force', '--rounds-only']);
+        assert.equal(result.status, 0, result.stderr);
+        assert.match(result.stdout, /1 failed/);
+        assert.equal(read(root, file), before);
+    }
+});
+
+test('malformed primary rows fail without replacing standings', t => {
+    for (const failure of ['driver-row', 'constructor-row']) {
+        const root = sandbox(t);
+        const before = read(root, STANDINGS);
+        const result = refresh(root, { STUB_FAIL: failure });
+        assert.equal(result.status, 1);
+        assert.match(result.stderr, /Malformed primary/);
+        assert.equal(read(root, STANDINGS), before);
+        assert.doesNotMatch(result.calls, /openf1/);
+    }
+});
+
+test('a newly completed empty Dirty Air session reports PARTIAL', t => {
+    const root = sandbox(t);
+    const result = refresh(root, { STUB_DIRTY_AIR_KEYS: '9001,9002' });
+    assertPartial(result, 'dirty-air: 1 session failed');
+    assert.deepEqual(JSON.parse(read(root, DIRTY_AIR)).sessions.find(session => String(session.session_key) === '9002').rows, []);
+});
+
+test('force accepts withdrawn Dirty Air sessions and Debrief rounds with warnings', t => {
+    const root = sandbox(t);
+    const bundle = JSON.parse(read(root, DIRTY_AIR));
+    bundle.sessions.push(cachedSession(9002));
+    fs.writeFileSync(path.join(root, DIRTY_AIR), JSON.stringify(bundle));
+    const cache = JSON.parse(read(root, DEBRIEF));
+    cache.rounds.push({ round: 2, singleLap: [{ lapTime: '1:30.000' }] });
+    fs.writeFileSync(path.join(root, DEBRIEF), JSON.stringify(cache));
+    const result = refresh(root, {}, ['--force']);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stderr, /removing populated sessions: .*9002/);
+    assert.match(result.stderr, /removing populated rounds or metrics: 2 singleLap/);
+    assert.equal(JSON.parse(read(root, DIRTY_AIR)).sessions.length, 1);
+    assert.equal(JSON.parse(read(root, DEBRIEF)).rounds.length, 1);
 });

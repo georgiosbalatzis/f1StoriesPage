@@ -766,6 +766,16 @@ function populatedSessions(bundle) {
     return ((bundle && bundle.sessions) || []).filter(session => session && session.rows && session.rows.length);
 }
 
+function writeAtomic(file, data) {
+    const temp = `${file}.${process.pid}.tmp`;
+    try {
+        fs.writeFileSync(temp, data);
+        fs.renameSync(temp, file);
+    } finally {
+        if (fs.existsSync(temp)) fs.unlinkSync(temp);
+    }
+}
+
 function writeDirtyAirSplit(bundle) {
     const sessions = populatedSessions(bundle);
     // session_key comes from OpenF1 and becomes a file name: numeric only. Checked before any write.
@@ -777,7 +787,7 @@ function writeDirtyAirSplit(bundle) {
     sessions.forEach(session => {
         const name = `${session.session_key}.json`;
         keep.add(name);
-        fs.writeFileSync(path.join(SPLIT_DIR, name), JSON.stringify(session));
+        writeAtomic(path.join(SPLIT_DIR, name), JSON.stringify(session));
     });
     const index = {
         version: bundle.version,
@@ -786,7 +796,7 @@ function writeDirtyAirSplit(bundle) {
         minisectors: bundle.minisectors,
         sessions: sessions.map(session => Object.fromEntries(INDEX_SESSION_FIELDS.filter(key => key in session).map(key => [key, session[key]])))
     };
-    fs.writeFileSync(path.join(SPLIT_DIR, 'index.json'), JSON.stringify(index));
+    writeAtomic(path.join(SPLIT_DIR, 'index.json'), JSON.stringify(index));
     fs.readdirSync(SPLIT_DIR).filter(name => !keep.has(name)).forEach(name => fs.unlinkSync(path.join(SPLIT_DIR, name)));
 }
 
@@ -873,6 +883,7 @@ async function updateDirtyAirCache(options) {
             const built = await buildDirtyAirSession(session);
             outputSessions.push(built);
             rebuiltCount += 1;
+            if (!built.rows.length) failedCount += 1;
         } catch (error) {
             failedCount += 1;
             console.warn(`⚠️  Dirty air cache failed for session ${sessionKey}: ${error.message}`);
@@ -895,12 +906,14 @@ async function updateDirtyAirCache(options) {
     const populatedAfter = new Set(populatedSessions(bundle).map(session => String(session.session_key)));
     const missing = populatedSessions(onDisk).filter(session => !populatedAfter.has(String(session.session_key)));
     if (missing.length) {
-        throw new Error(`dirty-air: refusing to remove populated sessions: ${missing.map(session => session.session_key).join(', ')}`);
+        const message = `dirty-air: removing populated sessions: ${missing.map(session => session.session_key).join(', ')}`;
+        if (!force) throw new Error(message);
+        console.warn(message);
     }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     writeDirtyAirSplit(bundle);
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(bundle));
+    writeAtomic(OUTPUT_PATH, JSON.stringify(bundle));
 
     return {
         outputPath: OUTPUT_PATH,

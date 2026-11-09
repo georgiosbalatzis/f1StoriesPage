@@ -183,9 +183,27 @@ function readExistingCache(expectedYear) {
     }
 }
 
-function populatedRounds(cache) {
-    return ((cache && cache.rounds) || []).filter(function(round) {
-        return round && (round.singleLap || []).some(function(row) { return row && row.lapTime; });
+function writeAtomic(file, data) {
+    var temp = file + '.' + process.pid + '.tmp';
+    try {
+        fs.writeFileSync(temp, data, 'utf8');
+        fs.renameSync(temp, file);
+    } finally {
+        if (fs.existsSync(temp)) fs.unlinkSync(temp);
+    }
+}
+
+var metricFields = {
+    singleLap: ['lapTime'], longRun: ['avgLap'], tyreDeg: ['deg'],
+    compoundUsage: ['soft', 'medium', 'hard'], teamIdealLap: ['idealLap'],
+    cornerPerformance: ['slowCorners', 'mediumCorners', 'fastCorners', 'overall'],
+    racePacePrediction: ['predictedLap']
+};
+function hasMetric(round, metric) {
+    return ((round && round[metric]) || []).some(function(row) {
+        return row && metricFields[metric].some(function(field) {
+            return row[field] !== null && row[field] !== undefined && row[field] !== '';
+        });
     });
 }
 
@@ -1213,18 +1231,25 @@ async function updateDebriefCache(options) {
     }
 
     // Every round is rebuilt on each run, so an upstream gap would otherwise blank rounds already published.
-    var populated = populatedRounds(payload);
-    var missing = populatedRounds(existing).filter(function(oldRound) {
-        return !populated.some(function(newRound) {
-            return oldRound.grandPrix ? newRound.grandPrix === oldRound.grandPrix : newRound.round === oldRound.round;
+    var missing = [];
+    ((existing && existing.rounds) || []).forEach(function(oldRound) {
+        var newRound = rounds.find(function(round) {
+            return oldRound.grandPrix ? round.grandPrix === oldRound.grandPrix : round.round === oldRound.round;
+        });
+        Object.keys(metricFields).forEach(function(metric) {
+            if (hasMetric(oldRound, metric) && !hasMetric(newRound, metric)) {
+                missing.push((oldRound.grandPrix || oldRound.round) + ' ' + metric);
+            }
         });
     });
     if (missing.length) {
-        throw new Error('debrief: refusing to remove populated rounds: ' + missing.map(function(round) { return round.grandPrix || round.round; }).join(', '));
+        var message = 'debrief: removing populated rounds or metrics: ' + missing.join(', ');
+        if (!(options && options.force)) throw new Error(message);
+        console.warn(message);
     }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload) + '\n', 'utf8');
+    writeAtomic(OUTPUT_PATH, JSON.stringify(payload) + '\n');
 
     return {
         outputPath: OUTPUT_PATH,
