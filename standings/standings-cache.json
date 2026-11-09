@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-31T10:45:05.566Z",
-  "raceName": "United States Grand Prix",
+  "generatedAt": "2026-11-09T13:38:44.985Z",
+  "raceName": "Brazilian Grand Prix",
   "source": {
     "driverStandingsUrl": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
     "constructorStandingsUrl": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=30"
@@ -12,19 +12,19 @@
       "url": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json",
       "limit": "30",
       "offset": "0",
-      "total": "23",
+      "total": "25",
       "StandingsTable": {
         "season": "2026",
-        "round": "18",
+        "round": "20",
         "StandingsLists": [
           {
             "season": "2026",
-            "round": "18",
+            "round": "20",
             "DriverStandings": [
               {
                 "position": "1",
                 "positionText": "1",
-                "points": "365",
+                "points": "390",
                 "wins": "9",
                 "Driver": {
                   "driverId": "antonelli",
@@ -48,7 +48,31 @@
               {
                 "position": "2",
                 "positionText": "2",
-                "points": "242",
+                "points": "279",
+                "wins": "3",
+                "Driver": {
+                  "driverId": "max_verstappen",
+                  "permanentNumber": "3",
+                  "code": "VER",
+                  "url": "http://en.wikipedia.org/wiki/Max_Verstappen",
+                  "givenName": "Max",
+                  "familyName": "Verstappen",
+                  "dateOfBirth": "1997-09-30",
+                  "nationality": "Dutch"
+                },
+                "Constructors": [
+                  {
+                    "constructorId": "red_bull",
+                    "url": "https://en.wikipedia.org/wiki/Red_Bull_Racing",
+                    "name": "Red Bull",
+                    "nationality": "Austrian"
+                  }
+                ]
+              },
+              {
+                "position": "3",
+                "positionText": "3",
+                "points": "262",
                 "wins": "3",
                 "Driver": {
                   "driverId": "russell",
@@ -70,9 +94,9 @@
                 ]
               },
               {
-                "position": "3",
-                "positionText": "3",
-                "points": "241",
+                "position": "4",
+                "positionText": "4",
+                "points": "261",
                 "wins": "1",
                 "Driver": {
                   "driverId": "hamilton",
@@ -94,33 +118,9 @@
                 ]
               },
               {
-                "position": "4",
-                "positionText": "4",
-                "points": "236",
-                "wins": "2",
-                "Driver": {
-                  "driverId": "max_verstappen",
-                  "permanentNumber": "3",
-                  "code": "VER",
-                  "url": "http://en.wikipedia.org/wiki/Max_Verstappen",
-                  "givenName": "Max",
-                  "familyName": "Verstappen",
-                  "dateOfBirth": "1997-09-30",
-                  "nationality": "Dutch"
-                },
-                "Constructors": [
-                  {
-                    "constructorId": "red_bull",
-                    "url": "https://en.wikipedia.org/wiki/Red_Bull_Racing",
-                    "name": "Red Bull",
-                    "nationality": "Austrian"
-                  }
-                ]
-              },
-              {
                 "position": "5",
                 "positionText": "5",
-                "points": "233",
+                "points": "249",
                 "wins": "1",
                 "Driver": {
                   "driverId": "leclerc",
@@ -144,8 +144,8 @@
               {
                 "position": "6",
                 "positionText": "6",
-                "points": "211",
-                "wins": "2",
+                "points": "246",
+                "wins": "3",
                 "Driver": {
                   "driverId": "norris",
                   "permanentNumber": "1",
@@ -168,7 +168,7 @@
               {
                 "position": "7",
                 "positionText": "7",
-                "points": "144",
+                "points": "152",
                 "wins": "0",
                 "Driver": {
                   "driverId": "piastri",
@@ -192,7 +192,7 @@
               {
                 "position": "8",
                 "positionText": "8",
-                "points": "105",
+                "points": "122",
                 "wins": "0",
                 "Driver": {
                   "driverId": "hadjar",
@@ -216,7 +216,7 @@
               {
                 "position": "9",
                 "positionText": "9",
-                "points": "77",
+                "points": "89",
                 "wins": "0",
                 "Driver": {
                   "driverId": "lawson",
@@ -342,17 +342,17 @@
               {
                 "position": "14",
                 "positionText": "14",
-                "points": "13",
+                "points": "14",
                 "wins": "0",
                 "Driver": {
-                  "driverId": "hulkenberg",
-                  "permanentNumber": "27",
-                  "code": "HUL",
-                  "url": "http://en.wikipedia.org/wiki/Nico_H%C3%BClkenberg",
-                  "givenName": "Nico",
-                  "familyName": "Hülkenberg",
-                  "dateOfBirth": "1987-08-19",
-                  "nationality": "German"
+                  "driverId": "bortoleto",
+                  "permanentNumber": "5",
+                  "code": "BOR",
+                  "url": "https://en.wikipedia.org/wiki/Gabriel_Bortoleto",
+                  "givenName": "Gabriel",
+                  "familyName": "Bortoleto",
+                  "dateOfBirth": "2004-10-14",
+                  "nationality": "Brazilian"
                 },
                 "Constructors": [
                   {
@@ -366,17 +366,17 @@
               {
                 "position": "15",
                 "positionText": "15",
-                "points": "10",
+                "points": "14",
                 "wins": "0",
                 "Driver": {
-                  "driverId": "bortoleto",
-                  "permanentNumber": "5",
-                  "code": "BOR",
-                  "url": "https://en.wikipedia.org/wiki/Gabriel_Bortoleto",
-                  "givenName": "Gabriel",
-                  "familyName": "Bortoleto",
-                  "dateOfBirth": "2004-10-14",
-                  "nationality": "Brazilian"
+                  "driverId": "hulkenberg",
+                  "permanentNumber": "27",
+                  "code": "HUL",
+                  "url": "http://en.wikipedia.org/wiki/Nico_H%C3%BClkenberg",
+                  "givenName": "Nico",
+                  "familyName": "Hülkenberg",
+                  "dateOfBirth": "1987-08-19",
+                  "nationality": "German"
                 },
                 "Constructors": [
                   {
@@ -510,6 +510,30 @@
               {
                 "position": "21",
                 "positionText": "21",
+                "points": "1",
+                "wins": "0",
+                "Driver": {
+                  "driverId": "ryo_hirakawa",
+                  "permanentNumber": "50",
+                  "code": "HIR",
+                  "url": "https://en.wikipedia.org/wiki/Ryo_Hirakawa",
+                  "givenName": "Ryo",
+                  "familyName": "Hirakawa",
+                  "dateOfBirth": "1994-03-07",
+                  "nationality": "Japanese"
+                },
+                "Constructors": [
+                  {
+                    "constructorId": "haas",
+                    "url": "https://en.wikipedia.org/wiki/Haas_F1_Team",
+                    "name": "Haas F1 Team",
+                    "nationality": "American"
+                  }
+                ]
+              },
+              {
+                "position": "22",
+                "positionText": "22",
                 "points": "0",
                 "wins": "0",
                 "Driver": {
@@ -532,8 +556,8 @@
                 ]
               },
               {
-                "position": "22",
-                "positionText": "22",
+                "position": "23",
+                "positionText": "23",
                 "points": "0",
                 "wins": "0",
                 "Driver": {
@@ -556,8 +580,8 @@
                 ]
               },
               {
-                "position": "23",
-                "positionText": "23",
+                "position": "24",
+                "positionText": "24",
                 "points": "0",
                 "wins": "0",
                 "Driver": {
@@ -578,6 +602,25 @@
                     "nationality": "American"
                   }
                 ]
+              },
+              {
+                "position": "25",
+                "positionText": "25",
+                "points": "0",
+                "wins": "0",
+                "Driver": {
+                  "driverId": "rafael_camara",
+                  "givenName": "Rafael",
+                  "familyName": "Camara"
+                },
+                "Constructors": [
+                  {
+                    "constructorId": "haas",
+                    "url": "https://en.wikipedia.org/wiki/Haas_F1_Team",
+                    "name": "Haas F1 Team",
+                    "nationality": "American"
+                  }
+                ]
               }
             ]
           }
@@ -595,16 +638,16 @@
       "total": "11",
       "StandingsTable": {
         "season": "2026",
-        "round": "18",
+        "round": "20",
         "StandingsLists": [
           {
             "season": "2026",
-            "round": "18",
+            "round": "20",
             "ConstructorStandings": [
               {
                 "position": "1",
                 "positionText": "1",
-                "points": "607",
+                "points": "652",
                 "wins": "12",
                 "Constructor": {
                   "constructorId": "mercedes",
@@ -616,7 +659,7 @@
               {
                 "position": "2",
                 "positionText": "2",
-                "points": "474",
+                "points": "510",
                 "wins": "2",
                 "Constructor": {
                   "constructorId": "ferrari",
@@ -628,8 +671,8 @@
               {
                 "position": "3",
                 "positionText": "3",
-                "points": "355",
-                "wins": "2",
+                "points": "415",
+                "wins": "3",
                 "Constructor": {
                   "constructorId": "red_bull",
                   "url": "https://en.wikipedia.org/wiki/Red_Bull_Racing",
@@ -640,8 +683,8 @@
               {
                 "position": "4",
                 "positionText": "4",
-                "points": "355",
-                "wins": "2",
+                "points": "398",
+                "wins": "3",
                 "Constructor": {
                   "constructorId": "mclaren",
                   "url": "https://en.wikipedia.org/wiki/McLaren",
@@ -652,7 +695,7 @@
               {
                 "position": "5",
                 "positionText": "5",
-                "points": "102",
+                "points": "114",
                 "wins": "0",
                 "Constructor": {
                   "constructorId": "rb",
@@ -676,7 +719,7 @@
               {
                 "position": "7",
                 "positionText": "7",
-                "points": "30",
+                "points": "31",
                 "wins": "0",
                 "Constructor": {
                   "constructorId": "haas",
@@ -688,7 +731,7 @@
               {
                 "position": "8",
                 "positionText": "8",
-                "points": "23",
+                "points": "28",
                 "wins": "0",
                 "Constructor": {
                   "constructorId": "audi",
