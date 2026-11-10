@@ -12,7 +12,7 @@
 
 **Evidence key:** `M:path:line` refers to Main at the pin above; child prefixes use the named child pin. IDs/aliases and dimensions are in [findings.json](../../perf/p01/findings.json). Metrics/resources: [summary.tsv](../../perf/p01/summary.tsv), [resources.tsv](../../perf/p01/resources.tsv); checks: [checks.tsv](../../perf/p01/checks.tsv). `EV-*` receipts resolve in `local-bundle:p01-evidence.tar.gz#work/s1/evidence-receipts.json`; [evidence-index.json](../../perf/p01/evidence-index.json) supplies hashes/retrieval status.
 
-**Limitations:** five supported opportunities do not establish five proven speedups. Three are measured profiling targets whose implementation is conditional on attribution. One synthetic host, replay/blocked providers, incomplete readiness, unknown bytes and unverified interactions constrain impact estimates. Field INP/CWV are unavailable. Production/local are separate baselines, never before/after. Compact data links need coordinator integration. Every unmeasured saving is **TBD — requires P-0X measurement**.
+**Limitations:** five supported opportunities do not establish five proven speedups. Three are measured profiling targets whose implementation is conditional on attribution. One synthetic host, replay/blocked providers, incomplete readiness, unknown bytes and unverified interactions constrain impact estimates. Field INP/CWV are unavailable. Production/local are separate baselines, never before/after. Compact data links were checked at 3dca15331; final closure changes require their own review. Every unmeasured saving is **TBD — requires P-0X measurement**.
 
 ## Evidence admission and scoring
 

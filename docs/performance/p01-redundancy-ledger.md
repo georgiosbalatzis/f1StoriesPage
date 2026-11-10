@@ -12,7 +12,7 @@
 
 **Evidence key:** `M:path:line` refers to Main at the pin above; child prefixes refer to the named child pin. `S-*` resolves in [findings.json](../../perf/p01/findings.json). Graphs and inventories: [route-assets.tsv](../../perf/p01/route-assets.tsv), [dependency-edges.tsv](../../perf/p01/dependency-edges.tsv), [initialization.tsv](../../perf/p01/initialization.tsv), [payloads.tsv](../../perf/p01/payloads.tsv), [dependency-usage.tsv](../../perf/p01/dependency-usage.tsv). `EV-*` receipts are retained in `local-bundle:p01-evidence.tar.gz#work/s1/evidence-receipts.json`; [evidence-index.json](../../perf/p01/evidence-index.json) supplies entry hashes and retrieval status.
 
-**Limitations:** this is a candidate ledger, not exhaustive proof of unused code. Static references, source graphs, package declarations and CSS coverage do not establish complete runtime reachability. Gross duplicate bytes are not removable bytes. Production/local, source/artifact and replay/live costs stay separate. Compact data links require coordinator integration. Every unmeasured saving is **TBD — requires P-0X measurement**.
+**Limitations:** this is a candidate ledger, not exhaustive proof of unused code. Static references, source graphs, package declarations and CSS coverage do not establish complete runtime reachability. Gross duplicate bytes are not removable bytes. Production/local, source/artifact and replay/live costs stay separate. Compact data links were checked at 3dca15331; final closure changes require their own review. Every unmeasured saving is **TBD — requires P-0X measurement**.
 
 ## Disposition and safety
 
@@ -89,4 +89,4 @@ Repository history, current working tree, emitted artifact and route transfer ar
 
 No CSS/dynamic reachability scan establishes a new safe deletion. Unused-looking test fixtures, fallback code and manifests require build/publishing/author/history references before any removal proposal. Nothing is deleted here. Expected repository, artifact, request, CPU, build-time and maintenance savings all remain **TBD — requires P-0X measurement**.
 
-Raw B/F ledgers remain `local-bundle:p01-evidence.tar.gz#work/b/candidates.tsv` and `local-bundle:p01-evidence.tar.gz#work/f/cleanup.tsv`. Adjudication is retained at `work/s1/challenge.md` in that bundle. The duplicates TSV SHA-256 is `3b02a6621f1e3765b23d3998121eb720407359cb5b9bdf8838dca31100190e81`. Report integration, durable owner retention and independent Gate F review remain coordinator/reviewer obligations.
+Raw B/F ledgers remain `local-bundle:p01-evidence.tar.gz#work/b/candidates.tsv` and `local-bundle:p01-evidence.tar.gz#work/f/cleanup.tsv`. Adjudication is retained at `work/s1/challenge.md` in that bundle. The duplicates TSV SHA-256 is `3b02a6621f1e3765b23d3998121eb720407359cb5b9bdf8838dca31100190e81`. The integrated links were checked at 3dca15331; the delta and closure reviews and independent backup status remain open.
