@@ -1379,8 +1379,8 @@ function renderDrivers(standings, openf1Map) {
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
-                   + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
-                  : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
+                   + '<div class="st-avatar-fallback" style="display:none;">' + esc(acr) + '</div>'
+                  : '<div class="st-avatar-fallback">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
             + '<div class="st-points-area"><div class="st-points">' + pts + '</div>'
             + (wins > 0 ? '<div class="st-wins">' + formatWinsLabel(wins) + '</div>' : '')
@@ -1528,8 +1528,8 @@ function renderDriversFromOpenF1(standings, driverInfo) {
             + '<div class="st-pos">' + s.position_current + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
-                   + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
-                  : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
+                   + '<div class="st-avatar-fallback" style="display:none;">' + esc(acr) + '</div>'
+                  : '<div class="st-avatar-fallback">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
             + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div></div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'

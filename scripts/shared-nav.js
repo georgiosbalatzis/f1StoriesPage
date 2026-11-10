@@ -130,8 +130,8 @@
 
         function render() {
             root.classList.toggle('is-active', active);
-            // The visible word is "ON AIR", so the accessible name keeps it (label in name).
-            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast, ON AIR');
+            // Keep the complete visible label, including punctuation, in the accessible name.
+            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast, ON AIR.');
             button.setAttribute('aria-busy', String(active && buffering));
         }
 
