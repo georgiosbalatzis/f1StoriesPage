@@ -122,7 +122,7 @@
 .edition .ed-cal__months a .ed-num { font-size: .9375rem; letter-spacing: 0; }
 .edition .ed-cal__months a:hover { background: var(--bg-surface); }
 .edition .ed-cal__months a[aria-current] { background: var(--text-primary); color: var(--bg-base); }
-.edition .ed-cal__months .is-empty { color: var(--text-secondary); opacity: .6; font-weight: 400; }
+.edition .ed-cal__months .is-empty { color: var(--text-secondary); font-weight: 400; }
 .edition .ed-calendar .ed-cal__months { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 .edition .ed-calendar .ed-cal__months > li > * { flex-direction: column; align-items: flex-start; }
 
