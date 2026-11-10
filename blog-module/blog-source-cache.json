@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261110W",
+      "title": "Kenny Roberts Jr.: Ξεπερνώντας το επώνυμο",
+      "author": "Themis Charvalis",
+      "date": "2026-11-10",
+      "dateISO": "2026-11-10",
+      "displayDate": "10 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261110W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261110W/2.webp",
+      "excerpt": "Από τη σκιά του θρυλικού πατέρα του μέχρι την κορυφή των 500cc, ο Kenny Roberts Jr. απέδειξε το 2000 πως άξιζε να γράψει τη δική του ιστορία.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261110W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 504,
+      "readingTime": "3 min",
+      "imageWidth": 1080,
+      "imageHeight": 737,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 689,
+      "inputDigest": "bde4f72a44a2bedfa973fba9b987a51312a30cec54779b5091d07f57e4778547"
+    },
+    {
       "id": "20261107-2J",
       "title": "This is Brazil... BetCast #279",
       "author": "Giannis Poulikidis",
@@ -11696,5 +11725,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-07T13:20:59.632Z"
+  "lastUpdated": "2026-11-10T14:02:01.228Z"
 }

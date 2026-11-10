@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Fri, 06 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 09 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Kenny Roberts Jr.: Ξεπερνώντας το επώνυμο</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261110W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261110W/article.html</guid>
+      <pubDate>Mon, 09 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Από τη σκιά του θρυλικού πατέρα του μέχρι την κορυφή των 500cc, ο Kenny Roberts Jr. απέδειξε το 2000 πως άξιζε να γράψει τη δική του ιστορία.</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>This is Brazil... BetCast #279</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261107-2J/article.html</link>
@@ -267,15 +276,6 @@
       <description>Στη Σιγκαπούρη, ο Lewis Hamilton έκανε κάτι που ακουγόταν απολύτως λογικό. Το αυτοκίνητο ήταν γρήγορο στο Q1, ακόμη καλύτερο στο Q2, και ο ίδιος ένιωθε…</description>
       <category>Τεχνικά</category>
       <dc:creator>Γιώργος Μπαλατζής</dc:creator>
-    </item>
-    <item>
-      <title>Hockenheim: Ένα χρόνο μετά</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261014W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261014W/article.html</guid>
-      <pubDate>Tue, 13 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Η επιστροφή του Vettel στον τόπο ενός από τα πιο οδυνηρά λάθη της καριέρας του. Ιούλιος του 2018.</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
