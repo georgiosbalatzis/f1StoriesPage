@@ -29,6 +29,8 @@ test('audio name contains the visible label through idle, buffering, playing and
     const visible = text(button.children[0].children[1]);
     const check = (action, busy) => { assert.equal(visible, 'ON AIR.'); assert.ok(button.attrs['aria-label'].includes(visible)); assert.match(button.attrs['aria-label'], action); assert.equal(button.attrs['aria-busy'], String(busy)); };
     assert.equal(button.children[1].attrs['aria-hidden'], 'true');
+    assert.equal(text(button), 'ON AIR.');
+    assert.equal(button.children[1].children[1].attrs['data-label'], visible);
     check(/^Αναπαραγωγή/, false);
     window.load(); await new Promise(resolve => setImmediate(resolve));
     button.events.click(); check(/^Παύση/, false);

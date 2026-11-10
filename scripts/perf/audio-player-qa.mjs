@@ -291,7 +291,7 @@ async function layoutChecks(browser, origin) {
                     fullHeight: Math.abs(b.height - nav.height) < 1.5,
                     past: Math.max(...parts.map(part => part.r)) - document.documentElement.clientWidth,
                     hamburgerInside: ham ? ham.r <= document.documentElement.clientWidth : true,
-                    // Both faces carry the label, so both pairings must read: paper on ink underneath, ink on red on top.
+                    // Both faces render the label: paper on ink underneath, ink on red on top.
                     baseColor: getComputedStyle(base).color, baseBg: getComputedStyle(buttonEl).backgroundColor,
                     fillColor: getComputedStyle(fill).color, fillBg: getComputedStyle(fill).backgroundColor,
                     clipped: word(base).scrollWidth > word(base).clientWidth || base.scrollWidth > base.clientWidth + 1,

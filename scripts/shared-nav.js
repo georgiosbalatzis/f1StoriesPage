@@ -98,8 +98,12 @@
             var node = el('span', 'nav-audio-face' + (extraClass ? ' ' + extraClass : ''));
             node.appendChild(el('span', 'nav-audio-glyph')).setAttribute('aria-hidden', 'true');
             var word = el('span', 'nav-audio-word');
-            word.appendChild(document.createTextNode('ON AIR'));
-            word.appendChild(el('i', '')).textContent = '.';
+            if (extraClass) {
+                word.setAttribute('data-label', 'ON AIR.');
+            } else {
+                word.appendChild(document.createTextNode('ON AIR'));
+                word.appendChild(el('i', '')).textContent = '.';
+            }
             node.appendChild(word);
             return node;
         }
