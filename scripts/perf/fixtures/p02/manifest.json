@@ -1,0 +1,106 @@
+{
+  "fixtures": [
+    {
+      "method": "GET",
+      "url": "https://api.jolpi.ca/ergast/f1/2026.json",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "body": "jolpica.body",
+      "sha256": "sha256-4cb49ba79da78562a35a328ad5d0d69d34da32b1a4a5000d9b60a7f9d66ffa82",
+      "bytes": 14292,
+      "capturedUtc": "2026-11-10T12:15:50Z",
+      "routes": [
+        "Home",
+        "Blog",
+        "Standings",
+        "Article"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "https://anchor.fm/s/101588098/podcast/rss",
+      "status": 200,
+      "headers": {
+        "content-type": "application/rss+xml; charset=utf-8",
+        "access-control-allow-origin": "*"
+      },
+      "body": "rss.body",
+      "sha256": "sha256-5297d0640359ffa61a7c0f8e6f640c6edba8ba58f9f34e5bedc54dea9292af6f",
+      "bytes": 65734,
+      "capturedUtc": "2026-11-10T12:15:51Z",
+      "routes": [
+        "Home",
+        "Blog",
+        "Standings",
+        "Article"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "body": "drivers-2026.body",
+      "sha256": "sha256-54dae18ac3fcaf0de0bf5a2eeae93d6aee8fd0d0484cfbfbe0a5caed0f0503db",
+      "bytes": 10965,
+      "capturedUtc": "2026-11-10T12:19:24Z",
+      "routes": [
+        "Standings"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "https://api.jolpi.ca/ergast/f1/current/driverstandings.json?limit=30",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "body": "drivers-current.body",
+      "sha256": "sha256-0549191c11e1ff783ea4e477c6b27256c018bbafa9902ef973463d2d9397b35f",
+      "bytes": 10968,
+      "capturedUtc": "2026-11-10T12:19:27Z",
+      "routes": [
+        "Standings"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=30",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "body": "constructors-2026.body",
+      "sha256": "sha256-ec9e84b5c3d09bfcf9973ecf5ed12502063cb4f9079cd4adf5f7285c39d41674",
+      "bytes": 2504,
+      "capturedUtc": "2026-11-10T12:19:26Z",
+      "routes": [
+        "Standings"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "https://api.jolpi.ca/ergast/f1/current/constructorstandings.json?limit=30",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "body": "constructors-current.body",
+      "sha256": "sha256-3fe648ce79514ba982b9ac3e5f6be93173a6b632515b9a782748d3d58c484122",
+      "bytes": 2507,
+      "capturedUtc": "2026-11-10T12:19:29Z",
+      "routes": [
+        "Standings"
+      ]
+    }
+  ]
+}

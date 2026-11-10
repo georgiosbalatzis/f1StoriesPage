@@ -61,7 +61,7 @@ function parseArgs(argv) {
     return args;
 }
 
-function loadBudget(budgetPath) {
+export function loadBudget(budgetPath) {
     if (!fs.existsSync(budgetPath)) {
         throw new Error(`Lighthouse budget not found: ${path.relative(REPO_ROOT, budgetPath)}`);
     }
@@ -77,7 +77,7 @@ function isInside(root, filePath) {
     return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
 }
 
-function resolveRequest(root, requestUrl) {
+export function resolveRequest(root, requestUrl) {
     const url = new URL(requestUrl, 'http://127.0.0.1');
     let pathname = decodeURIComponent(url.pathname);
     if (pathname.endsWith('/')) pathname += 'index.html';
@@ -120,7 +120,7 @@ function sendStorageSeedPage(res) {
     res.end('<!doctype html><meta charset="utf-8"><title>Lighthouse storage seed</title>');
 }
 
-function startServer(root) {
+export function startServer(root) {
     if (!fs.existsSync(path.join(root, 'index.html'))) {
         throw new Error(`Public artifact missing at ${path.relative(REPO_ROOT, root)}. Run npm run build:public first.`);
     }
@@ -194,25 +194,25 @@ async function closeBrowser(browser) {
     } catch (_) {}
 }
 
-async function closeChrome(chrome) {
+export async function closeChrome(chrome) {
     if (!chrome) return;
     try {
         await chrome.kill();
     } catch (_) {}
 }
 
-async function launchAuditChrome(userDataDir) {
+export async function launchAuditChrome(userDataDir, extraFlags = []) {
     const chromePath = getChromePath();
     if (!chromePath) throw new Error('Chrome not found. Set CHROME_PATH or PUPPETEER_EXECUTABLE_PATH.');
     return launch({
         chromePath,
-        chromeFlags: chromeFlags(),
+        chromeFlags: [...chromeFlags(), ...extraFlags],
         userDataDir,
         logLevel: 'silent'
     });
 }
 
-async function seedAuditConsent(chrome, origin) {
+export async function seedAuditConsent(chrome, origin) {
     let browser;
     let page;
     try {
@@ -237,7 +237,7 @@ async function seedAuditConsent(chrome, origin) {
 // Every public route registers the service worker. With --disable-storage-reset (kept so the
 // consent seed survives), it would serve each later audit from Cache Storage and zero out the
 // byte budgets, so every run starts without SW state; localStorage (consent) is left alone.
-async function clearServiceWorkers(chrome, origin) {
+export async function clearServiceWorkers(chrome, origin) {
     let browser;
     let page;
     try {
@@ -258,7 +258,7 @@ async function clearServiceWorkers(chrome, origin) {
 // A route path of "latest-article" resolves to the newest published article, as qa:visual does.
 const LATEST_ARTICLE = 'latest-article';
 
-function latestArticlePath(root) {
+export function latestArticlePath(root) {
     // The compact index is newest first; row[0] is the article id.
     const index = JSON.parse(fs.readFileSync(path.join(root, 'blog-module', 'blog-index-data.json'), 'utf8'));
     const id = index.p && index.p[0] && index.p[0][0];
@@ -297,7 +297,7 @@ function runCommand(command, args) {
     });
 }
 
-async function runLighthouse(route, origin, budget, outputDir, chromePort, run) {
+export async function runLighthouse(route, origin, budget, outputDir, chromePort, run) {
     const outputPath = path.join(outputDir, `${slug(route.name)}-${run}.json`);
     const routePath = String(route.path || '/').startsWith('/') ? route.path : `/${route.path}`;
     const url = new URL(routePath, origin).toString();
@@ -382,7 +382,7 @@ export function inlineCssBytes(html) {
 }
 
 // Median per metric across runs; Lighthouse varies run to run.
-function medianMetrics(runs) {
+export function medianMetrics(runs) {
     const median = values => {
         const sorted = values.filter(value => value != null).sort((a, b) => a - b);
         return sorted.length ? sorted[Math.floor((sorted.length - 1) / 2)] : null;
