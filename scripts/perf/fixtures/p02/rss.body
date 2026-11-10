@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:anchor="https://anchor.fm/xmlns" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:psc="http://podlove.org/simple-chapters">
+	<channel>
+		<title><![CDATA[F1 Stories]]></title>
+		<description><![CDATA[Podcast για την F1. Απλά και όμορφα...]]></description>
+		<link>https://f1stories.gr</link>
+		<generator>Anchor Podcasts</generator>
+		<lastBuildDate>Tue, 10 Nov 2026 12:15:51 GMT</lastBuildDate>
+		<atom:link href="https://anchor.fm/s/101588098/podcast/rss" rel="self" type="application/rss+xml"/>
+		<author><![CDATA[F1 stories]]></author>
+		<copyright><![CDATA[F1 stories]]></copyright>
+		<language><![CDATA[el]]></language>
+		<atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
+		<itunes:author>F1 stories</itunes:author>
+		<itunes:summary>Podcast για την F1. Απλά και όμορφα...</itunes:summary>
+		<itunes:type>episodic</itunes:type>
+		<itunes:owner>
+			<itunes:name>F1 stories</itunes:name>
+			<itunes:email></itunes:email>
+		</itunes:owner>
+		<itunes:explicit>false</itunes:explicit>
+		<itunes:category text="Sports"/>
+		<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+		<item>
+			<title><![CDATA[BetCast #270 Hungaroring]]></title>
+			<description><![CDATA[<p>BetCast #270 Hungaroring</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-270-Hungaroring-e3q3h5f</link>
+			<guid isPermaLink="false">463f4f99-a1d3-4780-900d-a81ae4606832</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Wed, 07 Oct 2026 16:59:27 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/127042159/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-9-7%2F433606830-44100-2-59a965c3642fd.mp3" length="14115316" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast #270 Hungaroring&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:14:42</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Haas, Sauber, VCARB 2025/2]]></title>
+			<description><![CDATA[<p>Haas, Sauber, VCARB 2025/2</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Haas--Sauber--VCARB-20252-e375unv</link>
+			<guid isPermaLink="false">0970d7e2-3813-4e4a-8d36-2eb5099b0107</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Fri, 22 Aug 2025 07:46:51 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/107198655/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-22%2F2dd355e3-90a5-e5df-6ff9-45a483012572.mp3" length="3848870" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Haas, Sauber, VCARB 2025/2&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:08:01</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1755848791580-3fbcb296509ab.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Mercedes W16 2025/2]]></title>
+			<description><![CDATA[<p>Mercedes W16 2025/2</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Mercedes-W16-20252-e375umk</link>
+			<guid isPermaLink="false">10985074-fdde-486e-90d0-9f5b04079269</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Fri, 22 Aug 2025 07:45:04 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/107198612/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-22%2Fc8f0652b-be3a-6241-be9a-b82c5223f9dc.mp3" length="3611366" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Mercedes W16 2025/2&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:07:31</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1755848692055-786a6946640f6.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Alpine 2025/2]]></title>
+			<description><![CDATA[<p>14 races, Retrospective</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Alpine-20252-e36n3h3</link>
+			<guid isPermaLink="false">9dc38195-86d6-4e87-aa94-8923593f8b0d</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Thu, 21 Aug 2025 06:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106712035/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2F6b17c0bd-feca-0b54-0383-2bca471f1e71.mp3" length="3892070" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;14 races, Retrospective&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:08:06</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754906030187-6172fa6ab857c.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[McLaren 2025/2]]></title>
+			<description><![CDATA[<p>14 Races , Retro</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/McLaren-20252-e36n2m9</link>
+			<guid isPermaLink="false">e07afd09-0b0e-44c1-962f-4901ab3129ad</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Wed, 20 Aug 2025 06:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106711177/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2F4da3049e-1831-0735-100f-e4a0700c1957.mp3" length="2790950" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;14 Races , Retro&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:05:48</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754903991410-61a04f373ce53.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Ferrari 2025/2]]></title>
+			<description><![CDATA[<p>14 Races, Retro</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Ferrari-20252-e36n2la</link>
+			<guid isPermaLink="false">18966f0f-e8af-458b-beab-26cfe2b51aec</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 18 Aug 2025 06:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106711146/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2Face218eb-2c32-8d24-1f6c-b2352c5b8963.mp3" length="3056486" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;14 Races, Retro&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:06:22</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754903912888-97cb32bebc902.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[RedBull 2025/2]]></title>
+			<description><![CDATA[<p>14 Races, Retro</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/RedBull-20252-e36n39t</link>
+			<guid isPermaLink="false">2f721991-7d2c-4d03-a85a-5713536a6bae</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 12 Aug 2025 06:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106711805/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2F5a199251-9ae8-f0f7-022e-6167e6c82215.mp3" length="3086630" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;14 Races, Retro&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:06:25</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754905528056-171ce0ceda638.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Williams 2025/2]]></title>
+			<description><![CDATA[<p>Ανασκοπηση 14 πρωτων αγωνων για την Williams </p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Williams-20252-e36n15f</link>
+			<guid isPermaLink="false">82a6b3d2-2dee-4e6b-9a28-d0f7469ac8ca</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 11 Aug 2025 08:16:11 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106709615/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2F447e5091-645e-51e2-bbab-b3a7822aee8c.mp3" length="3525926" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Ανασκοπηση 14 πρωτων αγωνων για την Williams &lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:07:20</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754900157337-08ceacddfcecd.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Aston Martin 2025/2]]></title>
+			<description><![CDATA[<p>Ανασκοπηση των 14 πρωτων αγωνων για την Aston Martin F1</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Aston-Martin-20252-e36n13d</link>
+			<guid isPermaLink="false">01702435-5cbf-455e-8577-161101b244f0</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 11 Aug 2025 08:14:29 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106709549/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-11%2Fb45ae35c-2c1b-d337-a9d8-138f6c940fbc.mp3" length="3997862" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Ανασκοπηση των 14 πρωτων αγωνων για την Aston Martin F1&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:08:19</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1754900046595-88bdadee8202e.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #13 : Hungary GP]]></title>
+			<description><![CDATA[<p>BetCast #13 : Hungary GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-13--Hungary-GP-e36bu6d</link>
+			<guid isPermaLink="false">85312422-a240-4b1b-ac91-7ca50cccbf35</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 02 Aug 2025 13:37:59 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106346125/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-7-2%2Ffbef303c-41dc-3c98-2df7-70461a9c9395.mp3" length="30405627" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast #13 : Hungary GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:31:40</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #17 : Special Guest]]></title>
+			<description><![CDATA[<p>CoolDownRoom #17 : Special Guest</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-17--Special-Guest-e3691fp</link>
+			<guid isPermaLink="false">28a7e114-c334-4cae-bff6-8d777a28f2f9</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Thu, 31 Jul 2025 08:02:14 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106251193/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-6-31%2Fe293f1cf-2f5b-ba7d-2290-51181d63d481.mp3" length="54702431" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;CoolDownRoom #17 : Special Guest&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:56:58</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1753948922119-c9cdecdf21c51.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #12 : Belgian GP]]></title>
+			<description><![CDATA[<p>BetCast Belgian GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-12--Belgian-GP-e367ei2</link>
+			<guid isPermaLink="false">ca6bc032-3679-4b8a-9405-8c87d2609f05</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Wed, 30 Jul 2025 07:01:01 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/106199042/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-6-30%2Fc67706ea-f539-844c-014f-3d7fd60ca5f9.mp3" length="41632011" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast Belgian GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:43:21</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1753883341925-9ef3a1f3773bf.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #16 : Special Guest]]></title>
+			<description><![CDATA[<p>🎧 ΝΕΟ PODCAST ALERT!Αυτό το επεισόδιο θα το αγαπήσεις αν μυρίζεις βενζίνη και ακούς F1 stories πριν καν ξεκινήσει το GP!🏎️ Μαζί μας ο <a href="https://www.youtube.com/@GPEightyNine">‪@GPEightyNine‬</a> , που μεταφέρει το real racing vibe από τα καρτ και τους endurance αγώνες κατευθείαν στο μικρόφωνο.✅ Πώς σε κάνουν καλύτερο οδηγό τα καρτ;✅ Γιατί η βροχή είναι ο απόλυτος δάσκαλος;✅ Πόσο κοντά είναι το grassroots racing στην F1 νοοτροπία;</p><p>❤️ Like &amp; Κοινοποίησε σε όποιον ονειρεύεται το grid!</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-16--Special-Guest-e35lmlp</link>
+			<guid isPermaLink="false">761c58cd-fc09-4594-8962-7a53c6785080</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Thu, 17 Jul 2025 06:38:53 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/105617529/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-6-17%2Fed3c47fd-0cd1-bbea-6b84-db1ba6a713f1.mp3" length="54702431" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;🎧 ΝΕΟ PODCAST ALERT!Αυτό το επεισόδιο θα το αγαπήσεις αν μυρίζεις βενζίνη και ακούς F1 stories πριν καν ξεκινήσει το GP!🏎️ Μαζί μας ο &lt;a href=&quot;https://www.youtube.com/@GPEightyNine&quot;&gt;‪@GPEightyNine‬&lt;/a&gt; , που μεταφέρει το real racing vibe από τα καρτ και τους endurance αγώνες κατευθείαν στο μικρόφωνο.✅ Πώς σε κάνουν καλύτερο οδηγό τα καρτ;✅ Γιατί η βροχή είναι ο απόλυτος δάσκαλος;✅ Πόσο κοντά είναι το grassroots racing στην F1 νοοτροπία;&lt;/p&gt;&lt;p&gt;❤️ Like &amp;amp; Κοινοποίησε σε όποιον ονειρεύεται το grid!&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:56:58</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1752734318064-1000be029ac4b.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #11 : Silverstone GP]]></title>
+			<description><![CDATA[<p>BetCast #11 : Silverstone GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-11--Silverstone-GP-e356t3u</link>
+			<guid isPermaLink="false">665001ec-a765-482f-90c1-d57c60890061</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 07 Jul 2025 07:16:16 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/105132606/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-6-7%2F85c8875f-3b45-b932-d83f-b1d4794524ab.mp3" length="31110306" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast #11 : Silverstone GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:32:24</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1751872563295-bf81510fc37ae.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #15 : Canadian CrashOut! ]]></title>
+			<description><![CDATA[<p>🏁 To CoolDownRoom ΕΠΙΣΤΡΕΦΕΙ! 🏁Έχουμε SPECIAL GUEST 🤫 και μια ΑΠΟΚΑΛΥΨΗ που θα συζητηθεί! 💣Στο μικροσκόπιο απόψε:🏆 Η τεχνική κυριαρχία της Mercedes. Άπιαστοι;🤦‍♂️ Το λάθος στρατηγικής που «πόνεσε» τον Lando.🦁 Το αλάνθαστο, επιθετικό στυλ του Max.💨 Ο «βρώμικος αέρας» που κατέστρεψε τον αγώνα της Ferrari.</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-15--Canadian-CrashOut-e34cpud</link>
+			<guid isPermaLink="false">4600bc74-eaaa-4a9b-b904-5c0541870d0d</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 17 Jun 2025 19:10:05 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/104277389/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-5-17%2F900c69b2-7baa-269a-a892-fffeba6b248d.mp3" length="58689761" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;🏁 To CoolDownRoom ΕΠΙΣΤΡΕΦΕΙ! 🏁Έχουμε SPECIAL GUEST 🤫 και μια ΑΠΟΚΑΛΥΨΗ που θα συζητηθεί! 💣Στο μικροσκόπιο απόψε:🏆 Η τεχνική κυριαρχία της Mercedes. Άπιαστοι;🤦‍♂️ Το λάθος στρατηγικής που «πόνεσε» τον Lando.🦁 Το αλάνθαστο, επιθετικό στυλ του Max.💨 Ο «βρώμικος αέρας» που κατέστρεψε τον αγώνα της Ferrari.&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:01:08</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1750187370795-092111ae39148.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Betcast #10 : Canada GP]]></title>
+			<description><![CDATA[<p>Betcast #10 : Canada GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-10--Canada-GP-e3488ci</link>
+			<guid isPermaLink="false">e76f0601-928f-44e1-994e-59ae0ae632f7</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 14 Jun 2025 16:24:54 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/104128338/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-5-14%2Fab1f92df-2b11-1200-733b-34884b189057.mp3" length="46622026" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Betcast #10 : Canada GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:48:33</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1749918281909-cee1e5351e1ad.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #14： Δεν μιλάμε πια, Δεν μιλάμε - Maχ-ιλαράκι ο Russell]]></title>
+			<description><![CDATA[<p>CoolDownRoom #14： Δεν μιλάμε πια, Δεν μιλάμε - Maχιλαράκι ο Russell</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-14---------Ma---Russell-e33sjd2</link>
+			<guid isPermaLink="false">385bcba6-e588-4186-9b56-80982372bf15</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Fri, 06 Jun 2025 08:13:34 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/103746402/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-5-6%2Ffb8faa08-ac95-b3e1-d3f8-dce4b2510fc5.mp3" length="87959122" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;CoolDownRoom #14： Δεν μιλάμε πια, Δεν μιλάμε - Maχιλαράκι ο Russell&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:36:37</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast # 9 : 🇪🇸Spain GP🇪🇸]]></title>
+			<description><![CDATA[<p>BetCast # 9 : 🇪🇸Spain GP🇪🇸</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast--9--Spain-GP-e33k3e8</link>
+			<guid isPermaLink="false">ebbc2e3d-3202-4134-8e7f-27ad5daef089</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 31 May 2025 14:07:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/103467912/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-31%2F91572828-040f-0b1d-501c-4a86eb8caef3.mp3" length="51272657" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast # 9 : 🇪🇸Spain GP🇪🇸&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:53:24</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1748700364499-9ca4bafd1a59e.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #13 : 🔥 Mocano 2025 : zzz 🏁]]></title>
+			<description><![CDATA[<p>CoolDownRoom #13 : 🔥 Mocano 2025 : zzz 🏁</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-13---Mocano-2025--zzz-e33eecp</link>
+			<guid isPermaLink="false">6fa4eafb-be76-4eaa-8ba2-f0bddbb2ff66</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 27 May 2025 16:43:53 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/103282521/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-27%2F30bedd18-f4d9-3804-f347-a7c1ee2c71b7.mp3" length="58590705" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;CoolDownRoom #13 : 🔥 Mocano 2025 : zzz 🏁&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:01:01</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1748364205539-64931f0ee81d7.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #8 : 🇲🇨🔧 Monaco GP 🔧🇲🇨]]></title>
+			<description><![CDATA[<p>BetCast #8 : 🇲🇨🔧 Monaco GP 🔧🇲🇨</p><p><br></p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-8---Monaco-GP-e33a2mj</link>
+			<guid isPermaLink="false">256a9def-2100-412e-9fd0-77f9cb102fcd</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 24 May 2025 13:31:47 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/103139475/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-24%2F0aef1aad-7e89-4657-6aef-d1cf24b985c6.mp3" length="21329226" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BetCast #8 : 🇲🇨🔧 Monaco GP 🔧🇲🇨&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:22:13</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1748093490848-4a43ab1c5aaa.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #12 : 🔥 Imola 2025: O Τελευταίος Χορός; 🏁]]></title>
+			<description><![CDATA[<p>Η Imola μας χάρισε έναν αγώνα γεμάτο ένταση, στρατηγικές εκπλήξεις και συναισθηματικές στιγμές. Ο Max Verstappen κατέκτησε τη νίκη, ενώ οι McLaren και Ferrari έδωσαν μάχες μέχρι την τελευταία στροφή. Με φήμες να κυκλοφορούν για την πιθανή αποχώρηση της ιστορικής πίστας από το καλεντάρι, αυτός ο αγώνας ίσως ήταν ο τελευταίος της Imola. Δες το βίντεο και ανακάλυψε όλα τα παρασκήνια και τις ανατροπές!</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-12---Imola-2025-O-e333ur5</link>
+			<guid isPermaLink="false">ab51c11d-adcc-4bca-b035-636b6e1f9003</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 20 May 2025 16:57:14 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102938917/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-20%2F23f10b38-9da3-a4ac-98a6-6371cbc4c8c3.mp3" length="69006248" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Η Imola μας χάρισε έναν αγώνα γεμάτο ένταση, στρατηγικές εκπλήξεις και συναισθηματικές στιγμές. Ο Max Verstappen κατέκτησε τη νίκη, ενώ οι McLaren και Ferrari έδωσαν μάχες μέχρι την τελευταία στροφή. Με φήμες να κυκλοφορούν για την πιθανή αποχώρηση της ιστορικής πίστας από το καλεντάρι, αυτός ο αγώνας ίσως ήταν ο τελευταίος της Imola. Δες το βίντεο και ανακάλυψε όλα τα παρασκήνια και τις ανατροπές!&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:11:52</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1747760220857-d4ef63d666c23.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #7 : 🤌🔧🇮🇹 Imola GP 🤌🔧🇮🇹]]></title>
+			<description><![CDATA[<p>🏎️💨 7ο BetCast – Imola GP 2025 LIVE 🏁🔴 Σήμερα 16:00 (Ελλάδα) στο κανάλι μας F1 Stories!💸 Στοιχηματικά tips, αναλύσεις &amp; insider προγνωστικά για το Miami GP📲 Link στο bio ή απευθείας:https://youtube.com/@F1_Stories_Original?si=aSfNyv63DZoR5d9i🔔 Subscribe &amp; stay tuned!</p><p><br></p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-7---Imola-GP-e32vjqq</link>
+			<guid isPermaLink="false">df3a61c0-7788-489c-9f1f-3e50a2e3ef0c</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 17 May 2025 14:07:59 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102796570/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-17%2Fadc1f796-91b3-63ea-b1b1-f3619526b644.mp3" length="40794003" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;🏎️💨 7ο BetCast – Imola GP 2025 LIVE 🏁🔴 Σήμερα 16:00 (Ελλάδα) στο κανάλι μας F1 Stories!💸 Στοιχηματικά tips, αναλύσεις &amp;amp; insider προγνωστικά για το Miami GP📲 Link στο bio ή απευθείας:https://youtube.com/@F1_Stories_Original?si=aSfNyv63DZoR5d9i🔔 Subscribe &amp;amp; stay tuned!&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:42:29</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1747490827363-89dfda75c2b61.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[🏎️ BoxBox!? Vol #4: Fight me. Ποιος οδηγός είναι υπερεκτιμημένος;  🏎️]]></title>
+			<description><![CDATA[<p>🏎️ 🔥 🟥 BoxBox!? Vol #4:  Fight me. Ποιος οδηγός είναι υπερεκτιμημένος;  🏎️ 🔥 🟥</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox---Vol-4-Fight-me-e32sdqg</link>
+			<guid isPermaLink="false">9b2a5741-7f57-425c-88d5-f7601cd82725</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Thu, 15 May 2025 07:32:09 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102692112/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-15%2F7b61bf77-c99c-129f-d743-986e34ed2f1e.mp3" length="67162630" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;🏎️ 🔥 🟥 BoxBox!? Vol #4:  Fight me. Ποιος οδηγός είναι υπερεκτιμημένος;  🏎️ 🔥 🟥&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:09:57</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[🔥 CoolDownRoom #10 Ferrari στο Miami – Το Pitwall καίγεται! 🏎️ 🔥 🟥]]></title>
+			<description><![CDATA[<p>🔥 Podcast #10 Ferrari στο Miami – Το Pitwall καίγεται! 🏎️ 🔥 🟥</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-10-Ferrari--Miami---Pitwall-e32m6da</link>
+			<guid isPermaLink="false">c0e58bd8-5687-4709-9073-29c1fe43985e</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 11 May 2025 17:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102487914/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-11%2F400019385-44100-2-2ca12fc4390c6.mp3" length="59379878" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;🔥 Podcast #10 Ferrari στο Miami – Το Pitwall καίγεται! 🏎️ 🔥 🟥&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:01:51</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[📦🔥 BoxBox!? #3: Vol. 2 – Βγήκαμε ξανά… από τα ρούχα μας! 😜👕👖🔥]]></title>
+			<description><![CDATA[<p>📦🔥 BoxBox!? #3: Vol. 2 – Βγήκαμε ξανά… από τα ρούχα μας! 😜👕👖🔥</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox---3-Vol--2-e32i6t0</link>
+			<guid isPermaLink="false">933e9d6d-471e-41da-a656-848b33124141</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Thu, 08 May 2025 08:09:17 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102357344/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-8%2F1ce729a0-f635-90d8-b3e4-2bd7661b10ac.mp3" length="71268937" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;📦🔥 BoxBox!? #3: Vol. 2 – Βγήκαμε ξανά… από τα ρούχα μας! 😜👕👖🔥&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:29:39</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #6: 🏁🌴☀️Miami GP 2025🏎️🌴🏁]]></title>
+			<description><![CDATA[<p><strong>Δημιουργία περιγραφής επεισοδίου BetCast</strong></p><p>Ο χρήστης ζητάει μια περιγραφή για το επεισόδιο BetCast #6: Miami Grand Prix 2025, για το Spotify. Θα πρέπει να δημιουργήσουμε μια πειστική περιγραφή επεισοδίου, πιθανότατα στα ελληνικά. Ανέλυση, προβλέψεις, στοιχήματα και ανακεφαλαίωση φαίνεται να είναι το κεντρικό περιεχόμενο. Μπορούμε να συμπεριλάβουμε την ημερομηνία: Gran Prix Μαϊάμι 24 Μαρτίου 2025, αν και στην πραγματικότητα το Gran Prix της Μαϊάμι θα είναι τον Μάιο του 2025.</p><p>Σκέφτηκε για 5 δευτερόλεπτα</p><p>Στο 6ο επεισόδιο του BetCast 🏁🌴☀️, βρισκόμαστε στον ήλιο της Φλόριντα για το Miami GP 2025! Αναλύουμε το χαρακτηριστικό street circuit γύρω από το Hard Rock Stadium, αποκαλύπτουμε τις πιο κρίσιμες στρατηγικές ελαστικών και ξεχωρίζουμε τα φαβορί για το podium.</p><p>👉 Από τα “σίγουρα” bets στους πρωτομάστορες μέχρι τα πιο δελεαστικά dark-horse picks, σου δίνουμε όλα τα insider tips για να μεγιστοποιήσεις την απόδοσή σου.<br>👉 Συζητάμε τους drivers που μπορεί να κάνουν την έκπληξη, τα best-value props και τις προβλέψεις μας για το fastest lap.</p><p>Συντονίσου στο BetCast #6 και μπες στο grid του στοιχήματος με… full throttle γνώση!</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-6-Miami-GP-2025-e32b364</link>
+			<guid isPermaLink="false">1a6c0932-3e70-4d02-ab65-2e98e5925653</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 03 May 2025 15:14:55 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/102124164/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-4-3%2F923e8a30-4579-9928-7ee5-36c8d367ab16.mp3" length="36927044" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;&lt;strong&gt;Δημιουργία περιγραφής επεισοδίου BetCast&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Ο χρήστης ζητάει μια περιγραφή για το επεισόδιο BetCast #6: Miami Grand Prix 2025, για το Spotify. Θα πρέπει να δημιουργήσουμε μια πειστική περιγραφή επεισοδίου, πιθανότατα στα ελληνικά. Ανέλυση, προβλέψεις, στοιχήματα και ανακεφαλαίωση φαίνεται να είναι το κεντρικό περιεχόμενο. Μπορούμε να συμπεριλάβουμε την ημερομηνία: Gran Prix Μαϊάμι 24 Μαρτίου 2025, αν και στην πραγματικότητα το Gran Prix της Μαϊάμι θα είναι τον Μάιο του 2025.&lt;/p&gt;&lt;p&gt;Σκέφτηκε για 5 δευτερόλεπτα&lt;/p&gt;&lt;p&gt;Στο 6ο επεισόδιο του BetCast 🏁🌴☀️, βρισκόμαστε στον ήλιο της Φλόριντα για το Miami GP 2025! Αναλύουμε το χαρακτηριστικό street circuit γύρω από το Hard Rock Stadium, αποκαλύπτουμε τις πιο κρίσιμες στρατηγικές ελαστικών και ξεχωρίζουμε τα φαβορί για το podium.&lt;/p&gt;&lt;p&gt;👉 Από τα “σίγουρα” bets στους πρωτομάστορες μέχρι τα πιο δελεαστικά dark-horse picks, σου δίνουμε όλα τα insider tips για να μεγιστοποιήσεις την απόδοσή σου.&lt;br&gt;👉 Συζητάμε τους drivers που μπορεί να κάνουν την έκπληξη, τα best-value props και τις προβλέψεις μας για το fastest lap.&lt;/p&gt;&lt;p&gt;Συντονίσου στο BetCast #6 και μπες στο grid του στοιχήματος με… full throttle γνώση!&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:38:27</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BoxBox!？ #3： Vol 1 - Βγήκαμε από τα ρούχα μας !]]></title>
+			<description><![CDATA[<p>Βγήκαμε από τα ρούχα μας !.</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox--3-Vol-1---e326e79</link>
+			<guid isPermaLink="false">7b5e782a-bfbf-4637-8eb9-30ca4bf3011f</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Wed, 30 Apr 2025 15:00:00 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101971625/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-30%2Fe449b600-0525-52ef-58af-c291d00199c0.mp3" length="70666075" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Βγήκαμε από τα ρούχα μας !.&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:29:25</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[CoolDownRoom #10 ： Μάχη στη Νύχτα της Τζέντα!]]></title>
+			<description><![CDATA[<p>Podcast #10 ： Μάχη στη Νύχτα της Τζέντα! </p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/CoolDownRoom-10-e3256qd</link>
+			<guid isPermaLink="false">377f7baf-212e-480f-936e-f11fb3b3588a</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 29 Apr 2025 11:56:08 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101931277/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-29%2F571294ba-f0d1-1b9d-216f-6d6b3a1a01d4.mp3" length="118165287" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Podcast #10 ： Μάχη στη Νύχτα της Τζέντα! &lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:49:12</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #5: Jeddah GP]]></title>
+			<description><![CDATA[<p>Jeddah GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-5-Jeddah-GP-e31o2lu</link>
+			<guid isPermaLink="false">576e96b6-4c5b-4562-ab47-68c9ca0ff4fb</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sat, 19 Apr 2025 15:43:36 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101501054/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-19%2F7f651185-c554-fcc3-7de4-53f386e97b4e.mp3" length="30300720" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Jeddah GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:31:33</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BetCast #4 : Bahrain GP]]></title>
+			<description><![CDATA[<p>Live Στοιχηματικές προτάσεις για το διήμερο !</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-4--Bahrain-GP-e31h9ef</link>
+			<guid isPermaLink="false">2fc138a5-c205-4e80-ac47-d76fa9e2d483</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 14 Apr 2025 15:52:55 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101278607/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F398383220-44100-2-67d020b12c523.mp3" length="34824776" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Live Στοιχηματικές προτάσεις για το διήμερο !&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:36:16</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BoxBox!？ #2： Vol 1 - Συμφωνώ - Διαφωνώ]]></title>
+			<description><![CDATA[<p>Vol 1 - Συμφωνώ - Διαφωνώ.mp3</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox--2-Vol-1------e31h9dr</link>
+			<guid isPermaLink="false">702b0a1a-fab1-490a-8f9b-28ee760bfc11</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 14 Apr 2025 15:50:51 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101278587/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F43ff7619-0dcd-4b80-eeb7-774a4388874b.mp3" length="36012140" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Vol 1 - Συμφωνώ - Διαφωνώ.mp3&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:25:00</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Podcast #8 ： Japan]]></title>
+			<description><![CDATA[<p>Japan - Η McLaren Ηγείται, η Mercedes Κοντά </p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Podcast-8--Japan-e31h9cp</link>
+			<guid isPermaLink="false">097532bd-e0a0-42c2-959d-455d9652f5ae</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 14 Apr 2025 15:50:22 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/101278553/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F8c75dccb-9993-9d6d-27ad-2ee5f0e7bfad.mp3" length="34604972" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Japan - Η McLaren Ηγείται, η Mercedes Κοντά &lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:24:01</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Japan GP / Τι περιμενουμε]]></title>
+			<description><![CDATA[<p>Japan GP / Τι περιμενουμε</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Japan-GP-e315s89</link>
+			<guid isPermaLink="false">db16cd85-3e23-42e4-8a6a-7b2e477b4199</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:49:23 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904649/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2Feca23616-5aab-0779-5d33-d9e6fdbdd1c2.mp3" length="14597516" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Japan GP / Τι περιμενουμε&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:24:01</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Australian GP / Τι ειδαμε]]></title>
+			<description><![CDATA[<p>Australian GP / Τι ειδαμε</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7v</link>
+			<guid isPermaLink="false">95bb1fa7-bfce-4bcc-9880-c7de5c9958c9</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:48:43 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904639/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2Fe316a031-1247-7c15-2960-05fd8c1c8da6.mp3" length="23520092" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Australian GP / Τι ειδαμε&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:38:46</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Australian GP / Τα πρωτα δεδομενα]]></title>
+			<description><![CDATA[<p>Australian GP / Τα πρωτα δεδομενα</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7g</link>
+			<guid isPermaLink="false">8f42a5f1-9dc1-4c37-9d2a-c0b6f8483147</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:48:08 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904624/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2Fb8bd3e2a-7f2c-4e92-58dc-7427201d52c8.mp3" length="25210052" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Australian GP / Τα πρωτα δεδομενα&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:41:33</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[GP Chinese - Τι ειδαμε]]></title>
+			<description><![CDATA[<p>GP Chinese - Τι ειδαμε</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-Chinese---e315s6q</link>
+			<guid isPermaLink="false">251db371-c5b6-4b21-8b4b-5d90e5fa6457</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:47:22 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904602/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F1f3340a7-b7eb-44b9-e1a3-43a925306d4e.mp3" length="23656700" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;GP Chinese - Τι ειδαμε&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:40:27</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[GP China / Τα πρωτα δεδομενα]]></title>
+			<description><![CDATA[<p>GP China / Τα πρωτα δεδομενα</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-China-e315s6h</link>
+			<guid isPermaLink="false">2c294b64-60f6-4fcf-b8d5-d092cb57433e</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:46:50 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904593/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F0fd13cd2-35a4-2f78-80bc-effa299f53a3.mp3" length="16638596" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;GP China / Τα πρωτα δεδομενα&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:27:42</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Tsunoda στην Redbull]]></title>
+			<description><![CDATA[<p>Tsunoda στην Redbull</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Tsunoda--Redbull-e315s5q</link>
+			<guid isPermaLink="false">2b3dd3fa-ab2a-4519-8163-cfb572a97743</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:45:58 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904570/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F1ac37072-8d59-715d-8b0a-47ebfa1d35bc.mp3" length="14907452" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Tsunoda στην Redbull&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:26:02</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[BoxBox!? #1]]></title>
+			<description><![CDATA[<p>BoxBox!? : Πρωτο επισοδειο!</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox---1-e315s4t</link>
+			<guid isPermaLink="false">6c644a1e-16cc-43b7-a99e-c449c40c58ba</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:44:42 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904541/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F6be987ad-4617-0c6a-cc6c-52c6e458ad16.mp3" length="21108788" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;BoxBox!? : Πρωτο επισοδειο!&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:36:36</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Betcast #1: Australian GP]]></title>
+			<description><![CDATA[<p>Betcast #1: Australian GP</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-1-Australian-GP-e315rtv</link>
+			<guid isPermaLink="false">254fd3b1-27e6-4693-88f9-54503022fdb0</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:35:04 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904319/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2Fc5bf509f-619d-d3e3-a173-1f805d4b94ab.mp3" length="11715164" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Betcast #1: Australian GP&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:19:17</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>6</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Betcast #2 : Chinese GP]]></title>
+			<description><![CDATA[<p>Στο δεύτερο επεισόδιο της σειράς BetCast, βουτάμε στον κόσμο των στοιχημάτων για το Chinese Grand Prix! </p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-2--Chinese-GP-e315rk7</link>
+			<guid isPermaLink="false">55c994e5-0fd7-4295-a0b8-5ed34335f93c</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:18:39 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100904007/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F7cd1c7cb-de9f-0233-7257-bd8019c410b2.mp3" length="7752548" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Στο δεύτερο επεισόδιο της σειράς BetCast, βουτάμε στον κόσμο των στοιχημάτων για το Chinese Grand Prix! &lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:13:22</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1743934666591-1a49f7b54d199.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>5</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Betcast #3 : Double Budget]]></title>
+			<description><![CDATA[<p>Ανακαλύψτε τις καλύτερες επιλογές για στοιχήματα στον αγώνα της Formula 1 στο θρυλικό Circuit de Suzuka! </p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-3--Double-Budget-e315rht</link>
+			<guid isPermaLink="false">342c1dd6-ff7a-465a-b157-37efe3dfb959</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 06 Apr 2025 10:16:36 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/100903933/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F7a140c20-f7be-4cff-b6e6-e27c8b3eb608.mp3" length="10439396" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Ανακαλύψτε τις καλύτερες επιλογές για στοιχήματα στον αγώνα της Formula 1 στο θρυλικό Circuit de Suzuka! &lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:16:43</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43075446/43075446-1743934549117-e02000fbe24eb.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>4</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[Pre-Season Testing 2025 - Τα είδαμε, τα αναλύσαμε, τι προβλέπουμε… χαμό!]]></title>
+			<description><![CDATA[<p><br />Στο νέο επεισόδιο του podcast μας, αναλύουμε το τριήμερο του Pre-Season Testing για το 2025 στη Formula 1! Μαζί, συζητάμε τις πρώτες εντυπώσεις από τις ομάδες, τις επιδόσεις των οδηγών, τις τεχνικές εξελίξεις και τα φαβορί για τη νέα σεζόν. Ποιοι ήταν οι μεγάλοι νικητές της προετοιμασίας και ποιοι κρύβουν εκπλήξεις για την επερχόμενη χρονιά; Συντονιστείτε και ακούστε την αναλυτική μας ανάλυση για όσα πρέπει να ξέρετε πριν την εκκίνηση του παγκόσμιου πρωταθλήματος!<a href="https://www.youtube.com/hashtag/formula1" rel="ugc noopener noreferrer" target="_blank">#formula1</a> <a href="https://www.youtube.com/hashtag/preseasontesting" rel="ugc noopener noreferrer" target="_blank">#PreSeasonTesting</a> <a href="https://www.youtube.com/hashtag/f12025" rel="ugc noopener noreferrer" target="_blank">#f12025</a> <a href="https://www.youtube.com/hashtag/podcast" rel="ugc noopener noreferrer" target="_blank">#podcast</a> <a href="https://www.youtube.com/hashtag/f1stories" rel="ugc noopener noreferrer" target="_blank">#f1stories</a> <a href="https://www.youtube.com/hashtag/f1greece" rel="ugc noopener noreferrer" target="_blank">#f1greece</a> <a href="https://www.youtube.com/hashtag/greecepodcast" rel="ugc noopener noreferrer" target="_blank">#greecepodcast</a></p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/Pre-Season-Testing-2025---e2vu395</link>
+			<guid isPermaLink="false">062c9f9e-da47-45b0-b5c5-c53ae3cf0400</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Sun, 09 Mar 2025 20:39:25 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/99601125/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-2-9%2F7117d91b-016b-0cef-d3a1-ec489268c1f7.mp3" length="61516415" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;&lt;br /&gt;Στο νέο επεισόδιο του podcast μας, αναλύουμε το τριήμερο του Pre-Season Testing για το 2025 στη Formula 1! Μαζί, συζητάμε τις πρώτες εντυπώσεις από τις ομάδες, τις επιδόσεις των οδηγών, τις τεχνικές εξελίξεις και τα φαβορί για τη νέα σεζόν. Ποιοι ήταν οι μεγάλοι νικητές της προετοιμασίας και ποιοι κρύβουν εκπλήξεις για την επερχόμενη χρονιά; Συντονιστείτε και ακούστε την αναλυτική μας ανάλυση για όσα πρέπει να ξέρετε πριν την εκκίνηση του παγκόσμιου πρωταθλήματος!&lt;a href=&quot;https://www.youtube.com/hashtag/formula1&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#formula1&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/preseasontesting&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#PreSeasonTesting&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/f12025&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#f12025&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/podcast&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#podcast&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/f1stories&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#f1stories&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/f1greece&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#f1greece&lt;/a&gt; &lt;a href=&quot;https://www.youtube.com/hashtag/greecepodcast&quot; rel=&quot;ugc noopener noreferrer&quot; target=&quot;_blank&quot;&gt;#greecepodcast&lt;/a&gt;&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>01:04:04</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>3</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[F1-75 live στο Λονδίνο: Από τις προσδοκίες στην πραγματικότητα - Podcast #2]]></title>
+			<description><![CDATA[<p>Το F1-75 Show στο Λονδίνο έφερε στο προσκήνιο πολλά νέα και ενδιαφέροντα στοιχεία για τη Formula 1. Σχολιάζουμε τις κινήσεις των ομάδων, τα νέα μονοθέσια, τις στρατηγικές και όσα πρέπει να γνωρίζετε για τη νέα χρονιά στην κορωνίδα του motorsport #f1greece #f1stories #formula1 #podcast</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/F1-75-live----------Podcast-2-e2vbble</link>
+			<guid isPermaLink="false">c313323d-1194-4717-85f8-e733d3ed93f1</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Tue, 25 Feb 2025 10:42:30 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/98987118/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-1-25%2F9ebb07d2-5444-14c5-8d13-fe70da7fa5dd.mp3" length="113263942" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Το F1-75 Show στο Λονδίνο έφερε στο προσκήνιο πολλά νέα και ενδιαφέροντα στοιχεία για τη Formula 1. Σχολιάζουμε τις κινήσεις των ομάδων, τα νέα μονοθέσια, τις στρατηγικές και όσα πρέπει να γνωρίζετε για τη νέα χρονιά στην κορωνίδα του motorsport #f1greece #f1stories #formula1 #podcast&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:47:11</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>2</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+		<item>
+			<title><![CDATA[F1 stories #1: Μια ματιά στο 2024]]></title>
+			<description><![CDATA[<p>Στο σημερινό επεισόδιο του podcast μας, ρίχνουμε μια πιο χαλαρή ματιά στην περασμένη χρονιά της Formula 1. Αντί για αυστηρή ειδησεογραφία, συζητάμε τις σημαντικότερες στιγμές, τα highlights, αλλά και τις προσωπικές μας απόψεις για τις εξελίξεις στη σεζόν. Από τις συγκλονιστικές νίκες μέχρι τις ανατροπές που μας άφησαν με ανοιχτό το στόμα, εξετάζουμε τα πάντα με την άνεση μιας φιλικής κουβέντας.Αν είστε λάτρεις του μηχανοκίνητου αθλητισμού ή απλώς θέλετε να ακούσετε τις απόψεις μας, μπείτε στη συζήτηση και πείτε μας τη γνώμη σας!Είμαστε: Γιάννης Πουλικίδης - Γeώργiος Μπαλατζής - Θανάσης Μπατάλας #f1greece #f1stories #formula1</p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/f1-stories/episodes/F1-stories-1----2024-e2v0vbq</link>
+			<guid isPermaLink="false">d8f9647e-981b-4c85-8757-eb3c94be1d4c</guid>
+			<dc:creator><![CDATA[F1 stories]]></dc:creator>
+			<pubDate>Mon, 17 Feb 2025 22:24:39 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/101588098/podcast/play/98646842/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-1-17%2F8dfb5551-e2f3-26fa-b545-c9e8e3f458de.mp3" length="36747109" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;Στο σημερινό επεισόδιο του podcast μας, ρίχνουμε μια πιο χαλαρή ματιά στην περασμένη χρονιά της Formula 1. Αντί για αυστηρή ειδησεογραφία, συζητάμε τις σημαντικότερες στιγμές, τα highlights, αλλά και τις προσωπικές μας απόψεις για τις εξελίξεις στη σεζόν. Από τις συγκλονιστικές νίκες μέχρι τις ανατροπές που μας άφησαν με ανοιχτό το στόμα, εξετάζουμε τα πάντα με την άνεση μιας φιλικής κουβέντας.Αν είστε λάτρεις του μηχανοκίνητου αθλητισμού ή απλώς θέλετε να ακούσετε τις απόψεις μας, μπείτε στη συζήτηση και πείτε μας τη γνώμη σας!Είμαστε: Γιάννης Πουλικίδης - Γeώργiος Μπαλατζής - Θανάσης Μπατάλας #f1greece #f1stories #formula1&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:38:16</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg"/>
+			<itunes:season>1</itunes:season>
+			<itunes:episode>1</itunes:episode>
+			<itunes:episodeType>full</itunes:episodeType>
+		</item>
+	</channel>
+</rss>
