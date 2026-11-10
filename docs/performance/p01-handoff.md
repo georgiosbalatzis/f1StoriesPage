@@ -274,7 +274,7 @@ The aggregate runtime PASS supersedes G's earlier “not run” narrative. Bench
 
 Do not commit raw evidence, dist/.build/node_modules, toolchains/browser binaries, child clones, caches/profiles or large file inventories. Preserve executable reproduction inputs outside git where scripts require them; a compact table alone cannot rehash absent media. Check public data for personal/contact/commercial information and absolute machine paths; partners appear only as P1–P6. Do not publish raw logs merely because the repository is public.
 
-The 3dca15331 review checked integrated compact data, aliases and links; the coordinator must verify any later changes and final delivery. Plan guidance is ≤2 MiB total uncompressed new compact data, target ≤1 MiB, ≤256 KiB/file; this is audit artifact hygiene, not a relaxed product budget. This workspace intentionally contains reports only, so those targets are not verified here. Retain full evidence externally rather than silently truncate measurements to fit.
+The 3dca15331 review checked integrated compact data, aliases and links; the coordinator must verify any later changes and final delivery. Plan guidance is ≤2 MiB total uncompressed new compact data, target ≤1 MiB, ≤256 KiB/file; this is audit artifact hygiene, not a relaxed product budget. Retain full evidence externally rather than silently truncate measurements to fit.
 
 ## Scope, delivery and cleanup
 
