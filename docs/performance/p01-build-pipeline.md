@@ -177,7 +177,7 @@ An independent fresh incremental cold build at the same SHA/Node 22 repeats the 
 
 Blog empty calendar-month labels fail at **3.58:1 versus 4.5:1**, selector `ol.ed-cal__months > li > span.is-empty > span`, foreground `#7d7871` on `#242321` (`M:blog-module/blog/archive-editorial.css:125`; `M:blog-module/build/discovery.js:242`). Provider failure does not excuse this independent defect.
 
-Article request counting uses entity inequality, not successful completion (`M:scripts/perf/lighthouse-guard.mjs:371`). Ten production-origin BetCast requests appear external to the loopback first party; the failed Jolpica request still counts. Subtracting one request arithmetically is not a clean rerun. Guarded requests with Lighthouse transferSize 0/status−1 do not imply a successful production response costs zero.
+Article request counting uses entity inequality, not successful completion (`M:scripts/perf/lighthouse-guard.mjs:373`). Ten production-origin BetCast requests appear external to the loopback first party; the failed Jolpica request still counts. Subtracting one request arithmetically is not a clean rerun. Guarded requests with Lighthouse transferSize 0/status−1 do not imply a successful production response costs zero.
 
 Benchmark Lighthouse is **n=1 with providers blocked**, with unobserved audited-page state and different URLs/setup. It is not a Gate E reproduction. Standings **`tab-pit-stops` and `session` NOT MEASURED** because of fixture mismatch. LAB interactions are not field INP; field INP and Core Web Vitals remain unavailable. See [runtime baseline](p01-runtime-baseline.md).
 

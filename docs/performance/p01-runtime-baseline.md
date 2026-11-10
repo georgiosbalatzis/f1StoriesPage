@@ -40,7 +40,7 @@ The Gate E archive URL is `/blog-module/blog/index.html`, a distinct tested URL 
 |---|---|
 | Host | Apple M3 Pro, arm64, 36 GiB RAM, Darwin 27.0.0 |
 | Browser | Chrome for Testing 158.0.8127.18; binary SHA-256 `6ac929cf1af41969ed0de43ac88a015ae4b70f92dcc1bfb60871bfa7f141e96d` |
-| Collector / build Node | Collector v26.13.0; Main/Telemetry/Ghost Car/BetCast build and Gate E v22.23.4; TYRES v24.22.2 |
+| Collector / build Node | Host/default Node: 26.13.0; retained collection runner selects Node 22.23.4; actual collection-process Node was not captured per attempt and is unverified. Main/Telemetry/Ghost Car/BetCast build and Gate E: Node 22.23.4; TYRES: Node 24.22.2 |
 | Mobile | 390×844, DPR3, touch/mobile UA |
 | Tablet | 768×1024, DPR2, touch/mobile UA |
 | Desktop | 1440×900, DPR1, desktop UA; also throttled, not physical desktop speed |
@@ -52,7 +52,7 @@ The Gate E archive URL is `/blog-module/blog/index.html`, a distinct tested URL 
 | Production delivery | Live first-party HTTPS/HTTP/2; external APIs replayed or blocked for controlled CDP |
 | Local-built delivery | Aggregate artifact, HTTP/1.1 gzip; build/data/transport differ from production |
 
-Source lock authority is `M:scripts/deployment/sources.json:1`; CI majors follow `M:.github/actions/setup/action.yml:19` and `M:scripts/deployment/release.mjs:77`. Local Node 26 collection does not mean the release was built with Node 26.
+Source lock authority is `M:scripts/deployment/sources.json:1`; CI majors follow `M:.github/actions/setup/action.yml:19` and `M:scripts/deployment/release.mjs:77`. Host/default Node: 26.13.0; retained collection runner selects Node 22.23.4; actual collection-process Node was not captured per attempt and is unverified.
 
 Production before/after records retain identity `sha256:9ac925c76bd67eb2a8d6df1fc36c88820ccececa3298f8979b3df0f4ca5996ae` in recorded phases. Production manifest build ID was `42714120119`. Lighthouse and offline lack separate release brackets. Local manifest outputDigest is `584d508980d382930eeb95506477fd71e6843c5d37a15ac4333dfb631836df17`; per-attempt local release is null and complete local bracketing is absent. TYRES code and data differ in identity: data SHA `dbc69155aaa8e8c2af3556ef02ba18d54ad0ba0c`, with a separately refreshed overlay. Manifest outputDigest and Gate E tree hashes have different schemes/scopes and are not interchangeable.
 
@@ -69,6 +69,12 @@ Production before/after records retain identity `sha256:9ac925c76bd67eb2a8d6df1f
 | Cache/offline | home/standings/ghostcar × 5 stages | 15 | Different states, not five replicates |
 
 Totals across environments: 304 controlled CDP navigations plus 10 real-provider observations, 44 benchmark Lighthouse diagnostics, 40 interaction contexts/120 journey repetitions, 30 cache stages and one local migration fixture. Admission uses the 354 IDs in retained `attempts.jsonl`, joined to `runs.jsonl`; 73 other run rows are excluded. The 44 Lighthouse and cache records are separate. [summary.tsv](../../perf/p01/summary.tsv), [runs.jsonl](../../perf/p01/runs.jsonl) and retained validation distinguish collector validity from strict protocol validation.
+
+## Methodology deviations
+
+Initial a0 tooling was incomplete. Follow-up passes a1–a8 (retained `prompts/a1.md` through `prompts/a8.md` and `out/a1.md` through `out/a8.md`) addressed validity and null handling, control and readiness selectors, and Lighthouse cleanup. Pilot attempts were discarded after configuration changes. The first full Lighthouse phase crashed in cleanup and was rerun. The post-a8 rerun replaced Lighthouse and interaction phases, local-built first and then production. Admitted CDP/interaction IDs are those in `evidence/attempts.jsonl`, joined to `evidence/runs.jsonl`; Lighthouse rows are in `evidence/lighthouse.jsonl`. Superseded `evidence/attempts-before-a8-rerun.jsonl`, `evidence/interactions-before-a8-rerun.jsonl`, and `evidence/attempts-pilot-discarded.jsonl` remain retained.
+
+Unresolved gaps include unverified interaction assertions and Lighthouse audited-page state, incomplete readiness/round fixtures, missing local identity brackets, unverified process Node, n=1 screen escalation and unavailable field data. These reruns do not close those gaps.
 
 ## Cold CDP baseline
 
@@ -252,7 +258,7 @@ S-08 needs a controlled three-frame insertion/theme-change fixture with scan/obs
 
 ## Gate E and preserved budgets
 
-**Gate E Lighthouse ran behind a DNS guard and seven assertions remain BLOCKED.** It used the unchanged guard, three mobile runs/canonical route, local aggregate HTTP/1.1 gzip/no-store. It is separate from the benchmark above. Four best-practices failures at 96/100 came from wrapper-induced Jolpica DNS console errors. Home and Article LCP medians were 2627.098 and 2554.348 ms; attribution remains BLOCKED under the guarded local setup. Article third-party count was 14 against ≤8; ten production-origin BetCast requests are external to the loopback origin and the failed provider request is still counted (`M:scripts/perf/lighthouse-guard.mjs:371`). Arithmetic removal is not a rerun.
+**Gate E Lighthouse ran behind a DNS guard and seven assertions remain BLOCKED.** It used the unchanged guard, three mobile runs/canonical route, local aggregate HTTP/1.1 gzip/no-store. It is separate from the benchmark above. Four best-practices failures at 96/100 came from wrapper-induced Jolpica DNS console errors. Home and Article LCP medians were 2627.098 and 2554.348 ms; attribution remains BLOCKED under the guarded local setup. Article third-party count was 14 against ≤8; ten production-origin BetCast requests are external to the loopback origin and the failed provider request is still counted (`M:scripts/perf/lighthouse-guard.mjs:373`). Arithmetic removal is not a rerun.
 
 The independent **Blog accessibility BASELINE FAILURE** remains: 96/100 against ≥98 in all three runs, six empty-month labels at 3.58:1 versus required 4.5:1. Source: `M:blog-module/blog/archive-editorial.css:125`, `M:blog-module/build/discovery.js:242`. See [build pipeline](p01-build-pipeline.md) and [checks.tsv](../../perf/p01/checks.tsv). **audit:runtime PASS on Main and aggregate; build:check BASELINE FAILURE.**
 

@@ -24,7 +24,7 @@ Keep three changes independently reviewable and reversible:
 
 | Change | Exact edit/addition scope | Inspection entry point at the baseline | Acceptance |
 |---|---|---|---|
-| A. Tooling-only measurement repair | Proposed additions `scripts/perf/p01-rate-safe-lighthouse.mjs` and `scripts/perf/p01-rate-safe-lighthouse.test.mjs`; reuse installed browser/CDP dependencies | `M:scripts/perf/lighthouse-guard.mjs:45` argument handling and `M:scripts/perf/lighthouse-guard.mjs:371` request rule; retained `work/a0/bench.mjs`, `provider.mjs`, `extra-phases.mjs` | Successful exact provider fixtures before relevant audited-page/frame/worker requests; fail closed on misses. Assert actual audited theme/viewport/consent/SW/analytics/required metrics and target identity. Preserve evaluator/budgets and real first-party assets. |
+| A. Tooling-only measurement repair | Proposed additions `scripts/perf/p01-rate-safe-lighthouse.mjs` and `scripts/perf/p01-rate-safe-lighthouse.test.mjs`; reuse installed browser/CDP dependencies | `M:scripts/perf/lighthouse-guard.mjs:45` argument handling and `M:scripts/perf/lighthouse-guard.mjs:373` request rule; retained `work/a0/bench.mjs`, `provider.mjs`, `extra-phases.mjs` | Successful exact provider fixtures before relevant audited-page/frame/worker requests; fail closed on misses. Assert actual audited theme/viewport/consent/SW/analytics/required metrics and target identity. Preserve evaluator/budgets and real first-party assets. |
 | B. Generated coherence, S-03 | Review generated changes only in `index.html`, `scripts/author/research-catalog.json`, `standings/index.html` | `M:scripts/build/generated-drift-guard.mjs:15`; `M:scripts/build/author-research.mjs:6`; `M:blog-module/build/home-panels.js:153`; `M:blog-module/build/home-panels.js:163`; `M:scripts/build/stamp-html.mjs:252` | Owner-approved data cut; normal generation; two final clean Node 22 builds each leave zero tracked drift and build:check exits 0. No guard exemption. |
 | C. Scoped calendar contrast, S-01 | `blog-module/blog/archive-editorial.css`; normal generated derivative `blog-module/blog/archive-editorial.min.css`; expected hash stamps in the 40 consumers below | `M:blog-module/blog/archive-editorial.css:125`; calendar generation `M:blog-module/build/discovery.js:242`; existing `M:scripts/perf/edition-qa.mjs:1` | Every empty-month label ≥4.5:1, light/dark at 390/768/1440; Blog accessibility ≥98 in three clean canonical-route runs; preserve content/links/empty semantics/keyboard/layout. |
 
@@ -110,7 +110,7 @@ Commands below are instructions for an authorized coordinator in disposable cont
 | Host | Apple M3 Pro, arm64, 36 GiB RAM, Darwin 27.0.0; battery/thermal/contention limits remain recorded |
 | Main, Telemetry, Ghost Car, BetCast build/check | Node 22.23.4; CI default major 22 (`M:.github/actions/setup/action.yml:19`) |
 | TYRES aggregate build | Node 24.22.2, code/data identity separate (`M:scripts/deployment/release.mjs:77`) |
-| Host/collector provenance | Context/worker reports name Node 26.13.0; retained bench-run.sh:4 selects Node 22. Actual collection-process Node is not per-attempt evidence and needs coordinator reconciliation; do not relabel host Node as release or collection proof. |
+| Host/collector provenance | Host/default Node: 26.13.0; retained collection runner selects Node 22.23.4; actual collection-process Node was not captured per attempt and is unverified. |
 | Browser | Chrome for Testing 158.0.8127.18, SHA-256 `6ac929cf1af41969ed0de43ac88a015ae4b70f92dcc1bfb60871bfa7f141e96d`; set `CHROME_PATH` to the verified executable |
 | Locked QA packages | Lighthouse 13.6.0, playwright-core 1.65.0, puppeteer-core 25.16.0, chrome-launcher 1.2.3; use existing lockfile (`M:package-lock.json:2847`; `M:package-lock.json:3400`; `M:package-lock.json:3432`; `M:package-lock.json:2151`) |
 | Offline analysis | Python 3 standard library, Git for pinned source reads; no Python package install needed |
@@ -119,11 +119,12 @@ Commands below are instructions for an authorized coordinator in disposable cont
 
 ### Offline evidence verification
 
-Keep the original archive immutable and outside git. In an extracted disposable review copy, bind `P01_REVIEW` to its root and `P01_SOURCE` to a clean checkout at the Main baseline; `P01_BUNDLE` names the retained archive. Verify the archive's owner-recorded checksum and receipt entry hashes before analysis.
+Keep the original archive immutable and outside git. In an extracted disposable review copy, bind `P01_REVIEW` to its root and `P01_SOURCE` to a clean checkout at the Main baseline; `P01_BUNDLE` and `P01_SITE_BUNDLE` name the two retained archives. Verify the archive's owner-recorded checksum and receipt entry hashes before analysis.
 
 ```sh
 mkdir -p "$P01_REVIEW"
 tar -xzf "$P01_BUNDLE" -C "$P01_REVIEW"
+tar -xzf "$P01_SITE_BUNDLE" -C "$P01_REVIEW"
 git -C "$P01_SOURCE" rev-parse HEAD
 git -C "$P01_SOURCE" status --short
 python3 "$P01_REVIEW/work/g/analyze-lighthouse.py" \
@@ -213,7 +214,7 @@ node "$P01_REVIEW/work/a0/bench.mjs" \
   --evidence "$P01_NEW_EVIDENCE"
 ```
 
-The recorded phase order is `record`, `pilot`, `cold`, `screens`, `warm`, `interactions`, `real`, `offline`, `lighthouse`, `summarize`, production then local-built, serialized. For local-built, use `--environment local-built --origin "$P01_LOCAL_ORIGIN"` with the same paths and a frozen artifact served by retained `serve-artifact.mjs --root <artifact> --port <chosen-port>`; terminate the task-owned server afterward. Do not overwrite original evidence. Revalidate a current live release and split changed identities; a future collection is not the original baseline. Preserve collection Node identity, fixtures/replay/unknown status, consent denial and provider rate/stop rules. Fix readiness/identity/context gaps before using new data for acceptance.
+The intended protocol listed `record`, `pilot`, `cold`, `screens`, `warm`, `interactions`, `real`, `offline`, `lighthouse`, `summarize`. The executed full series ran local-built first, then production: cold, screens, warm, interactions, offline, Lighthouse and real; later Lighthouse and interaction reruns also ran local-built then production. See [methodology deviations](p01-runtime-baseline.md#methodology-deviations) and retained `run-all-series.sh` and `run-rerun.sh`. For local-built, use `--environment local-built --origin "$P01_LOCAL_ORIGIN"` with the same paths and a frozen artifact served by retained `serve-artifact.mjs --root <artifact> --port <chosen-port>`; terminate the task-owned server afterward. Do not overwrite original evidence. Revalidate a current live release and split changed identities; a future collection is not the original baseline. Preserve collection Node identity, fixtures/replay/unknown status, consent denial and provider rate/stop rules. Fix readiness/identity/context gaps before using new data for acceptance.
 
 ## Gate A–F position
 
@@ -259,7 +260,7 @@ The aggregate runtime PASS supersedes G's earlier “not run” narrative. Bench
 
 ## Evidence retention and public delivery
 
-**Evidence location: `local-bundle:p01-evidence.tar.gz`, kept on the owner's machine outside git.** It holds raw captures, traces/HAR/screenshots, twelve Gate E JSONs/logs, historical workflow logs, inventories, worker synthesis and fixture/tooling provenance. Public documents contain compact summaries and bundle-relative entry references only. This pass neither creates the archive nor verifies completed retention; the coordinator must confirm the bundle is complete/readable and record its final SHA-256, bytes, retention/retrieval instructions and per-entry checksums in [evidence-index.json](../../perf/p01/evidence-index.json). Do not invent a final archive checksum or claim remote upload.
+**Evidence retrieval:** obtain both archives from the owner outside git: `p01-evidence.tar.gz` (SHA-256 `4b700e8c42095443afee1ce21e6b228965651b85a483f3632a6d0bf0ab5ccaac`, bytes `153982635`) and `p01-local-site.tar.gz` (SHA-256 `5dcaa188c862e7252b687219698014411be2d70185e46d8f8dd6bcba2293083e`, bytes `296448112`). Extract both into the same fresh root R; the latter supplies `evidence/local-site`. Verify both archive hashes and run `python3 R/work/data/verify-bundle.py R CHECKOUT`, using the extraction root and a checkout containing `docs/performance` and `perf/p01`. For repackaging from an extraction, copy the coordinator-written `evidence-bundle.json` into R; it is not an archive member. The index records the archived evidence members and grouped digests. Retention and verification remain coordinator duties; do not remove original evidence before verification succeeds.
 
 | Required retained entry | SHA-256 |
 |---|---|
