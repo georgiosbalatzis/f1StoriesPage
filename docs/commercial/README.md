@@ -46,6 +46,10 @@ This folder is the evidence-based foundation for selling sponsorships on F1 Stor
 | [packages.md](packages.md) | B-02 package proposals and scenario gates |
 | [pricing-methodology.md](pricing-methodology.md) | B-02 pricing method and measurement |
 | [b02-closeout.md](b02-closeout.md) | B-02 owner decisions and handoff |
+| [metrics-evidence.md](metrics-evidence.md) | B-03 collection and claim evidence |
+| [validation-contract.md](validation-contract.md) | B-03 validation and proposed approval rule |
+| [b06-measurement-handoff.md](b06-measurement-handoff.md) | Ranked future measurement handoff |
+| [b03-closeout.md](b03-closeout.md) | B-03 outcome and owner decisions |
 
 ## Commercial activation boundaries
 
@@ -54,7 +58,7 @@ Until the applicable and triggered gates for the selected scenario in the [X1–
 - place a sponsor inside a data tool;
 - combine F1, team or driver marks or imagery with a sponsor;
 - accept anything of value from a betting operator;
-- give sponsors audience figures beyond "consented-visitor click floor".
+- give sponsors numerical audience or performance statements: none is currently approved. The inherited "consented-visitor click floor" is not an approval; see the [validation contract](validation-contract.md#wording-reconciliations).
 
 Existing placements stay as they are unless the owner decides otherwise in a separate PR.
 
@@ -68,6 +72,10 @@ Existing placements stay as they are unless the owner decides otherwise in a sep
 | Permission to use marks, data or images | The relevant rights holder: Formula One Licensing B.V. / FOM, OpenF1, Jolpica, Pirelli, Open-Meteo, teams, agencies and partners |
 
 Software agents prepare evidence only. They cannot approve anything.
+
+## B-03 status
+
+Reviewed against repository SHA `58273df6d753510605468c0787d9cdf04d6d398e`. Documentation is ready for owner review; 20 models are recorded `PRODUCTION_EXECUTED`, none `PRODUCTION_VALIDATED`. Owner-local validation is `PENDING_OWNER_VALIDATION`; no sponsor-performance claims are approved. The proposed approval rule remains an owner decision.
 
 ## Relationship to later work
 
