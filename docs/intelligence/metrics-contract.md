@@ -81,3 +81,7 @@ counts. Not selected or exported: `user_pseudo_id`, `user_id`, `ga_session_id`, 
 device detail beyond category, `page_referrer`, `link_text`, `js_error` `message`/`stack`/`source`, row-level
 timestamps. `pseudonymous_users_*` / `users_*` tables are not queried. No row-level extract leaves BigQuery; no
 visitor-level joins.
+
+## Reconciliation note — 2026-11-10
+
+Reviewed against repository SHA `58273df6d753510605468c0787d9cdf04d6d398e`. The older article engagement row at `docs/intelligence/metrics-contract.md:20` describes an unmatched event ratio, not a share of documents: engaged events per page-view event can exceed one and is NULL with no denominator (`docs/intelligence/sql/models/12-article-engagement.sql:1–17`; `docs/intelligence/editorial-model.md:92–95`).
