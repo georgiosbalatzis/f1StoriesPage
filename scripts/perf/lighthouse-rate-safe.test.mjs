@@ -1,10 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { classifyRequest, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
+import { classifyRequest, loadFixtures, requestKey, summarizeAttempts, reconcileNetwork } from './lighthouse-rate-safe.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
 test('method and decoded query multimap match exactly', () => {
@@ -16,7 +15,7 @@ test('method and decoded query multimap match exactly', () => {
     assert.throws(() => requestKey('GET', 'https://example.org/data#fragment'));
 });
 test('fixture validates body and replays status and safe headers; unknown requests fail closed', () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fixture-test-'));
+    const dir = fs.mkdtempSync(path.join(process.cwd(), '.fixture-test-'));
     try {
         const body = Buffer.from('{"ok":true}');
         fs.writeFileSync(path.join(dir, 'body'), body);
@@ -60,14 +59,28 @@ test('frame and worker interception', async () => {
     assert.ok(CLOSED_PROXY_FLAGS.includes('--proxy-server=http://127.0.0.1:9'));
     const http = await import('node:http');
     const server = http.createServer((req, res) => {
-        if (req.url === '/worker.js') return res.end("fetch('https://worker.invalid/data').catch(()=>{})");
-        if (req.url === '/frame') return res.end("<script>fetch('https://frame.invalid/data').catch(()=>{})</script>");
-        res.end("<iframe src='/frame'></iframe><script>new Worker('/worker.js')</script>");
+        if (req.url === '/worker.js') {
+            res.setHeader('content-type', 'application/javascript');
+            return res.end("fetch('https://worker.invalid/data').then(r => r.text()).then(postMessage).catch(()=>{})");
+        }
+        res.setHeader('content-type', 'text/html');
+        if (req.url === '/frame') return res.end("<script>fetch('https://frame.invalid/data').then(r => r.text()).then(t => parent.postMessage(t, '*'))</script>");
+        res.end(`<main><h1>Title</h1><img id="hero-image" class="article-header-img"
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
+            <span id="next-race-name">Race</span><section id="numbers"><div class="tower-row">
+            <span class="tower-row__name">Driver</span><span class="tower-row__pts">10</span></div></section>
+            <ul class="ed-cal__months"><li>Month</li></ul><a href="/blog-entries/test">Article</a>
+            <span id="round-num">20</span><div id="drivers-table"><div class="st-row" data-detail-target="x">Driver</div></div>
+            <div class="article-content">Body</div></main>
+            <script>window.received=[];onmessage=e=>received.push(e.data);let w=new Worker('/worker.js');w.onmessage=e=>received.push(e.data)</script><iframe src='/frame'></iframe>`);
     });
     await new Promise((resolve, reject) => server.once('error', reject).listen(0, '127.0.0.1', resolve));
-    let chrome, browser, stop;
+    let chrome, browser, stop, profiles;
     try {
-        chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox', ...CLOSED_PROXY_FLAGS], maxConnectionRetries: 3, connectionPollInterval: 500, logLevel: 'silent' });
+        profiles = fs.mkdtempSync(path.join(process.cwd(), '.browser-test-'));
+        fs.mkdirSync(path.join(profiles, 'first'));
+        fs.mkdirSync(path.join(profiles, 'second'));
+        chrome = await launch({ userDataDir: path.join(profiles, 'first'), chromeFlags: ['--headless=new', '--no-sandbox', ...CLOSED_PROXY_FLAGS], maxConnectionRetries: 3, connectionPollInterval: 500, logLevel: 'silent' });
         browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
         const origin = `http://127.0.0.1:${server.address().port}`;
         const attempt = { causes: [], requests: [], observations: [] };
@@ -75,17 +88,59 @@ test('frame and worker interception', async () => {
         stop = await intercept(browser, origin, fixtures, attempt);
         const page = await browser.newPage();
         await page.goto(origin, { waitUntil: 'networkidle0' });
+        await page.waitForFunction(() => window.received.includes('ok'), { timeout: 5000 }).catch(error => {
+            throw new Error(`${error.message}; requests=${JSON.stringify(attempt.requests)}; causes=${JSON.stringify(attempt.causes)}`);
+        });
         await stop.drain();
+        assert.ok(await page.evaluate(() => window.received.includes('ok')));
+        assert.deepEqual(attempt.causes.filter(cause => cause.startsWith('Observer:')), []);
+        const observation = attempt.observations.find(item => item.url === `${origin}/`);
+        assert.ok(observation?.loaderId);
+        assert.deepEqual(observation.routeState, {
+            hero: true, schedule: true, homeStandings: true, calendar: 1, articleLinks: 1,
+            round: '20', standingsRows: 1, articleHero: true, title: true, articleBody: true, betcast: false
+        });
+        await page.evaluate(() => { fetch('https://unknown.invalid/data').catch(() => {}); new WebSocket('wss://socket.invalid/'); });
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await stop.drain();
+        assert.ok(attempt.causes.some(cause => cause.includes('Unmatched request: GET https://unknown.invalid/data')));
+        assert.ok(attempt.causes.some(cause => cause.includes('External WebSocket: wss://socket.invalid/')));
         assert.ok(attempt.requests.some(item => item.url === 'https://frame.invalid/data' && item.action === 'fulfill'));
-        const worker = attempt.requests.find(item => item.url === 'https://worker.invalid/data');
-        assert.ok(worker, 'worker request must be observed');
-        console.log(`Dedicated worker coverage: ${worker.action}`);
-        assert.ok(worker.action === 'fulfill' || (worker.action === 'observed-fetchless' && attempt.causes.some(cause => cause.includes(worker.url))));
-        await page.close();
+        await page.evaluate(() => setTimeout(() => fetch('https://late.invalid/data').catch(() => {}), 1200));
+        await stop(async () => chrome.kill());
+        assert.ok(attempt.requests.some(item => item.url === 'https://worker.invalid/data' && item.action === 'fulfill') ||
+            attempt.causes.some(cause => cause.includes('Network request without Fetch pause: https://worker.invalid/data')));
+        stop = null;
+        await browser.disconnect();
+        browser = null;
+        chrome = null;
+        assert.deepEqual(attempt.causes.filter(cause => cause.startsWith('Observer:')), []);
+
+        chrome = await launch({ userDataDir: path.join(profiles, 'second'), chromeFlags: ['--headless=new', '--no-sandbox', ...CLOSED_PROXY_FLAGS], maxConnectionRetries: 3, connectionPollInterval: 500, logLevel: 'silent' });
+        browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+        const next = { causes: [], requests: [], observations: [] };
+        stop = await intercept(browser, origin, fixtures, next);
+        await new Promise(resolve => setTimeout(resolve, 1400));
+        await stop.drain();
+        assert.ok(!next.requests.some(request => request.url.includes('late.invalid')));
+        assert.ok(!next.causes.some(cause => cause.includes('late.invalid')));
     } finally {
-        if (stop) await stop().catch(() => {});
+        if (stop) await stop(async () => { if (chrome) await chrome.kill(); }).catch(() => {});
         if (browser) await browser.disconnect();
         if (chrome) await chrome.kill();
         await new Promise(resolve => server.close(resolve));
+        if (profiles) fs.rmSync(profiles, { recursive: true, force: true });
     }
+});
+
+
+test('network-only requests invalidate their owning attempt, including late events', () => {
+    const first = { network: [], paused: [], causes: [] };
+    const second = { network: [], paused: [], causes: [] };
+    const url = 'https://unobserved.invalid/data';
+    first.network.push({ id: 'late', method: 'GET', url });
+    reconcileNetwork(first.network, first.paused, first.causes);
+    reconcileNetwork(second.network, second.paused, second.causes);
+    assert.deepEqual(first.causes, [`Network request without Fetch pause: ${url}`]);
+    assert.deepEqual(second.causes, []);
 });

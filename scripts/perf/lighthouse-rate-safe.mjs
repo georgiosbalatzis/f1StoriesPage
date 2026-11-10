@@ -4,8 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import os from 'node:os';
-import puppeteer from 'puppeteer-core';
+import puppeteer, { CDPSessionEvent } from 'puppeteer-core';
 import { loadBudget, resolveRequest, startServer, closeChrome, launchAuditChrome, seedAuditConsent, clearServiceWorkers, latestArticlePath, runLighthouse, medianMetrics, evaluateRoute, routeMetrics, inlineCssBytes } from './lighthouse-guard.mjs';
 
 export function requestKey(method, input) {
@@ -53,25 +52,65 @@ export function summarizeAttempts(route, attempts, required) {
 // installs the same interception before it is resumed, including nested targets.
 export const CLOSED_PROXY_FLAGS = ['--disable-quic', '--proxy-server=http://127.0.0.1:9', '--proxy-bypass-list=<-loopback>;127.0.0.1;localhost;[::1]'];
 
-export async function intercept(browser, origin, fixtures, attempt, discovery = false) {
+export function reconcileNetwork(network, paused, causes) {
+    const remaining = [...paused];
+    for (const request of network) {
+        const index = remaining.findIndex(item =>
+            item.id === request.id && item.url === request.url && item.method === request.method
+        );
+        if (index < 0) causes.push(`Network request without Fetch pause: ${request.url}`);
+        else remaining.splice(index, 1);
+    }
+}
+
+export async function intercept(browser, origin, fixtures, attempt) {
     const root = await browser.target().createCDPSession();
     const pending = new Set();
+    const sessions = new Map();
+    const targetTypes = new Map();
+    const destroyed = new Set();
+    const detached = new Set();
+    let closing = false;
     const track = promise => {
         pending.add(promise);
-        promise.catch(error => attempt.causes.push(`Observer: ${error.message}`)).finally(() => pending.delete(promise));
+        promise.catch(error => attempt.causes.push(`Observer: ${error.message}`))
+            .finally(() => pending.delete(promise));
     };
+    const lost = message => { if (!closing) attempt.causes.push(`Observer: ${message}`); };
+    const disconnected = () => lost('browser disconnected');
+    browser.on('disconnected', disconnected);
+    root.on(CDPSessionEvent.Disconnected, () => lost('root session disconnected'));
     const attach = async (parent, event) => {
         const session = parent.connection().session(event.sessionId);
         if (!session) throw new Error(`Missing session for ${event.targetInfo.type}`);
-        const targetInfo = event.targetInfo;
+        const info = event.targetInfo;
+        sessions.set(event.sessionId, info.targetId);
+        targetTypes.set(info.targetId, info.type);
+        const network = [];
+        const paused = [];
         const initiators = new Map();
+        attempt.reconcile.push(() => reconcileNetwork(network, paused, attempt.causes));
+        session.on(CDPSessionEvent.Disconnected, () => { if (!closing) detached.add(info.targetId); });
         session.on('Target.attachedToTarget', child => track(attach(session, child)));
-        let fetchSupported = true;
+        session.on('Target.detachedFromTarget', child => {
+            if (!closing) detached.add(sessions.get(child.sessionId) || child.sessionId);
+            sessions.delete(child.sessionId);
+        });
+        session.on('Inspector.targetCrashed', () => lost(`target crashed: ${info.targetId}`));
         session.on('Network.requestWillBeSent', event => {
             initiators.set(event.requestId, event.initiator);
-            if (!fetchSupported && /^https?:/.test(event.request.url) && new URL(event.request.url).origin !== origin) {
-                attempt.requests.push({ method: event.request.method, url: event.request.url, targetType: targetInfo.type, targetId: targetInfo.targetId, action: 'observed-fetchless' });
-                attempt.causes.push(`Fetch-less target external request: ${event.request.url}`);
+            if (event.type === 'Document' && event.frameId === info.targetId) {
+                attempt.navigations.push({ targetId: info.targetId, loaderId: event.loaderId, url: event.request.url });
+            }
+            if (/^https?:/i.test(event.request.url) && new URL(event.request.url).origin !== origin) {
+                network.push({ id: event.requestId, url: event.request.url, method: event.request.method });
+            }
+        });
+        session.on('Network.webSocketCreated', event => {
+            const socket = new URL(event.url);
+            const socketOrigin = `${socket.protocol === 'wss:' ? 'https:' : 'http:'}//${socket.host}`;
+            if (socketOrigin !== origin || socket.username || socket.password) {
+                attempt.causes.push(`External WebSocket: ${event.url}`);
             }
         });
         session.on('Fetch.requestPaused', event => track((async () => {
@@ -80,34 +119,122 @@ export async function intercept(browser, origin, fixtures, attempt, discovery = 
             try { decision = classifyRequest(request, origin, fixtures); }
             catch (error) { decision = { action: 'abort', cause: `Invalid request ${request.url}: ${error.message}` }; }
             if (decision.action === 'continue') return session.send('Fetch.continueRequest', { requestId });
-            const record = { method: request.method, url: request.url, resourceType: event.resourceType, frameId: event.frameId || null, targetType: targetInfo.type, targetId: targetInfo.targetId, initiator: initiators.get(networkId) || null, action: decision.action };
-            attempt.requests.push(record);
-            if (decision.action === 'fulfill') return session.send('Fetch.fulfillRequest', { requestId, ...decision.fixture });
-            attempt.causes.push(decision.cause);
-            return session.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' });
+            paused.push({ id: networkId, url: request.url, method: request.method });
+            const record = {
+                method: request.method, url: request.url, resourceType: event.resourceType,
+                frameId: event.frameId || null, targetType: info.type, targetId: info.targetId,
+                initiator: initiators.get(networkId) || null, action: decision.action
+            };
+            if (decision.action === 'fulfill') {
+                await session.send('Fetch.fulfillRequest', { requestId, ...decision.fixture });
+                attempt.requests.push(record);
+            } else {
+                attempt.requests.push(record);
+                attempt.causes.push(decision.cause);
+                await session.send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' });
+            }
         })()));
-        if (event.targetInfo.type === 'page') {
-            session.on('Page.loadEventFired', () => track((async () => {
-                const { result } = await session.send('Runtime.evaluate', { expression: `new Promise(resolve => setTimeout(() => resolve(JSON.stringify({url:location.href,readyState:document.readyState,hasMain:!!document.querySelector('main'),viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},theme:document.documentElement.getAttribute('data-theme'),routeState:{hero:!!document.querySelector('#hero-image'),calendar:!!document.querySelector('.ed-cal__months'),round:document.querySelector('#round-num')?.textContent.trim() || null,standingsRows:document.querySelectorAll('#drivers-table .st-row[data-detail-target]').length,articleHero:!!document.querySelector('img.article-header-img'),title:!!document.querySelector('h1')},consent:JSON.parse(localStorage.getItem('f1stories-cookie-consent-v1') || 'null'),serviceWorker:{controlled:!!navigator.serviceWorker?.controller}})), 1000))`, returnByValue: true, awaitPromise: true });
-                if (result.value) attempt.observations.push({ ...JSON.parse(result.value), targetId: targetInfo.targetId });
-            })().catch(error => { if (!/Inspected target navigated or closed|Target closed/.test(error.message)) throw error; })));
+        if (info.type === 'page') {
+            session.on('Page.lifecycleEvent', event => {
+                if (event.name !== 'load' || event.frameId !== info.targetId) return;
+                track((async () => {
+                const { frameTree } = await session.send('Page.getFrameTree');
+                if (frameTree.frame.loaderId !== event.loaderId || !frameTree.frame.url.startsWith(origin)) return;
+                const { result } = await session.send('Runtime.evaluate', {
+                    expression: `new Promise(resolve => setTimeout(() => {
+                        const image = selector => { const img = document.querySelector(selector); return !!img && img.complete && img.naturalWidth > 0; };
+                        resolve(JSON.stringify({
+                            url: location.href, readyState: document.readyState, hasMain: !!document.querySelector('main'),
+                            viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+                            theme: document.documentElement.getAttribute('data-theme'),
+                            routeState: {
+                                hero: image('#hero-image'), schedule: !!document.querySelector('#next-race-name')?.textContent.trim() &&
+                                    document.querySelector('#next-race-name').textContent.trim() !== 'Επόμενο GP',
+                                homeStandings: [...document.querySelectorAll('#numbers .tower-row')].some(row =>
+                                    row.querySelector('.tower-row__name')?.textContent.trim() && row.querySelector('.tower-row__pts')?.textContent.trim()),
+                                calendar: document.querySelectorAll('.ed-cal__months > li').length,
+                                articleLinks: document.querySelectorAll('a[href*="/blog-entries/"]').length,
+                                round: document.querySelector('#round-num')?.textContent.trim() || null,
+                                standingsRows: document.querySelectorAll('#drivers-table .st-row[data-detail-target]').length,
+                                articleHero: image('img.article-header-img'), title: !!document.querySelector('h1')?.textContent.trim(),
+                                articleBody: !!document.querySelector('.article-content')?.textContent.trim(),
+                                betcast: !!document.querySelector('iframe[data-f1s-betcast-managed]')
+                            },
+                            consent: JSON.parse(localStorage.getItem('f1stories-cookie-consent-v1') || 'null'),
+                            serviceWorker: { controlled: !!navigator.serviceWorker?.controller }
+                        }));
+                    }, 100))`, returnByValue: true, awaitPromise: true
+                });
+                const after = await session.send('Page.getFrameTree');
+                if (result.value && frameTree.frame.loaderId === after.frameTree.frame.loaderId) {
+                    const observation = JSON.parse(result.value);
+                    if (observation.routeState.betcast) {
+                        const frame = after.frameTree.childFrames?.find(child => /\/betcast\//i.test(child.frame.url));
+                        if (frame) {
+                            observation.routeState.betcastFrameId = frame.frame.id;
+                            try {
+                                const { executionContextId } = await session.send('Page.createIsolatedWorld', { frameId: frame.frame.id });
+                                const rows = await session.send('Runtime.evaluate', {
+                                    contextId: executionContextId,
+                                    expression: "document.querySelectorAll('tbody tr').length",
+                                    returnByValue: true
+                                });
+                                observation.routeState.betcastRows = rows.result.value || 0;
+                            } catch (_) { observation.routeState.betcastRows = 0; }
+                        }
+                    }
+                    attempt.observations.push({ ...observation, targetId: info.targetId, loaderId: frameTree.frame.loaderId });
+                }
+            })().catch(error => { if (!/Inspected target navigated or closed|Target closed|Session closed/.test(error.message)) throw error; }));
+            });
             await session.send('Page.enable');
+            await session.send('Page.setLifecycleEventsEnabled', { enabled: true });
         }
         await session.send('Network.enable');
-        try { await session.send('Fetch.enable', { patterns: [{ urlPattern: '*' }] }); } catch (error) {
-            if (targetInfo.type !== 'worker' || !error.message.includes("wasn't found")) throw error;
-            fetchSupported = false;
+        try { await session.send('Fetch.enable', { patterns: [{ urlPattern: '*' }] }); }
+        catch (error) {
+            if (info.type !== 'worker' || !error.message.includes("wasn't found")) throw error;
         }
-        if (['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(event.targetInfo.type)) {
+        if (['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(info.type)) {
             try { await session.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true }); }
-            catch (error) { if (['page', 'iframe'].includes(event.targetInfo.type)) throw error; }
+            catch (error) { if (['page', 'iframe'].includes(info.type)) throw error; }
         }
         await session.send('Runtime.runIfWaitingForDebugger');
+
     };
+    attempt.reconcile = [];
+    attempt.navigations = [];
     root.on('Target.attachedToTarget', event => track(attach(root, event)));
+    root.on('Target.detachedFromTarget', event => {
+        if (!closing) detached.add(sessions.get(event.sessionId) || event.sessionId);
+        sessions.delete(event.sessionId);
+    });
+    root.on('Target.targetDestroyed', event => destroyed.add(event.targetId));
+    await root.send('Target.setDiscoverTargets', { discover: true });
     await root.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });
     const drain = async () => { while (pending.size) await Promise.allSettled([...pending]); };
-    const stop = async () => { await drain(); await root.detach(); };
+    await drain();
+    const { targetInfos } = await root.send('Target.getTargets');
+    for (const info of targetInfos) {
+        if (!['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(info.type)) continue;
+        if (![...sessions.values()].includes(info.targetId)) {
+            attempt.causes.push(`Observer: existing target not attached: ${info.targetId} ${info.url}`);
+        }
+    }
+    const stop = async (close, expectedClosedTarget) => {
+        await drain();
+        closing = true;
+        await close();
+        await drain();
+        for (const id of detached) {
+            if (id !== expectedClosedTarget || !destroyed.has(id)) {
+                attempt.causes.push(`Observer: unexpected session loss: ${targetTypes.get(id) || 'unknown'} ${id}`);
+            }
+        }
+        attempt.reconcile.forEach(reconcile => reconcile());
+        delete attempt.reconcile;
+        browser.off('disconnected', disconnected);
+    };
     stop.drain = drain;
     return stop;
 }
@@ -130,44 +257,70 @@ async function main(argv) {
     const out = path.resolve(options.out, options.label);
     fs.mkdirSync(out, { recursive: true });
     const fixtures = loadFixtures(path.resolve(options.manifest || new URL('./fixtures/p02/manifest.json', import.meta.url).pathname));
-    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'rate-safe-profile-'));
     const report = { label: options.label, discovery: !!options.discovery, routes: [] };
-    let server, chrome, browser, stop;
+    let server;
     try {
         const started = await startServer(site); server = started.server;
-        chrome = await launchAuditChrome(profile, CLOSED_PROXY_FLAGS);
-        browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
-        const current = { causes: [], requests: [], observations: [] };
-        stop = await intercept(browser, started.origin, fixtures, current, !!options.discovery);
-        await seedAuditConsent(chrome, started.origin);
         for (const configured of routes) {
             const route = configured.path === 'latest-article' ? { ...configured, path: latestArticlePath(site) } : configured;
             const attempts = [];
             for (let i = 1; i <= (options.discovery ? 1 : count); i++) {
-                current.causes.length = current.requests.length = current.observations.length = 0;
-                await clearServiceWorkers(chrome, started.origin);
+                const current = { causes: [], requests: [], observations: [] };
+                const profile = fs.mkdtempSync(path.join(out, '.profile-'));
+                let chrome, browser, stop, lhr;
                 const expected = new URL(route.path, started.origin).href;
-                let lhr;
                 try {
+                    chrome = await launchAuditChrome(profile, CLOSED_PROXY_FLAGS);
+                    await seedAuditConsent(chrome, started.origin);
+                    await clearServiceWorkers(chrome, started.origin);
+                    browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+                    stop = await intercept(browser, started.origin, fixtures, current);
                     if (options.discovery) {
                         const page = await browser.newPage();
                         await page.goto(expected, { waitUntil: 'networkidle2', timeout: 30000 });
-                        await page.close();
                     } else lhr = await runLighthouse(route, started.origin, budget, out, chrome.port, i);
                 } catch (error) { current.causes.push(`Run: ${error.message}`); }
-                await stop.drain();
+                finally {
+                    if (stop) {
+                        const targetId = lhr && current.navigations.filter(nav => nav.url === expected).at(-1)?.targetId;
+                        await stop(() => closeChrome(chrome), targetId)
+                            .catch(error => current.causes.push(`Observer: ${error.message}`));
+                    }
+                    await closeChrome(chrome);
+                    if (browser) await browser.disconnect();
+                    fs.rmSync(profile, { recursive: true, force: true });
+                }
                 const expectedFinal = route.name === 'Standings' ? `${expected}?tab=drivers` : expected;
-                const observation = current.observations.filter(value => value.url === expected || value.url === expectedFinal).at(-1);
+                const navigations = current.navigations.filter(value => value.url === expected);
+                // Lighthouse's back-forward cache audit navigates away and back after the measured load.
+                const auditedNavigation = navigations[0];
+                const observation = current.observations.find(value =>
+                    (value.url === expected || value.url === expectedFinal) &&
+                    auditedNavigation?.targetId === value.targetId && auditedNavigation?.loaderId === value.loaderId
+                );
                 const analytics = current.requests.filter(request => /(^|\.)(googletagmanager\.com|google-analytics\.com|doubleclick\.net)$/i.test(new URL(request.url).hostname));
-                const assertions = { requestedURL: expected, finalURL: lhr?.finalDisplayedUrl || lhr?.finalUrl || observation?.url || null, readiness: observation?.readyState || null, hasMain: observation?.hasMain ?? null, viewport: observation?.viewport || null, theme: observation?.theme || null, consent: observation?.consent || null, serviceWorker: observation?.serviceWorker || null, routeState: observation?.routeState || null, analyticsRequests: analytics };
+                const assertions = { navigations: current.navigations, observations: current.observations, requestedURL: expected, finalURL: lhr?.finalDisplayedUrl || lhr?.finalUrl || observation?.url || null, readiness: observation?.readyState || null, hasMain: observation?.hasMain ?? null, viewport: observation?.viewport || null, theme: observation?.theme || null, consent: observation?.consent || null, serviceWorker: observation?.serviceWorker || null, routeState: observation?.routeState || null, analyticsRequests: analytics };
                 if (!options.discovery) {
+                    if (!auditedNavigation || navigations.some(nav => nav.targetId !== auditedNavigation.targetId)) {
+                        current.causes.push('Audited navigation target is ambiguous');
+                    }
                     if (assertions.finalURL !== expected && assertions.finalURL !== expectedFinal) current.causes.push('Final URL mismatch');
                     if (!observation || observation.readyState !== 'complete' || !observation.hasMain) current.causes.push('Audited page readiness not observed');
                     if (observation?.consent?.essential !== true || observation?.consent?.analytics !== false) current.causes.push('Analytics consent not denied');
                     if (analytics.length) current.causes.push('Analytics request without consent');
                     if (observation?.viewport?.width !== 412 || observation?.viewport?.height !== 823 || observation?.viewport?.dpr !== 1.75 || !['light', 'dark'].includes(observation?.theme)) current.causes.push('Viewport or theme mismatch');
                     const state = observation?.routeState;
-                    if ((route.name === 'Home' && !state?.hero) || (route.name === 'Blog' && !state?.calendar) || (route.name === 'Standings' && (state?.round !== '20' || !state?.standingsRows)) || (route.name === 'Article' && (!state?.articleHero || !state?.title))) current.causes.push('Route readiness mismatch');
+                    const routeReady = {
+                        Home: state?.hero && state?.schedule && state?.homeStandings,
+                        Blog: state?.calendar && state?.articleLinks,
+                        Standings: state?.round === '20' && state?.standingsRows,
+                        Article: state?.articleHero && state?.title && state?.articleBody
+                    };
+                    if (!routeReady[route.name]) current.causes.push('Route readiness mismatch');
+                    if (state?.betcast && (!state.betcastRows || !current.requests.some(request =>
+                        request.action === 'fulfill' && request.resourceType === 'Document' &&
+                        request.frameId === state.betcastFrameId
+                    ))) current.causes.push('BetCast embed document not fulfilled or data rows not populated');
                     const hits = current.requests.filter(request => request.action === 'fulfill' && request.targetId === observation?.targetId && request.frameId === observation?.targetId);
                     assertions.auditedTargetId = observation?.targetId || null;
                     assertions.auditedFixtureHits = hits;
@@ -186,11 +339,7 @@ async function main(argv) {
         report.error = error.message;
         throw error;
     } finally {
-        if (stop) await stop().catch(error => console.error(`Observer cleanup: ${error.message}`));
-        if (browser) await browser.disconnect();
-        await closeChrome(chrome);
         if (server) await new Promise(resolve => server.close(resolve));
-        fs.rmSync(profile, { recursive: true, force: true });
         fs.writeFileSync(path.join(out, options.discovery ? 'discovery.json' : 'results.json'), JSON.stringify(report, null, 2) + '\n');
     }
     if (report.routes.some(route => options.discovery ? route.attempts.some(attempt => attempt.causes.some(cause => cause.startsWith('Observer:') || cause.startsWith('Run:'))) : route.summary.failures.length)) process.exitCode = 1;
