@@ -4,9 +4,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { classifyRequest, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
+import { classifyRequest, expectedTheme, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
+test('only the pinned light theme is valid', () => {
+    assert.equal(expectedTheme('light'), true);
+    for (const theme of [null, undefined, 'dark', 'unknown']) assert.equal(expectedTheme(theme), false);
+});
 test('method and decoded query multimap match exactly', () => {
     const a = requestKey('GET', 'https://example.org/data?a=1&a=2&b=x%20y');
     assert.equal(a, requestKey('GET', 'https://example.org/data?b=x+y&a=2&a=1'));

@@ -48,6 +48,8 @@ export function summarizeAttempts(route, attempts, required) {
     return { valid: valid.length, ...evaluateRoute(route, metrics) };
 }
 
+export const expectedTheme = theme => theme === 'light';
+
 // Browser-level auto-attach pauses new targets before their first request. Each child
 // installs the same interception before it is resumed, including nested targets.
 export const CLOSED_PROXY_FLAGS = ['--disable-quic', '--proxy-server=http://127.0.0.1:9', '--proxy-bypass-list=<-loopback>;127.0.0.1;localhost;[::1]'];
@@ -296,6 +298,9 @@ async function main(argv) {
                     await clearServiceWorkers(chrome, started.origin);
                     browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
                     const blank = await browser.newPage();
+                    await blank.goto(new URL('/__f1stories-lighthouse-storage.html', started.origin).toString());
+                    await blank.evaluate(() => localStorage.setItem('f1stories-theme', 'light'));
+                    await blank.goto('about:blank');
                     for (const page of await browser.pages()) if (page !== blank) await page.close();
                     stop = await intercept(browser, started.origin, fixtures, current);
                     if (options.discovery) {
@@ -331,7 +336,7 @@ async function main(argv) {
                     if (!observation || observation.readyState !== 'complete' || !observation.hasMain) current.causes.push('Audited page readiness not observed');
                     if (observation?.consent?.essential !== true || observation?.consent?.analytics !== false) current.causes.push('Analytics consent not denied');
                     if (analytics.length) current.causes.push('Analytics request without consent');
-                    if (observation?.viewport?.width !== 412 || observation?.viewport?.height !== 823 || observation?.viewport?.dpr !== 1.75 || !['light', 'dark'].includes(observation?.theme)) current.causes.push('Viewport or theme mismatch');
+                    if (observation?.viewport?.width !== 412 || observation?.viewport?.height !== 823 || observation?.viewport?.dpr !== 1.75 || !expectedTheme(observation?.theme)) current.causes.push('Viewport or theme mismatch');
                     const state = observation?.routeState;
                     const routeReady = {
                         Home: state?.hero && state?.schedule && state?.homeStandings,
