@@ -40,7 +40,7 @@ Category balance follows evidence: three runtime investigations, one accessibili
 
 **Impact baseline:** production cold/light mobile CDP LCP **2708 ms [2704–2744], n=5**, highest primary mobile median. Representative LCP is `p.page-intro`. All five samples are data-incomplete and each has seven unknown-size requests. Local-built LCP **2720 ms [2692–2748], n=5** is a separate baseline. No usable-chart baseline or causal delay attribution exists. Expected saving: **TBD — requires P-0X measurement**.
 
-Source entry: `BetCast:src/App.js:29`; `BetCast:src/services/googleSheetService.js:43`. EV-ATTEMPTS/NETWORK; representative capture `sha256:0ee5e9ba4bb96bd593a0fd8027c115efb4ed379aac696493ec8de246b99d5f5c`.
+Source entry: `BetCast:src/App.js:29`; `BetCast:src/services/googleSheetService.js:43`. EV-ATTEMPTS/NETWORK; representative capture `sha256-0ee5e9ba4bb96bd593a0fd8027c115efb4ed379aac696493ec8de246b99d5f5c`.
 
 | Dimension | Justification |
 |---|---|
@@ -59,7 +59,7 @@ Source entry: `BetCast:src/App.js:29`; `BetCast:src/services/googleSheetService.
 
 **Impact baseline:** production cold/light mobile known bytes **966475 B [966327–966535], n=5**: median **715817 first-party B** and **250658 replayed B**. Main-target TaskDuration **589.029 ms [573.457–611.727], n=5**. Representative charts/React chunks are 112850/59283 B, n=1; these are resource observations, not attributed library savings. Local-built known bytes 967916 B [967916–967916] and TaskDuration 625.624 ms [622.354–660.137], n=5 each, remain separate. Expected saving: **TBD — requires P-0X measurement**.
 
-Source entry: `Telemetry:src/components/DashboardShell.tsx:34`; `Telemetry:src/components/dashboard/TelemetryTab.tsx:3`; `Telemetry:vite.config.ts:32`. EV-ATTEMPTS/NETWORK; capture `sha256:80f29c19302ded9c652de9b683472f64240b78f70645b1ce0afe0a3784c8336e`.
+Source entry: `Telemetry:src/components/DashboardShell.tsx:34`; `Telemetry:src/components/dashboard/TelemetryTab.tsx:3`; `Telemetry:vite.config.ts:32`. EV-ATTEMPTS/NETWORK; capture `sha256-80f29c19302ded9c652de9b683472f64240b78f70645b1ce0afe0a3784c8336e`.
 
 | Dimension | Justification |
 |---|---|
@@ -116,7 +116,7 @@ Source entry: `M:scripts/build/generated-drift-guard.mjs:15`; `M:scripts/build/a
 
 **Impact baseline:** home production mobile LCP **2320 ms [2316–2336], n=5**; representative LCP image **146091 B, n=1**. Latest local mobile/tablet/desktop each request the same **145952-B AVIF, n=1 per width**. Responsive descriptors and preloads already align; rendered boxes/currentSrc/DPR/fidelity comparison is missing. These are separate conditions, not a saving. Expected saving: **TBD — requires P-0X measurement**.
 
-Source entry: `M:index.html:33`; `M:index.html:149`; `M:blog-module/build/article-render.js:508`; `M:blog-module/build/article-render.js:528`; `M:scripts/build/stamp-html.mjs:871`. EV-RUNS/NETWORK; home capture `sha256:56891e32115e0a637e09da1420a7269e3500cf100b670e81be623d9c105cae92`.
+Source entry: `M:index.html:33`; `M:index.html:149`; `M:blog-module/build/article-render.js:508`; `M:blog-module/build/article-render.js:528`; `M:scripts/build/stamp-html.mjs:871`. EV-RUNS/NETWORK; home capture `sha256-56891e32115e0a637e09da1420a7269e3500cf100b670e81be623d9c105cae92`.
 
 | Dimension | Justification |
 |---|---|
