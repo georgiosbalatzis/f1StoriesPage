@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { classifyRequest, loadFixtures, requestKey, summarizeAttempts, reconcileNetwork } from './lighthouse-rate-safe.mjs';
+import { EventEmitter } from 'node:events';
+import { classifyRequest, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
 test('method and decoded query multimap match exactly', () => {
@@ -59,6 +60,7 @@ test('frame and worker interception', async () => {
     assert.ok(CLOSED_PROXY_FLAGS.includes('--proxy-server=http://127.0.0.1:9'));
     const http = await import('node:http');
     const server = http.createServer((req, res) => {
+        if (req.url === '/preexisting') return res.end('pre-existing page');
         if (req.url === '/worker.js') {
             res.setHeader('content-type', 'application/javascript');
             return res.end("fetch('https://worker.invalid/data').then(r => r.text()).then(postMessage).catch(()=>{})");
@@ -86,6 +88,7 @@ test('frame and worker interception', async () => {
         const attempt = { causes: [], requests: [], observations: [] };
         const fixtures = new Map([[requestKey('GET', 'https://frame.invalid/data'), { responseCode: 200, responseHeaders: [{ name: 'access-control-allow-origin', value: '*' }], body: Buffer.from('ok').toString('base64') }], [requestKey('GET', 'https://worker.invalid/data'), { responseCode: 200, responseHeaders: [{ name: 'access-control-allow-origin', value: '*' }], body: Buffer.from('ok').toString('base64') }]]);
         stop = await intercept(browser, origin, fixtures, attempt);
+        assert.ok(!attempt.causes.some(cause => cause.includes('pre-existing target could have issued requests')));
         const page = await browser.newPage();
         await page.goto(origin, { waitUntil: 'networkidle0' });
         await page.waitForFunction(() => window.received.includes('ok'), { timeout: 5000 }).catch(error => {
@@ -106,8 +109,11 @@ test('frame and worker interception', async () => {
         assert.ok(attempt.causes.some(cause => cause.includes('Unmatched request: GET https://unknown.invalid/data')));
         assert.ok(attempt.causes.some(cause => cause.includes('External WebSocket: wss://socket.invalid/')));
         assert.ok(attempt.requests.some(item => item.url === 'https://frame.invalid/data' && item.action === 'fulfill'));
-        await page.evaluate(() => setTimeout(() => fetch('https://late.invalid/data').catch(() => {}), 1200));
+        const firstProcess = chrome.process;
+        const firstExit = new Promise(resolve => firstProcess.once('exit', resolve));
         await stop(async () => chrome.kill());
+        await firstExit;
+        assert.ok(firstProcess.exitCode !== null || firstProcess.signalCode !== null);
         assert.ok(attempt.requests.some(item => item.url === 'https://worker.invalid/data' && item.action === 'fulfill') ||
             attempt.causes.some(cause => cause.includes('Network request without Fetch pause: https://worker.invalid/data')));
         stop = null;
@@ -119,8 +125,10 @@ test('frame and worker interception', async () => {
         chrome = await launch({ userDataDir: path.join(profiles, 'second'), chromeFlags: ['--headless=new', '--no-sandbox', ...CLOSED_PROXY_FLAGS], maxConnectionRetries: 3, connectionPollInterval: 500, logLevel: 'silent' });
         browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
         const next = { causes: [], requests: [], observations: [] };
+        const existing = await browser.newPage();
+        await existing.goto(`${origin}/preexisting`);
         stop = await intercept(browser, origin, fixtures, next);
-        await new Promise(resolve => setTimeout(resolve, 1400));
+        assert.ok(next.causes.includes(`Observer: pre-existing target could have issued requests: page ${origin}/preexisting`));
         await stop.drain();
         assert.ok(!next.requests.some(request => request.url.includes('late.invalid')));
         assert.ok(!next.causes.some(cause => cause.includes('late.invalid')));
@@ -134,13 +142,28 @@ test('frame and worker interception', async () => {
 });
 
 
-test('network-only requests invalidate their owning attempt, including late events', () => {
-    const first = { network: [], paused: [], causes: [] };
-    const second = { network: [], paused: [], causes: [] };
+test('network-only event between close and disconnect invalidates its attempt', async () => {
+    const { intercept } = await import('./lighthouse-rate-safe.mjs');
+    const browser = new EventEmitter();
+    browser.connected = true;
+    const root = new EventEmitter();
+    const session = new EventEmitter();
+    root.connection = () => ({ session: () => session });
+    session.send = async () => ({});
+    root.send = async method => {
+        if (method === 'Target.setAutoAttach') root.emit('Target.attachedToTarget', { sessionId: 's', targetInfo: { targetId: 't', type: 'worker' } });
+        return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+    };
+    browser.target = () => ({ createCDPSession: async () => root });
+    const first = { causes: [], requests: [], observations: [] };
+    const stop = await intercept(browser, 'http://127.0.0.1', new Map(), first);
     const url = 'https://unobserved.invalid/data';
-    first.network.push({ id: 'late', method: 'GET', url });
-    reconcileNetwork(first.network, first.paused, first.causes);
-    reconcileNetwork(second.network, second.paused, second.causes);
+    await stop(async () => {
+        setImmediate(() => {
+            session.emit('Network.requestWillBeSent', { requestId: 'late', request: { method: 'GET', url } });
+            browser.connected = false;
+            browser.emit('disconnected');
+        });
+    });
     assert.deepEqual(first.causes, [`Network request without Fetch pause: ${url}`]);
-    assert.deepEqual(second.causes, []);
 });

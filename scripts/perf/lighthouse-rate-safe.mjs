@@ -211,6 +211,12 @@ export async function intercept(browser, origin, fixtures, attempt) {
     });
     root.on('Target.targetDestroyed', event => destroyed.add(event.targetId));
     await root.send('Target.setDiscoverTargets', { discover: true });
+    const { targetInfos: preExisting } = await root.send('Target.getTargets');
+    for (const info of preExisting) {
+        if (['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(info.type) && info.url && info.url !== 'about:blank') {
+            attempt.causes.push(`Observer: pre-existing target could have issued requests: ${info.type} ${info.url}`);
+        }
+    }
     await root.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });
     const drain = async () => { while (pending.size) await Promise.allSettled([...pending]); };
     await drain();
@@ -225,6 +231,15 @@ export async function intercept(browser, origin, fixtures, attempt) {
         await drain();
         closing = true;
         await close();
+        if (browser.connected) await new Promise(resolve => {
+            const timer = setTimeout(() => {
+                browser.off('disconnected', onDisconnect);
+                attempt.causes.push('Observer: browser did not disconnect before reconciliation');
+                resolve();
+            }, 5000);
+            const onDisconnect = () => { clearTimeout(timer); resolve(); };
+            browser.once('disconnected', onDisconnect);
+        });
         await drain();
         for (const id of detached) {
             if (id !== expectedClosedTarget || !destroyed.has(id)) {
@@ -265,7 +280,7 @@ async function main(argv) {
             const route = configured.path === 'latest-article' ? { ...configured, path: latestArticlePath(site) } : configured;
             const attempts = [];
             for (let i = 1; i <= (options.discovery ? 1 : count); i++) {
-                const current = { causes: [], requests: [], observations: [] };
+                const current = { causes: [], requests: [], observations: [], navigations: [] };
                 const profile = fs.mkdtempSync(path.join(out, '.profile-'));
                 let chrome, browser, stop, lhr;
                 const expected = new URL(route.path, started.origin).href;
@@ -274,6 +289,8 @@ async function main(argv) {
                     await seedAuditConsent(chrome, started.origin);
                     await clearServiceWorkers(chrome, started.origin);
                     browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+                    const blank = await browser.newPage();
+                    for (const page of await browser.pages()) if (page !== blank) await page.close();
                     stop = await intercept(browser, started.origin, fixtures, current);
                     if (options.discovery) {
                         const page = await browser.newPage();
