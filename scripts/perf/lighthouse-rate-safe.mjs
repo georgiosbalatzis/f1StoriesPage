@@ -70,6 +70,7 @@ export async function intercept(browser, origin, fixtures, attempt) {
     const targetTypes = new Map();
     const destroyed = new Set();
     const detached = new Set();
+    const preExistingReported = new Set();
     let closing = false;
     const track = promise => {
         pending.add(promise);
@@ -84,6 +85,10 @@ export async function intercept(browser, origin, fixtures, attempt) {
         const session = parent.connection().session(event.sessionId);
         if (!session) throw new Error(`Missing session for ${event.targetInfo.type}`);
         const info = event.targetInfo;
+        if (event.waitingForDebugger === false && ['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(info.type) &&
+            info.url && info.url !== 'about:blank' && !preExistingReported.has(info.targetId)) {
+            attempt.causes.push(`Observer: target attached without pause could have issued requests: ${info.type} ${info.url}`);
+        }
         sessions.set(event.sessionId, info.targetId);
         targetTypes.set(info.targetId, info.type);
         const network = [];
@@ -215,6 +220,7 @@ export async function intercept(browser, origin, fixtures, attempt) {
     for (const info of preExisting) {
         if (['page', 'iframe', 'worker', 'shared_worker', 'service_worker'].includes(info.type) && info.url && info.url !== 'about:blank') {
             attempt.causes.push(`Observer: pre-existing target could have issued requests: ${info.type} ${info.url}`);
+            preExistingReported.add(info.targetId);
         }
     }
     await root.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });

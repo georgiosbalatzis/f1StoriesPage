@@ -142,6 +142,30 @@ test('frame and worker interception', async () => {
 });
 
 
+test('unpaused nonblank attachments invalidate the attempt', async () => {
+    const { intercept } = await import('./lighthouse-rate-safe.mjs');
+    const browser = new EventEmitter();
+    const root = new EventEmitter();
+    const session = new EventEmitter();
+    root.connection = () => ({ session: () => session });
+    session.send = async () => ({});
+    root.send = async method => {
+        if (method === 'Target.setAutoAttach') {
+            for (const [targetId, waitingForDebugger, url] of [
+                ['unpaused', false, 'http://127.0.0.1/race'],
+                ['paused', true, 'http://127.0.0.1/safe'],
+                ['blank', false, 'about:blank']
+            ]) root.emit('Target.attachedToTarget', { sessionId: targetId, waitingForDebugger, targetInfo: { targetId, type: 'worker', url } });
+        }
+        return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+    };
+    browser.target = () => ({ createCDPSession: async () => root });
+    const attempt = { causes: [], requests: [], observations: [] };
+    const stop = await intercept(browser, 'http://127.0.0.1', new Map(), attempt);
+    assert.deepEqual(attempt.causes, ['Observer: target attached without pause could have issued requests: worker http://127.0.0.1/race']);
+    await stop(async () => {});
+});
+
 test('network-only event between close and disconnect invalidates its attempt', async () => {
     const { intercept } = await import('./lighthouse-rate-safe.mjs');
     const browser = new EventEmitter();
