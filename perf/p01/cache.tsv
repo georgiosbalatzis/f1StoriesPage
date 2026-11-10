@@ -1,0 +1,32 @@
+environment	route	stage	http_cache	app_storage	sw_controller	offline	result	bytes	evidence_id
+local-built	home	fresh-online	enabled	retained	false	false	HTTP 200	428258	sha256-c551702f40c8eece02c697888902c3db3523bd42971a904a4f3ecb862f011375
+local-built	home	warm-return	enabled	retained	false	false	HTTP 200	87	sha256-77d7d647655d46a2d423b1e64a43045da2b9953e6bc1581920b00dee411058c7
+local-built	home	cache-disabled-return	disabled	retained	false	false	HTTP 200	425128	sha256-534174d50d4e249678cb8d928c174d6feacafb5c56ec0ed3d43ac2b0ac46248b
+local-built	home	offline-existing-document	enabled	retained	false	true	ok	0	sha256-f92f84f5320825e2ea4d0980c1e731dfef650e3a674986dfbfa0e172fb3e8906
+local-built	home	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at local-built:/ Call log: [2m  - navigating to ""local-built:/"", waiting until ""load""[22m "	0	sha256-5e9676b88ecfb77f90b94cb8166b1fcb8391dd551372d1e3b1e4d150f9b5c49e
+local-built	standings	fresh-online	enabled	retained	false	false	HTTP 200	216399	sha256-372110ef4afc87fd36438eb3629a7a6e69cd6b1db7ca0de80b39e53368aed71c
+local-built	standings	warm-return	enabled	retained	false	false	HTTP 200	87	sha256-c510beae2b7dc3ce9ba2a333f2fd4fe4d1ef700693c65df8377cf0896fc743da
+local-built	standings	cache-disabled-return	disabled	retained	false	false	HTTP 200	213267	sha256-92c764c31bb9e3286a7add11625421221a17e0ab55a1fca26b88ae8d4b6cd8fc
+local-built	standings	offline-existing-document	enabled	retained	false	true	ok	0	sha256-c138b4e313608496ef4dd53f6d0313b4218951d1e0202a73991c05671b64d50e
+local-built	standings	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at local-built:/standings/ Call log: [2m  - navigating to ""local-built:/standings/"", waiting until ""load""[22m "	0	sha256-297e325d0e37e6abe8cfd9861d35400f15d23a19190e43e9288239385b3c4b39
+local-built	ghostcar	fresh-online	enabled	retained	false	false	HTTP 200	196130	sha256-ca63bd48510796d8f5d939df4da5381f01f320d35d5d37b245188437f6109948
+local-built	ghostcar	warm-return	enabled	retained	false	false	HTTP 200	56556	sha256-e9b8711914ba6aa1274c90515e76abeafd4930d8f8758bcbaa8a127bc3b3606b
+local-built	ghostcar	cache-disabled-return	disabled	retained	false	false	HTTP 200	248903	sha256-cffd2ac205b969eba702cdf1a75caad2fe7b22516a2a231a592295db5ab3a6a3
+local-built	ghostcar	offline-existing-document	enabled	retained	false	true	ok	0	sha256-1874f08fb4256b59960b943fde7a6aa704f86e28cff82c8024f49f88a39dea65
+local-built	ghostcar	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at local-built:/ghostcar/ Call log: [2m  - navigating to ""local-built:/ghostcar/"", waiting until ""load""[22m "	215336	sha256-03229b870a39c100b3b6d1699eb442e1fc5b8078df69e733769832540febeb10
+local-built	home	legacy-sw-migration	enabled	legacy fixture	false	false	pass	null	sha256-2e5f181eae8a0fb03a2bab383e16d016f550f31c8d732861215a27801fe46053
+production	home	fresh-online	enabled	retained	false	false	HTTP 200	427881	sha256-64e166753aef2f5701259e7444f8ecc5c954aaad4bdc7fa7919e4b5b28742cd8
+production	home	warm-return	enabled	retained	false	false	HTTP 200	87	sha256-0cb2652d3d3d26ff3a7478e526d0905c20c5565c8de6209a5d99f5c1e83f11f4
+production	home	cache-disabled-return	disabled	retained	false	false	HTTP 200	424683	sha256-48b02858c7412cecd4da61348ffdeaec8175a5b6d59b8c6c801a5346e89c1a4c
+production	home	offline-existing-document	enabled	retained	false	true	ok	0	sha256-9a6471aee8abfe7f64c10d163fd18e81242022933ab9d2dca2f4582d319c2f5e
+production	home	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at https://f1-stories.gr/ Call log: [2m  - navigating to ""https://f1-stories.gr/"", waiting until ""load""[22m "	0	sha256-9fa8e4727da409100887362adf935c62ee8367c4e6441e9a573914085374744a
+production	standings	fresh-online	enabled	retained	false	false	HTTP 200	214571	sha256-7af1999052821b84c0bba157d212a7bde5a548de939e838de045db68128813fb
+production	standings	warm-return	enabled	retained	false	false	HTTP 200	88	sha256-b185165a31d68e32e7e9424d4d4fad97c652685134e949e9712161d736e9db60
+production	standings	cache-disabled-return	disabled	retained	false	false	HTTP 200	211316	sha256-f0ed6b943497c94c72416676b154675828f57bea4939daa749611541bf010cfa
+production	standings	offline-existing-document	enabled	retained	false	true	ok	0	sha256-a1119980e08c1b5d50e09828146e4afca349df373b7e10afa1f7ba2088844f97
+production	standings	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at https://f1-stories.gr/standings/ Call log: [2m  - navigating to ""https://f1-stories.gr/standings/"", waiting until ""load""[22m "	0	sha256-ebfaebdec3882a1e9e32c1c04e671cd13dca7095fa1ac3c86af489a8e967f1a9
+production	ghostcar	fresh-online	enabled	retained	false	false	HTTP 200	138698	sha256-e12499b0b903d9d0abf9d0d0d39a2da00262c7f6c2064898b4fc342894e9ca94
+production	ghostcar	warm-return	enabled	retained	false	false	HTTP 200	252116	sha256-f937806b11b60acf55a6157d4208721b0ce6ef5cdfbe5e178a51157ae0490355
+production	ghostcar	cache-disabled-return	disabled	retained	false	false	HTTP 200	149755	sha256-7b836220a4a7d894034dafcba656acb613e2a01b0e7334264f7bf809ab68eb01
+production	ghostcar	offline-existing-document	enabled	retained	false	true	ok	0	sha256-1f75647b8513bdf8b07351b9aa75536269e1e429d3191bba6a6b1b3b1e2a3903
+production	ghostcar	offline-cold-navigation	empty	empty	false	true	"page.goto: net::ERR_INTERNET_DISCONNECTED at https://f1-stories.gr/ghostcar/ Call log: [2m  - navigating to ""https://f1-stories.gr/ghostcar/"", waiting until ""load""[22m "	175417	sha256-35811a9b020b02d1381fdc7f0eb39b5f7ad2f00200b6ebcf396296cb0f9706a9

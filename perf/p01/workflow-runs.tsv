@@ -1,0 +1,13 @@
+workflow	run_id	head_sha	event	mode	created_at	started_at	completed_at	queue_s	elapsed_s	job_minutes	conclusion	evidence_id
+auto-publish-author-pr	42376510514	0c02a1e31d14cf1eb64baf71670ff0423dd3a71e	workflow_run	ARTICLE_FAST_PATH (blog classification; downstream confirmation required)	2026-11-07T13:20:31Z	2026-11-07T13:20:31Z	2026-11-07T13:24:47Z	0.0	256.0	4.07	success	gh-run-42376510514
+auto-publish-author-pr	42361651051	2d881bb0e32836dce9a72e617c51ae7c1f50f179	workflow_run	ARTICLE_FAST_PATH (blog classification; downstream confirmation required)	2026-11-07T09:54:01Z	2026-11-07T09:54:01Z	2026-11-07T09:59:19Z	0.0	318.0	5.08	success	gh-run-42361651051
+auto-publish-author-pr	42306032451	77cb42a941070f3b7203088ff2f4704b859b75e0	workflow_run	ARTICLE_FAST_PATH (blog classification; downstream confirmation required)	2026-11-06T22:36:41Z	2026-11-06T22:36:41Z	2026-11-06T22:41:05Z	0.0	264.0	4.15	success	gh-run-42306032451
+quality	42727641086	4d4d9fe595ecaa00edb56e3870b7644c0b43cb0e	pull_request	unknown	2026-11-10T00:21:14Z	2026-11-10T00:29:24Z	2026-11-10T00:33:40Z	490.0	256.0	19.62	success	gh-run-42727641086
+quality	42694925671	869e804629a98e387de1e1847916d4b0de4bc082	pull_request	unknown	2026-11-09T20:38:38Z	2026-11-09T20:38:38Z	2026-11-09T20:45:17Z	0.0	399.0	18.87	success	gh-run-42694925671
+quality	42681016201	0a1f433f5c161c9ec5a7947cd4e0263cff7b7502	pull_request	unknown	2026-11-09T19:11:47Z	2026-11-09T19:11:47Z	2026-11-09T19:19:07Z	0.0	440.0	17.93	success	gh-run-42681016201
+deploy-pages	42714120119	58273df6d753510605468c0787d9cdf04d6d398e	schedule	FULL_RELEASE (default for standalone event)	2026-11-09T22:41:30Z	2026-11-09T22:41:30Z	2026-11-09T22:59:06Z	0.0	1056.0	17.35	success	gh-run-42714120119
+deploy-pages	42652406086	786765799f6526b2f70d7361ea38c22a8b3b56bd	workflow_dispatch	FULL_RELEASE (default for standalone event)	2026-11-09T16:12:32Z	2026-11-09T16:12:32Z	2026-11-09T16:30:40Z	0.0	1088.0	17.97	success	gh-run-42652406086
+deploy-pages	42579290204	854058128251a09d2077842d7f62dce24916edc5	workflow_dispatch	FULL_RELEASE (default for standalone event)	2026-11-09T07:25:49Z	2026-11-09T07:25:49Z	2026-11-09T07:42:58Z	0.0	1029.0	17.02	success	gh-run-42579290204
+publish-blog	42701947067	58273df6d753510605468c0787d9cdf04d6d398e	push	unknown	2026-11-09T21:22:51Z	2026-11-09T21:22:51Z	2026-11-09T21:42:23Z	0.0	1172.0	19.32	success	gh-run-42701947067
+publish-blog	42682747686	aa6744f0943736642dc67df4cea03d5f107cd0fe	push	unknown	2026-11-09T19:22:39Z	2026-11-09T19:22:39Z	2026-11-09T19:37:50Z	0.0	911.0	14.97	success	gh-run-42682747686
+publish-blog	42646393693	786765799f6526b2f70d7361ea38c22a8b3b56bd	push	unknown	2026-11-09T15:36:36Z	2026-11-09T16:04:47Z	2026-11-09T16:08:46Z	1691.0	239.0	20.92	success	gh-run-42646393693

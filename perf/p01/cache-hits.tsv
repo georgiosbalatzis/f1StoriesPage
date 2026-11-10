@@ -1,0 +1,10 @@
+run_id	cache_layer	key	restore_hit	verified_child_hit	child	data_sha	invalidation	age	evidence_id
+42714120119	GitHub images	public-images-Linux-X64-302c911d45d0e8508b9733748a2f483abfb4201e73a57960eeaa39bcc1817684-19896ac1b42b33bf98dc77a6721a6495c86ed9f17d5ac4ef7b454d5bca8fef65	true	unknown			see publishing.md		gh-run-42714120119-log
+42714120119	GitHub child artifacts	child-artifacts-v1-Linux-X64-56f5ffce0989008a0573d582f712fc137b6a3ee948c775cc38494cf38f01483b-42701947067	true	unknown			see publishing.md		gh-run-42714120119-log
+42714120119	verified child artifact	see source; actual key not exposed by jobs API	unknown	telemetry=true,ghostcar=true,tyres=false,betcast=true	all		see publishing.md		gh-run-42714120119-log
+42652406086	GitHub images	public-images-Linux-X64-302c911d45d0e8508b9733748a2f483abfb4201e73a57960eeaa39bcc1817684-19896ac1b42b33bf98dc77a6721a6495c86ed9f17d5ac4ef7b454d5bca8fef65	true	unknown			see publishing.md		gh-run-42652406086-log
+42652406086	GitHub child artifacts	child-artifacts-v1-Linux-X64-56f5ffce0989008a0573d582f712fc137b6a3ee948c775cc38494cf38f01483b-42646393693	true	unknown			see publishing.md		gh-run-42652406086-log
+42652406086	verified child artifact	see source; actual key not exposed by jobs API	unknown	telemetry=true,ghostcar=true,tyres=false,betcast=true	all		see publishing.md		gh-run-42652406086-log
+42579290204	GitHub images	public-images-Linux-X64-302c911d45d0e8508b9733748a2f483abfb4201e73a57960eeaa39bcc1817684-19896ac1b42b33bf98dc77a6721a6495c86ed9f17d5ac4ef7b454d5bca8fef65	true	unknown			see publishing.md		gh-run-42579290204-log
+42579290204	GitHub child artifacts	child-artifacts-v1-Linux-X64-b8d1cbab149cf727a6355ddb41e1a3b95b16696dfadada84e0c70f5a5d1e4ff5-42577540070	true	unknown			see publishing.md		gh-run-42579290204-log
+42579290204	verified child artifact	see source; actual key not exposed by jobs API	unknown	telemetry=true,ghostcar=true,tyres=false,betcast=true	all		see publishing.md		gh-run-42579290204-log

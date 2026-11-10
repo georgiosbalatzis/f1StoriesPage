@@ -1,0 +1,8 @@
+category	owner	file_count	raw_bytes	gzip_bytes_if_computed	measurement_scope	command	evidence
+cache/data	main	206	16291483	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+docs	main	251	11929135	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+generated	main	485	27601273	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+historical content	main	301	2057863	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+media	main	3431	193609454	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+source	main	377	5157633	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md
+tests	main	249	7036911	not computed	tracked working-tree file sizes	git ls-files -z; lstat	inventory.py; hygiene.md

@@ -1,0 +1,11 @@
+owner	classification	file_count	bytes
+betcast	42 files; gzip 2249158 bytes	1	2840396
+betcast	child emitted	2	1998910
+ghostcar	23 files; gzip 2194765 bytes	1	3031265
+ghostcar	child emitted	2	2175335
+main	4375 files; gzip 231253546 bytes	1	326729235
+main	public output	435	109668064
+telemetry	185 files; gzip 12866646 bytes	1	19242194
+telemetry	child emitted	36	13010578
+tyres	922 files; gzip 46567874 bytes	1	53590834
+tyres	child emitted	25	9229803
