@@ -1,0 +1,1388 @@
+[
+  {
+    "id": "S-02",
+    "aliases": [
+      "A-01"
+    ],
+    "title": "Attribute BetCast mobile text LCP before a targeted loading change",
+    "category": "runtime",
+    "route_component": "/betcast/",
+    "source_sha": "74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650",
+    "source_path_line": "betcast/src/App.js:29; betcast/src/services/googleSheetService.js:43",
+    "current_behavior": "Production cold mobile LCP median 2708 ms [2704,2744], n=5; representative LCP is p.page-intro. All five are data-incomplete; this is a shell-paint finding, not a usable-chart baseline.",
+    "prior_work_class": "newly discovered problems",
+    "evidence_ids": [
+      "sha256:0ee5e9ba4bb96bd593a0fd8027c115efb4ed379aac696493ec8de246b99d5f5c",
+      "sha256:fd6800678b8d796d2300b2aa75f253483ab82d97de15f5807cbdfb83e3588259",
+      "sha256:00ea6c974c3a1c4e22a691bc0b594c2c16325f3a0cea8c9312e48c0e12e0bea5",
+      "sha256:c193a7571519e97c4f3d88e7915f4132887ccc280518bea3548d4b43b2d35f1f",
+      "sha256:0661eee75c6babb20bc3de64e3295c22fa89f6488b1bc9a462badb0d106c02fa",
+      "EV-ATTEMPTS",
+      "EV-NETWORK",
+      "SRC:betcast/src/App.js",
+      "SRC:betcast/src/services/googleSheetService.js"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": {
+      "value": 2708,
+      "unit": "ms production cold mobile LCP; range 2704–2744; replay/blocked provider mode",
+      "n": 5
+    },
+    "expected_impact": "TBD — requires P-04 measurement",
+    "intervention": "Profile fonts, blocking CSS and component commit timing with complete fixtures; change only an attributed delay. Do not equate sequential provider fallback with this text LCP.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Controlled per-environment n>=5, mobile/desktop; text LCP and complete chart readiness.",
+      "Both themes, auto/URL theme, embeds, CSV errors and consent preserved."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-04",
+    "performance_0_5": 3,
+    "ux_0_5": 3,
+    "dx_0_5": 1,
+    "confidence_0_5": 4,
+    "dependencies": [
+      "P-02 measurement/gate recovery",
+      "Complete BetCast direct/proxy fixture",
+      "Owner authorization for changes to the pinned child"
+    ],
+    "owner": "BetCast maintainer",
+    "priority_score": 19,
+    "score_justifications": {
+      "performance": "Largest measured primary production mobile LCP is 2708 ms.",
+      "UX": "Slow text appearance affects the initial mobile reading experience.",
+      "DX": "A focused profile is more useful than a builder migration.",
+      "confidence": "Five repeated shell observations agree; data readiness is incomplete.",
+      "complexity": "Requires text/font/CSS attribution and a readiness-complete fixture.",
+      "risk": "Changing font or lazy loading order may worsen layout or usable-data timing."
+    },
+    "disposition": "ranked",
+    "ranked": true,
+    "rank": 1,
+    "measurements": {
+      "production": {
+        "n": 5,
+        "median": 2708,
+        "min": 2704,
+        "max": 2744
+      },
+      "local_built": {
+        "n": 5,
+        "median": 2720,
+        "min": 2692,
+        "max": 2748
+      },
+      "limitation": "Series are not subtracted or pooled; neither proves a causal optimization."
+    }
+  },
+  {
+    "id": "S-04",
+    "aliases": [
+      "A-02",
+      "A-03"
+    ],
+    "title": "Attribute Telemetry initial bytes and main-target work together",
+    "category": "runtime",
+    "route_component": "/telemetry/",
+    "source_sha": "38c3dd2018b810a5dce1add1f7663bcb199c845a",
+    "source_path_line": "telemetry/src/components/DashboardShell.tsx:34; telemetry/src/components/dashboard/TelemetryTab.tsx:3; telemetry/vite.config.ts:32",
+    "current_behavior": "Production mobile known total median 966475 B [966327,966535]: 715817 B first-party and 250658 B replayed bodies at the median. TaskDuration 589.029 ms [573.457,611.727], n=5. This is not TBT, field INP, or proof Recharts accounts for all cost.",
+    "prior_work_class": "newly discovered problems",
+    "evidence_ids": [
+      "sha256:80f29c19302ded9c652de9b683472f64240b78f70645b1ce0afe0a3784c8336e",
+      "sha256:ba07c2de7563012d8834221eaf722e017eeab730623648551c99b6995572266d",
+      "sha256:41141e3794aa23a9c51506dda23874266c84803271af60ad9146e5e4c48bc38a",
+      "sha256:16aef133485ac1b2ae1c35159a121fb0f345ec1db4dd0e700409c1601bfe140e",
+      "sha256:da8cc0aac5c5eaca6109b16679c49d41c70a51be3660a9917bcddeb7a4ae6cd3",
+      "EV-ATTEMPTS",
+      "EV-NETWORK",
+      "SRC:telemetry/src/components/DashboardShell.tsx",
+      "SRC:telemetry/src/components/dashboard/TelemetryTab.tsx",
+      "SRC:telemetry/vite.config.ts"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": {
+      "value": 966475,
+      "unit": "known recorded bytes per production cold mobile load; includes 250658 replayed bytes",
+      "n": 5
+    },
+    "expected_impact": "TBD — requires P-04 measurement",
+    "intervention": "Join chunk/request attribution to main-target traces and chart-ready timing; preserve lazy tabs and independent API query semantics.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "n>=5 separate navigation and selected-chart-ready measurements.",
+      "Report first-party/replay/unknown bytes and ScriptDuration/TaskDuration separately.",
+      "Verify all tab selections, cancellation, data correctness and consent."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-04",
+    "performance_0_5": 3,
+    "ux_0_5": 2,
+    "dx_0_5": 2,
+    "confidence_0_5": 4,
+    "dependencies": [
+      "P-02 measurement recovery",
+      "Complete session fixtures and chart readiness probe",
+      "Owner authorization for pinned child changes"
+    ],
+    "owner": "Telemetry maintainer",
+    "priority_score": 18,
+    "score_justifications": {
+      "performance": "Largest recorded primary production mobile byte total and task duration.",
+      "UX": "Initial work can delay usable charts, but chart readiness was not assessed.",
+      "DX": "One attribution experiment covers network and CPU without duplicate refactors.",
+      "confidence": "Five samples reproduce counters; per-library cause and field impact remain unknown.",
+      "complexity": "Requires emitted-chunk mapping and request/CPU attribution.",
+      "risk": "Deferring charts or data can move cost to interaction and harm readiness."
+    },
+    "disposition": "ranked",
+    "ranked": true,
+    "rank": 2,
+    "measurements": {
+      "known_total": {
+        "n": 5,
+        "median": 966475.0,
+        "min": 966327.0,
+        "max": 966535.0
+      },
+      "first_party": {
+        "n": 5,
+        "median": 715817.0,
+        "min": 715669.0,
+        "max": 715877.0
+      },
+      "replay": {
+        "n": 5,
+        "median": 250658.0,
+        "min": 250658.0,
+        "max": 250658.0
+      },
+      "task_seconds": {
+        "n": 5,
+        "median": 0.589029,
+        "min": 0.573457,
+        "max": 0.611727
+      }
+    }
+  },
+  {
+    "id": "S-01",
+    "aliases": [
+      "lighthouse"
+    ],
+    "title": "Repair Blog calendar contrast baseline failure",
+    "category": "maintenance",
+    "route_component": "/blog-module/blog/index.html",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "blog-module/blog/archive-editorial.css:125; blog-module/build/discovery.js:242",
+    "current_behavior": "Gate E Blog accessibility is 96/96/96 against >=98; six empty-month labels have 3.58:1 contrast against 4.5:1. The .is-empty opacity rule is independent of the DNS error.",
+    "prior_work_class": "newly discovered problems",
+    "evidence_ids": [
+      "EV-GATE-BLOG-1",
+      "EV-GATE-BLOG-2",
+      "EV-GATE-BLOG-3",
+      "SRC:blog-module/blog/archive-editorial.css",
+      "SRC:blog-module/build/discovery.js"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": {
+      "value": 96,
+      "unit": "Lighthouse accessibility score /100; 6 contrast nodes per run; threshold 98",
+      "n": 3
+    },
+    "expected_impact": "TBD — requires P-02 measurement",
+    "intervention": "Adjust only calendar empty-month contrast, regenerate normal assets, and prove contrast >=4.5:1 in both themes without weakening budgets.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 1,
+    "regression_tests": [
+      "Each failing label >=4.5:1 in both themes.",
+      "Blog Lighthouse accessibility >=98 in three runs.",
+      "Calendar content, empty states, links and keyboard focus preserved."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-02",
+    "performance_0_5": 0,
+    "ux_0_5": 2,
+    "dx_0_5": 2,
+    "confidence_0_5": 5,
+    "dependencies": [
+      "Successful-response provider fixtures for the complete Gate E rerun."
+    ],
+    "owner": "Main maintainer",
+    "priority_score": 16,
+    "score_justifications": {
+      "performance": "No runtime speed improvement is demonstrated.",
+      "UX": "Six empty-month captions fail contrast; the affected reading task is narrow.",
+      "DX": "Restores an existing accessibility gate.",
+      "confidence": "Three saved Lighthouse repetitions and matching CSS identify the defect.",
+      "complexity": "One component rule and normal generated assets need review.",
+      "risk": "A scoped color/opacity change has limited visual risk."
+    },
+    "disposition": "ranked",
+    "ranked": true,
+    "rank": 3
+  },
+  {
+    "id": "S-03",
+    "aliases": [
+      "build-check"
+    ],
+    "title": "Restore coherence of tracked generated Main outputs",
+    "category": "build",
+    "route_component": "Main generated outputs",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "scripts/build/generated-drift-guard.mjs:15; scripts/build/author-research.mjs:6; blog-module/build/home-panels.js:163; scripts/build/stamp-html.mjs:252",
+    "current_behavior": "build:check exits 1 on index.html, scripts/author/research-catalog.json and standings/index.html; diff is 60 additions/60 deletions. Independent incremental cold build repeats those paths, not a byte-for-byte second diff.",
+    "prior_work_class": "documented unresolved technical debt",
+    "evidence_ids": [
+      "EV-GATE-BUILD-CHECK",
+      "EV-GATE-DRIFT",
+      "EV-GATE-INCREMENTAL",
+      "SRC:scripts/build/generated-drift-guard.mjs",
+      "SRC:scripts/build/author-research.mjs",
+      "SRC:blog-module/build/home-panels.js",
+      "SRC:scripts/build/stamp-html.mjs"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": {
+      "value": 3,
+      "unit": "tracked paths with baseline generated drift; 60 insertions and 60 deletions",
+      "n": 2
+    },
+    "expected_impact": "TBD — requires P-02 measurement",
+    "intervention": "Approve the authoritative data cut, regenerate and review only expected outputs, then demonstrate two clean builds and retain the guard unchanged.",
+    "complexity_0_5": 2,
+    "regression_risk_0_5": 2,
+    "regression_tests": [
+      "build:check exit 0 after each of two clean Node22 builds.",
+      "test:incremental and test:deployment retain all assertions.",
+      "Review season totals, order, round labels, research list, canonical and SEO invariants."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-02",
+    "performance_0_5": 0,
+    "ux_0_5": 1,
+    "dx_0_5": 5,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 15,
+    "score_justifications": {
+      "performance": "No build-time saving has been measured.",
+      "UX": "Tracked season output is stale, but the public build already regenerates it.",
+      "DX": "A reliable build:check is a prerequisite for later work.",
+      "confidence": "Gate log, exact diff and independent cold build identify the same three paths.",
+      "complexity": "Review normal generation and the data cut; no new pipeline is needed.",
+      "risk": "Generated editorial/data output must not be updated blindly."
+    },
+    "disposition": "ranked",
+    "ranked": true,
+    "rank": 4
+  },
+  {
+    "id": "S-05",
+    "aliases": [
+      "A-04",
+      "C-01"
+    ],
+    "title": "Profile the shared home/article hero without undoing responsive delivery",
+    "category": "runtime",
+    "route_component": "/ and latest article",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "index.html:33; index.html:149; blog-module/build/article-render.js:508; blog-module/build/article-render.js:528; scripts/build/stamp-html.mjs:871",
+    "current_behavior": "Home production mobile LCP 2320 ms [2316,2336], n=5; representative hero request 146091 B, n=1. Latest local representative mobile/tablet/desktop captures each request the same 145952-byte AVIF. Existing srcset/preloads already align. The article resizing opportunity remains a hypothesis.",
+    "prior_work_class": "newly discovered problems",
+    "evidence_ids": [
+      "sha256:56891e32115e0a637e09da1420a7269e3500cf100b670e81be623d9c105cae92",
+      "sha256:b9fe947aa1e61aadc430bfa80a8cf537fb99babef1e1047a85b9097dd0c30967",
+      "sha256:52a4a1196d6348a683b1b581126c3002bd0bdeeed0aabd27954c292bce6b25c1",
+      "sha256:aedc3a74b6624310dafd8b5172f2902da5203e437ee77fc1da71bc2bf021c6f2",
+      "SRC:index.html",
+      "SRC:blog-module/build/article-render.js",
+      "SRC:scripts/build/stamp-html.mjs"
+    ],
+    "evidence_level": "STRONGLY SUPPORTED",
+    "measured_cost": {
+      "value": 146091,
+      "unit": "bytes representative production home LCP image; not a saving",
+      "n": 1
+    },
+    "expected_impact": "TBD — requires P-03 measurement",
+    "intervention": "Collect currentSrc, rendered dimensions, DPR, reuse and visual comparison; adjust derivatives or priority only if a same-environment comparison proves improvement.",
+    "complexity_0_5": 2,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "n>=5 home and latest article per environment with matched delivery.",
+      "Rendered dimensions/currentSrc/DPR and image-fidelity checks at 390/768/1440.",
+      "Preserved originals/direct URLs and source-less historical articles remain valid."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-03",
+    "performance_0_5": 2,
+    "ux_0_5": 2,
+    "dx_0_5": 1,
+    "confidence_0_5": 3,
+    "dependencies": [
+      "P-02 trustworthy delivery baseline",
+      "Rendered-pixel and fidelity observations"
+    ],
+    "owner": "Main maintainer",
+    "priority_score": 12,
+    "score_justifications": {
+      "performance": "A 146091-byte representative home LCP image is material, but oversizing is unproved.",
+      "UX": "Home mobile LCP is 2320 ms and currently below 2500 ms.",
+      "DX": "Reuse one image-selection experiment for home and latest article.",
+      "confidence": "LCP/request evidence agrees; display boxes/currentSrc and potential savings are missing.",
+      "complexity": "Collect DPR, boxes, selection and fidelity before changing derivatives.",
+      "risk": "Historical URLs, truthful srcset and editorial fidelity constrain changes."
+    },
+    "disposition": "ranked",
+    "ranked": true,
+    "rank": 5
+  },
+  {
+    "id": "S-06",
+    "aliases": [
+      "B-01"
+    ],
+    "title": "Measure residual masthead skin migration",
+    "category": "architecture",
+    "route_component": "live shared nav",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "styles/shared-nav.css:61; styles/editorial.css:264; docs/css-architecture.md:8",
+    "current_behavior": "Skin is split between shared-nav and editorial, explicitly documented as T9; structure/skin coexistence is intentional and no current runtime penalty is measured.",
+    "prior_work_class": "documented unresolved technical debt",
+    "evidence_ids": [
+      "SRC:styles/shared-nav.css",
+      "SRC:styles/editorial.css",
+      "SRC:docs/css-architecture.md"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Measure computed-style and maintenance benefit before migrating only residual skin.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 4,
+    "regression_tests": [
+      "computed styles and nav interactions"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 0,
+    "ux_0_5": 1,
+    "dx_0_5": 2,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "CSS/JS",
+    "priority_score": -3,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "styles/shared-nav.css:61; styles/editorial.css:264",
+      "partials/nav.html; docs/css-architecture.md:8"
+    ]
+  },
+  {
+    "id": "S-07",
+    "aliases": [
+      "B-02"
+    ],
+    "title": "Test article table ownership before consolidation",
+    "category": "architecture",
+    "route_component": "generated/historical content",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "blog-module/blog/article-styles.css:14; blog-module/blog/article-editorial.css:369",
+    "current_behavior": "Structural table rules and editorial overrides serve generated/historical and card/scroll states; overlap does not establish redundant declarations.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:blog-module/blog/article-styles.css",
+      "SRC:blog-module/blog/article-editorial.css"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Build generated and historical table state fixtures before any scoped rule migration.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 4,
+    "regression_tests": [
+      "compare generated and historical tables"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 0,
+    "ux_0_5": 1,
+    "dx_0_5": 2,
+    "confidence_0_5": 1,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "CSS/JS",
+    "priority_score": -5,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "blog-module/blog/article-styles.css:14; blog-module/blog/article-editorial.css:369",
+      "blog-module/build/csv-to-table.js; long article"
+    ]
+  },
+  {
+    "id": "S-08",
+    "aliases": [
+      "B-03"
+    ],
+    "title": "Attribute managed-embed adapter work",
+    "category": "runtime",
+    "route_component": "only articles with managed embeds",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "blog-module/blog/article-embeds.js:7; blog-module/blog/article-embeds.js:106; blog-module/blog/article-script.js:663",
+    "current_behavior": "BetCast bridge and parameterized data bridge have different URL/origin rules; source includes cleanup. Initial-load traces do not measure dynamic insertion/theme-change work.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:blog-module/blog/article-embeds.js",
+      "SRC:blog-module/blog/article-script.js"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Use a three-frame fixture and scan/observer/timer/message counters before sharing any adapter work.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 4,
+    "regression_tests": [
+      "mixed protocol fixture and provider message security tests"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 1,
+    "ux_0_5": 1,
+    "dx_0_5": 2,
+    "confidence_0_5": 1,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "CSS/JS",
+    "priority_score": -1,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "blog-module/blog/article-embeds.js:7,106,191; blog-module/blog/article-script.js:663",
+      "managed article script inclusion; stamp-html.mjs:753"
+    ]
+  },
+  {
+    "id": "S-09",
+    "aliases": [
+      "B-04"
+    ],
+    "title": "Attribute both article progress paths",
+    "category": "runtime",
+    "route_component": "live only when matching elements",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "scripts/shared-nav.js:490; scripts/shared-nav.js:500; blog-module/blog/article-script.js:93",
+    "current_behavior": "Shared-nav consolidates scroll work in a RAF and caches geometry; race report updates a separate bar and sections with read-before-write ordering. No attributed callback cost is retained.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:scripts/shared-nav.js",
+      "SRC:blog-module/blog/article-script.js"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Capture controlled scroll windows and both visuals; consolidate only measured redundant reads while retaining both interfaces.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "performance trace and both progress visuals"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 1,
+    "ux_0_5": 1,
+    "dx_0_5": 1,
+    "confidence_0_5": 1,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "CSS/JS",
+    "priority_score": -1,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "scripts/shared-nav.js:490; blog-module/blog/article-script.js:93",
+      "article pages and shared partial"
+    ]
+  },
+  {
+    "id": "S-10",
+    "aliases": [
+      "C-02"
+    ],
+    "title": "Measure homepage secondary-frame preload contention",
+    "category": "runtime",
+    "route_component": "home",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "index.html:35; index.html:156",
+    "current_behavior": "One local tablet frame request is 264058 B; source index.html:35 uses a viewport-conditioned responsive preload. Visibility, reuse and contention are unmeasured; stamp-html.mjs:868 is an article preload and was a mismatched citation.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "sha256:a9f192a8a4d410a4fdcf496853bac41becfcf6e8f337f3a57a19acd4e8e46aca",
+      "SRC:index.html"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": {
+      "value": 264058,
+      "unit": "transfer bytes",
+      "n": 1
+    },
+    "expected_impact": "TBD — requires P-03 measurement",
+    "intervention": "Measure frame visibility and priority with the hero before changing the preload.",
+    "complexity_0_5": 2,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "homepage frame visibility and responsive fidelity"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-03",
+    "performance_0_5": 2,
+    "ux_0_5": 1,
+    "dx_0_5": 1,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "C",
+    "priority_score": 7,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null
+  },
+  {
+    "id": "S-11",
+    "aliases": [
+      "D-01",
+      "D-03"
+    ],
+    "title": "Compare shared quality artifact with current parallel builds",
+    "category": "build",
+    "route_component": "Site Quality",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": ".github/workflows/quality.yml:45; .github/workflows/quality.yml:115; .github/workflows/quality.yml:163; .github/workflows/quality.yml:231",
+    "current_behavior": "Four full-mode quality jobs build dist; browser build is skipped for content-only changes. A historical jobs snapshot confirms four builds, but saving wall time or runner minutes is unproved.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "EV-D-QUALITY-JOBS",
+      "SRC:.github/workflows/quality.yml"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-07 measurement",
+    "intervention": "Compare matched full/content-only runs including artifact transfer, queue, generated source inputs, hashes and suite parity.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Generated-source input parity",
+      "Artifact provenance and hash parity",
+      "Full and article-only suite equivalence"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-07",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 3,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "build/CI",
+    "priority_score": -2,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "gh-run-42694925671-jobs"
+    ]
+  },
+  {
+    "id": "S-12",
+    "aliases": [
+      "E-01"
+    ],
+    "title": "Measure shell drift before adding shared contracts",
+    "category": "architecture",
+    "route_component": "all child apps",
+    "source_sha": "telemetry=38c3dd2018b810a5dce1add1f7663bcb199c845a; ghostcar=13fc12afb7c73ccbab6e71fc3d3210d922038d51; tyres=249aa796a1981be4f70213c9f1973b4418faf3ca; betcast=74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650",
+    "source_path_line": "telemetry/src/copy.ts:187; ghostcar/src/app/siteNav.js:1; tyres/index.html:23; betcast/src/components/SiteMasthead.jsx:52",
+    "current_behavior": "Navigation/partner implementations are independent; aggregate/standalone URL differences are often intentional. Ghost Car already declares a check:site drift check. No incident or update-effort series proves net benefit.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:telemetry/src/copy.ts",
+      "SRC:ghostcar/src/app/siteNav.js",
+      "SRC:tyres/index.html",
+      "SRC:betcast/src/components/SiteMasthead.jsx"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-08 measurement",
+    "intervention": "Reuse existing parity checks and quantify drift incidents before adding fixtures or shared contracts; avoid a runtime package.",
+    "complexity_0_5": 2,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Standalone and aggregate navigation, partner links and theme parity"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-08",
+    "performance_0_5": 0,
+    "ux_0_5": 1,
+    "dx_0_5": 3,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "multi-app maintainers",
+    "priority_score": 3,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "E-01-static"
+    ]
+  },
+  {
+    "id": "S-13",
+    "aliases": [
+      "E-02"
+    ],
+    "title": "Measure BetCast sequential fallback failure latency",
+    "category": "runtime",
+    "route_component": "/betcast/",
+    "source_sha": "74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650",
+    "source_path_line": "betcast/src/services/googleSheetService.js:24; betcast/src/services/googleSheetService.js:43",
+    "current_behavior": "Two direct URLs and up to four proxy attempts run sequentially with 8 s and 6 s fetch timers. The 40 s sum is a configured timeout envelope, not an observed user latency or a strict end-to-end bound.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:betcast/src/services/googleSheetService.js"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-04 measurement",
+    "intervention": "Measure success/error/body-read timing and cache cases with controlled responses before changing fallback order or concurrency.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 4,
+    "regression_tests": [
+      "CSV correctness, CORS, stale cache, failures and upstream privacy"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-04",
+    "performance_0_5": 2,
+    "ux_0_5": 2,
+    "dx_0_5": 1,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "multi-app maintainers",
+    "priority_score": 6,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "E-02-static"
+    ]
+  },
+  {
+    "id": "S-14",
+    "aliases": [
+      "E-03"
+    ],
+    "title": "Measure OpenF1 fan-out before sharing API code",
+    "category": "architecture",
+    "route_component": "/telemetry/ and /ghostcar/",
+    "source_sha": "38c3dd2018b810a5dce1add1f7663bcb199c845a;13fc12afb7c73ccbab6e71fc3d3210d922038d51",
+    "source_path_line": "telemetry/src/api/openf1.ts:174; telemetry/src/api/openf1.ts:392; ghostcar/src/services/openf1.js:41",
+    "current_behavior": "Both children call OpenF1 but request scheduling, cancellation and date operator semantics differ. Retained real-provider observations are incomplete and do not establish redundant calls across independent visits.",
+    "prior_work_class": "hypotheses requiring further measurement",
+    "evidence_ids": [
+      "SRC:telemetry/src/api/openf1.ts",
+      "SRC:ghostcar/src/services/openf1.js"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-04 measurement",
+    "intervention": "Share compatible recordings first, then measure waterfall/rate limits and semantic equivalence before considering client reuse.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 4,
+    "regression_tests": [
+      "Dates/operators, partial failures, cancellation, rate limits and independent app releases"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-04",
+    "performance_0_5": 2,
+    "ux_0_5": 2,
+    "dx_0_5": 2,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "multi-app maintainers",
+    "priority_score": 8,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "E-03-static"
+    ]
+  },
+  {
+    "id": "S-15",
+    "aliases": [
+      "F-01",
+      "F-C01"
+    ],
+    "title": "Audit identical media URL requirements before deduplication",
+    "category": "hygiene",
+    "route_component": "repository / aggregate",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "blog-module/blog-entries/20250424-3GF/article.html:19; blog-module/blog-entries/20250424G/article.html:19; scripts/build/public-media-integrity.mjs:6",
+    "current_behavior": "All listed hashes recheck: 294 tracked groups/26107749 gross repeated B and 300 aggregate groups/24311688 B. Distinct published URLs are referenced; gross repetition is not removable bytes or route transfer.",
+    "prior_work_class": "documented unresolved technical debt",
+    "evidence_ids": [
+      "EV-DUPLICATES",
+      "SRC:blog-module/blog-entries/20250424-3GF/article.html",
+      "SRC:blog-module/blog-entries/20250424G/article.html",
+      "SRC:scripts/build/public-media-integrity.mjs"
+    ],
+    "evidence_level": "HYPOTHESIS",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-06 measurement",
+    "intervention": "Map live/historical/social/direct URL references and hosting semantics before proposing any storage change.",
+    "complexity_0_5": 3,
+    "regression_risk_0_5": 5,
+    "regression_tests": [
+      "direct URL, article, historical and social metadata tests"
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-06",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 2,
+    "dependencies": [
+      "Complete the stated measurement and relevant dynamic-state fixtures before a production change."
+    ],
+    "owner": "tree / artifact hygiene",
+    "priority_score": -10,
+    "score_justifications": {
+      "performance": "Potential benefit is unmeasured; score reflects only plausible scope.",
+      "UX": "User benefit is unproved and must preserve all current states.",
+      "DX": "Possible maintenance or investigation benefit has no measured saving.",
+      "confidence": "Source fact is verified; proposed improvement still needs a controlled comparison.",
+      "complexity": "Fixtures and state/provenance comparisons precede implementation.",
+      "risk": "The relevant CSS, data, URL or release compatibility must remain intact."
+    },
+    "disposition": "hypothesis",
+    "ranked": false,
+    "rank": null,
+    "measurements": {
+      "tracked": {
+        "groups": 294,
+        "files": 719,
+        "gross_repeated_bytes": 26107749,
+        "hashes_reverified": 719,
+        "limitation": "Verifies every listed group; not an independent search for omitted duplicate groups or realizable savings."
+      },
+      "aggregate": {
+        "groups": 300,
+        "files": 743,
+        "gross_repeated_bytes": 24311688,
+        "hashes_reverified": 743,
+        "limitation": "Verifies every listed group; not an independent search for omitted duplicate groups or realizable savings."
+      }
+    },
+    "legacy_evidence_refs": [
+      "duplicates.tsv",
+      "cleanup.tsv:F-C01",
+      "inventory-summary.json"
+    ]
+  },
+  {
+    "id": "S-16",
+    "aliases": [
+      "C-03"
+    ],
+    "title": "Preserve existing Dirty Air index/session partitioning",
+    "category": "maintenance",
+    "route_component": "standings",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "standings/tabs/dirty-air.js:26; standings/tabs/dirty-air.js:509; standings/tabs/dirty-air.js:1268",
+    "current_behavior": "The large authoring bundle is absent from the frozen artifact; code fetches dirty-air/index.json and dirty-air/<session>.json with OpenF1 fallback.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:standings/tabs/dirty-air.js"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-03 measurement",
+    "intervention": "Reject a new split based only on repository size; keep data normalization and fallback.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-03",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 4,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 2,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "source",
+      "payloads.tsv"
+    ]
+  },
+  {
+    "id": "S-17",
+    "aliases": [
+      "C-04"
+    ],
+    "title": "Keep blog source cache in its build boundary",
+    "category": "build",
+    "route_component": "content build",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "blog-module/build/index.js:1156; blog-module/build/home-panels.js:382; scripts/build/validate-public-artifact.mjs:43",
+    "current_behavior": "blog-source-cache.json is read/written during generation and absent at its source path in the local artifact; it is not a measured browser payload.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:blog-module/build/index.js",
+      "SRC:blog-module/build/home-panels.js",
+      "SRC:scripts/build/validate-public-artifact.mjs"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-07 measurement",
+    "intervention": "Reject runtime partitioning; investigate build cost only if a profile warrants it.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-07",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 4,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 2,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "source",
+      "payloads.tsv"
+    ]
+  },
+  {
+    "id": "S-18",
+    "aliases": [
+      "D-02"
+    ],
+    "title": "Preserve verified child caches and TYRES freshness",
+    "category": "build",
+    "route_component": "Deploy Pages aggregate",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "scripts/deployment/release.mjs:123; scripts/deployment/release.mjs:186; scripts/deployment/build.mjs:30; scripts/deployment/build.mjs:53",
+    "current_behavior": "Three sampled deployment logs show Telemetry/Ghost Car/BetCast verified hits and TYRES rebuilt; this is not a fleet hit rate or proof every miss is avoidable.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-D-DEPLOY-1",
+      "EV-D-DEPLOY-2",
+      "EV-D-DEPLOY-3",
+      "SRC:scripts/deployment/release.mjs",
+      "SRC:scripts/deployment/build.mjs"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-07 measurement",
+    "intervention": "Retain code/data/Node/config/hash checks and scheduled data refresh; investigate miss reasons separately only after matched timings.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-07",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "preserved",
+    "ranked": false,
+    "rank": null
+  },
+  {
+    "id": "S-19",
+    "aliases": [
+      "E-04"
+    ],
+    "title": "Preserve source lazy boundaries without claiming zero startup cost",
+    "category": "architecture",
+    "route_component": "telemetry, ghostcar, tyres, betcast",
+    "source_sha": "telemetry=38c3dd2018b810a5dce1add1f7663bcb199c845a; ghostcar=13fc12afb7c73ccbab6e71fc3d3210d922038d51; tyres=249aa796a1981be4f70213c9f1973b4418faf3ca; betcast=74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650",
+    "source_path_line": "telemetry/src/components/DashboardShell.tsx:34; ghostcar/src/features/replay/ReplayStage.jsx:10; tyres/src/ui/app.ts:434; betcast/src/App.js:29",
+    "current_behavior": "All four pinned children have optional lazy imports. BetCast nevertheless fetches its 606 analysis chunk in the representative initial load: lazy syntax is not proof a chunk waits for interaction.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:telemetry/src/components/DashboardShell.tsx",
+      "SRC:ghostcar/src/features/replay/ReplayStage.jsx",
+      "SRC:tyres/src/ui/app.ts",
+      "SRC:betcast/src/App.js"
+    ],
+    "evidence_level": "STRONGLY SUPPORTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-04 measurement",
+    "intervention": "Retain lazy boundaries and measure the selected default view before attempting further deferral.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-04",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 4,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 2,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "preserved",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "E-04-static"
+    ]
+  },
+  {
+    "id": "S-20",
+    "aliases": [
+      "E-05"
+    ],
+    "title": "Reject generic app consolidation or BetCast migration",
+    "category": "architecture",
+    "route_component": "all child apps",
+    "source_sha": "telemetry=38c3dd2018b810a5dce1add1f7663bcb199c845a; ghostcar=13fc12afb7c73ccbab6e71fc3d3210d922038d51; tyres=249aa796a1981be4f70213c9f1973b4418faf3ca; betcast=74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650",
+    "source_path_line": "scripts/deployment/sources.json:13; telemetry/package.json:23; ghostcar/package.json:28; tyres/package.json:7; betcast/package.json:11",
+    "current_behavior": "React 19/18 and Three 0.162/0.186 coexist; Main lock declares Node22 except TYRES24. Independent source pins, data pins, standalone URLs and embeds are release contracts.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:scripts/deployment/sources.json",
+      "SRC:telemetry/package.json",
+      "SRC:ghostcar/package.json",
+      "SRC:tyres/package.json",
+      "SRC:betcast/package.json"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-08 measurement",
+    "intervention": "Keep independent builds; reject shared runtime packages, repo consolidation or BetCast builder migration without quantified net benefit and owner approval.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-08",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 4,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 2,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "E-05-static"
+    ]
+  },
+  {
+    "id": "S-21",
+    "aliases": [
+      "F-02",
+      "F-C02"
+    ],
+    "title": "Preserve author JSZip allowlist exception",
+    "category": "maintenance",
+    "route_component": "repository / aggregate",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "scripts/build/public-artifact.mjs:45; scripts/author/dom-tools.js:60",
+    "current_behavior": "The public artifact explicitly permits node_modules/jszip/dist/jszip.min.js; author code injects it on demand for ZIP actions.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:scripts/build/public-artifact.mjs",
+      "SRC:scripts/author/dom-tools.js"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-06 measurement",
+    "intervention": "Reject removal merely because the file is under node_modules.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-06",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "cleanup.tsv:F-C02"
+    ]
+  },
+  {
+    "id": "S-22",
+    "aliases": [
+      "F-03",
+      "F-C03",
+      "F-C04"
+    ],
+    "title": "Preserve dynamic tabs and historical media contracts",
+    "category": "maintenance",
+    "route_component": "repository / aggregate",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "standings/standings.js:87; blog-module/build/index.js:887; scripts/build/public-media-integrity.mjs:6",
+    "current_behavior": "Standings uses literal dynamic imports and constructed states; preserved-public-media validates hashes for published paths even after current references disappear.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:standings/standings.js",
+      "SRC:blog-module/build/index.js",
+      "SRC:scripts/build/public-media-integrity.mjs"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-06 measurement",
+    "intervention": "Reject literal-search or coverage-only deletion of tabs, classes, originals, variants or source-less historical output.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-06",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null,
+    "legacy_evidence_refs": [
+      "cleanup.tsv:F-C03",
+      "cleanup.tsv:F-C04"
+    ]
+  },
+  {
+    "id": "S-23",
+    "aliases": [
+      "B-R1"
+    ],
+    "title": "Reject duplicate standings stylesheet-transfer claim",
+    "category": "maintenance",
+    "route_component": "Main compatibility",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "standings/index.html:52; standings/index.html:54; scripts/build/inline-head-css.mjs:24; scripts/build/inline-head-css.mjs:32",
+    "current_behavior": "Source has a normal stylesheet link and a noscript fallback; public inlining replaces the normal link and removes its identical fallback. Two full transfers are not established.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:standings/index.html",
+      "SRC:scripts/build/inline-head-css.mjs"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Keep the source/no-JS compatibility path; do not claim byte savings from two source tags.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null
+  },
+  {
+    "id": "S-24",
+    "aliases": [
+      "B-R2"
+    ],
+    "title": "Preserve author-only CSS ownership",
+    "category": "maintenance",
+    "route_component": "Main compatibility",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "docs/css-architecture.md:18; docs/css-architecture.md:19; scripts/build/public-artifact.mjs:45",
+    "current_behavior": "theme-overrides.css, fonts.css, critical-common.css and blog-styles.css are author-tool styles, intentionally absent from reader-route graphs.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-SOURCE-LOCK",
+      "SRC:docs/css-architecture.md",
+      "SRC:scripts/build/public-artifact.mjs"
+    ],
+    "evidence_level": "REJECTED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-05 measurement",
+    "intervention": "Reject dead-CSS deletion based on reader-route coverage.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-05",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "rejected",
+    "ranked": false,
+    "rank": null
+  },
+  {
+    "id": "S-25",
+    "aliases": [
+      "B-R3"
+    ],
+    "title": "Preserve legacy service-worker migration",
+    "category": "maintenance",
+    "route_component": "Main compatibility",
+    "source_sha": "58273df6d753510605468c0787d9cdf04d6d398e",
+    "source_path_line": "scripts/sw-cleanup.js:1; sw.js:1",
+    "current_behavior": "Online cache probes report no active root SW; the local-only migration fixture removes the old controller/registration/cache and reloads once, n=1. Fresh offline navigation fails in all six probes.",
+    "prior_work_class": "existing optimizations operating correctly",
+    "evidence_ids": [
+      "EV-CACHE",
+      "SRC:scripts/sw-cleanup.js",
+      "SRC:sw.js"
+    ],
+    "evidence_level": "CONFIRMED",
+    "measured_cost": null,
+    "expected_impact": "TBD — requires P-06 measurement",
+    "intervention": "Reject removal of migration logic; do not claim an active worker or offline fallback.",
+    "complexity_0_5": 1,
+    "regression_risk_0_5": 3,
+    "regression_tests": [
+      "Retain existing source/artifact, no-JS, historical, author, embed and data-integrity contract checks."
+    ],
+    "verification_method": "Use the specific acceptance metrics and evidence boundaries in answers.md and p02.md; retain comparable before/after runs in each environment separately.",
+    "phase": "P-06",
+    "performance_0_5": 0,
+    "ux_0_5": 0,
+    "dx_0_5": 1,
+    "confidence_0_5": 5,
+    "dependencies": [],
+    "owner": "Main maintainer",
+    "priority_score": 4,
+    "score_justifications": {
+      "performance": "No new performance saving is demonstrated.",
+      "UX": "Preservation avoids regressions; no new UX gain is claimed.",
+      "DX": "Clarifies an existing boundary rather than adding a refactor.",
+      "confidence": "Confidence applies to the preserved fact or rejected proposal, not an optimization.",
+      "complexity": "No implementation is proposed in this synthesis.",
+      "risk": "Removing the current contract could break retained user paths."
+    },
+    "disposition": "preserved",
+    "ranked": false,
+    "rank": null
+  }
+]

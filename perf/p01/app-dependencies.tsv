@@ -1,0 +1,65 @@
+application	sha	node	builder	dependency	locked_version	runtime_or_build	direct_or_transitive	entry_or_lazy	emitted_chunk	raw_bytes	gzip_bytes	transfer_bytes	evidence
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	lucide-react	0.503.0	runtime declared	direct	shell and lazy UI imports					telemetry/package.json; package-lock.json packages/node_modules/lucide-react
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	react	19.1.0	runtime declared	direct	initial entry					telemetry/package.json; package-lock.json packages/node_modules/react
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	react-dom	19.1.0	runtime declared	direct	initial entry					telemetry/package.json; package-lock.json packages/node_modules/react-dom
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	recharts	2.15.3	runtime declared	direct	lazy dashboard tabs					telemetry/package.json; package-lock.json packages/node_modules/recharts
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@eslint/js	9.39.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@eslint/js
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@tailwindcss/vite	4.1.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@tailwindcss/vite
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@testing-library/jest-dom	6.9.1	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@testing-library/jest-dom
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@testing-library/react	16.3.2	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@testing-library/react
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@testing-library/user-event	14.6.1	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@testing-library/user-event
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@types/react	19.1.2	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@types/react
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@types/react-dom	19.1.2	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@types/react-dom
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@vitejs/plugin-react	4.4.1	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@vitejs/plugin-react
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	@vitest/ui	4.1.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/@vitest/ui
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	eslint	9.39.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/eslint
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	eslint-plugin-react-hooks	5.2.0	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/eslint-plugin-react-hooks
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	eslint-plugin-react-refresh	0.4.20	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/eslint-plugin-react-refresh
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	globals	16.0.0	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/globals
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	jsdom	29.0.2	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/jsdom
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	msw	2.13.2	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/msw
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	playwright	1.63.0	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/playwright
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	tailwindcss	4.1.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/tailwindcss
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	typescript	5.7.3	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/typescript
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	typescript-eslint	8.31.0	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/typescript-eslint
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	vite	6.4.1	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/vite
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	vitest	4.1.4	build/test	direct	not established					telemetry/package.json; package-lock.json packages/node_modules/vitest
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	scheduler	0.26.0	transitive; bundled reachability unverified	transitive	not established					telemetry/package-lock.json packages/node_modules/scheduler
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	d3-scale	4.0.2	transitive; bundled reachability unverified	transitive	not established					telemetry/package-lock.json packages/node_modules/d3-scale
+telemetry	38c3dd2018b810a5dce1add1f7663bcb199c845a	22	Vite	lodash	4.17.23	transitive; bundled reachability unverified	transitive	not established					telemetry/package-lock.json packages/node_modules/lodash
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	react	18.3.1	runtime declared	direct	initial entry					ghostcar/package.json; package-lock.json packages/node_modules/react
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	react-dom	18.3.1	runtime declared	direct	initial entry					ghostcar/package.json; package-lock.json packages/node_modules/react-dom
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	three	0.162.0	runtime declared	direct	lazy 3D scene; verify chunk graph					ghostcar/package.json; package-lock.json packages/node_modules/three
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	@gltf-transform/core	4.3.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/@gltf-transform/core
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	@gltf-transform/extensions	4.3.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/@gltf-transform/extensions
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	@gltf-transform/functions	4.3.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/@gltf-transform/functions
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	@playwright/test	1.60.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/@playwright/test
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	@vitejs/plugin-react	4.7.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/@vitejs/plugin-react
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	eslint	10.4.1	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/eslint
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	eslint-plugin-react-hooks	7.1.1	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/eslint-plugin-react-hooks
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	globals	17.6.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/globals
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	meshoptimizer	0.25.0	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/meshoptimizer
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	prettier	3.8.3	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/prettier
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	vite	6.4.2	build/test	direct	not established					ghostcar/package.json; package-lock.json packages/node_modules/vite
+ghostcar	13fc12afb7c73ccbab6e71fc3d3210d922038d51	22	Vite	scheduler	0.23.2	transitive; bundled reachability unverified	transitive	not established					ghostcar/package-lock.json packages/node_modules/scheduler
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	three	0.186.1	runtime declared	direct	lazy 3D scene; verify chunk graph					tyres/package.json; package-lock.json packages/node_modules/three
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	zod	4.6.7	runtime declared	direct	runtime schema (mini import)					tyres/package.json; package-lock.json packages/node_modules/zod
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	@biomejs/biome	2.5.15	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/@biomejs/biome
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	@playwright/test	1.64.1	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/@playwright/test
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	@types/node	26.6.5	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/@types/node
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	@types/three	0.186.0	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/@types/three
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	typescript	7.0.2	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/typescript
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	vite	8.3.4	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/vite
+tyres	249aa796a1981be4f70213c9f1973b4418faf3ca	24	Vite	vitest	5.0.5	build/test	direct	not established					tyres/package.json; package-lock.json packages/node_modules/vitest
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	@testing-library/jest-dom	5.17.0	test despite dependencies declaration	direct	not established					betcast/package.json; package-lock.json packages/node_modules/@testing-library/jest-dom
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	@testing-library/react	13.4.0	test despite dependencies declaration	direct	not established					betcast/package.json; package-lock.json packages/node_modules/@testing-library/react
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	@testing-library/user-event	13.5.0	test despite dependencies declaration	direct	not established					betcast/package.json; package-lock.json packages/node_modules/@testing-library/user-event
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	react	18.3.1	runtime declared	direct	initial entry					betcast/package.json; package-lock.json packages/node_modules/react
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	react-dom	18.3.1	runtime declared	direct	initial entry					betcast/package.json; package-lock.json packages/node_modules/react-dom
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	recharts	2.15.3	runtime declared	direct	lazy BetCast analysis					betcast/package.json; package-lock.json packages/node_modules/recharts
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	web-vitals	2.1.4	runtime declared; invocation unverified	direct	not established					betcast/package.json; package-lock.json packages/node_modules/web-vitals
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	gh-pages	5.0.0	build/test	direct	not established					betcast/package.json; package-lock.json packages/node_modules/gh-pages
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	react-scripts	5.0.1	build/test	direct	not established					betcast/package.json; package-lock.json packages/node_modules/react-scripts
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	scheduler	0.23.2	transitive; bundled reachability unverified	transitive	not established					betcast/package-lock.json packages/node_modules/scheduler
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	d3-scale	4.0.2	transitive; bundled reachability unverified	transitive	not established					betcast/package-lock.json packages/node_modules/d3-scale
+betcast	74eeb98b4acb1b4e0ea45d4ab12f7fdf4e0c2650	22	CRA	lodash	4.17.21	transitive; bundled reachability unverified	transitive	not established					betcast/package-lock.json packages/node_modules/lodash

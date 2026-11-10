@@ -1,0 +1,116 @@
+route	phase	kind	source	emitted_url_or_inline	load_order	bytes_raw	owner	evidence
+home	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	index.html:9
+home	initial	css	styles/vendor/bootstrap.slim.min.css	inline in public HTML	2		shared	index.html:38
+home	initial	css	styles.min.css	inline in public HTML	3		shared	index.html:43
+home	initial	css	styles/editorial.min.css	inline in public HTML	4		shared	index.html:44
+home	initial	css	home.min.css	inline in public HTML	5		home	index.html:45
+home	initial	css	styles/shared-nav.min.css	inline in public HTML	6		shared	index.html:46
+home	initial	css	styles/home-fonts.min.css	inline in public HTML	7		shared	index.html:47
+home	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	8		shared	index.html:48
+home	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	9		shared	index.html:49
+home	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	10		shared	index.html:83
+home	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	11		shared	index.html:743
+home	initial	js	scripts/f1-optimized.min.js	scripts/f1-optimized.min.js?v=22a06aaa	12		home	index.html:744
+home	initial	js	scripts/shared-nav.min.js	scripts/shared-nav.min.js?v=46457253	13		shared	index.html:745
+home	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	14		shared	index.html:746
+archive	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	blog-module/blog/index.html:9
+archive	initial	css	blog-module/blog/archive-front.min.css	inline in public HTML	2		archive	blog-module/blog/index.html:29
+archive	initial	css	styles/home-fonts.min.css	inline in public HTML	3		shared	blog-module/blog/index.html:31
+archive	initial	css	styles.min.css	inline in public HTML	4		shared	blog-module/blog/index.html:36
+archive	initial	css	styles/shared-nav.min.css	inline in public HTML	5		shared	blog-module/blog/index.html:37
+archive	initial	css	styles/editorial.min.css	inline in public HTML	6		shared	blog-module/blog/index.html:38
+archive	initial	css	blog-module/blog/archive-editorial.min.css	inline in public HTML	7		archive	blog-module/blog/index.html:39
+archive	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	8		shared	blog-module/blog/index.html:41
+archive	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	9		shared	blog-module/blog/index.html:42
+archive	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	10		shared	blog-module/blog/index.html:44
+archive	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	11		shared	blog-module/blog/index.html:192
+archive	initial	js	scripts/shared-nav.min.js	/scripts/shared-nav.min.js?v=46457253	12		shared	blog-module/blog/index.html:193
+archive	initial	js	blog-module/taxonomy.min.js	/blog-module/taxonomy.min.js?v=f4881ac5	13		archive	blog-module/blog/index.html:194
+archive	initial	js	blog-module/blog-index.min.js	/blog-module/blog-index.min.js?v=23703c9c	14		archive	blog-module/blog/index.html:195
+archive	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	15		shared	blog-module/blog/index.html:196
+latest	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	blog-module/blog-entries/20261107-2J/article.html:9
+latest	initial	css	styles/vendor/bootstrap.slim.min.css	inline in public HTML	2		shared	blog-module/blog-entries/20261107-2J/article.html:55
+latest	initial	css	styles.min.css	inline in public HTML	3		shared	blog-module/blog-entries/20261107-2J/article.html:60
+latest	initial	css	blog-module/blog/article-styles.min.css	inline in public HTML	4		article	blog-module/blog-entries/20261107-2J/article.html:61
+latest	initial	css	styles/shared-nav.min.css	inline in public HTML	5		shared	blog-module/blog-entries/20261107-2J/article.html:62
+latest	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	6		shared	blog-module/blog-entries/20261107-2J/article.html:67
+latest	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	7		shared	blog-module/blog-entries/20261107-2J/article.html:68
+latest	initial	css	styles/home-fonts.min.css	inline in public HTML	8		shared	blog-module/blog-entries/20261107-2J/article.html:72
+latest	initial	css	styles/editorial.min.css	inline in public HTML	9		shared	blog-module/blog-entries/20261107-2J/article.html:73
+latest	initial	css	blog-module/blog/article-editorial.min.css	inline in public HTML	10		article	blog-module/blog-entries/20261107-2J/article.html:74
+latest	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	11		shared	blog-module/blog-entries/20261107-2J/article.html:76
+latest	initial	js	blog-module/blog/article-embeds.min.js	/blog-module/blog/article-embeds.min.js?v=6ef47150	12		article	blog-module/blog-entries/20261107-2J/article.html:321
+latest	initial	js	blog-module/blog/article-script.min.js	/blog-module/blog/article-script.min.js?v=aa69de91	13		article	blog-module/blog-entries/20261107-2J/article.html:322
+latest	initial	js	scripts/shared-nav.min.js	/scripts/shared-nav.min.js?v=46457253	14		shared	blog-module/blog-entries/20261107-2J/article.html:323
+latest	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	15		shared	blog-module/blog-entries/20261107-2J/article.html:324
+latest	initial	js	blog-module/blog-fixes.min.js	/blog-module/blog-fixes.min.js?v=98855f5a	16		article	blog-module/blog-entries/20261107-2J/article.html:325
+latest	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	17		shared	blog-module/blog-entries/20261107-2J/article.html:326
+long	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	blog-module/blog-entries/20250602-1G/article.html:9
+long	initial	css	styles/vendor/bootstrap.slim.min.css	inline in public HTML	2		shared	blog-module/blog-entries/20250602-1G/article.html:55
+long	initial	css	styles.min.css	inline in public HTML	3		shared	blog-module/blog-entries/20250602-1G/article.html:60
+long	initial	css	blog-module/blog/article-styles.min.css	inline in public HTML	4		article	blog-module/blog-entries/20250602-1G/article.html:61
+long	initial	css	styles/shared-nav.min.css	inline in public HTML	5		shared	blog-module/blog-entries/20250602-1G/article.html:62
+long	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	6		shared	blog-module/blog-entries/20250602-1G/article.html:67
+long	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	7		shared	blog-module/blog-entries/20250602-1G/article.html:68
+long	initial	css	styles/home-fonts.min.css	inline in public HTML	8		shared	blog-module/blog-entries/20250602-1G/article.html:72
+long	initial	css	styles/editorial.min.css	inline in public HTML	9		shared	blog-module/blog-entries/20250602-1G/article.html:73
+long	initial	css	blog-module/blog/article-editorial.min.css	inline in public HTML	10		article	blog-module/blog-entries/20250602-1G/article.html:74
+long	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	11		shared	blog-module/blog-entries/20250602-1G/article.html:76
+long	initial	js	blog-module/blog/article-script.min.js	/blog-module/blog/article-script.min.js?v=aa69de91	12		article	blog-module/blog-entries/20250602-1G/article.html:1846
+long	initial	js	scripts/shared-nav.min.js	/scripts/shared-nav.min.js?v=46457253	13		shared	blog-module/blog-entries/20250602-1G/article.html:1847
+long	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	14		shared	blog-module/blog-entries/20250602-1G/article.html:1848
+long	initial	js	blog-module/blog-fixes.min.js	/blog-module/blog-fixes.min.js?v=98855f5a	15		article	blog-module/blog-entries/20250602-1G/article.html:1849
+long	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	16		shared	blog-module/blog-entries/20250602-1G/article.html:1850
+historical	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	blog-module/blog-entries/20250301G/article.html:9
+historical	initial	css	styles/vendor/bootstrap.slim.min.css	inline in public HTML	2		shared	blog-module/blog-entries/20250301G/article.html:55
+historical	initial	css	styles.min.css	inline in public HTML	3		shared	blog-module/blog-entries/20250301G/article.html:60
+historical	initial	css	blog-module/blog/article-styles.min.css	inline in public HTML	4		article	blog-module/blog-entries/20250301G/article.html:61
+historical	initial	css	styles/shared-nav.min.css	inline in public HTML	5		shared	blog-module/blog-entries/20250301G/article.html:62
+historical	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	6		shared	blog-module/blog-entries/20250301G/article.html:67
+historical	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	7		shared	blog-module/blog-entries/20250301G/article.html:68
+historical	initial	css	styles/home-fonts.min.css	inline in public HTML	8		shared	blog-module/blog-entries/20250301G/article.html:72
+historical	initial	css	styles/editorial.min.css	inline in public HTML	9		shared	blog-module/blog-entries/20250301G/article.html:73
+historical	initial	css	blog-module/blog/article-editorial.min.css	inline in public HTML	10		article	blog-module/blog-entries/20250301G/article.html:74
+historical	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	11		shared	blog-module/blog-entries/20250301G/article.html:76
+historical	initial	js	blog-module/blog/article-script.min.js	/blog-module/blog/article-script.min.js?v=aa69de91	12		article	blog-module/blog-entries/20250301G/article.html:325
+historical	initial	js	scripts/shared-nav.min.js	/scripts/shared-nav.min.js?v=46457253	13		shared	blog-module/blog-entries/20250301G/article.html:326
+historical	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	14		shared	blog-module/blog-entries/20250301G/article.html:327
+historical	initial	js	blog-module/blog-fixes.min.js	/blog-module/blog-fixes.min.js?v=98855f5a	15		article	blog-module/blog-entries/20250301G/article.html:328
+historical	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	16		shared	blog-module/blog-entries/20250301G/article.html:329
+standings	initial	js	scripts/perf/error-beacon.min.js	/scripts/perf/error-beacon.min.js?v=59367e85	1		shared	standings/index.html:9
+standings	initial preload	modulepreload	standings/standings.min.js	/standings/standings.min.js?v=dbbe427b	2		standings	standings/index.html:32
+standings	initial preload	modulepreload	standings/chunks/chunk-LMW46ZBV.min.js	/standings/chunks/chunk-LMW46ZBV.min.js	3		standings	standings/index.html:34
+standings	initial preload	modulepreload	standings/chunks/chunk-PSADLYIK.min.js	/standings/chunks/chunk-PSADLYIK.min.js	4		standings	standings/index.html:35
+standings	initial preload	modulepreload	standings/chunks/chunk-SKD2355F.min.js	/standings/chunks/chunk-SKD2355F.min.js	5		standings	standings/index.html:36
+standings	initial preload	modulepreload	standings/chunks/chunk-TCJI3BYJ.min.js	/standings/chunks/chunk-TCJI3BYJ.min.js	6		standings	standings/index.html:37
+standings	initial	css	styles/home-fonts.min.css	inline in public HTML	7		shared	standings/index.html:40
+standings	initial	css	styles/vendor/bootstrap.slim.min.css	inline in public HTML	8		shared	standings/index.html:41
+standings	initial	css	styles.min.css	inline in public HTML	9		shared	standings/index.html:46
+standings	initial	css	styles/shared-nav.min.css	inline in public HTML	10		shared	standings/index.html:47
+standings	initial	js	scripts/analytics.min.js	/scripts/analytics.min.js?v=84696617	11		shared	standings/index.html:49
+standings	initial	js	scripts/perf/web-vitals-beacon.min.js	/scripts/perf/web-vitals-beacon.min.js?v=ed70f8ac	12		shared	standings/index.html:50
+standings	initial	css	standings/standings.min.css	inline in public HTML	13		standings	standings/index.html:52
+standings	initial	css	standings/standings-polish.min.css	inline in public HTML	14		standings	standings/index.html:53
+standings	initial	css	styles/editorial.min.css	inline in public HTML	15		shared	standings/index.html:55
+standings	initial	css	standings/standings-editorial.min.css	inline in public HTML	16		standings	standings/index.html:56
+standings	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js?v=d8c05277	17		shared	standings/index.html:57
+standings	initial	js	scripts/shared-nav.min.js	/scripts/shared-nav.min.js?v=46457253	18		shared	standings/index.html:463
+standings	initial	js	scripts/cookie-consent.min.js	/scripts/cookie-consent.min.js?v=6a6b15bc	19		shared	standings/index.html:464
+standings	initial	js	standings/standings.min.js	standings.min.js?v=dbbe427b	20		standings	standings/index.html:466
+standings	initial	js	scripts/sw-cleanup.min.js	/scripts/sw-cleanup.min.js?v=d00bcfb3	21		shared	standings/index.html:467
+dashboard	initial	css	styles/home-fonts.min.css	/styles/home-fonts.min.css	1		dashboard	dashboard/index.html:13
+dashboard	initial	css	dashboard/dashboard.css	/dashboard/dashboard.css	2	22769	dashboard	dashboard/index.html:14
+dashboard	initial	js	scripts/theme-init.min.js	/scripts/theme-init.min.js	3		dashboard	dashboard/index.html:15
+dashboard	initial	js	dashboard/snapshot-crypto.js	/dashboard/snapshot-crypto.js	4	4134	dashboard	dashboard/index.html:16
+dashboard	initial	js	dashboard/dashboard.js	/dashboard/dashboard.js	5	62991	dashboard	dashboard/index.html:17
+telemetry	unknown	app	child pinned build	unknown			child app	child artifact not inspected; see Worker E
+ghostcar	unknown	app	child pinned build	unknown			child app	child artifact not inspected; see Worker E
+tyres	unknown	app	child pinned build	unknown			child app	child artifact not inspected; see Worker E
+betcast	unknown	app	child pinned build	unknown			child app	child artifact not inspected; see Worker E
+standings	on tab activation	css	standings/tabs/pit-stops.css	/standings/tabs/pit-stops.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/quali-gaps.css	/standings/tabs/quali-gaps.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/lap1-gains.css	/standings/tabs/lap1-gains.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/tyre-pace.css	/standings/tabs/tyre-pace.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/dirty-air.css	/standings/tabs/dirty-air.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/track-dominance.css	/standings/tabs/track-dominance.min.css			standings	standings/standings.js:772
+standings	on tab activation	css	standings/tabs/debrief.css	/standings/tabs/debrief.min.css			standings	standings/standings.js:772

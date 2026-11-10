@@ -1,0 +1,15 @@
+from	to	route	trigger	transform	cache	fallback	path_line	evidence_id
+article sources	blog-source-cache.json	build	content generation	parse/metadata and incremental digest	build cache	source files	blog-module/build/index.js:1156	source
+blog-source-cache.json	blog-index-data.json	build	index generation	published index projection	build file	none observed	blog-module/build/index.js:1169	source
+blog-source-cache.json	home panels HTML	home/build	build injection	render panels	static HTML	none observed	blog-module/build/home-panels.js:382	source
+media-metadata.json	article images/HTML	build	article generation	focal points and archival metadata	build input	see metadata validator	blog-module/build/media-meta.js:17	source
+blog-index.js	blog-index-data.json	index	runtime data fetch when required	JSON parse	fetch no-store	relative path retries	blog-module/blog-index.js:17; blog-module/blog-index.js:174	source
+search-destinations.js	search-destinations.json	search	search demand	JSON parse	fetch no-store	error path	blog-module/search-destinations.js:54	source
+standings.js	standings-cache.json	standings	initial snapshot	validate and render	fetch no-cache	live source after snapshot failure	standings/standings.js:1252	source
+standings.js	rounds/<season>-<round>.json	standings	valid season and round query	validate pinned snapshot	fetch no-cache	Jolpica round endpoints	standings/core/rounds.js:25; standings/core/rounds.js:53	source
+dirty-air tab	dirty-air/index.json	standings	tab loads cache	JSON metadata	in-memory promise	live data path	standings/tabs/dirty-air.js:509	source
+dirty-air tab	dirty-air/<session>.json	standings	session selection	normalize session	in-memory session cache	OpenF1	standings/tabs/dirty-air.js:1259	source
+debrief tab	debrief-cache.json	standings	tab data load	JSON parse	fetch no-cache	inspect tab fallback	standings/tabs/debrief.js:120	source
+fetchJSON	IndexedDB / sessionStorage	standings tabs	URL-keyed request	JSON cache	TTL; IndexedDB with sessionStorage fallback	network	standings/core/fetchers.js:23; standings/core/cache.js:1	source
+article renderer	image variants	article/home	build	truthful width descriptors; AVIF/WebP	static files	WebP fallback	blog-module/build/image-sizes.js:27; blog-module/build/article-render.js:512	source
+stamp-html	font/image preload	home/article	public build	insert matched URL and responsive preload	browser reuse unverified	native browser selection	scripts/build/stamp-html.mjs:505; scripts/build/stamp-html.mjs:868	source
