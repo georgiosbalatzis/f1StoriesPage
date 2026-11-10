@@ -98,8 +98,12 @@
             var node = el('span', 'nav-audio-face' + (extraClass ? ' ' + extraClass : ''));
             node.appendChild(el('span', 'nav-audio-glyph')).setAttribute('aria-hidden', 'true');
             var word = el('span', 'nav-audio-word');
-            word.appendChild(document.createTextNode('ON AIR'));
-            word.appendChild(el('i', '')).textContent = '.';
+            if (extraClass) {
+                word.setAttribute('data-label', 'ON AIR.');
+            } else {
+                word.appendChild(document.createTextNode('ON AIR'));
+                word.appendChild(el('i', '')).textContent = '.';
+            }
             node.appendChild(word);
             return node;
         }
@@ -130,8 +134,8 @@
 
         function render() {
             root.classList.toggle('is-active', active);
-            // The visible word is "ON AIR", so the accessible name keeps it (label in name).
-            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast, ON AIR');
+            // Keep the complete visible label, including punctuation, in the accessible name.
+            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast, ON AIR.');
             button.setAttribute('aria-busy', String(active && buffering));
         }
 

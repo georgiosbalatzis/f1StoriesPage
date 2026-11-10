@@ -134,7 +134,7 @@ async function behaviourChecks(browser, origin) {
     let s = await snapshot(player.page);
     check('player reads exactly ON AIR.', s.text === 'ON AIR.', s.text);
     check('the box starts empty', s.progress === 0, String(s.progress));
-    check('paused aria-label', s.aria === 'Αναπαραγωγή BetCast, ON AIR', s.aria);
+    check('paused aria-label', s.aria === 'Αναπαραγωγή BetCast, ON AIR.', s.aria);
     check('no audio element or media request before click', s.audios === 0 && !audioHit(player.requests));
     check('no video, thumbnail or iframe in the player', s.media === 0);
     check('no YouTube requests or Player API', !youtube(player.requests));
@@ -146,14 +146,14 @@ async function behaviourChecks(browser, origin) {
     await player.page.waitForFunction(() => window.__audios[0] && !window.__audios[0].paused);
     s = await snapshot(player.page);
     check('click plays an HTMLAudioElement without native controls', s.audios === 1 && s.paused === false && s.preload === 'none' && s.controls === false, JSON.stringify(s));
-    check('playing shows the pause label', s.active && s.aria === 'Παύση BetCast, ON AIR', s.aria);
+    check('playing shows the pause label', s.active && s.aria === 'Παύση BetCast, ON AIR.', s.aria);
     for (let i = 0; i < 30 && !audioHit(player.requests); i++) await player.page.waitForTimeout(100);
     check('audio requested only after the click', audioHit(player.requests));
     check('only the newest episode plays, never an older one', !player.requests.some(url => url.includes('older-episode')));
     check('still no YouTube after play', !youtube(player.requests));
     await player.page.click('.nav-audio-btn');
     s = await snapshot(player.page);
-    check('second click pauses', s.paused === true && !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR', JSON.stringify(s));
+    check('second click pauses', s.paused === true && !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR.', JSON.stringify(s));
     await player.context.close();
 
     const keys = await open(browser, origin, { meta: { audioUrl: AUDIO_URL } });
@@ -161,7 +161,7 @@ async function behaviourChecks(browser, origin) {
     await keys.page.keyboard.press('Space');
     await keys.page.waitForFunction(() => window.__audios[0] && !window.__audios[0].paused);
     s = await snapshot(keys.page);
-    check('Space starts playback', s.active && s.aria === 'Παύση BetCast, ON AIR', s.aria);
+    check('Space starts playback', s.active && s.aria === 'Παύση BetCast, ON AIR.', s.aria);
     await keys.page.keyboard.press('Enter');
     s = await snapshot(keys.page);
     check('Enter pauses playback', !s.active && s.paused === true);
@@ -180,7 +180,7 @@ async function behaviourChecks(browser, origin) {
     await failing.page.click('.nav-audio-btn');
     await failing.page.waitForFunction(() => !document.querySelector('.nav-audio').classList.contains('is-active') && document.querySelector('.nav-audio-note').textContent !== '', null, { timeout: 5000 }).catch(() => {});
     s = await snapshot(failing.page);
-    check('audio failure restores the play state', !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR' && s.note !== '', JSON.stringify(s));
+    check('audio failure restores the play state', !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR.' && s.note !== '', JSON.stringify(s));
     check('audio failure raises no page error', failing.errors.length === 0, failing.errors.join('; '));
     await failing.context.close();
 }
@@ -198,7 +198,7 @@ async function persistenceChecks(browser, origin) {
     await page.goto(`${origin}/`, { waitUntil: 'load' });
     await page.waitForFunction(() => window.__audios[0] && !window.__audios[0].paused, null, { timeout: 8000 }).catch(() => {});
     let s = await snapshot(page);
-    check('playback continues on the next page without a click', s.audios === 1 && s.paused === false && s.active && s.aria === 'Παύση BetCast, ON AIR', JSON.stringify(s));
+    check('playback continues on the next page without a click', s.audios === 1 && s.paused === false && s.active && s.aria === 'Παύση BetCast, ON AIR.', JSON.stringify(s));
     // The seek lands once the stream's metadata arrives, so wait for it rather than sampling at load.
     await page.waitForFunction(() => window.__audios[0].currentTime > 0.5, null, { timeout: 4000 }).catch(() => {});
     check('resumed position is not back at the start', await page.evaluate(() => window.__audios[0].currentTime) > 0.5);
@@ -212,7 +212,7 @@ async function persistenceChecks(browser, origin) {
     await page.goto(`${origin}/standings/`, { waitUntil: 'load' });
     await page.waitForTimeout(600);
     s = await snapshot(page);
-    check('a paused player stays paused on the next page', s.audios === 0 && !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR', JSON.stringify(s));
+    check('a paused player stays paused on the next page', s.audios === 0 && !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR.', JSON.stringify(s));
     check('a paused player keeps its fill on the next page', Math.abs(s.progress - held) < 1.5, `${s.progress} vs ${held}`);
     await page.click('.nav-audio-btn');
     await playing(page);
@@ -222,14 +222,14 @@ async function persistenceChecks(browser, origin) {
     await page.goto(`${origin}/authors/`, { waitUntil: 'load' });
     await page.waitForTimeout(600);
     s = await snapshot(page);
-    check('a browser-blocked resume falls back to paused without noise', !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR' && s.note === '' && errors.length === 0, JSON.stringify(s) + errors.join('; '));
+    check('a browser-blocked resume falls back to paused without noise', !s.active && s.aria === 'Αναπαραγωγή BetCast, ON AIR.' && s.note === '' && errors.length === 0, JSON.stringify(s) + errors.join('; '));
     await context.close();
 
     const ending = await open(browser, origin, { meta: { audioUrl: AUDIO_URL }, audio: 'short', pagePath: '/authors/' });
     await ending.page.click('.nav-audio-btn');
     await ending.page.waitForFunction(() => window.__audios[0] && window.__audios[0].ended, null, { timeout: 8000 }).catch(() => {});
     s = await snapshot(ending.page);
-    check('when the episode ends the player stops, empties and starts nothing else', s.audios === 1 && !s.active && s.paused === true && s.progress === 0 && s.aria === 'Αναπαραγωγή BetCast, ON AIR', JSON.stringify(s));
+    check('when the episode ends the player stops, empties and starts nothing else', s.audios === 1 && !s.active && s.paused === true && s.progress === 0 && s.aria === 'Αναπαραγωγή BetCast, ON AIR.', JSON.stringify(s));
     await ending.page.goto(`${origin}/`, { waitUntil: 'load' });
     await ending.page.waitForTimeout(600);
     s = await snapshot(ending.page);
@@ -291,7 +291,7 @@ async function layoutChecks(browser, origin) {
                     fullHeight: Math.abs(b.height - nav.height) < 1.5,
                     past: Math.max(...parts.map(part => part.r)) - document.documentElement.clientWidth,
                     hamburgerInside: ham ? ham.r <= document.documentElement.clientWidth : true,
-                    // Both faces carry the label, so both pairings must read: paper on ink underneath, ink on red on top.
+                    // Both faces render the label: paper on ink underneath, ink on red on top.
                     baseColor: getComputedStyle(base).color, baseBg: getComputedStyle(buttonEl).backgroundColor,
                     fillColor: getComputedStyle(fill).color, fillBg: getComputedStyle(fill).backgroundColor,
                     clipped: word(base).scrollWidth > word(base).clientWidth || base.scrollWidth > base.clientWidth + 1,

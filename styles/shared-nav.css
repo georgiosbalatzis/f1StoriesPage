@@ -362,7 +362,7 @@
     text-transform: uppercase;
 }
 .nav-audio-word i { font-style: normal; color: var(--signal); }
-.nav-audio-face--fill .nav-audio-word i { color: inherit; }
+.nav-audio-face--fill .nav-audio-word::before { content: attr(data-label); }
 .nav-audio-note {
     position: absolute;
     top: calc(100% + 6px);
