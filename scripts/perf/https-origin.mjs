@@ -53,8 +53,10 @@ export async function closeHttpsServer(server, dir, paths) {
             const timer = setTimeout(() => { for (const socket of server.httpsSockets || []) socket.destroy(); resolve(); }, 500);
             server.close(() => { clearTimeout(timer); resolve(); });
         });
-    } finally { try { cleanupSync([dir]); } finally { paths?.delete(dir); } }
+    } finally { removeOwned(dir, paths); }
 }
+// Deregister only after a successful removal so the exit handler can retry a failed one.
+function removeOwned(dir, paths) { cleanupSync([dir]); paths?.delete(dir); }
 export async function startHttpsOrigin(root, origin, handler, paths, out) {
     const host = new URL(validateOrigin(origin)).hostname;
     validateTmpRoot(os.tmpdir(), out);
@@ -72,7 +74,7 @@ export async function startHttpsOrigin(root, origin, handler, paths, out) {
         await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
         const port = server.address().port;
         return { server, origin, port, hash: spkiHash(fs.readFileSync(cert)), dir, close: () => closeHttpsServer(server, dir, paths) };
-    } catch (error) { if (server?.listening) await closeHttpsServer(server, dir, paths); else { try { cleanupSync([dir]); } finally { paths?.delete(dir); } } throw error; }
+    } catch (error) { if (server?.listening) await closeHttpsServer(server, dir, paths); else removeOwned(dir, paths); throw error; }
 }
 
 export function requestKey(method, input) {

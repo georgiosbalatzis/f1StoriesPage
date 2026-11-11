@@ -119,6 +119,9 @@ test('cleanup attempts all removals and close is bounded', async () => {
     let destroyed = false;
     await closeHttpsServer({ httpsSockets: [{ destroy() { destroyed = true; } }], close() {} }, dir, new Set([dir]));
     assert.equal(destroyed, true); assert.equal(fs.existsSync(dir), false);
+    const failed = 'unremovable\0dir', owned = new Set([failed]);
+    await assert.rejects(closeHttpsServer({ close(done) { done(); } }, failed, owned));
+    assert.equal(owned.has(failed), true, 'failed removal stays registered for the exit handler');
     assert.throws(() => validateTmpRoot(process.cwd()), /outside/);
     const output = fs.mkdtempSync(path.join(os.tmpdir(), 'output-test-'));
     try { assert.throws(() => validateTmpRoot(output, output), /outside/); } finally { fs.rmSync(output, { recursive: true, force: true }); }
