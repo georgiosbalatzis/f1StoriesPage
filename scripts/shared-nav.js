@@ -21,7 +21,7 @@
             if (done) return;
             loaded = true;
             if (image) return finish();
-            // 250 ms: long enough for the hero's LCP entry after load, short enough that an early tap on ON AIR still finds the feed.
+            // 250 ms is a trade-off, not a guarantee: 1000 ms left ON AIR unready long enough to swallow an early tap (audio-player QA).
             if (observer) task = window.setTimeout(finish, 250);
             else if (window.requestAnimationFrame) frame = window.requestAnimationFrame(function () {
                 frame = window.requestAnimationFrame(function () { task = window.setTimeout(finish, 0); });
