@@ -215,6 +215,7 @@ export function restoreChildCache(cacheRoot, app, targetDirectory, { nodeMajor =
             if (createHash('sha256').update(data).digest('hex') !== expected.sha256) return null;
         }
         if (app.application === 'tyres') {
+            fs.mkdirSync(path.dirname(targetDirectory), { recursive: true });
             const probeRoot = fs.mkdtempSync(path.join(path.dirname(targetDirectory), 'tyres-probe-'));
             try {
                 fs.symlinkSync(outDir, path.join(probeRoot, 'tyres'));

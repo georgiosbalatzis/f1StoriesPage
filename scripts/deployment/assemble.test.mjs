@@ -299,7 +299,8 @@ test('verified child artifact cache reuses valid entries and fails closed on pin
 
     // TYRES cache checks both remote data.sha and 6-hour freshness window.
     const tyresApp = lock().applications.find(app => app.application === 'tyres');
-    const tyresOut = fixture(t, child('tyres', { '2026/austin/index.html': tyresRace, ...tyresData(builtAt, builtAt) }));
+    const tyresBuiltAt = new Date().toISOString();
+    const tyresOut = fixture(t, child('tyres', { '2026/austin/index.html': tyresRace, ...tyresData(tyresBuiltAt, tyresBuiltAt) }));
     const dataSha = 'd'.repeat(40);
     const tyresMeta = {
         ...tyresApp,
@@ -319,15 +320,19 @@ test('verified child artifact cache reuses valid entries and fails closed on pin
     const tyresKey = saveChildCache(cacheRoot, tyresApp, tyresMeta, tyresOut, { dataSha });
     assert.ok(tyresKey?.startsWith('tyres-'));
     // Fresh TYRES cache with matching dataSha hits.
-    const tyresDest = path.join(cacheRoot, 'restored-tyres');
-    const tyresHit = restoreChildCache(cacheRoot, tyresApp, tyresDest, { dataSha, builtAt });
+    const tyresDest = path.join(cacheRoot, 'snapshot-tyres', tyresApp.output);
+    assert.equal(fs.existsSync(path.dirname(tyresDest)), false);
+    const tyresHit = restoreChildCache(cacheRoot, tyresApp, tyresDest, { dataSha, builtAt: tyresBuiltAt });
     assert.ok(tyresHit && tyresHit.cacheHit === true);
     assert.equal(tyresHit.data.sha, dataSha);
     // Different remote dataSha misses.
     assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-data'), { dataSha: '9'.repeat(40), builtAt }), null);
-    // Stale (>6h) TYRES manifest misses so a fresh build runs weekend:update.
-    const sevenHoursLater = new Date(Date.parse(builtAt) + 7 * 3600000).toISOString();
-    assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-stale'), { dataSha, builtAt: sevenHoursLater }), null);
+    // The six-hour boundary is stale, and a changed TYRES pin also misses.
+    const sixHoursLater = new Date(Date.parse(tyresBuiltAt) + 6 * 3600000).toISOString();
+    assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-stale'), { dataSha, builtAt: sixHoursLater }), null);
+    assert.equal(restoreChildCache(cacheRoot, { ...tyresApp, sha: 'f'.repeat(40) }, path.join(cacheRoot, 'miss-tyres-pin'), { dataSha, builtAt: tyresBuiltAt }), null);
+    fs.writeFileSync(path.join(cacheRoot, tyresKey, 'output/index.html'), 'tampered');
+    assert.equal(restoreChildCache(cacheRoot, tyresApp, path.join(cacheRoot, 'miss-tyres-tamper'), { dataSha, builtAt: tyresBuiltAt }), null);
 
     // .build/child-artifacts/ must be gitignored so restored caches never dirty main or trip rendering-sink-guard.
     const repoRoot = path.join(here, '../..');
