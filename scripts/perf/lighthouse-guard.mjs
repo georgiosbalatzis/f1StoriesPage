@@ -121,11 +121,20 @@ function sendStorageSeedPage(res) {
 }
 
 export function startServer(root) {
-    if (!fs.existsSync(path.join(root, 'index.html'))) {
-        throw new Error(`Public artifact missing at ${path.relative(REPO_ROOT, root)}. Run npm run build:public first.`);
-    }
+    const server = http.createServer(createStaticHandler(root));
 
-    const server = http.createServer((req, res) => {
+    return new Promise((resolve, reject) => {
+        server.on('error', reject);
+        server.listen(0, '127.0.0.1', () => {
+            const address = server.address();
+            resolve({ server, origin: `http://127.0.0.1:${address.port}` });
+        });
+    });
+}
+
+export function createStaticHandler(root) {
+    if (!fs.existsSync(path.join(root, 'index.html'))) throw new Error(`Public artifact missing at ${path.relative(REPO_ROOT, root)}. Run npm run build:public first.`);
+    return (req, res) => {
         if (!req.url || !['GET', 'HEAD'].includes(req.method || '')) {
             res.writeHead(405);
             res.end('Method not allowed');
@@ -151,15 +160,7 @@ export function startServer(root) {
             return;
         }
         sendFile(req, res, filePath);
-    });
-
-    return new Promise((resolve, reject) => {
-        server.on('error', reject);
-        server.listen(0, '127.0.0.1', () => {
-            const address = server.address();
-            resolve({ server, origin: `http://127.0.0.1:${address.port}` });
-        });
-    });
+    };
 }
 
 function lighthouseBin() {

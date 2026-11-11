@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { classifyRequest, expectedTheme, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
+import { classifyRequest, createLossState, expectedTheme, loadFixtures, requestKey, summarizeAttempts } from './lighthouse-rate-safe.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
 test('only the pinned light theme is valid', () => {
@@ -194,4 +194,124 @@ test('network-only event between close and disconnect invalidates its attempt', 
         });
     });
     assert.deepEqual(first.causes, [`Network request without Fetch pause: ${url}`]);
+});
+
+ test('session losses are exempt only during orchestrated teardown', () => {
+    const events = [];
+    const state = createLossState(events);
+    assert.equal(state.record('detached', 'audit'), true);
+    state.setPhase('probe');
+    assert.equal(state.record('detached', 'probe'), true);
+    state.setPhase('teardown');
+    assert.equal(state.record('detached', 'audit'), false);
+    assert.deepEqual(events.map(event => event.phase), ['lighthouse', 'probe', 'teardown']);
+});
+
+test('default synthetic interception lifecycle matches Main requests, causes and validity', async () => {
+    const current = await import('./lighthouse-rate-safe.mjs');
+    async function run(module) {
+        const browser = new EventEmitter(), root = new EventEmitter(), session = new EventEmitter();
+        browser.connected = false;
+        root.connection = () => ({ session: () => session });
+        session.send = async () => ({});
+        root.send = async method => {
+            if (method === 'Target.setAutoAttach') root.emit('Target.attachedToTarget', { sessionId: 's', targetInfo: { targetId: 't', type: 'worker' } });
+            return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+        };
+        browser.target = () => ({ createCDPSession: async () => root });
+        const attempt = { causes: [], requests: [], observations: [] };
+        const url = 'https://unknown.invalid/data';
+        const stop = await module.intercept(browser, 'http://127.0.0.1', new Map(), attempt);
+        session.emit('Network.requestWillBeSent', { requestId: 'n', request: { url, method: 'GET' }, initiator: { type: 'script' } });
+        session.emit('Fetch.requestPaused', { requestId: 'f', networkId: 'n', request: { url, method: 'GET' }, resourceType: 'Fetch', frameId: 't' });
+        await stop(async () => {});
+        return { requests: attempt.requests, causes: attempt.causes, valid: !attempt.causes.length };
+    }
+    // Captured from commit 4eba7fca.
+    assert.deepEqual(await run(current), { requests: [{ method: 'GET', url: 'https://unknown.invalid/data', resourceType: 'Fetch', frameId: 't', targetType: 'worker', targetId: 't', initiator: { type: 'script' }, action: 'abort' }], causes: ['Unmatched request: GET https://unknown.invalid/data'], valid: false });
+});
+
+test('HTTPS records an unrecognized intermediate redirect hop', async () => {
+    const { intercept } = await import('./lighthouse-rate-safe.mjs');
+    const browser = new EventEmitter(), root = new EventEmitter(), session = new EventEmitter();
+    browser.connected = false;
+    root.connection = () => ({ session: () => session });
+    session.send = async () => ({});
+    root.send = async method => {
+        if (method === 'Target.setAutoAttach') root.emit('Target.attachedToTarget', { sessionId: 's', targetInfo: { targetId: 't', type: 'worker' } });
+        return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+    };
+    browser.target = () => ({ createCDPSession: async () => root });
+    const attempt = { causes: [], requests: [], observations: [], httpsPort: 1234 };
+    const stop = await intercept(browser, 'https://first.test', new Map(), attempt);
+    session.emit('Network.requestWillBeSent', { requestId: 'n', request: { url: 'https://first.test/end', method: 'GET' }, redirectResponse: { url: 'https://unknown.invalid/hop' } });
+    await stop(async () => {});
+    assert.ok(attempt.causes.includes('Unexpected redirect hop: https://unknown.invalid/hop'));
+});
+
+test('default navigation filtering, serialized attempts and exit codes match Main', async () => {
+    const { auditedNavigations, attemptOutput, reportExitCode } = await import('./lighthouse-rate-safe.mjs');
+    // Captured from commit 4eba7fca.
+    const navs = [{ targetId: 'a', loaderId: '1', url: 'http://site/a' }, { targetId: 'a', loaderId: '2', url: 'http://site/b' }, { targetId: 'a', loaderId: '3', url: 'http://site/a' }];
+    assert.deepEqual(auditedNavigations(navs, 'http://site/a'), [navs[0], navs[2]]);
+    assert.equal(JSON.stringify(attemptOutput({ causes: [], requests: [{ action: 'fulfill' }] }, { finalURL: 'http://site/a' }, { performance: 90 })), '{"valid":true,"causes":[],"requests":[{"action":"fulfill"}],"assertions":{"finalURL":"http://site/a"},"metrics":{"performance":90}}');
+    assert.equal(reportExitCode({ discovery: false, routes: [{ summary: { failures: [] } }] }), 0);
+    assert.equal(reportExitCode({ discovery: false, routes: [{ summary: { failures: ['invalid'] } }] }), 1);
+});
+
+test('managed iframe expectation is parsed from article HTML and verification fails closed', async () => {
+    const { expectedEmbedFromHtml, verifyEmbed } = await import('./lighthouse-rate-safe.mjs');
+    const expectedUrl = expectedEmbedFromHtml('<!doctype html><iframe data-f1s-betcast-managed src="/betcast/index.html?a=1&amp;b=2"></iframe>', 'https://site.test/article');
+    assert.equal(expectedUrl, 'https://site.test/betcast/index.html?a=1&b=2');
+    const response = { phase: 'probe', url: expectedUrl, frameId: 'f', type: 'Document', status: 200, targetId: 't', loaderId: 'l' };
+    const good = { present: true, expectedUrl, measuredUrl: expectedUrl, probe: { src: expectedUrl, url: expectedUrl, frameId: 'f', rows: 1 }, response, navigation: { url: expectedUrl, frameId: 'f', targetId: 't', loaderId: 'l' }, provider: { phase: 'probe', frameId: 'f', action: 'fulfill', status: 200, url: 'https://docs.google.com/data' } };
+    assert.equal(verifyEmbed(good), true);
+    for (const probe of [{ ...good.probe, url: expectedUrl + '&bad=1' }, { ...good.probe, url: 'https://site.test/betcast/other?a=1&b=2' }, { ...good.probe, rows: 0 }]) assert.equal(verifyEmbed({ ...good, probe }), false);
+    assert.equal(verifyEmbed({ ...good, provider: { ...good.provider, frameId: 'other' } }), false);
+    assert.equal(verifyEmbed({ present: true, expectedUrl }), false);
+    assert.equal(verifyEmbed({ present: false, required: true }), false);
+    assert.equal(verifyEmbed({ present: false, required: false }), true);
+});
+
+test('HTTPS rejects same-origin intermediate redirects', async () => {
+    const { intercept } = await import('./lighthouse-rate-safe.mjs');
+    const browser = new EventEmitter(), root = new EventEmitter(), session = new EventEmitter();
+    root.connection = () => ({ session: () => session });
+    session.send = async () => ({});
+    root.send = async method => {
+        if (method === 'Target.setAutoAttach') root.emit('Target.attachedToTarget', { sessionId: 's', targetInfo: { targetId: 't', type: 'worker' } });
+        return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+    };
+    browser.target = () => ({ createCDPSession: async () => root });
+    const attempt = { causes: [], requests: [], observations: [], httpsPort: 1234 };
+    const stop = await intercept(browser, 'https://first.test', new Map(), attempt);
+    session.emit('Network.requestWillBeSent', { requestId: 'n', request: { url: 'https://first.test/end', method: 'GET' }, redirectResponse: { url: 'https://first.test/start', remoteIPAddress: '127.0.0.1', remotePort: 1234, status: 302 } });
+    await stop(async () => {});
+    assert.ok(attempt.causes.includes('Unexpected redirect hop: https://first.test/start'));
+});
+
+test('terminal 200 redirected capture replays and default records omit redirect note', async () => {
+    const { intercept } = await import('./lighthouse-rate-safe.mjs');
+    for (const httpsPort of [undefined, 1234]) {
+        const browser = new EventEmitter(), root = new EventEmitter(), session = new EventEmitter(), sent = [];
+        root.connection = () => ({ session: () => session });
+        session.send = async (method, args) => { sent.push({ method, args }); return {}; };
+        root.send = async method => {
+            if (method === 'Target.setAutoAttach') root.emit('Target.attachedToTarget', { sessionId: 's', targetInfo: { targetId: 't', type: 'worker' } });
+            return method === 'Target.getTargets' ? { targetInfos: [] } : {};
+        };
+        browser.target = () => ({ createCDPSession: async () => root });
+        const url = 'https://provider.test/data';
+        const fixture = { responseCode: 200, responseHeaders: [], body: 'YQ==', redirectNote: 'terminal replay' };
+        const attempt = { causes: [], requests: [], observations: [], httpsPort };
+        const stop = await intercept(browser, 'https://first.test', new Map([[requestKey('GET', url), fixture]]), attempt);
+        session.emit('Network.requestWillBeSent', { requestId: 'n', request: { url, method: 'GET' }, initiator: { type: 'script' } });
+        session.emit('Fetch.requestPaused', { requestId: 'f', networkId: 'n', request: { url, method: 'GET' }, resourceType: 'Fetch', frameId: 't' });
+        await stop(async () => {});
+        assert.deepEqual(sent.find(item => item.method === 'Fetch.fulfillRequest').args, { requestId: 'f', responseCode: 200, responseHeaders: [], body: 'YQ==' });
+        assert.deepEqual(attempt.causes, []);
+        // Captured default record shape from commit 4eba7fca.
+        if (!httpsPort) assert.deepEqual(attempt.requests, [{ method: 'GET', url, resourceType: 'Fetch', frameId: 't', targetType: 'worker', targetId: 't', initiator: { type: 'script' }, action: 'fulfill' }]);
+        else assert.equal(attempt.requests[0].redirectNote, 'terminal replay');
+    }
 });
