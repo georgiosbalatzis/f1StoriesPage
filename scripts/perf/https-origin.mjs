@@ -2,12 +2,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import https from 'node:https';
+import net from 'node:net';
+import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createHash, createPublicKey } from 'node:crypto';
 
 export function validateOrigin(input) {
     const url = new URL(input);
-    if (url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash || input !== url.origin) throw new Error('Origin must be an HTTPS hostname with default port and no path');
+    if (net.isIP(url.hostname.replace(/^\[|\]$/g, '')) || url.hostname.endsWith('.') || !/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/.test(url.hostname) || url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash || input !== url.origin) throw new Error('Origin must be an HTTPS hostname with default port and no path');
     return url.origin;
 }
 export function spkiHash(key) {
@@ -17,22 +19,45 @@ export function httpsChromeFlags(host, port, hash, proxyFlags) {
     if (!/^(?=.{1,253}$)[a-z0-9.-]+$/i.test(host) || !Number.isInteger(port) || port < 1 || port > 65535 || !/^[A-Za-z0-9+/]{43}=$/.test(hash)) throw new Error('Invalid HTTPS mapping');
     // Resolver rules configure hostname denial; negative navigation checks demonstrate closed-proxy refusal, not independent resolver containment.
     // The mapping is port-specific and the proxy bypass applies only to the mapped host.
-    return [`--host-resolver-rules=MAP ${host}:443 127.0.0.1:${port}, MAP * ~NOTFOUND, EXCLUDE localhost`, `--ignore-certificate-errors-spki-list=${hash}`, ...proxyFlags, `--proxy-bypass-list=<-loopback>;${host}:443;127.0.0.1;localhost;[::1]`];
+    return [`--host-resolver-rules=MAP ${host}:443 127.0.0.1:${port}, MAP * ~NOTFOUND`, `--ignore-certificate-errors-spki-list=${hash}`, ...proxyFlags, `--proxy-bypass-list=<-loopback>;${host}:443`];
 }
 export function articlePath(root, id) {
     if (!/^[A-Za-z0-9_-]+$/.test(id) || !fs.existsSync(path.join(root, 'blog-module', 'blog-entries', id, 'article.html'))) throw new Error('Article ID not present in site');
     return `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 }
 export function cleanupSync(paths) {
-    for (const dir of paths) fs.rmSync(dir, { recursive: true, force: true });
+    let failure;
+    for (const dir of paths) { try { fs.rmSync(dir, { recursive: true, force: true }); } catch (error) { failure ||= error; } }
+    if (failure) throw failure;
 }
 export function validateHttpsFlags(flags) {
     for (const flag of flags) {
         if (/^--(?:ignore-certificate-errors(?!-spki-list(?:=|$))|allow-insecure-localhost|disable-web-security|host-resolver-rules)(?:=|$)/i.test(flag)) throw new Error(`Unsafe HTTPS Chrome flag: ${flag}`);
     }
 }
-export async function startHttpsOrigin(root, origin, handler, paths) {
+export function validateTmpRoot(tmp, out) {
+    const resolved = fs.realpathSync(tmp);
+    const repo = fs.realpathSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'));
+    const inside = (parent, child) => { const rel = path.relative(parent, child); return !rel || (!rel.startsWith(`..${path.sep}`) && rel !== '..' && !path.isAbsolute(rel)); };
+    if (inside(repo, resolved) || (out && inside(fs.realpathSync(out), resolved))) throw new Error('Temporary root must be outside repository and output directory');
+}
+export function authorityHandler(host, handler) {
+    return (req, res) => {
+        if (req.headers.host !== host || (req.socket.servername && req.socket.servername !== host)) { res.writeHead(421); res.end('Misdirected request'); return; }
+        handler(req, res);
+    };
+}
+export async function closeHttpsServer(server, dir, paths) {
+    try {
+        await new Promise(resolve => {
+            const timer = setTimeout(() => { for (const socket of server.httpsSockets || []) socket.destroy(); resolve(); }, 500);
+            server.close(() => { clearTimeout(timer); resolve(); });
+        });
+    } finally { try { cleanupSync([dir]); } finally { paths?.delete(dir); } }
+}
+export async function startHttpsOrigin(root, origin, handler, paths, out) {
     const host = new URL(validateOrigin(origin)).hostname;
+    validateTmpRoot(os.tmpdir(), out);
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-https-'));
     paths?.add(dir);
     let server;
@@ -41,11 +66,13 @@ export async function startHttpsOrigin(root, origin, handler, paths) {
         const key = path.join(dir, 'key.pem'), cert = path.join(dir, 'cert.pem');
         execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', `/CN=${host}`, '-addext', `subjectAltName=DNS:${host}`], { stdio: 'ignore' });
         fs.chmodSync(key, 0o600);
-        server = https.createServer({ key: fs.readFileSync(key), cert: fs.readFileSync(cert) }, handler(root));
+        server = https.createServer({ key: fs.readFileSync(key), cert: fs.readFileSync(cert) }, authorityHandler(host, handler(root)));
+        server.httpsSockets = new Set();
+        server.on('connection', socket => { server.httpsSockets.add(socket); socket.on('close', () => server.httpsSockets.delete(socket)); });
         await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
         const port = server.address().port;
-        return { server, origin, port, hash: spkiHash(fs.readFileSync(cert)), dir, close: async () => { try { await new Promise(resolve => server.close(resolve)); } finally { fs.rmSync(dir, { recursive: true, force: true }); } } };
-    } catch (error) { if (server?.listening) await new Promise(resolve => server.close(resolve)); cleanupSync([dir]); paths?.delete(dir); throw error; }
+        return { server, origin, port, hash: spkiHash(fs.readFileSync(cert)), dir, close: () => closeHttpsServer(server, dir, paths) };
+    } catch (error) { if (server?.listening) await closeHttpsServer(server, dir, paths); else { try { cleanupSync([dir]); } finally { paths?.delete(dir); } } throw error; }
 }
 
 export function requestKey(method, input) {
@@ -55,7 +82,7 @@ export function requestKey(method, input) {
     return JSON.stringify([method, url.origin, url.pathname, query]);
 }
 
-export function loadFixtures(manifestPaths) {
+export function loadHttpsFixtures(manifestPaths) {
     const fixtures = new Map();
     for (const manifestPath of [manifestPaths].flat()) {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -80,4 +107,3 @@ export function loadFixtures(manifestPaths) {
     }
     return fixtures;
 }
-

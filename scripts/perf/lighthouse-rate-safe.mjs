@@ -4,16 +4,34 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { spawn, spawnSync } from 'node:child_process';
-import { generateKeyPairSync } from 'node:crypto';
+import { createHash, generateKeyPairSync } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { DOMParser } from '@xmldom/xmldom';
-import { validateOrigin, httpsChromeFlags, articlePath, startHttpsOrigin, loadFixtures, spkiHash, cleanupSync, validateHttpsFlags } from './https-origin.mjs';
-const selfTestOnly = process.argv.includes('--self-test');
-const { default: puppeteer, CDPSessionEvent } = selfTestOnly ? {} : await import('puppeteer-core');
-const {  loadBudget, resolveRequest, startServer, createStaticHandler, closeChrome, launchAuditChrome, seedAuditConsent, clearServiceWorkers, latestArticlePath, runLighthouse, medianMetrics, evaluateRoute, routeMetrics, inlineCssBytes  } = selfTestOnly ? {} : await import('./lighthouse-guard.mjs');
+import { validateOrigin, httpsChromeFlags, articlePath, startHttpsOrigin, loadHttpsFixtures, spkiHash, cleanupSync, validateHttpsFlags, validateTmpRoot } from './https-origin.mjs';
+const { default: puppeteer, CDPSessionEvent } = await import('puppeteer-core');
+const {  loadBudget, resolveRequest, startServer, createStaticHandler, closeChrome, launchAuditChrome, seedAuditConsent, clearServiceWorkers, latestArticlePath, runLighthouse, medianMetrics, evaluateRoute, routeMetrics, inlineCssBytes  } = await import('./lighthouse-guard.mjs');
 
-export { requestKey, loadFixtures } from './https-origin.mjs';
+export { requestKey } from './https-origin.mjs';
 import { requestKey } from './https-origin.mjs';
+
+export function loadFixtures(manifestPath) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (!Array.isArray(manifest.fixtures)) throw new Error('fixtures must be an array');
+    const fixtures = new Map();
+    for (const item of manifest.fixtures) {
+        if (item.method !== 'GET' || !Number.isInteger(item.status) || item.status < 200 || item.status > 599 || !item.headers || Array.isArray(item.headers) || typeof item.headers !== 'object' || typeof item.body !== 'string' || !/^sha256-[a-f0-9]{64}$/.test(item.sha256 || '')) throw new Error('Invalid fixture metadata');
+        const key = requestKey(item.method, item.url);
+        if (fixtures.has(key)) throw new Error('Duplicate fixture request');
+        const body = fs.readFileSync(path.resolve(path.dirname(manifestPath), item.body));
+        if (body.length > 10 * 1024 * 1024 || createHash('sha256').update(body).digest('hex') !== item.sha256.slice(7)) throw new Error('Invalid fixture body');
+        const headers = Object.entries(item.headers).map(([name, value]) => {
+            if (!/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/.test(name) || typeof value !== 'string' || /[\r\n]/.test(value)) throw new Error('Invalid fixture header');
+            return { name, value };
+        }).filter(({ name }) => !/^(content-length|content-encoding|transfer-encoding)$/i.test(name));
+        fixtures.set(key, { responseCode: item.status, responseHeaders: headers, body: body.toString('base64') });
+    }
+    return fixtures;
+}
 
 export function classifyRequest(request, firstPartyOrigin, fixtures) {
     const url = new URL(request.url);
@@ -342,7 +360,11 @@ function installHttpsCleanup(paths) {
 }
 
 async function httpsSelftest() {
+    const paths = new Set();
+    const removeCleanup = installHttpsCleanup(paths);
+    validateTmpRoot(os.tmpdir());
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-selftest-'));
+    paths.add(dir);
     const site = path.join(dir, 'site'); fs.mkdirSync(site);
     fs.writeFileSync(path.join(site, 'index.html'), '<!doctype html><title>selftest</title>');
     const profile = path.join(dir, 'profile'); fs.mkdirSync(profile);
@@ -350,7 +372,7 @@ async function httpsSelftest() {
     let failed = false;
     const check = (name, ok) => { console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`); if (!ok) failed = true; };
     try {
-        started = await startHttpsOrigin(site, 'https://f1-stories.gr', createStaticHandler);
+        started = await startHttpsOrigin(site, 'https://f1-stories.gr', createStaticHandler, paths);
         const host = 'f1-stories.gr';
         const flags = httpsChromeFlags(host, started.port, started.hash, CLOSED_PROXY_FLAGS.filter(f => !f.startsWith('--proxy-bypass-list=')));
         // Chromium's SPKI exception ignores certificate errors, including hostname mismatch:
@@ -396,6 +418,7 @@ async function httpsSelftest() {
         const certDir = started?.dir;
         if (started) await started.close();
         fs.rmSync(dir, { recursive: true, force: true });
+        paths.delete(dir); removeCleanup();
         check('key cert and profile deleted', !!certDir && !fs.existsSync(dir) && !fs.existsSync(certDir));
     }
     const childResult = await new Promise(resolve => {
@@ -410,20 +433,28 @@ async function httpsSelftest() {
     if (failed) process.exitCode = 1;
 }
 
+export function parseOptions(argv) {
+    const options = {};
+    for (let i = 0; i < argv.length; i++) {
+        if (['--discovery', '--expect-betcast', '--https-selftest', '--self-test', '--https-signal-child'].includes(argv[i])) options[argv[i].slice(2)] = true;
+        else if (['--target-dir', '--label', '--routes', '--attempts', '--out', '--manifest', '--origin', '--article'].includes(argv[i]) && argv[i + 1]) { const key = argv[i].slice(2); const value = argv[++i]; if (key === 'manifest') (options.manifests ||= []).push(value); else options[key] = value; }
+        else throw new Error(`Unknown or incomplete argument: ${argv[i]}`);
+    }
+    if (!options.origin) {
+        for (const flag of ['article', 'expect-betcast']) if (options[flag]) throw new Error(`Unknown or incomplete argument: --${flag}`);
+    }
+    return options;
+}
+
 async function main(argv) {
-    if (argv.includes('--https-signal-child')) {
+    const options = parseOptions(argv);
+    if (options['https-signal-child']) {
         const paths = new Set();
         installHttpsCleanup(paths);
         const started = await startHttpsOrigin(process.cwd(), 'https://f1-stories.gr', () => (_req, res) => res.end(), paths);
         paths.add(started.dir);
         console.log(`READY ${started.dir}`);
         return;
-    }
-    const options = {};
-    for (let i = 0; i < argv.length; i++) {
-        if (['--discovery', '--expect-betcast', '--https-selftest', '--self-test'].includes(argv[i])) options[argv[i].slice(2)] = true;
-        else if (['--target-dir', '--label', '--routes', '--attempts', '--out', '--manifest', '--origin', '--article'].includes(argv[i]) && argv[i + 1]) { const key = argv[i].slice(2); const value = argv[++i]; if (key === 'manifest') (options.manifests ||= []).push(value); else options[key] = value; }
-        else throw new Error(`Unknown or incomplete argument: ${argv[i]}`);
     }
     if (options['self-test']) { const result = spawnSync(process.execPath, ['--test', fileURLToPath(new URL('./__tests__/https-origin.test.mjs', import.meta.url))], { stdio: 'inherit' }); process.exitCode = result.status ?? 1; return; }
     if (options['https-selftest']) { validateHttpsFlags((process.env.LIGHTHOUSE_CHROME_FLAGS || '').split(/\s+/)); return httpsSelftest(); }
@@ -438,14 +469,15 @@ async function main(argv) {
     const site = path.resolve(options['target-dir']);
     const out = path.resolve(options.out, options.label);
     fs.mkdirSync(out, { recursive: true });
-    const fixtures = loadFixtures((options.manifests ? (options.origin ? options.manifests : [options.manifests.at(-1)]) : [new URL('./fixtures/p02/manifest.json', import.meta.url).pathname]).map(value => path.resolve(value)));
+    const manifests = options.manifests || [new URL('./fixtures/p02/manifest.json', import.meta.url).pathname];
+    const fixtures = options.origin ? loadHttpsFixtures(manifests.map(value => path.resolve(value))) : loadFixtures(path.resolve(manifests.at(-1)));
     if (options.article) articlePath(site, options.article);
     const report = { label: options.label, discovery: !!options.discovery, routes: [] };
     let server, startedClose;
     const cleanupPaths = new Set();
     const removeCleanup = options.origin ? installHttpsCleanup(cleanupPaths) : () => {};
     try {
-        const started = options.origin ? await startHttpsOrigin(site, options.origin, createStaticHandler, cleanupPaths) : await startServer(site); server = started.server; startedClose = started.close; if (options.origin) cleanupPaths.add(started.dir);
+        const started = options.origin ? await startHttpsOrigin(site, options.origin, createStaticHandler, cleanupPaths, path.resolve(options.out)) : await startServer(site); server = started.server; startedClose = started.close; if (options.origin) cleanupPaths.add(started.dir);
         const chromeExtraFlags = options.origin ? httpsChromeFlags(new URL(options.origin).hostname, started.port, started.hash, CLOSED_PROXY_FLAGS.filter(flag => !flag.startsWith('--proxy-bypass-list='))) : CLOSED_PROXY_FLAGS;
         if (options.origin) validateHttpsFlags(chromeExtraFlags.filter(flag => !flag.startsWith('--host-resolver-rules=')));
         for (const configured of routes) {
@@ -501,7 +533,8 @@ async function main(argv) {
                         await stop(() => closeChrome(chrome), options.origin ? undefined : targetId)
                             .catch(error => current.causes.push(`Observer: ${error.message}`));
                     }
-                    try { await closeChrome(chrome); } finally { try { if (browser) await browser.disconnect(); } finally { fs.rmSync(profile, { recursive: true, force: true }); cleanupPaths.delete(profile); } }
+                    if (options.origin) { try { await closeChrome(chrome); } finally { try { if (browser) await browser.disconnect(); } finally { fs.rmSync(profile, { recursive: true, force: true }); cleanupPaths.delete(profile); } } }
+                    else { await closeChrome(chrome); if (browser) await browser.disconnect(); fs.rmSync(profile, { recursive: true, force: true }); }
                 }
                 const expectedFinal = route.name === 'Standings' ? `${expected}?tab=drivers` : expected;
                 const navigations = auditedNavigations(current.navigations, expected, current.auditNavigationCount);
@@ -511,7 +544,8 @@ async function main(argv) {
                     (value.url === expected || value.url === expectedFinal) &&
                     auditedNavigation?.targetId === value.targetId && auditedNavigation?.loaderId === value.loaderId
                 );
-                const analytics = current.requests.filter(request => { try { return /(^|\.)(googletagmanager\.com|google-analytics\.com|doubleclick\.net)$/i.test(new URL(request.url).hostname); } catch (_) { return false; } });
+                const isAnalytics = request => /(^|\.)(googletagmanager\.com|google-analytics\.com|doubleclick\.net)$/i.test(new URL(request.url).hostname);
+                const analytics = current.requests.filter(request => { if (!options.origin) return isAnalytics(request); try { return isAnalytics(request); } catch (_) { return false; } });
                 const assertions = { navigations: current.navigations, observations: current.observations, requestedURL: expected, finalURL: lhr?.finalDisplayedUrl || lhr?.finalUrl || observation?.url || null, readiness: observation?.readyState || null, hasMain: observation?.hasMain ?? null, viewport: observation?.viewport || null, theme: observation?.theme || null, consent: observation?.consent || null, serviceWorker: observation?.serviceWorker || null, routeState: observation?.routeState || null, analyticsRequests: analytics };
                 if (!options.discovery) {
                     if (!auditedNavigation || navigations.some(nav => nav.targetId !== auditedNavigation.targetId)) {

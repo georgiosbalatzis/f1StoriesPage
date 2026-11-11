@@ -27,3 +27,5 @@ node scripts/perf/lighthouse-rate-safe.mjs --self-test
 node scripts/perf/lighthouse-rate-safe.mjs --https-selftest
 node scripts/perf/lighthouse-rate-safe.mjs --target-dir SITE --label replay --out OUTPUT --origin https://f1-stories.gr --routes Article --article ARTICLE_ID --manifest MANIFEST --expect-betcast
 ```
+
+Containment relies on Chrome flags and Fetch interception; it is not an OS-enforced egress boundary. Live containment, DNS, and speculative hint checks require an isolated environment and remain unmeasured.

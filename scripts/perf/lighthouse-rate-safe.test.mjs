@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
@@ -314,4 +315,18 @@ test('terminal 200 redirected capture replays and default records omit redirect 
         if (!httpsPort) assert.deepEqual(attempt.requests, [{ method: 'GET', url, resourceType: 'Fetch', frameId: 't', targetType: 'worker', targetId: 't', initiator: { type: 'script' }, action: 'fulfill' }]);
         else assert.equal(attempt.requests[0].redirectNote, 'terminal replay');
     }
+});
+
+test('default arguments and manifest retain Main validation', async () => {
+    const { parseOptions } = await import('./lighthouse-rate-safe.mjs');
+    // M:scripts/perf/lighthouse-rate-safe.mjs:17-19
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'legacy-manifest-'));
+    try {
+        const manifest = path.join(dir, 'manifest.json'); fs.writeFileSync(manifest, '{}');
+        assert.throws(() => loadFixtures(manifest), { message: 'fixtures must be an array' });
+        // M:scripts/perf/lighthouse-rate-safe.mjs:270
+        for (const flag of ['--article', '--expect-betcast']) assert.throws(() => parseOptions(flag === '--article' ? [flag, 'id'] : [flag]), { message: `Unknown or incomplete argument: ${flag}` });
+        assert.equal(parseOptions(['--out', '--self-test']).out, '--self-test');
+        assert.equal(parseOptions(['--self-test'])['self-test'], true);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

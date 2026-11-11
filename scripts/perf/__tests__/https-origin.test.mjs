@@ -5,13 +5,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { validateOrigin, httpsChromeFlags, spkiHash, articlePath, loadFixtures } from '../https-origin.mjs';
+import { validateOrigin, httpsChromeFlags, spkiHash, articlePath, loadHttpsFixtures as loadFixtures } from '../https-origin.mjs';
 
 test('origin and scoped flags', () => {
     assert.equal(validateOrigin('https://f1-stories.gr'), 'https://f1-stories.gr');
-    for (const value of ['http://f1-stories.gr', 'https://f1-stories.gr:444', 'https://f1-stories.gr/', 'https://user@f1-stories.gr']) assert.throws(() => validateOrigin(value));
+    for (const value of ['http://f1-stories.gr', 'https://f1-stories.gr:444', 'https://f1-stories.gr/', 'https://user@f1-stories.gr', 'https://127.0.0.1', 'https://[::1]', 'https://example.com.']) assert.throws(() => validateOrigin(value));
     const flags = httpsChromeFlags('f1-stories.gr', 1234, 'A'.repeat(43) + '=', ['--proxy-server=http://127.0.0.1:9']);
     assert.match(flags[0], /MAP f1-stories\.gr:443 127\.0\.0\.1:1234, MAP \* ~NOTFOUND/);
+    assert.equal(flags.at(-1), '--proxy-bypass-list=<-loopback>;f1-stories.gr:443');
+    assert.ok(!flags[0].includes('EXCLUDE'));
     assert.ok(!flags.includes('--ignore-certificate-errors'));
     assert.ok(!flags.some(f => f.includes('<-loopback>;*')));
 });
@@ -90,4 +92,34 @@ test('HTTPS rejects unsafe operator flags while allowing scoped SPKI', async () 
     const { validateHttpsFlags } = await import('../https-origin.mjs');
     for (const flag of ['--ignore-certificate-errors', '--ignore-certificate-errors=true', '--allow-insecure-localhost', '--disable-web-security', '--host-resolver-rules=MAP * x']) assert.throws(() => validateHttpsFlags([flag]), /Unsafe/);
     assert.doesNotThrow(() => validateHttpsFlags(['--ignore-certificate-errors-spki-list=abc', '--headless']));
+});
+
+test('authority and malformed request targets are rejected without sockets', async () => {
+    const { authorityHandler } = await import('../https-origin.mjs');
+    const { createStaticHandler } = await import('../lighthouse-guard.mjs');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'handler-test-'));
+    try {
+        fs.writeFileSync(path.join(dir, 'index.html'), 'ok');
+        const handler = authorityHandler('example.test', createStaticHandler(dir));
+        const run = (host, servername, url) => { let status, body; handler({ headers: { host }, socket: { servername }, method: 'GET', url }, { writeHead(code) { status = code; }, end(value) { body = value; } }); return [status, body]; };
+        assert.deepEqual(run('example.test', 'example.test', '/%'), [400, 'Bad request']);
+        assert.deepEqual(run('127.0.0.1', 'example.test', '/'), [421, 'Misdirected request']);
+        assert.deepEqual(run('example.test', 'other.test', '/'), [421, 'Misdirected request']);
+        assert.deepEqual(run('example.test:443', undefined, '/'), [421, 'Misdirected request']);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('cleanup attempts all removals and close is bounded', async () => {
+    const { cleanupSync, closeHttpsServer, validateTmpRoot } = await import('../https-origin.mjs');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'close-test-'));
+    const remaining = path.join(dir, 'remaining'); fs.mkdirSync(remaining);
+    const file = path.join(dir, 'file'); fs.writeFileSync(file, 'x');
+    assert.throws(() => cleanupSync([path.join(file, 'child'), remaining]));
+    assert.equal(fs.existsSync(remaining), false);
+    let destroyed = false;
+    await closeHttpsServer({ httpsSockets: [{ destroy() { destroyed = true; } }], close() {} }, dir, new Set([dir]));
+    assert.equal(destroyed, true); assert.equal(fs.existsSync(dir), false);
+    assert.throws(() => validateTmpRoot(process.cwd()), /outside/);
+    const output = fs.mkdtempSync(path.join(os.tmpdir(), 'output-test-'));
+    try { assert.throws(() => validateTmpRoot(output, output), /outside/); } finally { fs.rmSync(output, { recursive: true, force: true }); }
 });

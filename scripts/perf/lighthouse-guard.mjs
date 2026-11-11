@@ -141,13 +141,14 @@ export function createStaticHandler(root) {
             return;
         }
 
-        const url = new URL(req.url, 'http://127.0.0.1');
+        let url, filePath;
+        try { url = new URL(req.url, 'http://127.0.0.1'); filePath = resolveRequest(root, req.url); }
+        catch (error) { if (!(error instanceof URIError || error instanceof TypeError)) throw error; res.writeHead(400); res.end('Bad request'); return; }
         if (url.pathname === '/__f1stories-lighthouse-storage.html') {
             sendStorageSeedPage(res);
             return;
         }
 
-        const filePath = resolveRequest(root, req.url);
         if (!filePath) {
             res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
             res.end('Not found');
