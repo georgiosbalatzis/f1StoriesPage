@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Mon, 09 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 10 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Η Ferrari στα άκρα και ο Lewis πρωταγωνιστής!</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261111J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261111J/article.html</guid>
+      <pubDate>Tue, 10 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Η Ferrari προσπαθεί και ο Lewis... Θα καταφέρει η Ferrari να βγει από την κατηφόρα;</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
     <item>
       <title>Kenny Roberts Jr.: Ξεπερνώντας το επώνυμο</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261110W/article.html</link>
@@ -267,15 +276,6 @@
       <description>O Freddy Loix, έπρεπε να αποδείξει από την πρώτη στιγμή ότι άξιζαν να βρίσκονται στο υψηλότερο επίπεδο.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Όσο περισσότερο πιέζουν, τόσο πιο αργοί γίνονται;</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261015G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261015G/article.html</guid>
-      <pubDate>Wed, 14 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Στη Σιγκαπούρη, ο Lewis Hamilton έκανε κάτι που ακουγόταν απολύτως λογικό. Το αυτοκίνητο ήταν γρήγορο στο Q1, ακόμη καλύτερο στο Q2, και ο ίδιος ένιωθε…</description>
-      <category>Τεχνικά</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>

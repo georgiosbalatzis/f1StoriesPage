@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261111J",
+      "title": "Η Ferrari στα άκρα και ο Lewis πρωταγωνιστής!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-11",
+      "dateISO": "2026-11-11",
+      "displayDate": "11 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261111J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261111J/1.webp",
+      "excerpt": "Η Ferrari προσπαθεί και ο Lewis... Θα καταφέρει η Ferrari να βγει από την κατηφόρα;",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261111J/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Lewis Hamilton",
+        "Ferrari"
+      ],
+      "wordCount": 746,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "6b234d854990ba5dbaba9663442f635361234649bea8549c62c2e5f48b9a8fe8"
+    },
+    {
       "id": "20261110W",
       "title": "Kenny Roberts Jr.: Ξεπερνώντας το επώνυμο",
       "author": "Themis Charvalis",
@@ -11725,5 +11755,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-10T14:02:01.228Z"
+  "lastUpdated": "2026-11-11T10:03:34.626Z"
 }
