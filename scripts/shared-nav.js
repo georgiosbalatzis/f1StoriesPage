@@ -3,6 +3,49 @@
 (function () {
     'use strict';
 
+    function afterFirstPaintWork(fn) {
+        var done, loaded, image, observer, frame, task, fallback;
+        function finish() {
+            if (done) return;
+            done = true;
+            document.removeEventListener('visibilitychange', onVisibility);
+            window.removeEventListener('load', onLoad);
+            if (observer) observer.disconnect();
+            if (frame) window.cancelAnimationFrame(frame);
+            window.clearTimeout(task);
+            window.clearTimeout(fallback);
+            fn();
+        }
+        function onVisibility() { if (document.visibilityState === 'hidden') finish(); }
+        function onLoad() {
+            if (done) return;
+            loaded = true;
+            if (image) return finish();
+            // 250 ms: long enough for the hero's LCP entry after load, short enough that an early tap on ON AIR still finds the feed.
+            if (observer) task = window.setTimeout(finish, 250);
+            else if (window.requestAnimationFrame) frame = window.requestAnimationFrame(function () {
+                frame = window.requestAnimationFrame(function () { task = window.setTimeout(finish, 0); });
+            });
+        }
+        if (document.visibilityState === 'hidden') { finish(); return; }
+        document.addEventListener('visibilitychange', onVisibility);
+        // Best-effort bound: timers can be throttled or suspended in the background.
+        fallback = window.setTimeout(finish, 8000);
+        try {
+            if (PerformanceObserver.supportedEntryTypes.includes('largest-contentful-paint')) {
+                observer = new PerformanceObserver(function (list) {
+                    if (list.getEntries().some(function (entry) { return entry.url; })) {
+                        image = true;
+                        if (loaded) finish();
+                    }
+                });
+                observer.observe({ type: 'largest-contentful-paint', buffered: true });
+            }
+        } catch (_) { if (observer) observer.disconnect(); observer = null; }
+        if (document.readyState === 'complete') onLoad();
+        else window.addEventListener('load', onLoad);
+    }
+
     var THEME_KEY = 'f1stories-theme';
 
     function storeTheme(theme) {
@@ -290,9 +333,7 @@
         }
 
         render();
-        // Read the feed once the page itself has loaded, so it never competes with it.
-        if (document.readyState === 'complete') loadLatest();
-        else window.addEventListener('load', loadLatest, { once: true });
+        afterFirstPaintWork(loadLatest);
     }
 
     initAudioPlayer();
@@ -756,6 +797,7 @@
             }
         } catch (_) {}
 
+        afterFirstPaintWork(function () {
         fetch('https://api.jolpi.ca/ergast/f1/' + year + '.json')
             .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
             .then(function (data) {
@@ -769,6 +811,7 @@
                 }
             })
             .catch(function () { /* keep fallback */ });
+        });
     }
 
     if (countdownNameEl || countdownEl || countdownMobileEl || countdownFlagEl) {

@@ -26,7 +26,7 @@ async function readCountdown({ instant = now, cached, data, ok = true, storageBl
     const requests = [];
     const writes = [];
     const context = vm.createContext({
-        Date: FixedDate, Intl,
+        Date: FixedDate, Intl, afterFirstPaintWork: fn => fn(),
         document: { hidden: false, getElementById: id => nodes.get(id) || null },
         window: { setTimeout: () => 1, clearTimeout() {} },
         sessionStorage: {

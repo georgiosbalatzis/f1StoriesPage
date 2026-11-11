@@ -16,13 +16,13 @@ test('audio name contains the visible label through idle, buffering, playing and
     }
     const nav = new Element();
     const document = { readyState: 'loading', querySelector: () => nav, createElement: () => new Element(), createTextNode: text => ({ textContent: text }) };
-    const window = { location: { search: '' }, addEventListener(name, fn) { this[name] = fn; } }; window.self = window.top = window;
+    const window = { load() {}, location: { search: '' }, addEventListener(name, fn) { this[name] = fn; } }; window.self = window.top = window;
     let audio;
     class Audio extends Element { constructor() { super(); audio = this; } play() { return Promise.resolve(); } pause() { this.events.pause?.(); } }
     const source = readFileSync(new URL('../../shared-nav.js', import.meta.url), 'utf8');
     const start = source.indexOf('    function initAudioPlayer()');
     const end = source.indexOf('\n    initAudioPlayer();', start);
-    const context = { window, document, Audio, sessionStorage: { getItem: () => null, setItem() {} }, fetch: () => Promise.resolve({ ok: true, text: () => Promise.resolve('feed') }), newestEnclosure: () => 'https://example.com/audio.mp3', BETCAST_FEED: 'feed', setTimeout: () => 1, clearTimeout() {}, isFinite, Date };
+    const context = { window, document, Audio, afterFirstPaintWork: fn => fn(), sessionStorage: { getItem: () => null, setItem() {} }, fetch: () => Promise.resolve({ ok: true, text: () => Promise.resolve('feed') }), newestEnclosure: () => 'https://example.com/audio.mp3', BETCAST_FEED: 'feed', setTimeout: () => 1, clearTimeout() {}, isFinite, Date };
     vm.runInNewContext(source.slice(start, end) + '\ninitAudioPlayer();', context);
     const root = nav.children[0], button = root.children[0];
     const text = node => (node.textContent || '') + (node.children || []).map(text).join('');
