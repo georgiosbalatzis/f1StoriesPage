@@ -44,7 +44,7 @@ export async function startHttpsOrigin(root, origin, handler, paths) {
         server = https.createServer({ key: fs.readFileSync(key), cert: fs.readFileSync(cert) }, handler(root));
         await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
         const port = server.address().port;
-        return { server, origin, port, hash: spkiHash(fs.readFileSync(key)), dir, close: async () => { try { await new Promise(resolve => server.close(resolve)); } finally { fs.rmSync(dir, { recursive: true, force: true }); } } };
+        return { server, origin, port, hash: spkiHash(fs.readFileSync(cert)), dir, close: async () => { try { await new Promise(resolve => server.close(resolve)); } finally { fs.rmSync(dir, { recursive: true, force: true }); } } };
     } catch (error) { if (server?.listening) await new Promise(resolve => server.close(resolve)); cleanupSync([dir]); paths?.delete(dir); throw error; }
 }
 

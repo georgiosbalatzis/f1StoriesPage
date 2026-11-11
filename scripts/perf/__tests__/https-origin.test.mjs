@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { validateOrigin, httpsChromeFlags, spkiHash, articlePath, loadFixtures } from '../https-origin.mjs';
 
 test('origin and scoped flags', () => {
@@ -14,14 +15,8 @@ test('origin and scoped flags', () => {
     assert.ok(!flags.includes('--ignore-certificate-errors'));
     assert.ok(!flags.some(f => f.includes('<-loopback>;*')));
 });
-// Throwaway key and certificate; expected hash computed with OpenSSL x509 | pkey | dgst | base64.
+// Public certificate; expected hash computed independently with OpenSSL.
 test('SPKI matches fixed OpenSSL certificate hash', () => {
-    const key = `-----BEGIN PRIVATE KEY-----
-MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgxtx1TEIi2gmctpxO
-bFTQ2MUB3K2i1nfA2MoAA+/3admhRANCAAR0YAfO1BLCJMYHVq+9EdwXwFBGlf3Z
-QkjVWPLNoyW3RcNvQ2fzb/Vl47jHi7AoZiFVOCoidrgmQeL1kaQV2wC9
------END PRIVATE KEY-----
-`;
     const cert = `-----BEGIN CERTIFICATE-----
 MIIBezCCASGgAwIBAgIUHFFItCNy8WC6VUopvQBaqfi7YLYwCgYIKoZIzj0EAwIw
 FzEVMBMGA1UEAwwMdGVzdC5pbnZhbGlkMB4XDTI2MTExMTA4MzA1MFoXDTI2MTEx
@@ -33,8 +28,16 @@ dC5pbnZhbGlkMAoGCCqGSM49BAMCA0gAMEUCIGeDigHue/bpQcvNAv0PRtTIgChh
 A9YaZWyRFHUixMwQAiEAtYWzWqFSF+Y38uaJWFa2qDAoEpt7wWM0ADHer4/J2AY=
 -----END CERTIFICATE-----
 `;
-    assert.equal(spkiHash(key), 'XyId6v4qAIMrcjAPLrAv1/U3GBnCu5GkQUb01ziZlzw=');
     assert.equal(spkiHash(cert), 'XyId6v4qAIMrcjAPLrAv1/U3GBnCu5GkQUb01ziZlzw=');
+});
+test('generated certificate and key have the same SPKI hash', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'spki-test-'));
+    try {
+        const key = path.join(dir, 'key.pem');
+        const cert = path.join(dir, 'cert.pem');
+        execFileSync('openssl', ['req', '-x509', '-newkey', 'ec', '-pkeyopt', 'ec_paramgen_curve:P-256', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=test.invalid'], { stdio: 'ignore' });
+        assert.equal(spkiHash(fs.readFileSync(cert)), spkiHash(fs.readFileSync(key)));
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 test('capture hashes, null headers, redirect and duplicates', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fixture-test-'));
