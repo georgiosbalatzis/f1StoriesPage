@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261111W",
+      "title": "Ο ξεχωριστός κύριος Gronholm",
+      "author": "Themis Charvalis",
+      "date": "2026-11-11",
+      "dateISO": "2026-11-11",
+      "displayDate": "11 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261111W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261111W/2.webp",
+      "excerpt": "Από την καθυστερημένη καταξίωση στην παγκόσμια κορυφή, ο Marcus Grönholm έγραψε τη δική του ιστορία με δύο τίτλους και 30 νίκες στο WRC.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261111W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "WRC",
+        "Racing Legends",
+        "Ford focus WRC",
+        "Peugeot 206 WRC"
+      ],
+      "wordCount": 663,
+      "readingTime": "4 min",
+      "imageWidth": 680,
+      "imageHeight": 451,
+      "backgroundImageWidth": 460,
+      "backgroundImageHeight": 268,
+      "inputDigest": "8eb10b4583cd337f88d883fb4b42f08a7aad05b07bdb6df54c2ac547b87d55d6"
+    },
+    {
       "id": "20261111J",
       "title": "Η Ferrari στα άκρα και ο Lewis πρωταγωνιστής!",
       "author": "Giannis Poulikidis",
@@ -11755,5 +11787,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-11T10:03:34.626Z"
+  "lastUpdated": "2026-11-11T19:20:12.337Z"
 }
