@@ -395,7 +395,7 @@ test("source lock matches reviewed origin, application paths and pinned revision
   assert.equal(lock.origin, "https://f1-stories.gr");
   const expected = {
     main: ["/", undefined],
-    telemetry: ["/telemetry/", "38c3dd2018b810a5dce1add1f7663bcb199c845a"],
+    telemetry: ["/telemetry/", "82def832eec1a703e698511151d047b2941955bb"],
     ghostcar: ["/ghostcar/", "13fc12afb7c73ccbab6e71fc3d3210d922038d51"],
     tyres: ["/tyres/", "249aa796a1981be4f70213c9f1973b4418faf3ca"],
   };
