@@ -13,6 +13,7 @@
 //
 //   npm run qa:countdown            flags: --root=dist
 
+import { guardContext, matchesCountdown } from './qa-network.mjs';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -32,6 +33,7 @@ const MIME = new Map([['.html', 'text/html; charset=utf-8'], ['.js', 'text/javas
     ['.woff2', 'font/woff2'], ['.map', 'application/json']]);
 
 const failures = [];
+const networkViolations = [];
 let passed = 0;
 function check(name, ok, detail = '') {
     if (ok) passed += 1;
@@ -51,7 +53,8 @@ function startServer() {
 }
 
 async function readCountdown(browser, origin, { now, schedule, cached, timezoneId = 'UTC' }) {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, timezoneId, locale: 'el-GR' });
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 900 }, timezoneId, locale: 'el-GR' });
+    await guardContext(context, origin, networkViolations, { freeze: false });
     const page = await context.newPage();
     await page.route(SCHEDULE_URL, route => (schedule ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(schedule) }) : route.abort()));
     await page.clock.setFixedTime(new Date(now));
@@ -87,7 +90,7 @@ try {
     ];
     for (const [now, name, timer, why] of cases) {
         const state = await readCountdown(browser, origin, { now, schedule: null });
-        check(`fallback ${now}: ${name}`, state.name === name && state.timer === timer, `${why}; got "${state.name}" "${state.timer}"`);
+        check(`fallback ${now}: ${name}`, matchesCountdown(state, name, timer), `${why}; got "${state.name}" "${state.timer}"`);
         check(`fallback ${now}: marked as stored schedule`, state.source === 'fallback' && /αποθηκευμένο πρόγραμμα/.test(state.label || ''), `source=${state.source}`);
     }
 
@@ -139,4 +142,5 @@ try {
 
 console.log(`countdown-qa: ${passed} checks passed, ${failures.length} failed`);
 for (const failure of failures) console.log(`  FAIL ${failure}`);
-process.exit(failures.length ? 1 : 0);
+networkViolations.forEach(message => console.error(message));
+process.exit(failures.length || networkViolations.length ? 1 : 0);

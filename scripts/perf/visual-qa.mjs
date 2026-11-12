@@ -7,6 +7,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { guardContext } from './qa-network.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
@@ -14,7 +15,10 @@ const { Launcher } = require('chrome-launcher');
 const sharp = require('sharp');
 
 const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
-const DIST_ROOT = path.join(REPO_ROOT, 'dist');
+const DIST_ROOT = path.resolve(REPO_ROOT, process.argv.find(arg => arg.startsWith('--dist='))?.slice(7) || 'dist');
+const networkViolations = [];
+const networkNotes = [];
+let serverOrigin = '';
 const COOKIE_KEY = 'f1stories-cookie-consent-v1';
 
 const VIEWPORTS = [
@@ -146,9 +150,45 @@ function readLatestArticleRoute() {
     return '/blog-module/blog-entries/20260526D/article.html';
 }
 
+export function scanForcedColors() {
+                    const issues = [];
+                    const selector = el => el.id ? `${el.tagName.toLowerCase()}#${el.id}` : `${el.tagName.toLowerCase()}${typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.') : ''}`;
+                    const visible = el => { const s = getComputedStyle(el), r = el.getBoundingClientRect(); return s.display !== 'none' && s.visibility === 'visible' && Number(s.opacity) > 0 && r.width > 1 && r.height > 1; };
+                    const system = ['CanvasText', 'LinkText', 'ButtonText'].map(color => { const e = document.createElement('span'); e.style.color = color; document.body.append(e); const result = getComputedStyle(e).color; e.remove(); return result; });
+                    for (const el of document.querySelectorAll('body *')) {
+                        if (!visible(el)) continue;
+                        const s = getComputedStyle(el);
+                        const hasText = [...el.childNodes].some(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+                        let background = el;
+                        while (background && getComputedStyle(background).backgroundColor === 'rgba(0, 0, 0, 0)') background = background.parentElement;
+                        const bg = background ? getComputedStyle(background).backgroundColor : getComputedStyle(document.documentElement).backgroundColor;
+                        if (hasText && s.color === bg) issues.push(`text same as background: ${selector(el)}`);
+                        if (el.matches('a[href], button, input, select, textarea, [role="button"]')) {
+                            const border = ['Top','Right','Bottom','Left'].some(side => parseFloat(s[`border${side}Width`]) > 0 && s[`border${side}Style`] !== 'none' && s[`border${side}Color`] !== bg);
+                            const outline = s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 && s.outlineColor !== bg;
+                            const pseudoBorder = ['::before', '::after'].some(pseudo => {
+                                const p = getComputedStyle(el, pseudo);
+                                if (p.content === 'none' || p.content === 'normal' || p.display === 'none' || p.visibility !== 'visible' || Number(p.opacity) === 0 || parseFloat(p.width) <= 1 || parseFloat(p.height) <= 1) return false;
+                                return ['Top','Right','Bottom','Left'].every(side => parseFloat(p[`border${side}Width`]) > 0 && p[`border${side}Style`] !== 'none' && p[`border${side}Color`] !== bg && p[`border${side}Color`] !== 'rgba(0, 0, 0, 0)');
+                            });
+                            if (!border && !outline && !pseudoBorder && !system.includes(s.color)) issues.push(`control has no visible boundary or system text: ${selector(el)}`);
+                        }
+                    }
+                    return issues;
+
+}
+
 function buildRoutes() {
     const latestArticle = readLatestArticleRoute();
+    const manifestPath = path.join(DIST_ROOT, 'deployment-manifest.json');
+    const applications = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')).applications : [];
+    if (!Array.isArray(applications)) throw new Error('Invalid deployment manifest: applications must be an array');
+    const ecosystem = ['betcast', 'telemetry', 'ghostcar', 'tyres'].flatMap(name => {
+        if (!applications.some(app => app.application === name)) { console.log(`${name}: not in dist`); return []; }
+        return [{ name, slug: name, path: `/${name}/` }];
+    });
     return [
+        ...ecosystem,
         { name: 'Home', slug: 'home', path: '/' },
         { name: 'Blog index', slug: 'blog', path: '/blog-module/blog/index.html' },
         { name: 'Latest article', slug: 'latest-article', path: latestArticle },
@@ -180,7 +220,8 @@ function consentValue() {
 }
 
 async function preparePage(browser, viewport, theme, options = {}) {
-    const page = await browser.newPage();
+    const page = await browser.newPage({ serviceWorkers: 'block' });
+    await guardContext(page.context(), serverOrigin, networkViolations, { artifactRoot: DIST_ROOT, notes: networkNotes });
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.emulateMedia({ colorScheme: theme });
     await page.addInitScript(({ themeName, cookieKey, consentJson, allowCookieBanner }) => {
@@ -240,7 +281,7 @@ function formatIssue(issue) {
     return `${issue.type}: ${target}${issue.detail || ''}`.trim();
 }
 
-async function scanPage(page, routeSlug) {
+export async function scanPage(page, routeSlug) {
     return page.evaluate(currentRouteSlug => {
         const viewportWidth = document.documentElement.clientWidth;
         const scrollWidth = Math.max(document.documentElement.scrollWidth, document.body ? document.body.scrollWidth : 0);
@@ -433,7 +474,16 @@ async function scanPage(page, routeSlug) {
             if (footerCount < 1) issues.push({ type: 'landmark-footer', detail: 'expected a visible footer/contentinfo landmark' });
         }
 
-        const visibleHeadings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).filter(isVisible);
+        const visibleHeadings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).filter(el => {
+            if (el.closest('[hidden], [inert], [aria-hidden="true" i]')) return false;
+            if (typeof el.checkVisibility === 'function') return el.checkVisibility({ visibilityProperty: true });
+            for (let node = el; node; node = node.parentElement) {
+                const style = getComputedStyle(node);
+                if (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse') return false;
+                if (node.tagName === 'DETAILS' && !node.open && !Array.from(node.children).find(child => child.tagName === 'SUMMARY')?.contains(el)) return false;
+            }
+            return true;
+        });
         const h1Count = visibleHeadings.filter(heading => heading.tagName === 'H1').length;
         if (h1Count !== 1) {
             issues.push({ type: 'heading-count', detail: `expected 1 visible h1, found ${h1Count}` });
@@ -1063,6 +1113,50 @@ async function runThemeInteraction(browser, origin) {
     return result;
 }
 
+async function forcedColorsPass(browser, origin, routes) {
+    const rows = [];
+    const entries = path.join(DIST_ROOT, 'blog-module', 'blog-entries');
+    let article = '';
+    if (fs.existsSync(entries)) for (const entry of fs.readdirSync(entries).sort().reverse()) {
+        const file = path.join(entries, entry, 'article.html');
+        if (fs.existsSync(file) && /<iframe[^>]*(?:data-f1s-betcast|betcast|telemetry)/i.test(fs.readFileSync(file, 'utf8'))) {
+            article = `/blog-module/blog-entries/${encodeURIComponent(entry)}/article.html`; break;
+        }
+    }
+    if (!article) { article = readLatestArticleRoute(); console.log('Forced colours: article embed not in dist'); }
+    const targets = [routes.find(r => r.slug === 'home'), routes.find(r => r.slug === 'blog'), {name: 'Article', path: article}, ...routes.filter(r => ['betcast', 'telemetry'].includes(r.slug))];
+    for (const viewport of VIEWPORTS.slice(0, 3)) for (const target of targets) {
+        const page = await preparePage(browser, viewport, 'dark');
+        const issues = [];
+        try {
+            await page.emulateMedia({ forcedColors: 'active' });
+            await page.goto(`${origin}${target.path}`, { waitUntil: 'load' });
+            const embeds = page.locator('iframe[data-f1s-betcast-managed], iframe[src*="/telemetry/"]');
+            for (let i = 0; i < await embeds.count(); i++) { await embeds.nth(i).scrollIntoViewIfNeeded(); }
+            await page.waitForTimeout(1000);
+            if (target.name === 'Article' && article !== readLatestArticleRoute() && page.frames().length < 2) issues.push('article embed did not load');
+            for (const frame of page.frames()) {
+                try { issues.push(...await frame.evaluate(scanForcedColors)); } catch (error) { issues.push(`frame inspection failed: ${frame.url()} ${error.message}`); }
+            }
+            for (let i = 0; i < 3; i++) {
+                await page.keyboard.press('Tab');
+                const focus = await page.evaluate(() => {
+                    let el = document.activeElement;
+                    while (el && el.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+                    if (!el || el === document.body) return 'no focused control';
+                    const s = getComputedStyle(el);
+                    if ((s.outlineStyle === 'none' || parseFloat(s.outlineWidth) === 0) && s.boxShadow === 'none') return `no visible focus indicator: ${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`;
+                    return '';
+                });
+                if (focus) issues.push(`Tab ${i + 1}: ${focus}`);
+            }
+        } catch (error) { issues.push(`forced-colours check failed: ${error.message}`); }
+        finally { await page.close(); }
+        rows.push({ name: `Forced colours ${viewport.width} ${target.name} (${target.path})`, status: issues.length ? 'fail' : 'ok', detail: issues.join('; ') || 'ok' });
+    }
+    return rows;
+}
+
 function writeReport(outputDir, matrix, interactions, routes) {
     const generatedAt = new Date().toISOString();
     const issueRows = matrix.filter(row => row.issues.length);
@@ -1122,11 +1216,14 @@ async function main() {
     const routes = buildRoutes();
     const themes = selectedThemes(args.theme);
     const started = await startServer();
-    const browser = await chromium.launch({
-        executablePath: chromePath,
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
+    serverOrigin = started.origin;
+    let browser;
+    try {
+        browser = await chromium.launch({
+            executablePath: chromePath, headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        });
+    } catch (error) { await closeServer(started.server); throw error; }
 
     const matrix = [];
     const interactions = [];
@@ -1149,8 +1246,13 @@ async function main() {
         interactions.push(await runNavInteraction(browser, started.origin, outputDir));
         interactions.push(await runCookieInteraction(browser, started.origin, outputDir));
         interactions.push(await runThemeInteraction(browser, started.origin));
+        interactions.push(...['betcast', 'telemetry', 'ghostcar', 'tyres'].filter(name => !routes.some(route => route.slug === name)).map(name => ({ name: `Route ${name}`, status: 'ok', detail: 'not in dist; skipped' })));
+        interactions.push(...await forcedColorsPass(browser, started.origin, routes));
 
+        networkNotes.forEach(detail => interactions.push({ name: 'Network guard', status: 'ok', detail }));
+        networkViolations.forEach(detail => interactions.push({ name: 'Network guard', status: 'fail', detail }));
         const report = writeReport(outputDir, matrix, interactions, routes);
+        if (networkViolations.length) process.exitCode = 1;
         console.log(`Report: ${report.reportPath}`);
 
         if (!report.pass && args.failOnIssues) {
