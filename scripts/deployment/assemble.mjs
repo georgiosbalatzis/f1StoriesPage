@@ -8,12 +8,18 @@ const CHILD_PATH = new RegExp(`^(?:${CHILDREN.join('|')})(?:/|$)`);
 // Publisher links that must not survive in navigation: the retired domain and the old standalone hosts.
 const RETIRED = /^https?:\/\/(?:www\.)?f1stories\.gr(?:\/|$)|^https:\/\/georgiosbalatzis\.github\.io\/(?:f1-telemetry-dashboard|ghostcar|Tyres|BetCastVisualisation)\//;
 
-export function files(root, prefix = '') {
+export function files(root, prefix = '', publication = '') {
     return fs.readdirSync(path.join(root, prefix), { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
         const rel = path.posix.join(prefix, entry.name);
         if (entry.isSymbolicLink()) throw new Error(`Symbolic link forbidden: ${rel}`);
         if (entry.isFile() && fs.statSync(path.join(root, rel)).nlink > 1) throw new Error(`Hard link forbidden: ${rel}`);
-        if (entry.isDirectory()) return files(root, rel);
+        // actions/upload-pages-artifact excludes hidden paths unless include-hidden-files is enabled.
+        if (publication && entry.name.startsWith('.')) {
+            if (publication === 'assembly' && entry.isFile() && entry.name === '.nojekyll') return [];
+            if (/(?:^|\/)(?:\.env(?:\.[^/]*)?|\.npmrc)$/.test(rel)) throw new Error(`Credential-like file in production: ${rel}`);
+            throw new Error(`Hidden path ${rel} is excluded by actions/upload-pages-artifact's hidden-file upload rule`);
+        }
+        if (entry.isDirectory()) return files(root, rel, publication);
         if (!entry.isFile()) throw new Error(`Non-regular output: ${rel}`);
         return [rel];
     });
@@ -26,7 +32,7 @@ export function inventory(inputs) {
     for (const app of inputs) {
         const prefix = app.path.slice(1);
         if (app.path !== '/' && !CHILDREN.includes(app.path.slice(1, -1))) throw new Error(`Invalid output namespace: ${app.path}`);
-        for (const rel of files(app.directory)) {
+        for (const rel of files(app.directory, '', 'assembly')) {
             const destination = prefix + rel;
             if (paths.has(destination)) collisions.push({ path: destination, owners: [paths.get(destination), app.application] });
             paths.set(destination, app.application);
@@ -218,6 +224,19 @@ export function validateSite(directory, apps, { builtAt } = {}) {
     return { files: names.size, sitemapUrls: urls.length, nested, manifests: 'scoped', root404: 'Main', freshness };
 }
 
+export function validateOutputPolicy(entries) {
+    for (const entry of entries) {
+        if (entry.application === 'main' && CHILD_PATH.test(entry.path)) throw new Error(`Main writes into child namespace: ${entry.path}`);
+        if (entry.application !== 'main' && /(?:^|\/)(?:src|docs|node_modules|e2e|tests?|__tests__|scratchpad|test-results|\.git)(?:\/|$)/.test(entry.path)) throw new Error(`Source/test content in production: ${entry.path}`);
+        if (entry.path.endsWith('.map')) throw new Error(`Unexpected production source map: ${entry.path}`);
+        if (/(?:^|\/)(?:\.env(?:\.[^/]*)?|\.npmrc|[^/]*\.(?:pem|key))$/.test(entry.path)) throw new Error(`Credential-like file in production: ${entry.path}`);
+        // Telemetry deliberately publishes its analysis report and datasets; other Markdown is internal documentation.
+        if (entry.application !== 'main' && entry.path.endsWith('.md') && !entry.path.startsWith('telemetry/analysis/')) throw new Error(`Internal documentation in production: ${entry.path}`);
+    }
+}
+
+export const outputDigest = entries => createHash('sha256').update(JSON.stringify(entries)).digest('hex');
+
 export function assemble(inputs, destination, metadata, reportDirectory) {
     const report = inventory(inputs);
     fs.mkdirSync(reportDirectory, { recursive: true });
@@ -226,20 +245,13 @@ export function assemble(inputs, destination, metadata, reportDirectory) {
     for (const app of inputs) {
         if (app.application === 'main' ? app.path !== '/' : !/^\/[a-z0-9-]+\/$/.test(app.path)) throw new Error(`Unsafe namespace: ${app.path}`);
     }
-    for (const entry of report.entries) {
-        if (entry.application === 'main' && CHILD_PATH.test(entry.path)) throw new Error(`Main writes into child namespace: ${entry.path}`);
-        if (entry.application !== 'main' && /(?:^|\/)(?:src|docs|node_modules|e2e|tests?|__tests__|scratchpad|test-results|\.git)(?:\/|$)/.test(entry.path)) throw new Error(`Source/test content in production: ${entry.path}`);
-        if (entry.path.endsWith('.map')) throw new Error(`Unexpected production source map: ${entry.path}`);
-        if (/(?:^|\/)(?:\.env(?:\.[^/]*)?|\.npmrc|[^/]*\.(?:pem|key))$/.test(entry.path)) throw new Error(`Credential-like file in production: ${entry.path}`);
-        // Telemetry deliberately publishes its analysis report and datasets; other Markdown is internal documentation.
-        if (entry.application !== 'main' && entry.path.endsWith('.md') && !entry.path.startsWith('telemetry/analysis/')) throw new Error(`Internal documentation in production: ${entry.path}`);
-    }
+    validateOutputPolicy(report.entries);
     if (report.bytes >= 1_000_000_000) throw new Error('Aggregate exceeds GitHub Pages 1 GB limit');
     if (report.entries.some(entry => entry.path === 'deployment-manifest.json')) throw new Error('Reserved deployment metadata collision');
     // Validate inventory before copying; no merging or overwrite semantics.
     fs.mkdirSync(destination, { recursive: true });
     if (fs.readdirSync(destination).length) throw new Error('Destination must be empty');
-    for (const app of inputs) for (const rel of files(app.directory)) {
+    for (const app of inputs) for (const rel of files(app.directory, '', 'assembly')) {
         const target = path.join(destination, app.path.slice(1), rel);
         fs.mkdirSync(path.dirname(target), { recursive: true });
         fs.copyFileSync(path.join(app.directory, rel), target, fs.constants.COPYFILE_EXCL);
@@ -251,9 +263,9 @@ export function assemble(inputs, destination, metadata, reportDirectory) {
     report.bytes += sitemap.length - sitemapEntry.bytes;
     sitemapEntry.bytes = sitemap.length;
     sitemapEntry.sha256 = createHash('sha256').update(sitemap).digest('hex');
-    const outputDigest = createHash('sha256').update(JSON.stringify(report.entries)).digest('hex');
-    const manifest = { schemaVersion: 1, origin: ORIGIN, ...metadata, outputDigest, freshness: result.freshness, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, nodeVersion: app.nodeVersion, data: app.data, files: report.entries.filter(entry => entry.application === app.application).length, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
+    const digest = outputDigest(report.entries);
+    const manifest = { schemaVersion: 1, origin: ORIGIN, ...metadata, outputDigest: digest, freshness: result.freshness, applications: inputs.map(app => ({ application: app.application, repository: app.repository, sourceSha: app.sourceSha, sourceDigest: app.sourceDigest, dirty: app.dirty, canonicalPath: app.path, version: app.version, build: app.build, nodeVersion: app.nodeVersion, data: app.data, files: report.entries.filter(entry => entry.application === app.application).length, bytes: report.entries.filter(entry => entry.application === app.application).reduce((sum, entry) => sum + entry.bytes, 0) })) };
     const manifestText = JSON.stringify(manifest, null, 2) + '\n';
     fs.writeFileSync(path.join(destination, 'deployment-manifest.json'), manifestText);
-    return { ...result, files: result.files + 1, bytes: report.bytes + Buffer.byteLength(manifestText), outputDigest, collisions: report.collisions.length, mode: metadata.mode, releaseEligible: metadata.releaseEligible };
+    return { ...result, files: result.files + 1, bytes: report.bytes + Buffer.byteLength(manifestText), outputDigest: digest, collisions: report.collisions.length, mode: metadata.mode, releaseEligible: metadata.releaseEligible };
 }
