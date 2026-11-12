@@ -14,7 +14,7 @@
     {
       "application": "telemetry",
       "repository": "georgiosbalatzis/f1-telemetry-dashboard",
-      "sha": "82def832eec1a703e698511151d047b2941955bb",
+      "sha": "c825b3da4ce92ce0ec8a76ea4ff299da6abada2a",
       "path": "/telemetry/",
       "output": "dist",
       "build": "build:f1stories",
@@ -46,7 +46,7 @@
     {
       "application": "betcast",
       "repository": "georgiosbalatzis/BetCastVisualisation",
-      "sha": "f039dc657a216b6c23582db3e7eab2f6d3991f81",
+      "sha": "1d453951e8238f6e705efc5aa71d57de1157578d",
       "path": "/betcast/",
       "output": "build",
       "build": "build:f1stories",
