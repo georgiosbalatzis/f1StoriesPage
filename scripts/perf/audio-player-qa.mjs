@@ -13,6 +13,7 @@
 //
 //   npm run qa:audio-player            flags: --root=dist  --json
 
+import { guardContext, hasPausedAudioLabel } from './qa-network.mjs';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -35,6 +36,7 @@ const MIME = new Map([['.html', 'text/html; charset=utf-8'], ['.js', 'text/javas
     ['.woff2', 'font/woff2'], ['.map', 'application/json']]);
 
 const failures = [];
+const networkViolations = [];
 let passed = 0;
 function check(name, ok, detail = '') {
     if (ok) passed += 1;
@@ -70,7 +72,8 @@ const rgb = css => (css.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
 
 // Opens the page with a mocked podcast feed. meta: object | string (raw body) | null (HTTP 500).
 async function open(browser, origin, { meta, theme = 'dark', width = 1440, audio = 'ok', pagePath = '/authors/' }) {
-    const context = await browser.newContext({ viewport: { width, height: 800 } });
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width, height: 800 } });
+    await guardContext(context, origin, networkViolations);
     await context.addInitScript(([themeValue]) => {
         try { localStorage.setItem('f1stories-theme', themeValue); } catch (_) {}
         const Original = window.Audio;
@@ -83,14 +86,14 @@ async function open(browser, origin, { meta, theme = 'dark', width = 1440, audio
     page.on('request', request => requests.push(request.url()));
     page.on('pageerror', error => errors.push(error.message));
     // The podcast feed (newest episode first). meta: { audioUrl } builds one, a string is served raw, null is HTTP 500.
-    await page.route(FEED_URL, route => {
+    await context.route(FEED_URL, route => {
         const cors = { 'access-control-allow-origin': '*' };
         if (meta === null) return route.fulfill({ status: 500, headers: cors, body: 'boom' });
         const xml = typeof meta === 'string' ? meta
             : `<?xml version="1.0"?><rss><channel><title>F1 Stories</title>${meta.audioUrl === undefined ? '' : `<item><title>Newest</title>${meta.audioUrl ? `<enclosure url="${meta.audioUrl}" type="audio/mpeg"/>` : ''}</item>`}<item><title>Older</title><enclosure url="${OLDER_URL}" type="audio/mpeg"/></item></channel></rss>`;
         return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/rss+xml' }, body: xml });
     });
-    await page.route(AUDIO_URL, route => {
+    await context.route(AUDIO_URL, route => {
         requests.push(AUDIO_URL); // media requests are not always reported by the request event once routed
         if (audio === 'fail') return route.fulfill({ status: 404, body: 'gone' });
         const body = silentWav(audio === 'short' ? 4000 : 80000);
@@ -134,7 +137,7 @@ async function behaviourChecks(browser, origin) {
     let s = await snapshot(player.page);
     check('player reads exactly ON AIR.', s.text === 'ON AIR.', s.text);
     check('the box starts empty', s.progress === 0, String(s.progress));
-    check('paused aria-label', s.aria === 'Αναπαραγωγή BetCast, ON AIR.', s.aria);
+    check('paused aria-label', hasPausedAudioLabel(s), s.aria);
     check('no audio element or media request before click', s.audios === 0 && !audioHit(player.requests));
     check('no video, thumbnail or iframe in the player', s.media === 0);
     check('no YouTube requests or Player API', !youtube(player.requests));
@@ -329,7 +332,8 @@ async function main() {
         console.log(`audio-player-qa: ${passed} checks passed, ${failures.length} failed.`);
         failures.forEach(failure => console.log(`  FAIL ${failure}`));
     }
-    process.exit(failures.length ? 1 : 0);
+    networkViolations.forEach(message => console.error(message));
+    process.exit(failures.length || networkViolations.length ? 1 : 0);
 }
 
 main().catch(error => { console.error(error.stack || error.message || error); process.exit(1); });

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { guardContext } from './qa-network.mjs';
 // embed-qa.mjs - regression check for the Standings embeds (/standings/?embed=1).
 //
 // Loads every embed target at 320, 390 and 680px in both themes, with a viewport tall enough that the page has
@@ -272,13 +273,17 @@ async function main() {
     const themes = args.theme === 'both' ? ['dark', 'light'] : [args.theme];
     const targets = TARGETS.filter(t => !args.only.length || args.only.some(o => (t.label || t.id).includes(o)));
     const started = await startServer(args.root);
-    const browser = await chromium.launch({ executablePath: chromePath, headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+    let browser;
+    try { browser = await chromium.launch({ executablePath: chromePath, headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] }); }
+    catch (error) { started.server.closeAllConnections?.(); await new Promise(resolve => started.server.close(resolve)); throw error; }
     const rows = [];
+    const networkViolations = [];
 
     try {
-        console.log(`Serving ${args.root} at ${started.origin} (live OpenF1/Jolpica data required)`);
+        console.log(`Serving ${args.root} at ${started.origin} (recorded provider data)`);
         for (const theme of themes) {
-            const context = await browser.newContext({ viewport: { width: args.widths[0], height: VIEWPORT_HEIGHT } });
+            const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: args.widths[0], height: VIEWPORT_HEIGHT } });
+            await guardContext(context, started.origin, networkViolations);
             await context.addInitScript(([key, value]) => { try { localStorage.setItem(key, value); } catch (_) {} }, [THEME_KEY, theme]);
             try {
                 for (const width of args.widths) {
@@ -302,6 +307,8 @@ async function main() {
         await new Promise(resolve => started.server.close(resolve));
     }
 
+    networkViolations.forEach(message => console.error(message));
+    if (networkViolations.length) process.exitCode = 1;
     const failing = rows.filter(row => row.issues.length);
     if (args.json) console.log(JSON.stringify(rows, null, 2));
     console.log(`\n${rows.length - failing.length}/${rows.length} embed checks passed.`);
