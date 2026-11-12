@@ -180,3 +180,31 @@ test('telemetry bridge ignores foreign hosts, other applications and full dashbo
         cleanup();
     }
 });
+
+test('standalone and assembled TYRES and Ghost Car embeds follow theme changes', async () => {
+    const fs = require('node:fs');
+    const os = require('node:os');
+    const path = require('node:path');
+    const vm = require('node:vm');
+    const { prepareMain } = await import('../../../scripts/deployment/assemble.mjs');
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'p08-theme-'));
+    try {
+        const original = fs.readFileSync(path.join(__dirname, '../../blog/article-script.js'), 'utf8');
+        fs.writeFileSync(path.join(root, 'article.js'), original);
+        fs.writeFileSync(path.join(root, 'sitemap.xml'), '<urlset></urlset>');
+        prepareMain(root);
+        for (const [source, urls] of [[original, ['https://georgiosbalatzis.github.io/Tyres/embed/el/', 'https://georgiosbalatzis.github.io/ghostcar/?embed=1']], [fs.readFileSync(path.join(root, 'article.js'), 'utf8'), ['/tyres/embed/el/', '/ghostcar/?embed=1']]]) {
+            const frames = urls.map(src => ({ src, closest: () => false }));
+            let changed;
+            const document = { documentElement: { theme: 'light', getAttribute() { return this.theme; } } };
+            const articleContent = { querySelectorAll(selector) { return frames.filter(frame => [...selector.matchAll(/src\^="([^"]+)"/g)].some(match => frame.src.startsWith(match[1]))); } };
+            class MutationObserver { constructor(callback) { changed = callback; } observe() {} }
+            const body = source.slice(source.indexOf('    function setupTyreEmbeds()'), source.indexOf('    function setupSocialEmbeds()'));
+            vm.runInNewContext(`${body}\nsetupTyreEmbeds();`, { articleContent, document, MutationObserver });
+            assert.ok(frames.every(frame => frame.src.endsWith('#light')));
+            document.documentElement.theme = 'dark';
+            changed();
+            assert.ok(frames.every(frame => frame.src.endsWith('#dark')));
+        }
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

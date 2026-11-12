@@ -10,7 +10,7 @@ import { inventory, assemble, prepareMain, validateSite } from './assemble.mjs';
 import { assertReleasable, buildMode, checkLock, checkScript, checkSource, childCacheKey, nodeEnvironment, restoreChildCache, saveChildCache, seedImageCache } from './release.mjs';
 import { extraNode } from './toolchain.mjs';
 import { legacyStubs } from './redirects.mjs';
-import { verifyPublic } from './verify-public.mjs';
+import { verifyPublic, verifyIdentity } from './verify-public.mjs';
 
 const ORIGIN = 'https://f1-stories.gr';
 const builtAt = '2026-10-25T12:00:00.000Z';
@@ -116,6 +116,7 @@ const failures = {
     'production source map': [{ betcast: { 'assets/app.js.map': '{}' } }, /source map/],
     'internal documentation': [{ ghostcar: { 'README.md': '# notes' } }, /Internal documentation/],
     'development credentials': [{ tyres: { '.env': 'TOKEN=x' } }, /Credential-like file/],
+    'hidden directory': [{ telemetry: { '.well-known/security.txt': 'contact' } }, /Hidden path \.well-known .*upload-pages-artifact.*hidden-file upload rule/],
     'test files': [{ tyres: { 'tests/unit/a.test.js': '' } }, /Source\/test content/],
     'nested page without policy': [{ tyres: { '2026/austin/index.html': '<h1>Austin</h1>' } }, /2026\/austin\/index\.html needs a self canonical or noindex/],
     'retired navigation link': [{ tyres: { 'index.html': landing('tyres').replace('<a href="/">', '<a href="https://f1stories.gr/">') } }, /Retired publisher links in navigation: tyres\/index\.html/],
@@ -405,7 +406,7 @@ test('the wrong Node environment is refused', t => {
 test('public integrity: every sitemap URL is a page canonical to itself, on the primary domain', t => {
     const page = url => `<link rel="canonical" href="${url}">`;
     const entries = {
-        CNAME: 'f1-stories.gr\n', '.nojekyll': '', '404.html': '', 'robots.txt': 'User-agent: *\nAllow: /', 'feed.xml': '', 'index.html': page(`${ORIGIN}/`),
+        CNAME: 'f1-stories.gr\n', '404.html': '', 'robots.txt': 'User-agent: *\nAllow: /', 'feed.xml': '', 'index.html': page(`${ORIGIN}/`),
         'standings/index.html': '', 'authors/index.html': '', 'authors/a/index.html': '', 'blog-module/blog/index.html': '', 'blog-module/blog/section/news/index.html': '',
         'blog-module/blog/archive/2026/index.html': '', 'blog-module/blog/entities/drivers/x/index.html': '',
         'blog-module/blog-entries/1/article.html': page(`${ORIGIN}/blog-module/blog-entries/1/article.html`),
@@ -456,4 +457,91 @@ test('a missing pinned source fails clearly instead of building something else',
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /main: source checkout missing at/);
     assert.ok(!fs.existsSync(path.join(workspace, 'site')));
+});
+
+
+test('offline artifact identity detects contract mutations', async t => {
+    const lock = JSON.parse(fs.readFileSync(path.join(here, 'sources.json')));
+    const { run, destination, reports } = site(t, { main: {
+        '.nojekyll': '', CNAME: 'f1-stories.gr', 'feed.xml': '', 'blog-module/blog/index.html': '',
+        'authors/a/index.html': '', 'blog-module/blog/section/news/index.html': '', 'blog-module/blog/archive/2026/index.html': '',
+        'blog-module/blog/entities/drivers/x/index.html': '', 'blog-module/blog-entries/1/article.html': '',
+    }, telemetry: { '.nojekyll': '', 'interactive/.nojekyll': '' } });
+    run();
+    for (const rel of ['.nojekyll', 'telemetry/.nojekyll', 'telemetry/interactive/.nojekyll']) assert.equal(fs.existsSync(path.join(destination, rel)), false);
+    assert.ok(JSON.parse(fs.readFileSync(path.join(reports, 'collision-report.json'))).entries.every(entry => !entry.path.includes('.nojekyll')));
+    assert.deepEqual(verifyPublic(destination).problems, []);
+    const manifestPath = path.join(destination, 'deployment-manifest.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath));
+    Object.assign(manifest, { mode: 'release', releaseEligible: true, sourcesClean: true, lock: { enabled: true, releaseReady: true }, buildId: 'fixture', nodeVersion: 'v22.0.0' });
+    for (const [i, record] of manifest.applications.entries()) {
+        const app = lock.applications[i];
+        Object.assign(record, { repository: app.repository, sourceSha: app.sha || 'a'.repeat(40), sourceDigest: 'b'.repeat(64), dirty: false, version: '1.0.0', build: app.build, nodeVersion: `v${app.node}.0.0` });
+        if (app.data) record.data = { ref: app.data.ref, paths: app.data.paths, sha: 'c'.repeat(40), digest: 'd'.repeat(64), refresh: { script: app.data.refresh, at: builtAt, digest: 'e'.repeat(64) } };
+    }
+    const save = () => fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+    save();
+    const verify = () => verifyIdentity(destination, lock, { expectedMainSha: 'a'.repeat(40), expectedTyresDataSha: 'c'.repeat(40) }).checks;
+    const started = performance.now();
+    const initial = verify();
+    console.log(`offline identity fixture runtime: ${(performance.now() - started).toFixed(2)} ms`);
+    assert.ok(initial.every(c => c.status !== 'FAIL'), JSON.stringify(initial));
+    await t.test('CLI report destinations preserve artifact bytes', () => {
+        const digestTree = () => {
+            const walk = (dir, prefix = '') => fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
+                const rel = path.join(prefix, entry.name);
+                return entry.isDirectory() ? [[rel, 'directory'], ...walk(path.join(dir, entry.name), rel)] : [[rel, createHash('sha256').update(fs.readFileSync(path.join(dir, entry.name))).digest('hex')]];
+            });
+            return createHash('sha256').update(JSON.stringify(walk(destination))).digest('hex');
+        };
+        const invoke = report => spawnSync(process.execPath, [path.join(here, 'verify-public.mjs'), '--site', destination, '--lock', path.join(here, 'sources.json'), ...(report ? ['--report', report] : [])], { encoding: 'utf8' });
+        const before = digestTree();
+        const outside = path.join(reports, 'report.json');
+        assert.equal(invoke(outside).status, 0);
+        assert.ok(JSON.parse(fs.readFileSync(outside)).checks.every(check => check.status !== 'FAIL'));
+        assert.equal(digestTree(), before);
+        assert.equal(invoke(path.join(destination, 'report.json')).status, 2);
+        assert.equal(digestTree(), before);
+        const link = path.join(reports, 'link.json');
+        fs.symlinkSync(path.join(destination, 'index.html'), link);
+        assert.equal(invoke(link).status, 2);
+        assert.equal(digestTree(), before);
+        const parent = path.join(reports, 'alias');
+        fs.symlinkSync(destination, parent);
+        assert.equal(invoke(path.join(parent, 'report.json')).status, 2);
+        assert.equal(digestTree(), before);
+        const hardlink = path.join(reports, 'hardlink');
+        fs.linkSync(path.join(destination, 'index.html'), hardlink);
+        assert.equal(invoke(hardlink).status, 2);
+        assert.equal(digestTree(), before);
+        fs.unlinkSync(hardlink);
+        assert.equal(invoke().status, 0);
+        assert.equal(digestTree(), before);
+    });
+    const cases = [
+        ['hidden marker added' , 'A-13', () => fs.writeFileSync(path.join(destination, '.nojekyll'), '')],
+        ['changed child file', 'A-04/A-07', () => fs.appendFileSync(path.join(destination, 'ghostcar/assets/app.js'), 'changed')],
+        ['deleted non-sitemap asset', 'A-09/A-10/A-06', () => fs.unlinkSync(path.join(destination, 'ghostcar/assets/app.css'))],
+        ['missing manifest field', 'A-04', () => { delete manifest.buildId; save(); }],
+        ['wrong child sourceSha', 'A-01/A-02', () => { manifest.applications[1].sourceSha = 'f'.repeat(40); save(); }],
+        ['wrong repository', 'A-01/A-02', () => { manifest.applications[1].repository = 'wrong/repo'; save(); }],
+        ['wrong build', 'A-01/A-02', () => { manifest.applications[1].build = 'wrong'; save(); }],
+        ['wrong Node major', 'A-01/A-02', () => { manifest.applications[1].nodeVersion = 'v99.0.0'; save(); }],
+        ['wrong namespace', 'A-01/A-02', () => { manifest.applications[1].canonicalPath = '/wrong/'; save(); }],
+        ['missing refresh metadata', 'A-05/A-06', () => { delete manifest.applications[3].data.refresh; save(); }],
+        ['missing app record', 'A-01/A-02', () => { manifest.applications.pop(); save(); }],
+        ['missing child root', 'A-09/A-10/A-06', () => fs.unlinkSync(path.join(destination, 'ghostcar/index.html'))],
+        ['wrong TYRES data identity', 'A-05/A-06', () => { manifest.applications[3].data.sha = 'f'.repeat(40); save(); }],
+        ['freshness mismatch', 'A-05/A-06', () => { manifest.freshness.dataGeneratedAt = '2026-01-01T00:00:00Z'; save(); }],
+        ['wrong canonical origin', 'A-09/A-10/A-06', () => { const p = path.join(destination, 'ghostcar/index.html'); fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(`${ORIGIN}/ghostcar/`, 'https://evil.example/ghostcar/')); }],
+        ['retired navigation link', 'A-09/A-10/A-06', () => fs.appendFileSync(path.join(destination, 'index.html'), '<nav><a href="https://f1stories.gr/">old</a></nav>')],
+        ['forbidden child source path', 'A-08', () => { fs.mkdirSync(path.join(destination, 'tyres/src')); fs.writeFileSync(path.join(destination, 'tyres/src/example.js'), ''); }],
+    ];
+    for (const [name, id, mutate] of cases) await t.test(name, () => {
+        const backup = fs.mkdtempSync(path.join(os.tmpdir(), 'p08-backup-'));
+        fs.cpSync(destination, backup, { recursive: true });
+        const before = structuredClone(manifest);
+        try { mutate(); const result = verify(); assert.ok(result.some(c => c.id === id && c.status === 'FAIL' && c.diagnostic), JSON.stringify(result)); }
+        finally { fs.rmSync(destination, { recursive: true }); fs.cpSync(backup, destination, { recursive: true }); fs.rmSync(backup, { recursive: true }); Object.keys(manifest).forEach(key => delete manifest[key]); Object.assign(manifest, before); }
+    });
 });
