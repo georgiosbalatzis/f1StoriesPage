@@ -1,14 +1,14 @@
 # P-10 — Performance & Codebase Optimization Final Engineering Review
 
-**P-10 VALIDATION COMPLETE — PROGRAM CLOSURE PENDING**
+**P-10 VALIDATION COMPLETE — OWNER ACCEPTED CLOSURE WITH DISCLOSED RESIDUAL RISKS (2026-11-12)**
 
-This is an evidence-based validation record, not a declaration that every program gate passed. The bounded P-10 checks below are complete; delta review, browser journeys, human accessibility acceptance and other decisions remain open. P-01–P-09 established a baseline, made targeted accessibility, request-pacing, cache, identity and layout changes, and rejected changes without sufficient evidence. The frozen artifact has verified identity and public-file checks; release readiness remains conditional on the decisions below. No new production deployment or field performance measurement is claimed here; a current closed-proxy laboratory measurement is recorded below.
+This is an evidence-based validation record, not a declaration that every program gate passed. The owner accepted administrative program closure with explicitly unverified security, accessibility, browser and build acceptance items; these are tracked in [issue #483](https://github.com/georgiosbalatzis/f1StoriesPage/issues/483). The bounded P-10 checks below are complete, but full browser journeys and human accessibility acceptance remain unverified. P-01–P-09 established a baseline, made targeted accessibility, request-pacing, cache, identity and layout changes, and rejected changes without sufficient evidence. The frozen artifact has verified identity and public-file checks; release readiness remains conditional on the decisions below. No new production deployment or field performance measurement is claimed here; a current closed-proxy laboratory measurement is recorded below.
 
 ## Identity and provenance
 
 Frozen Pages run `43131092903`: Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`, Telemetry `82def832eec1a703e698511151d047b2941955bb`, Ghost Car `13fc12afb7c73ccbab6e71fc3d3210d922038d51`, TYRES code `249aa796a1981be4f70213c9f1973b4418faf3ca`, TYRES data `dbc69155aaa8e8c2af3556ef02ba18d54ad0ba0c`, data digest `2632578b4f4d073625075f35e039854910765b8d5c3a5ffaa505bdb369faeccd`, generated `2026-11-12T00:59:34.718Z`, BetCast `f039dc657a216b6c23582db3e7eab2f6d3991f81`. Manifest output digest `8e1d89b15c8d43cc392979151d039cb980b95198d70d3b01a80e40e464977f51`; ZIP SHA-256 `01c2f8d035773c8c96d77047601ce59dc9d64518636f75f43d922d31c5e191f1` matched the GitHub digest. These hashes describe different objects. P-08 identity and public checks passed; B-18/B-19 browser behavior remains unverified. Evidence: run `43131092903`, `p10/IDENTITY.md`, `p10/verify-43131092903.json` in the external evidence archive.
 
-P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`, branch `test/p10-final-regression`; this review and URL checker are uncommitted. No P-10 PR or head SHA exists yet.
+P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`. Review, URL checker and tests are contained in [PR #482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482), initially reviewed at head `1605c228bd90b9b77616df13a4e7674a7cf677fa`. The PR may acquire a subsequent documentation-only commit; the final merge SHA is recorded by GitHub, not inferred in this report.
 
 ## Phase status
 
@@ -23,7 +23,7 @@ P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`, branch 
 | P-07 | PASS: TYRES restoration observed; end-to-end latency improvement NOT MEASURED. |
 | P-08 | PASS: frozen artifact identity and contracts; browser B-18/B-19 NOT VERIFIED; B-14 trust proposal awaits independent review. |
 | P-09 | PASS: fixture CLS improvement and deployed bundle identity; human screen-reader acceptance NOT VERIFIED. |
-| P-10 | Bounded validation recorded and independently reviewed (two rounds); full integrated browser coverage remains open. Program closure pending. |
+| P-10 | Bounded validation recorded and independently reviewed (two rounds); full integrated browser coverage NOT VERIFIED. Owner accepted closure with disclosed residuals tracked in #483, not a claim of all gates passing. |
 
 Detailed phase provenance and PR identifiers: external evidence `p10/ACCEPTANCE-MATRIX.md` and `CHECKPOINT.md`.
 
@@ -90,11 +90,11 @@ READY WITH DISCLOSED LIMITATIONS means bounded evidence exists, not that every l
 | Publishing pipeline | READY WITH DISCLOSED LIMITATIONS | CI and build pass; current repeated deterministic/incremental checks and matched latency open. |
 | Cache reliability | READY WITH DISCLOSED LIMITATIONS | Two production hits recorded; freshness and integrity controls retained; more paths require observation. |
 | Analytics and consent | READY WITH DISCLOSED LIMITATIONS | Security and CI consent/RUM regressions pass; comprehensive current browser verification open. |
-| Security | BLOCKED | #473 containment proof and independent security review outstanding; B-14 is an unapproved proposal. This does not establish a deployed security defect. |
+| Security | NOT VERIFIED | #473 was closed without merge because isolated containment proof was unavailable. B-14 parent-origin fallback remains unreviewed by an independent security reviewer and its impact is undetermined; no deployed vulnerability has been established. Tracked in #483. |
 | Artifact provenance | READY | Frozen source/data identities and ZIP digest verified for run `43131092903`; no fresh live assertion. |
 | CI and rollback | READY WITH DISCLOSED LIMITATIONS | Supplied quality/release steps passed; P-10 delta review and complete integrated gates outstanding. Roll back P-10 by reverting its eventual commit; production rollback uses prior verified Pages artifact and pins under owner control. |
 
-#473 blocks its own merge and phase closure, not this draft. Program closure requires execution or formal disposition of outstanding mandatory acceptance. Matched P-07 latency is optional follow-up measurement. No evidence here establishes a broken URL, exposed credential or incorrect frozen pin. Simulated LCP misses, incomplete field data and incomplete responsive coverage are disclosed limitations; they are not evidence of a reader-facing slowdown.
+#473 was closed without merge, excluding the unverified HTTPS mode from Main. The owner formally accepted administrative program closure with the outstanding acceptance gaps explicitly unverified and tracked in #483; this is not a security or accessibility sign-off. Matched P-07 latency is optional follow-up measurement. No evidence here establishes a broken URL, exposed credential or incorrect frozen pin. Simulated LCP misses, incomplete field data and incomplete responsive coverage are disclosed limitations; they are not evidence of a reader-facing slowdown.
 
 ## Quantified results and engineering decisions
 
@@ -111,32 +111,32 @@ Rejected: speculative media deletion would risk historical URLs and dynamic usag
 
 ## Residual risk and maintenance
 
-1. High: #473 remains draft until OS-enforced isolated testing, forced-termination lifecycle, owner acceptance and independent security review; never run its live harness on the owner's account (`p05/473-SECURITY-HANDOFF.md`).
-2. High: obtain a delta review of this change and complete or formally disposition missing integrated browser/consent/security and generated-build gates before closure.
+1. High: #473 was closed without merge because OS-enforced isolation and forced-termination safety are unverified. Reopen only if needed and only for isolated-VM testing, owner acceptance and independent security review; never run its live harness on the owner's account (`p05/473-SECURITY-HANDOFF.md`).
+2. High: the owner formally dispositioned missing integrated browser/security and repeated generated-build gates as **NOT VERIFIED**, tracked in #483. Prior independent review covered the original PR; documentation-only closure edits require CI validation and accurate disclosure.
 3. Medium: conduct P-09 human screen-reader checks for loading, success, failure and recovery; review B-14 separately with threat fixtures.
 4. Medium: measure matched publication latency and observe TYRES scheduled refresh/data-change misses; retain six-hour freshness and SHA/digest controls.
 5. Medium: obtain representative field metrics if available without changing consent; investigate Blog heading order and complete responsive, forced-colours and cross-app browser checks.
 
 Keep CI budgets and failure gates unchanged. Verify pins and artifact digests on each release, run cross-app contracts on pin changes, sample accessibility and responsive journeys periodically, monitor TYRES freshness and matched publishing timings, and retain reports and prior verified artifacts for rollback. Escalate production regressions with the affected run, source identities and reproducible evidence.
 
-## Owner checkpoint
+## Owner closure disposition
 
 Independent review: external `p10/sol-review.md` (REQUIRED CHANGES R1–R5, addressed) and delta `p10/sol-review-r2.md` (R1/R2 closed; stale comparison-status text corrected in this revision).
 
-Delta review: <to be added>
+Review status: original P-10 review and second delta review are documented above. The owner-approved closure wording here is a documentation-only follow-up; do not imply a new independent review occurred.
 
-Draft PR: <to be added>
+Pull request: [#482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482).
 
-Exact committed head: pending creation.
+Initial reviewed PR head: `1605c228bd90b9b77616df13a4e7674a7cf677fa`; subsequent documentation edits and final merge SHA are recorded on GitHub.
 
 | Item | Mandatory vs optional | Current state | Evidence location | Owner action |
 |---|---|---|---|---|
-| #473 isolation/security | Mandatory for #473 merge/phase closure | Blocked; does not block this draft | `p05/473-SECURITY-HANDOFF.md` | Require isolation, lifecycle proof and independent security review before its merge. |
-| P-09 human screen-reader check | Mandatory acceptance or formal disposition | Not verified | `p09/sol-review-r5.md` | Arrange human loading, success, failure and recovery checks or formally disposition. |
-| P-07 matched end-to-end latency and remaining cache paths | Matched latency optional measurement; required cache acceptance needs disposition | Unmeasured latency; refresh/data-change paths unobserved | `p07r/TYRES-VALIDATION.md`, `CHECKPOINT.md` | Decide measurement and disposition remaining paths. |
-| B-14 review | Mandatory proposal review before adoption | Pending | `p10/sol-review.md`, P-08 evidence | Commission independent threat-fixture review or reject/defer proposal. |
-| Complete integration/child journeys, embeds/audio/full visual QA | Mandatory acceptance or formal disposition | Smoke passed its assertions; full journeys not verified | `p10/data/release-43131092903-build.log`, `p10/run-suites.out.txt` | Execute missing suites or formally disposition each gap. |
-| Responsive, forced-colours and Blog heading order | Mandatory acceptance or formal disposition | Incomplete | `p10/ACCEPTANCE-MATRIX.md` | Complete checks or formally disposition gaps. |
-| Clean repeated deterministic build, generated drift and incremental checks | Mandatory acceptance or formal disposition | Not verified | `p10/run-suites.out.txt` | Run clean repeated checks or formally disposition. |
+| #473 isolation/security | Mandatory for any future #473 merge | Closed WITHOUT merge; no HTTPS mode deployed | `p05/473-SECURITY-HANDOFF.md` | Reopen only if necessary after isolated-VM containment and independent security review. |
+| P-09 human screen-reader check | Formally deferred by owner | NOT VERIFIED | `p09/sol-review-r5.md` | Track in #483; conduct human loading, success, failure and recovery checks. |
+| P-07 matched end-to-end latency and remaining cache paths | Formally deferred by owner | UNMEASURED latency; refresh/data-change paths unobserved | `p07r/TYRES-VALIDATION.md`, `CHECKPOINT.md` | Track in #483; measure only on normal publishing runs, preserve permissions. |
+| B-14 review | Required before any security change | UNVERIFIED origin-fallback risk, not independently assessed | `p10/sol-review.md`, P-08 evidence | Track in #483; independent threat-fixture and high-effort security review before adopting any proposal. |
+| Complete integration/child journeys, embeds/audio/full visual QA | Formally deferred by owner | CI smoke passed its assertions; full journeys NOT VERIFIED | `p10/data/release-43131092903-build.log`, `p10/run-suites.out.txt` | Track gaps in #483; no claim of full integration equivalence. |
+| Responsive, forced-colours and Blog heading order | Formally deferred by owner | Incomplete; NOT VERIFIED | `p10/ACCEPTANCE-MATRIX.md` | Track in #483; fix a real markup problem only after reproduction. |
+| Clean repeated deterministic build, generated drift and incremental checks | Formally deferred by owner | NOT VERIFIED in bounded P-10 campaign; existing CI checks PASS their own assertions | `p10/run-suites.out.txt` | Track in #483; do not claim repeated clean-build success. |
 
-No deployment, pin change or closure is authorized by this report.
+Owner explicitly approved finishing the program and dispositioning these residual checks. This report alone does not authorize any unrelated production change or child pin update. Normal Pages deployment follows the PR #482 merge, if performed.
