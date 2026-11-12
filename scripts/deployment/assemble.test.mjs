@@ -545,3 +545,53 @@ test('offline artifact identity detects contract mutations', async t => {
         finally { fs.rmSync(destination, { recursive: true }); fs.cpSync(backup, destination, { recursive: true }); fs.rmSync(backup, { recursive: true }); Object.keys(manifest).forEach(key => delete manifest[key]); Object.assign(manifest, before); }
     });
 });
+
+test('URL preservation detects removals and missing files while allowing additions', t => {
+    const sitemap = urls => `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url => `<url><loc>${ORIGIN}/${url}</loc></url>`).join('')}</urlset>`;
+    const previous = fixture(t, { 'sitemap.xml': sitemap(['old/']) });
+    const current = fixture(t, { 'sitemap.xml': sitemap(['old/', 'new/']), 'old/index.html': 'old' });
+    const run = (...extra) => spawnSync(process.execPath, [path.join(here, 'url-preservation.mjs'), '--previous', previous, '--current', current, ...extra], { encoding: 'utf8' });
+    assert.equal(run().status, 0);
+    assert.equal(run('--report', path.join(current, 'report.json')).status, 2);
+    const reports = fixture(t, { 'target.json': 'keep' });
+    fs.symlinkSync(path.join(reports, 'target.json'), path.join(reports, 'link.json'));
+    assert.equal(run('--report', path.join(reports, 'link.json')).status, 2);
+    fs.linkSync(path.join(reports, 'target.json'), path.join(reports, 'hardlink.json'));
+    assert.equal(run('--report', path.join(reports, 'hardlink.json')).status, 2);
+    assert.equal(fs.readFileSync(path.join(reports, 'target.json'), 'utf8'), 'keep');
+    fs.writeFileSync(path.join(current, 'sitemap.xml'), sitemap(['new/']));
+    assert.equal(run().status, 1);
+    fs.writeFileSync(path.join(current, 'sitemap.xml'), sitemap(['old/', 'new/']));
+    fs.unlinkSync(path.join(current, 'old/index.html'));
+    assert.equal(run().status, 1);
+});
+
+
+test('URL preservation validates sitemap input and confined host resolution', t => {
+    const ns = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+    const sitemap = url => `<s:urlset xmlns:s="${ns}"><s:url><s:loc> ${url} </s:loc></s:url></s:urlset>`;
+    const previous = fixture(t, { 'sitemap.xml': sitemap(`${ORIGIN}/old/`) });
+    const current = fixture(t, { 'sitemap.xml': sitemap(`${ORIGIN}/old/`), 'old/index.html': 'ok' });
+    const run = () => spawnSync(process.execPath, [path.join(here, 'url-preservation.mjs'), '--previous', previous, '--current', current], { encoding: 'utf8' });
+    const set = (site, content) => fs.writeFileSync(path.join(site, 'sitemap.xml'), content);
+    for (const bad of ['not XML', `<urlset xmlns="${ns}"/>`, `<sitemapindex xmlns="${ns}"/>`, '<urlset><url></urlset>']) {
+        set(previous, bad); assert.equal(run().status, 2, bad);
+    }
+    for (const bad of [`${ORIGIN}/%2e%2e%2foutside.html`, `${ORIGIN}/bad%ZZ`, 'https://example.com/']) {
+        set(previous, sitemap(bad)); assert.equal(run().status, 2, bad);
+    }
+    set(previous, sitemap(`${ORIGIN}/old/`));
+    fs.unlinkSync(path.join(current, 'old/index.html'));
+    fs.writeFileSync(path.join(current, 'old/index.html.html'), 'wrong');
+    assert.equal(run().status, 1);
+    set(previous, sitemap(`${ORIGIN}/missing.html`)); set(current, sitemap(`${ORIGIN}/missing.html`));
+    fs.writeFileSync(path.join(current, 'missing.html.html'), 'wrong'); assert.equal(run().status, 1);
+    const outside = fixture(t, { 'outside.html': 'outside' });
+    fs.symlinkSync(path.join(outside, 'outside.html'), path.join(current, 'escape.html'));
+    set(previous, sitemap(`${ORIGIN}/escape.html`)); set(current, sitemap(`${ORIGIN}/escape.html`)); assert.equal(run().status, 1);
+    fs.writeFileSync(path.join(current, 'café & tea.html'), 'ok');
+    const encoded = `${ORIGIN}/caf%C3%A9%20%26%20tea.html?x=1&amp;y=&#50;`;
+    set(previous, sitemap(encoded)); set(current, sitemap(encoded)); assert.equal(run().status, 0);
+    fs.writeFileSync(path.join(current, 'old/index.html'), 'ok');
+    set(previous, sitemap(`${ORIGIN}/old/`)); set(current, sitemap(`${ORIGIN}/old/`)); assert.equal(run().status, 0);
+});
