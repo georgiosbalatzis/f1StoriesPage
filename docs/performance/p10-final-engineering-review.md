@@ -1,14 +1,14 @@
 # P-10 — Performance & Codebase Optimization Final Engineering Review
 
-**P-10 VALIDATION COMPLETE — OWNER ACCEPTED CLOSURE WITH DISCLOSED RESIDUAL RISKS (2026-11-12)**
+**PERFORMANCE & CODEBASE OPTIMIZATION 2.0 — ENGINEERING PROGRAM CLOSED WITH DISCLOSED RESIDUAL RISKS**
 
-This is an evidence-based validation record, not a declaration that every program gate passed. The owner accepted administrative program closure with explicitly unverified security, accessibility, browser and build acceptance items; these are tracked in [issue #483](https://github.com/georgiosbalatzis/f1StoriesPage/issues/483). The bounded P-10 checks below are complete, but full browser journeys and human accessibility acceptance remain unverified. P-01–P-09 established a baseline, made targeted accessibility, request-pacing, cache, identity and layout changes, and rejected changes without sufficient evidence. The frozen artifact has verified identity and public-file checks; release readiness remains conditional on the decisions below. No new production deployment or field performance measurement is claimed here; a current closed-proxy laboratory measurement is recorded below.
+Classification applied by the owner's final disposition (2026-11-12) on merge of PR #482, after the mandatory closure checks below passed (two clean deterministic builds, generated drift, incremental, bounded final smoke, B-14 security review, green CI on the reviewed head). Before that disposition this record read "P-10 VALIDATION COMPLETE — PROGRAM CLOSURE PENDING". This is an evidence-based record, not a declaration that every program gate passed, and it is not an accessibility sign-off. Residual items are disclosed, formally dispositioned by the owner and tracked in [issue #483](https://github.com/georgiosbalatzis/f1StoriesPage/issues/483) and the per-item issues listed below. Full browser journeys and human accessibility acceptance remain unverified. P-01–P-09 established a baseline, made targeted accessibility, request-pacing, cache, identity and layout changes, and rejected changes without sufficient evidence. The frozen artifact has verified identity and public-file checks; release readiness remains conditional on the decisions below. No new production deployment or field performance measurement is claimed here; a current closed-proxy laboratory measurement is recorded below.
 
 ## Identity and provenance
 
 Frozen Pages run `43131092903`: Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`, Telemetry `82def832eec1a703e698511151d047b2941955bb`, Ghost Car `13fc12afb7c73ccbab6e71fc3d3210d922038d51`, TYRES code `249aa796a1981be4f70213c9f1973b4418faf3ca`, TYRES data `dbc69155aaa8e8c2af3556ef02ba18d54ad0ba0c`, data digest `2632578b4f4d073625075f35e039854910765b8d5c3a5ffaa505bdb369faeccd`, generated `2026-11-12T00:59:34.718Z`, BetCast `f039dc657a216b6c23582db3e7eab2f6d3991f81`. Manifest output digest `8e1d89b15c8d43cc392979151d039cb980b95198d70d3b01a80e40e464977f51`; ZIP SHA-256 `01c2f8d035773c8c96d77047601ce59dc9d64518636f75f43d922d31c5e191f1` matched the GitHub digest. These hashes describe different objects. P-08 identity and public checks passed; B-18/B-19 browser behavior remains unverified. Evidence: run `43131092903`, `p10/IDENTITY.md`, `p10/verify-43131092903.json` in the external evidence archive.
 
-P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`. Review, URL checker and tests are contained in [PR #482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482), initially reviewed at head `1605c228bd90b9b77616df13a4e7674a7cf677fa`. The PR may acquire a subsequent documentation-only commit; the final merge SHA is recorded by GitHub, not inferred in this report.
+P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`. Review, URL checker and tests are contained in [PR #482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482), initially reviewed at head `1605c228bd90b9b77616df13a4e7674a7cf677fa`. The PR acquired subsequent documentation-only commits (owner closure dispositions, then closure acceptance results); the final merge SHA is recorded by GitHub, not inferred in this report.
 
 ## Phase status
 
@@ -18,12 +18,12 @@ P-10 repository base is Main `2cdd77085cb740f5d1cf0fc90803995e2fe4e959`. Review,
 | P-02 | PASS: generated coherence at tested SHA, calendar contrast and rate-safe measurement tooling; stale #462 superseded. |
 | P-03 | PASS: attribution and scoped accessibility fixes; no unproven performance gain claimed. |
 | P-04 | PASS for authorized Telemetry pacing correctness; literal performance criterion FAIL (gzip +186 B). BetCast real-world LCP improvement NOT MEASURED. |
-| P-05 | KNOWN BASELINE LIMITATION: simulated LCP misses; #474 rejected. HTTPS tool #473 BLOCKED pending isolation and review. |
+| P-05 | KNOWN BASELINE LIMITATION: simulated LCP misses; #474 rejected. HTTPS tool #473 closed without merge (2026-11-12) and excluded from the release; isolated-VM verification tracked in #484. |
 | P-06 | PASS: hygiene investigation; no deletion justified. |
 | P-07 | PASS: TYRES restoration observed; end-to-end latency improvement NOT MEASURED. |
-| P-08 | PASS: frozen artifact identity and contracts; browser B-18/B-19 NOT VERIFIED; B-14 trust proposal awaits independent review. |
+| P-08 | PASS: frozen artifact identity and contracts; browser B-18/B-19 NOT VERIFIED. B-14 independently reviewed (Sol High, threat fixtures): no deployed defect established, informational; deferred hardening in georgiosbalatzis/f1-telemetry-dashboard#28. |
 | P-09 | PASS: fixture CLS improvement and deployed bundle identity; human screen-reader acceptance NOT VERIFIED. |
-| P-10 | Bounded validation recorded and independently reviewed (two rounds); full integrated browser coverage NOT VERIFIED. Owner accepted closure with disclosed residuals tracked in #483, not a claim of all gates passing. |
+| P-10 | PASS with disclosed residual risk: bounded validation, closure checks (deterministic builds, drift, incremental, final smoke 55/55, B-14 review) and independent reviews complete; exhaustive browser coverage accepted as incomplete (#489). |
 
 Detailed phase provenance and PR identifiers: external evidence `p10/ACCEPTANCE-MATRIX.md` and `CHECKPOINT.md`.
 
@@ -78,23 +78,23 @@ READY WITH DISCLOSED LIMITATIONS means bounded evidence exists, not that every l
 | Main editorial website | READY WITH DISCLOSED LIMITATIONS | Source and editorial suites pass; full integrated journeys unverified. |
 | Historical article integrity | READY WITH DISCLOSED LIMITATIONS | Corrected sitemap/file comparison: 0 of 514 earlier URLs removed or unresolved; content and all links not exhaustively checked. |
 | SEO and metadata | READY WITH DISCLOSED LIMITATIONS | Public artifact and CI media/domain checks pass; complete browser and external redirect audit unverified. |
-| Accessibility | NOT VERIFIED | Scoped fixes and proxy tests pass; human SR, forced colours and Blog heading order open. |
-| Responsive/visual behavior | NOT VERIFIED | CI edition/tablet and local fixture checks; full viewport/theme matrix missing. |
+| Accessibility | READY WITH DISCLOSED LIMITATIONS | Scoped fixes and proxy tests pass; rendered heading order 0 skips (Blog index, Home; 390/768/1440). Open: human screen reader (BetCastVisualisation#8), original Blog heading-order finding not reproduced but not closed (#486), forced colours. |
+| Responsive/visual behavior | READY WITH DISCLOSED LIMITATIONS | Final smoke: Home, Blog, article, Standings, BetCast × 390/768/1440 × light/dark/system — no horizontal overflow, mobile menu, theme persistence against each app's DOM contract. Full visual QA residual (#489). |
 | Main performance | READY WITH DISCLOSED LIMITATIONS | Current rate-safe run reproduces the known simulated-LCP misses (Home 2810, Blog 2734, Article 3332 ms; Article perf 92) with the same known simulated-budget failure pattern; no matched before/after regression or improvement established; Standings passes; field data unavailable. |
 | Telemetry | READY WITH DISCLOSED LIMITATIONS | Pacing fix merged; provider and full selection journeys unverified. |
-| Ghost Car | NOT VERIFIED | Pin and source contract verified, complete current journey not verified. |
+| Ghost Car | READY WITH DISCLOSED LIMITATIONS | Pin and source contract verified; final smoke verified navigation, direct load and reload of `/ghostcar/`; complete data journey not verified (#489). |
 | TYRES | READY WITH DISCLOSED LIMITATIONS | Identity and cache hits verified; refresh and data-change production paths not observed. |
 | BetCast | READY WITH DISCLOSED LIMITATIONS | Fixture CLS and deployed bundle verified; human SR and current complete journey open. |
-| Cross-app navigation | NOT VERIFIED | Source roundtrip passes; B-18/B-19 browser behavior open. |
-| Embedded integrations | NOT VERIFIED | Embed dialog fixture passes; complete integration and embed suites skipped. |
-| Publishing pipeline | READY WITH DISCLOSED LIMITATIONS | CI and build pass; current repeated deterministic/incremental checks and matched latency open. |
+| Cross-app navigation | READY WITH DISCLOSED LIMITATIONS | Final smoke: aggregate navigation to all five apps and back, direct load/reload, Grand Prix hub generated deep links into child tools; source round-trip passes. Standings' race-specific TYRES link needs live schedule data (falls back to `/tyres/`, observed). |
+| Embedded integrations | READY WITH DISCLOSED LIMITATIONS | Final smoke: embedded BetCast article (trusted handshake, resize, loaded content, parent theme); P-09 trusted-origin replay. Full embed/audio suites residual (#489). |
+| Publishing pipeline | READY WITH DISCLOSED LIMITATIONS | CI and build pass; two clean builds byte-identical, generated-drift guard synchronized, incremental check passes; matched end-to-end latency unmeasured (#485). |
 | Cache reliability | READY WITH DISCLOSED LIMITATIONS | Two production hits recorded; freshness and integrity controls retained; more paths require observation. |
 | Analytics and consent | READY WITH DISCLOSED LIMITATIONS | Security and CI consent/RUM regressions pass; comprehensive current browser verification open. |
-| Security | NOT VERIFIED | #473 was closed without merge because isolated containment proof was unavailable. B-14 parent-origin fallback remains unreviewed by an independent security reviewer and its impact is undetermined; no deployed vulnerability has been established. Tracked in #483. |
+| Security | READY WITH DISCLOSED LIMITATIONS | B-14: no deployed defect established (Sol High, deterministic threat fixtures; informational; deferred hardening georgiosbalatzis/f1-telemetry-dashboard#28). #473 closed without merge, excluded (#484). Security policy suites pass. Production HTTP framing headers unmeasured. |
 | Artifact provenance | READY | Frozen source/data identities and ZIP digest verified for run `43131092903`; no fresh live assertion. |
-| CI and rollback | READY WITH DISCLOSED LIMITATIONS | Supplied quality/release steps passed; P-10 delta review and complete integrated gates outstanding. Roll back P-10 by reverting its eventual commit; production rollback uses prior verified Pages artifact and pins under owner control. |
+| CI and rollback | READY | Quality and release steps pass; reviewed PR #482 head green. Roll back P-10 by reverting its eventual commit; production rollback uses prior verified Pages artifact and pins under owner control. |
 
-#473 was closed without merge, excluding the unverified HTTPS mode from Main. The owner formally accepted administrative program closure with the outstanding acceptance gaps explicitly unverified and tracked in #483; this is not a security or accessibility sign-off. Matched P-07 latency is optional follow-up measurement. No evidence here establishes a broken URL, exposed credential or incorrect frozen pin. Simulated LCP misses, incomplete field data and incomplete responsive coverage are disclosed limitations; they are not evidence of a reader-facing slowdown.
+#473 was closed without merge, excluding the unverified HTTPS mode from Main. Every outstanding item is formally dispositioned by the owner and tracked in a GitHub issue with owner, severity, evidence and follow-up trigger (umbrella #483). Matched P-07 latency is follow-up measurement. No evidence here establishes a broken URL, exposed credential or incorrect frozen pin. Simulated LCP misses, incomplete field data and incomplete responsive coverage are disclosed limitations; they are not evidence of a reader-facing slowdown.
 
 ## Quantified results and engineering decisions
 
@@ -105,38 +105,53 @@ READY WITH DISCLOSED LIMITATIONS means bounded evidence exists, not that every l
 - Main: `git diff --stat a26fbac5a 2cdd77085 -- '*.css' '*.js' '*.html' styles scripts/perf 'scripts/shared-nav*'` shows 54 HTML/test files, including generated homepage hero and preload changes; no runtime CSS/JS source change was identified. HTML and image changes can affect performance, so P-10 remeasured: a closed-proxy `perf:lighthouse:rate-safe` run on the frozen live artifact (3 attempts per route, all valid) gives simulated LCP Home 2810, Blog 2734, Article 3332 ms (Article performance 92), Standings within budget — same known simulated-budget failure pattern; no matched before/after regression or improvement established. P-05 observed loopback LCP 74–118 ms; simulated Home 2883/3505, Blog 2734/3184, Article 2957/3558 ms against 2500 ms. Simulation and observed paint are distinct; field LCP/CLS/INP NOT MEASURED (`p05/CONCLUSION.md`).
 - Hygiene: P-06 found no safe deletion; gross duplicates are not realised savings. URL preservation adds deployment fixtures for input validation, resolution, containment and report destinations.
 
-The program improved reproducible artifact identity and cross-app contract checks, rate-safe closed-proxy Lighthouse tooling, queue pacing, scoped accessibility, TYRES cache restoration, evidence retention and release validation. Deterministic build controls exist, but a fresh repeated P-10 build is not established by these records.
+The program improved reproducible artifact identity and cross-app contract checks, rate-safe closed-proxy Lighthouse tooling, queue pacing, scoped accessibility, TYRES cache restoration, evidence retention and release validation. Two fresh clean builds of the reviewed head produced byte-identical `dist` trees.
 
 Rejected: speculative media deletion would risk historical URLs and dynamic usage; font/preload ideas lacked demonstrated benefit; the BetCast intro replacement candidate increased CLS; navigation deferral #474 exceeded its Blog TBT guardrail; broad build sharing lacked measured benefit; permission increases lacked security authorization. Preserve controls and review evidence before revisiting any proposal.
 
 ## Residual risk and maintenance
 
-1. High: #473 was closed without merge because OS-enforced isolation and forced-termination safety are unverified. Reopen only if needed and only for isolated-VM testing, owner acceptance and independent security review; never run its live harness on the owner's account (`p05/473-SECURITY-HANDOFF.md`).
-2. High: the owner formally dispositioned missing integrated browser/security and repeated generated-build gates as **NOT VERIFIED**, tracked in #483. Prior independent review covered the original PR; documentation-only closure edits require CI validation and accurate disclosure.
-3. Medium: conduct P-09 human screen-reader checks for loading, success, failure and recovery; review B-14 separately with threat fixtures.
-4. Medium: measure matched publication latency and observe TYRES scheduled refresh/data-change misses; retain six-hour freshness and SHA/digest controls.
-5. Medium: obtain representative field metrics if available without changing consent; investigate Blog heading order and complete responsive, forced-colours and cross-app browser checks.
+Ranked residual risks (all tracked; umbrella #483):
+
+| Rank | Item | Severity | Issue | Follow-up trigger |
+|---|---|---|---|---|
+| 1 | Human screen-reader acceptance of BetCast loading/error/Retry | Medium | georgiosbalatzis/BetCastVisualisation#8 | Within 30 days or before the next BetCast loading/error UI change |
+| 2 | #473 HTTPS runner isolated-VM containment proof (closed, excluded) | Medium | #484 | Before #473 is reopened or its results inform a release |
+| 3 | Blog heading-order finding (not reproduced, not closed) | Low–medium | #486 | Next Blog index template change or 30 days |
+| 4 | P-07 matched end-to-end publication latency; TYRES refresh/data-change paths | Low | #485 | After the next five normal article publications |
+| 5 | Lighthouse simulated-LCP budget failures (budgets unchanged) | Low | #487 | Field data available or budget review |
+| 6 | Field Core Web Vitals not measured | Low | #488 | When a field data source is approved |
+| 7 | Exhaustive browser coverage (full visual/embeds/audio/countdown with complete fixtures) | Low | #489 | Next change to embeds, audio player or visual QA tooling |
+| 8 | B-14 Telemetry embed-origin hardening (no deployed defect) | Informational | georgiosbalatzis/f1-telemetry-dashboard#28 | Before restricting Telemetry embedding or changing its message protocol |
 
 Keep CI budgets and failure gates unchanged. Verify pins and artifact digests on each release, run cross-app contracts on pin changes, sample accessibility and responsive journeys periodically, monitor TYRES freshness and matched publishing timings, and retain reports and prior verified artifacts for rollback. Escalate production regressions with the affected run, source identities and reproducible evidence.
 
 ## Owner closure disposition
 
-Independent review: external `p10/sol-review.md` (REQUIRED CHANGES R1–R5, addressed) and delta `p10/sol-review-r2.md` (R1/R2 closed; stale comparison-status text corrected in this revision).
+Independent review: external `p10/sol-review.md` (REQUIRED CHANGES R1–R5, addressed) and delta `p10/sol-review-r2.md` (R1/R2 closed). After the owner's final disposition, two further independent reviews occurred: the B-14 security review (Sol High, `p10/closure/B14-REVIEW.md`) and a Sol Medium delta review of these closure edits (recorded on PR #482). No other review is implied.
 
-Review status: original P-10 review and second delta review are documented above. The owner-approved closure wording here is a documentation-only follow-up; do not imply a new independent review occurred.
+Pull request: [#482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482). Initial reviewed PR head: `1605c228bd90b9b77616df13a4e7674a7cf677fa`; subsequent documentation edits and the final merge SHA are recorded on GitHub.
 
-Pull request: [#482](https://github.com/georgiosbalatzis/f1StoriesPage/pull/482).
+Closure acceptance conditions (owner, 2026-11-12), results against the PR #482 head and the live artifact of Pages run `43131092903` (evidence: external archive `p10/closure/`):
 
-Initial reviewed PR head: `1605c228bd90b9b77616df13a4e7674a7cf677fa`; subsequent documentation edits and final merge SHA are recorded on GitHub.
+| Condition | Result |
+|---|---|
+| Two clean deterministic builds | PASS — two fresh clones of the reviewed head, `npm run build:public` (79 s / 80 s), sorted SHA-256 manifests of `dist` identical. |
+| Generated drift | PASS — `npm run build:check` (`scripts/build/generated-drift-guard.mjs`): generated artifacts synchronized. |
+| Incremental checks | PASS — `npm run check:assets`; `npm run test:incremental` passed at HEAD (0 changed pages). |
+| Bounded final smoke | PASS 55/55 — aggregate navigation to `/telemetry/`, `/ghostcar/`, `/tyres/`, `/betcast/`, Race Desk and back; Grand Prix hub generated deep links into child tools; embedded BetCast article (trusted handshake, resize, loaded content, parent theme); shared audio play/pause on `/`, `/authors/`, `/standings/`; Home, Blog, article, Standings, BetCast × 390/768/1440 × light/dark/system with no horizontal overflow, mobile menu and theme persistence checked against each app's DOM theme contract. Only `f1-stories.gr` was served (from the artifact); all other requests aborted; BetCast data from frozen Sheets fixtures; audio from a synthetic local file. Standings' race-specific TYRES link falls back to `/tyres/` without live schedule data (observed, expected). |
+| B-14 security review | NO DEPLOYED DEFECT ESTABLISHED, severity informational — independent Sol High review of Telemetry pin `82def832e` and the deployed bundle, with deterministic threat fixtures (hostile parent with normal, attribute-suppressed and header-suppressed referrer, invalid-theme-first; legitimate control; opaque sandbox unsupported). A hostile framer can only receive `{type, height}` resize replies and change its own embed's light/dark appearance and same-document theme URL parameter; no disclosure, XSS, storage/cookie change, navigation or network request. Deferred hardening: georgiosbalatzis/f1-telemetry-dashboard#28. |
+| CI on the reviewed head | Required green before merge (Site Quality and Ecosystem dry run). |
 
 | Item | Mandatory vs optional | Current state | Evidence location | Owner action |
 |---|---|---|---|---|
-| #473 isolation/security | Mandatory for any future #473 merge | Closed WITHOUT merge; no HTTPS mode deployed | `p05/473-SECURITY-HANDOFF.md` | Reopen only if necessary after isolated-VM containment and independent security review. |
-| P-09 human screen-reader check | Formally deferred by owner | NOT VERIFIED | `p09/sol-review-r5.md` | Track in #483; conduct human loading, success, failure and recovery checks. |
-| P-07 matched end-to-end latency and remaining cache paths | Formally deferred by owner | UNMEASURED latency; refresh/data-change paths unobserved | `p07r/TYRES-VALIDATION.md`, `CHECKPOINT.md` | Track in #483; measure only on normal publishing runs, preserve permissions. |
-| B-14 review | Required before any security change | UNVERIFIED origin-fallback risk, not independently assessed | `p10/sol-review.md`, P-08 evidence | Track in #483; independent threat-fixture and high-effort security review before adopting any proposal. |
-| Complete integration/child journeys, embeds/audio/full visual QA | Formally deferred by owner | CI smoke passed its assertions; full journeys NOT VERIFIED | `p10/data/release-43131092903-build.log`, `p10/run-suites.out.txt` | Track gaps in #483; no claim of full integration equivalence. |
-| Responsive, forced-colours and Blog heading order | Formally deferred by owner | Incomplete; NOT VERIFIED | `p10/ACCEPTANCE-MATRIX.md` | Track in #483; fix a real markup problem only after reproduction. |
-| Clean repeated deterministic build, generated drift and incremental checks | Formally deferred by owner | NOT VERIFIED in bounded P-10 campaign; existing CI checks PASS their own assertions | `p10/run-suites.out.txt` | Track in #483; do not claim repeated clean-build success. |
+| #473 isolation/security | Mandatory for any future #473 merge | Closed WITHOUT merge; no HTTPS mode deployed | `p05/473-SECURITY-HANDOFF.md`; #484 | Reopen only if necessary after isolated-VM containment and independent security review. |
+| P-09 human screen-reader check | Formally deferred by owner | NOT VERIFIED | `p09/sol-review-r5.md`; georgiosbalatzis/BetCastVisualisation#8 | Conduct human loading, success, failure and recovery checks. |
+| P-07 matched end-to-end latency and remaining cache paths | Formally deferred by owner | UNMEASURED latency; refresh/data-change paths unobserved | `p07r/TYRES-VALIDATION.md`; #485 | Measure only on normal publishing runs, preserve permissions. |
+| B-14 review | Completed | No deployed defect established (informational); hardening deferred, no security change adopted | `p10/closure/B14-REVIEW.md`; georgiosbalatzis/f1-telemetry-dashboard#28 | Review again before restricting Telemetry embedding or changing its message protocol. |
+| Complete integration/child journeys, embeds/audio/full visual QA | Formally deferred by owner | Bounded final smoke 55/55 PASS; exhaustive suites NOT VERIFIED | `p10/closure/final-smoke.json`; #489 | No claim of full integration equivalence; give remaining suites complete fixtures. |
+| Responsive, forced-colours and Blog heading order | Formally deferred by owner | Responsive/theme smoke PASS; Blog heading-order not reproduced (rendered 0 skips, 390/768/1440), not closed; forced colours NOT VERIFIED | `p10/closure/heading-order.txt`; #486 | Fix a real markup problem only after reproduction with `qa:visual` conditions. |
+| Clean repeated deterministic build, generated drift and incremental checks | Completed | PASS (see table above) | `p10/closure/build-check.out.txt` | None. |
+| Lighthouse simulated-LCP failures / field Core Web Vitals | Disclosed | Simulated failures remain; budgets unchanged; field data NOT MEASURED | #487, #488 | Revisit with field data. |
 
-Owner explicitly approved finishing the program and dispositioning these residual checks. This report alone does not authorize any unrelated production change or child pin update. Normal Pages deployment follows the PR #482 merge, if performed.
+Owner explicitly approved finishing the program and dispositioning these residual checks. This report alone does not authorize any unrelated production change or child pin update. Normal Pages deployment follows the PR #482 merge.
