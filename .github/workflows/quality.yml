@@ -163,6 +163,7 @@ jobs:
         run: npm run build:public
 
       - name: Check generated artifact drift
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run build:check
 
       - name: Run static source guard

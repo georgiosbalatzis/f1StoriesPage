@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Tue, 10 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 11 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Deny Hulme: Ο πρωτάθλητης που δεν έμοιαζε με τους άλλους.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261112W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261112W/article.html</guid>
+      <pubDate>Wed, 11 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο Denny Hulme, ο μοναδικός Νεοζηλανδός πρωταθλητής της Formula 1, έζησε μακριά από τη δημοσιότητα, αφήνοντας πίσω του μια σπουδαία αγωνιστική κληρονομιά.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Ο ξεχωριστός κύριος Gronholm</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261111W/article.html</link>
@@ -265,15 +274,6 @@
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261017W/article.html</guid>
       <pubDate>Fri, 16 Oct 2026 21:00:00 GMT</pubDate>
       <description>Ο Νίκολας Λατίφι (Nicholas Latifi) υπήρξε ένας από τους οδηγούς που κατάφεραν να φτάσουν στην κορυφή του μηχανοκίνητου αθλητισμού, περνώντας από τις…</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Mika Salo: Ένα παιδί από το Ελσίνκι</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261016W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261016W/article.html</guid>
-      <pubDate>Thu, 15 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Υπήρξε κάποτε ένα παιδί από το Ελσίνκι που μεγάλωσε έχοντας απέναντί του έναν άλλο Mika. Τον Χάκινεν.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>

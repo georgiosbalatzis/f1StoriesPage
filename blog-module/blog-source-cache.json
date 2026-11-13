@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261112W",
+      "title": "Deny Hulme: Ο πρωτάθλητης που δεν έμοιαζε με τους άλλους.",
+      "author": "Themis Charvalis",
+      "date": "2026-11-12",
+      "dateISO": "2026-11-12",
+      "displayDate": "12 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261112W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261112W/2.webp",
+      "excerpt": "Ο Denny Hulme, ο μοναδικός Νεοζηλανδός πρωταθλητής της Formula 1, έζησε μακριά από τη δημοσιότητα, αφήνοντας πίσω του μια σπουδαία αγωνιστική κληρονομιά.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261112W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Deny Hulme",
+        "F1",
+        "Racing Legends",
+        "F1 Champions"
+      ],
+      "wordCount": 619,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 700,
+      "backgroundImageHeight": 1004,
+      "inputDigest": "1f61721a5d93e6c391cf0b45e11a8da85d739d207a3f8713ad069dd6a7e1fd6c"
+    },
+    {
       "id": "20261111W",
       "title": "Ο ξεχωριστός κύριος Gronholm",
       "author": "Themis Charvalis",
@@ -11787,5 +11819,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-11T19:20:12.337Z"
+  "lastUpdated": "2026-11-13T09:42:42.386Z"
 }
