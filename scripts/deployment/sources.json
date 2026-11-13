@@ -46,7 +46,7 @@
     {
       "application": "betcast",
       "repository": "georgiosbalatzis/BetCastVisualisation",
-      "sha": "1d453951e8238f6e705efc5aa71d57de1157578d",
+      "sha": "0524f185be750de3ce4c2a6116188ef6fe333ccc",
       "path": "/betcast/",
       "output": "build",
       "build": "build:f1stories",
