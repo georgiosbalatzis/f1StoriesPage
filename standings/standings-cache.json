@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T13:38:44.985Z",
+  "generatedAt": "2026-11-14T01:58:54.367Z",
   "raceName": "Brazilian Grand Prix",
   "source": {
     "driverStandingsUrl": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
@@ -610,8 +610,13 @@
                 "wins": "0",
                 "Driver": {
                   "driverId": "rafael_camara",
+                  "permanentNumber": "51",
+                  "code": "CAM",
+                  "url": "https://en.wikipedia.org/wiki/Rafael_C%C3%A2mara",
                   "givenName": "Rafael",
-                  "familyName": "Camara"
+                  "familyName": "Camara",
+                  "dateOfBirth": "2005-05-05",
+                  "nationality": "Brazilian"
                 },
                 "Constructors": [
                   {
