@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261114W",
+      "title": "Ricardo Zonta: Πέρα από την Formula 1",
+      "author": "Themis Charvalis",
+      "date": "2026-11-14",
+      "dateISO": "2026-11-14",
+      "displayDate": "14 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261114W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261114W/2.webp",
+      "excerpt": "Ο Ricardo Zonta, πρωταθλητής πριν από τη Formula 1, έζησε μια καριέρα γεμάτη ατυχίες, τραυματισμούς και χαμένες ευκαιρίες.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261114W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Ricardo Zonda",
+        "Racing Champion"
+      ],
+      "wordCount": 893,
+      "readingTime": "5 min",
+      "imageWidth": 497,
+      "imageHeight": 319,
+      "backgroundImageWidth": 588,
+      "backgroundImageHeight": 359,
+      "inputDigest": "cd3f35ccede192bece3dbac95e4a32ea684f5c3272587a219d2f3125626be56f"
+    },
+    {
       "id": "20261112W",
       "title": "Deny Hulme: Ο πρωτάθλητης που δεν έμοιαζε με τους άλλους.",
       "author": "Themis Charvalis",
@@ -11819,5 +11850,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-13T09:42:42.386Z"
+  "lastUpdated": "2026-11-14T18:41:48.289Z"
 }

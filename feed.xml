@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Wed, 11 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 13 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ricardo Zonta: Πέρα από την Formula 1</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261114W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261114W/article.html</guid>
+      <pubDate>Fri, 13 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο Ricardo Zonta, πρωταθλητής πριν από τη Formula 1, έζησε μια καριέρα γεμάτη ατυχίες, τραυματισμούς και χαμένες ευκαιρίες.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Deny Hulme: Ο πρωτάθλητης που δεν έμοιαζε με τους άλλους.</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261112W/article.html</link>
@@ -265,15 +274,6 @@
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261018W/article.html</guid>
       <pubDate>Sat, 17 Oct 2026 21:00:00 GMT</pubDate>
       <description>Ο Troy Corser δεν ήταν από εκείνους που έδιναν την εντύπωση ότι πολεμούσαν με τη μοτοσυκλέτα τους.</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Nicholas Latifi: Η εντυπωσιακή του παρουσία στις μικρές κατηγορίες</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261017W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261017W/article.html</guid>
-      <pubDate>Fri, 16 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Νίκολας Λατίφι (Nicholas Latifi) υπήρξε ένας από τους οδηγούς που κατάφεραν να φτάσουν στην κορυφή του μηχανοκίνητου αθλητισμού, περνώντας από τις…</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
