@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { flash, invisibleFocus, focusChainBroken, menuBroken, selectionLost, skipBroken, heightBroken, orderBroken, themeBroken, betcastSelectionBroken, withTimeout, focusCycleEnded, traverseFocus, traceOutcome, classifyPresentedFrames, expectedTabbablesFixture, focusDiff, mergeVisibleStops } from '../presentation-qa.mjs';
+import { flash, invisibleFocus, focusChainBroken, menuBroken, selectionLost, skipBroken, heightBroken, orderBroken, themeBroken, betcastSelectionBroken, withTimeout, focusCycleEnded, traverseFocus, traceOutcome, classifyPresentedFrames, expectedTabbablesFixture, focusDiff, mergeVisibleStops, classifyMissing, telemetryInvisibleStop } from '../presentation-qa.mjs';
 assert.equal(flash('white', 'black'), true);
 assert.equal(invisibleFocus({ visible:false, indicator:true, hidden:false }), true);
 assert.equal(menuBroken({ open:true, inside:true, closed:true, restored:false }), true);
@@ -61,8 +61,27 @@ async function rotatingProbe(landedIdentity, rotating = true) {
     let i = 0;
     const expected = [{identity:1,selector:'#before'}, {identity:2,selector:'#slide',rotating}, {identity:3,selector:'#after'}];
     return traverseFocus({press:async()=>{}, observe:async()=>[{identity:[1,3,1][i++],tag:'BUTTON',selector:'button',...visible}], expected:async()=>expected,
-        probeDiff:async()=>[{kind:'missing',...expected[1],focused:true,predecessorFocused:true,landedIdentity,predecessor:'#before'}]});
+        probeDiff:async()=>[{kind:'missing',...expected[1],focused:true,predecessorFocused:true,tabbableAtPredecessor:true,landedIdentity,predecessor:'#before'}]});
 }
 assert.equal((await rotatingProbe(2)).completed, true);
 assert.match((await rotatingProbe(3)).errors.join(' '), /GENUINE/);
 assert.equal((await rotatingProbe(2, false)).completed, false);
+
+assert.equal(classifyMissing({predecessorFocused:true,tabbableAtPredecessor:false}), 'STATE-DEPENDENT');
+assert.equal(classifyMissing({predecessorFocused:true,tabbableAtPredecessor:true,identity:2,landedIdentity:3}), 'GENUINE');
+assert.equal(classifyMissing({predecessorFocused:true}), 'UNMEASURED');
+let cycleIndex=0;
+const shortCycle=await traverseFocus({press:async()=>{},observe:async()=>[{identity:[1,2,1][cycleIndex++],tag:'BUTTON',...visible}],expected:async()=>[1,2]});
+assert.match(shortCycle.errors.join(' '), /incomplete traversal: no top-level boundary observed/);
+assert.equal(shortCycle.termination, 'first-stop-repeat');
+assert.equal(telemetryInvisibleStop([{identity:1,telemetry:true,tag:'IFRAME'},{tag:'BODY',indicator:false,visible:true}], [{identity:2}]), true);
+
+async function stateProbe(state) {
+    let i=0; const expected=[{identity:1,selector:'#a'},{identity:2,selector:'#target'},{identity:3,selector:'#b'}];
+    return traverseFocus({press:async()=>{},observe:async()=>[{identity:[1,3,1][i++],tag:'BUTTON',...visible}],expected:async()=>expected,probeDiff:async()=>[{kind:'missing',...expected[1],predecessorFocused:true,landedIdentity:3,stateReason:'visibility:hidden',...state}]});
+}
+const hidden=await stateProbe({tabbableAtPredecessor:false});
+assert.deepEqual(hidden.errors, []);
+assert.match(hidden.notes.join(' '), /STATE-DEPENDENT.*visibility:hidden/);
+assert.match((await stateProbe({tabbableAtPredecessor:true})).errors.join(' '), /GENUINE/);
+assert.match((await stateProbe({})).errors.join(' '), /UNMEASURED/);

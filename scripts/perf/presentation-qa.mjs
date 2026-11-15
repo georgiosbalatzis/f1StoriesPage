@@ -12,6 +12,8 @@ const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export const flash = (first, final) => !first || !final || first !== final;
 export const invisibleFocus = s => !s.visible || !s.indicator || s.hidden;
 export const focusChainBroken = chain => { const effective = chain.length > 1 && chain.at(-1).tag === 'BODY' ? chain.slice(0,-1) : chain; const leaf=effective.at(-1), frames=effective.slice(0,-1); return frames.some(x => !x.visible || x.hidden) || invisibleFocus({...leaf,indicator:leaf.indicator || frames.some(x => x.focusVisible && x.indicator)}); };
+export const telemetryInvisibleStop = (chain, next) => chain.length === 2 && chain[0].telemetry && chain[1].tag === 'BODY' && (!chain[1].indicator || !chain[1].visible || chain[1].hidden) && next?.[0]?.identity !== chain[0].identity;
+export const classifyMissing = p => !p.predecessorFocused || typeof p.tabbableAtPredecessor !== 'boolean' ? 'UNMEASURED' : !p.tabbableAtPredecessor ? 'STATE-DEPENDENT' : p.landedIdentity !== p.identity ? 'GENUINE' : 'REACHED';
 export const focusCycleEnded = (chain, stops) => chain.length === 1 && chain[0]?.tag === 'BODY' && stops > 0;
 // Runs in the page so visibility reflects the browser's rendered tree.
 export function expectedTabbables() {
@@ -90,13 +92,19 @@ export function mergeVisibleStops(expected, stops) {
 }
 export async function traverseFocus({press, observe, expected, probeDiff, diagnostic = false}) {
     const errors = [], stops = [], trace = [], seen = new Map();
-    let completed = false;
+    let completed = false, termination = 'none';
     for (let i = 0; i < 400; i++) {
         if (diagnostic) trace.push({key:'before Tab',chain:await observe()});
         await press();
         const chain = await observe(), state = chain.at(-1);
         if (diagnostic) trace.push({key:'after Tab',chain});
+        if (stops.length && stops.at(-1).chain.length === 2 && stops.at(-1).chain[0].telemetry && stops.at(-1).chain[1].tag === 'BODY') {
+            const previous = stops.at(-1).chain;
+            if (telemetryInvisibleStop(previous, chain)) errors.push('invisible focus stop: Telemetry embed document body receives forward Tab focus without indicator (not a trap)');
+            else if (focusChainBroken(previous)) errors.push('focus body invisible, hidden, or no indicator');
+        }
         if (focusCycleEnded(chain, stops.length)) {
+            termination = 'boundary';
             await press();
             const next = await observe();
             if (diagnostic) trace.push({key:'after boundary Tab',chain:next});
@@ -106,14 +114,15 @@ export async function traverseFocus({press, observe, expected, probeDiff, diagno
         }
         const key = chain.map(x => x.identity).join('/');
         if (seen.has(key)) {
-            if (seen.get(key) === 0) completed = true;
-            else errors.push('focus trap: stop repeated before completion');
+            if (seen.get(key) === 0) { completed = true; termination = 'first-stop-repeat'; }
+            else { termination = 'repeat'; errors.push('focus trap: stop repeated before completion'); }
             break;
         }
         seen.set(key, stops.length);
         stops.push({...state, chain, expectedAtStop:await expected()});
-        if (focusChainBroken(chain)) errors.push(`focus ${state.selector} ${state.href || ''} invisible, hidden, or no indicator`);
+        if (!(chain.length === 2 && chain[0].telemetry && chain[1].tag === 'BODY') && focusChainBroken(chain)) errors.push(`focus ${state.selector} ${state.href || ''} invisible, hidden, or no indicator`);
     }
+    if (termination === 'none' && stops.length === 400) termination = 'cap';
     const visited = [...new Map(stops.map(stop => [stop.chain[0].identity, stop.chain[0]])).values()];
     const finalExpected = await expected();
     const expectedStops = mergeVisibleStops(finalExpected, stops);
@@ -122,18 +131,23 @@ export async function traverseFocus({press, observe, expected, probeDiff, diagno
     let probes = [];
     if (probeDiff && (orderBroken(visited.map(x => x.identity), expectedIds) || orderBroken(visited.map(x => x.identity), finalExpected.map(x => x.identity)))) {
         probes = await probeDiff(visited, expectedStops, stops, finalExpected);
-        for (const probe of probes) if (probe.kind === 'missing' && probe.focused && probe.predecessorFocused && probe.landedIdentity !== probe.identity) errors.push(`GENUINE: ${probe.selector} focusable via focus() but skipped by Tab from ${probe.predecessor}`);
+        for (const probe of probes.filter(p => p.kind === 'missing')) {
+            probe.classification = classifyMissing(probe);
+            if (probe.classification === 'GENUINE') errors.push(`GENUINE: ${probe.selector} tabbable but skipped by Tab from ${probe.predecessor}`);
+            if (probe.classification === 'UNMEASURED') errors.push(`UNMEASURED: ${probe.selector} predecessor state unavailable`);
+        }
     }
     // Only a measured predecessor-to-target Tab can explain an unvisited rotating slide.
-    const explained = new Set(probes.filter(p => p.kind === 'missing' && p.rotating && p.focused && p.predecessorFocused && p.landedIdentity === p.identity).map(p => p.identity));
+    const explained = new Set(probes.filter(p => p.kind === 'missing' && (p.classification === 'STATE-DEPENDENT' || (p.rotating && p.classification === 'REACHED'))).map(p => p.identity));
     const comparableExpected = expectedStops.filter(x => !explained.has(typeof x === 'object' ? x.identity : x));
     if (completed && orderBroken(visited.map(x => x.identity), comparableExpected.map(x => typeof x === 'object' ? x.identity : x))) {
         errors.push('focus trap: traversal does not cover the top-level tabbable list in order'); completed = false;
     }
+    if (termination === 'first-stop-repeat' && expectedStops.length < 3) { completed = false; errors.push('incomplete traversal: no top-level boundary observed'); }
     if (!stops.length) errors.push('no keyboard stops observed');
     if (!completed && !errors.some(e => e.startsWith('focus trap'))) errors.push('incomplete traversal');
     for (let i=0; i<errors.length; i++) errors[i] += ` (${diff})`;
-    return {stops,stopCount:stops.length,completed,trace,probes,errors};
+    return {stops,stopCount:stops.length,completed,termination,trace,probes,errors,notes:probes.filter(p => p.classification === 'STATE-DEPENDENT').map(p => `STATE-DEPENDENT: ${p.selector}: ${p.stateReason}`)};
 }
 export const traceOutcome = classifications => ({errors:classifications.includes('VISIBLE-FLASH') ? ['presented-frame trace: VISIBLE-FLASH (4x CPU, 300ms theme-init delay)'] : [],unmeasured:classifications.length !== 10 || classifications.includes('UNMEASURED') ? 'presented-frame trace incomplete or UNMEASURED' : null});
 export const menuBroken = s => !s.open || !s.inside || !s.closed || !s.restored;
@@ -169,8 +183,9 @@ async function selfTest() {
     const probe = async sequence => { let i = 0; return traverseFocus({press:async()=>{}, observe:async()=>[{identity:sequence[i++],tag:'BUTTON',selector:'button',visible:true,indicator:true,hidden:false}], expected:async()=>[1,2,3]}); };
     assert((await probe([1,2,1])).errors.some(e => e.includes('focus trap')), 'short focus cycle');
     assert((await probe([1,2,3,1])).completed, 'full focus cycle');
-    const rotating = async landed => { let i=0; return traverseFocus({press:async()=>{},observe:async()=>[{identity:[1,3,1][i++],tag:'BUTTON',selector:'button',visible:true,indicator:true,hidden:false}],expected:async()=>[{identity:1},{identity:2,rotating:true},{identity:3}],probeDiff:async()=>[{kind:'missing',identity:2,rotating:true,focused:true,predecessorFocused:true,landedIdentity:landed}]}); };
+    const rotating = async landed => { let i=0; return traverseFocus({press:async()=>{},observe:async()=>[{identity:[1,3,1][i++],tag:'BUTTON',selector:'button',visible:true,indicator:true,hidden:false}],expected:async()=>[{identity:1},{identity:2,rotating:true},{identity:3}],probeDiff:async()=>[{kind:'missing',identity:2,rotating:true,focused:true,predecessorFocused:true,tabbableAtPredecessor:true,landedIdentity:landed}]}); };
     assert((await rotating(2)).completed && !(await rotating(3)).completed, 'rotating reachability');
+    assert(classifyMissing({predecessorFocused:true,tabbableAtPredecessor:false}) === 'STATE-DEPENDENT' && classifyMissing({predecessorFocused:true,tabbableAtPredecessor:true,identity:1,landedIdentity:2}) === 'GENUINE' && classifyMissing({predecessorFocused:true}) === 'UNMEASURED', 'predecessor state classification');
     assert(expectedTabbablesFixture(), 'hidden menu, radio group and scroller');
     assert(mergeVisibleStops([{identity:1},{identity:3}], [{chain:[{identity:2}],expectedAtStop:[{identity:1},{identity:2},{identity:3}]}]).map(x => x.identity).join(',') === '1,2,3', 'dynamic visibility');
     assert(menuBroken({ open: true, inside: true, closed: true, restored: false }), 'menu');
@@ -379,7 +394,7 @@ async function main() {
                 }
                 const errors = [...(result?.errors || []), ...(result?.error ? [result.error] : []), ...violations];
                 const status = errors.length ? 'FAIL' : result?.unmeasured ? 'NOT-MEASURABLE' : 'PASS';
-                const reason = (errors.length ? errors.join('; ').replace(/\s+/g,' ').slice(0,300) : result?.unmeasured || 'ok') + (result?.samples ? ' pre-presentation heuristic=' + JSON.stringify(result.samples) : '');
+                const reason = (errors.length ? errors.join('; ').replace(/\s+/g,' ').slice(0,300) : result?.unmeasured || 'ok') + (result?.notes?.length ? '; ' + result.notes.join('; ') : '') + (result?.samples ? ' pre-presentation heuristic=' + JSON.stringify(result.samples) : '');
                 add(app,name,width,status,reason,{...result,networkNotes:notes,violations});
             };
             for (const os of ['light','dark']) for (const stored of ['light','dark','auto']) await run(`theme-${os}-${stored}`, async p => {
@@ -453,7 +468,7 @@ async function main() {
                 const focusChain = async () => {
                     let frame=p.mainFrame(), chain=[];
                     for (;;) {
-                        const state=await frame.evaluate(() => { const e=document.activeElement, r=e.getBoundingClientRect(), s=getComputedStyle(e); window.__b19FocusIds ||= new WeakMap(); window.__b19FocusElements ||= new Map(); window.__b19FocusNext ||= 1; if (!window.__b19FocusIds.has(e)) window.__b19FocusIds.set(e,window.__b19FocusNext++); window.__b19FocusElements.set(window.__b19FocusIds.get(e),e); return {identity:window.__b19FocusIds.get(e),tag:e.tagName,id:e.id,selector:e.tagName.toLowerCase()+(e.id?'#'+e.id:''),href:e.getAttribute('href'),visible:r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,hidden:!!e.closest('[aria-hidden="true"],[inert]'),indicator:(s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>0)||s.boxShadow!=='none',focusVisible:e.matches(':focus-visible'),box:{x:r.x,y:r.y,width:r.width,height:r.height}}; });
+                        const state=await frame.evaluate(() => { const e=document.activeElement, r=e.getBoundingClientRect(), s=getComputedStyle(e); window.__b19FocusIds ||= new WeakMap(); window.__b19FocusElements ||= new Map(); window.__b19FocusNext ||= 1; if (!window.__b19FocusIds.has(e)) window.__b19FocusIds.set(e,window.__b19FocusNext++); window.__b19FocusElements.set(window.__b19FocusIds.get(e),e); return {identity:window.__b19FocusIds.get(e),tag:e.tagName,id:e.id,telemetry:e.tagName === 'IFRAME' && /\/telemetry\//.test(e.getAttribute('src') || ''),selector:e.tagName.toLowerCase()+(e.id?'#'+e.id:''),href:e.getAttribute('href'),visible:r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,hidden:!!e.closest('[aria-hidden="true"],[inert]'),indicator:(s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>0)||s.boxShadow!=='none',focusVisible:e.matches(':focus-visible'),box:{x:r.x,y:r.y,width:r.width,height:r.height}}; });
                         chain.push(state);
                         if (state.tag !== 'IFRAME') break;
                         const handle=await frame.evaluateHandle(() => document.activeElement);
@@ -473,8 +488,20 @@ async function main() {
                         return {available:true,focused:document.activeElement === e,visible:e.checkVisibility({visibilityProperty:true}),inViewport:r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,scrollHeight:e.scrollHeight,clientHeight:e.clientHeight,scrollWidth:e.scrollWidth,clientWidth:e.clientWidth,overflowX:s.overflowX,overflowY:s.overflowY,tabbableDescendants:descendants.length,keyboardScroller:!e.hasAttribute('tabindex') && descendants.length===0 && ((/(auto|scroll)/.test(s.overflowY)&&e.scrollHeight>e.clientHeight)||(/(auto|scroll)/.test(s.overflowX)&&e.scrollWidth>e.clientWidth))};
                     }, identity);
                     for (const [index, item] of expected.entries()) if (!vi.has(item.identity)) {
-                        const state=await inspect(item.identity), pred=expected[index-1], prior=pred ? await inspect(pred.identity) : null;
-                        let landed=null; if (prior?.focused) { await press(); landed=(await focusChain())[0]; }
+                        const pred=expected[index-1], prior=pred ? await inspect(pred.identity) : null;
+                        let landed=null, state={available:false};
+                        if (prior?.focused) {
+                            await p.waitForTimeout(500);
+                            state=await p.evaluate(id => {
+                                const e=window.__b19FocusElements?.get(id); if (!e) return {available:false};
+                                const connected=e.isConnected, s=getComputedStyle(e), visible=e.checkVisibility({visibilityProperty:true}), disabled=e.matches(':disabled'), blocked=!!e.closest('[inert],[hidden],dialog:not([open])'), ariaHidden=!!e.closest('[aria-hidden=\"true\"]');
+                                const descendants=[...e.querySelectorAll('a[href],area[href],button,input,select,textarea,iframe,object,embed,summary,[tabindex],[contenteditable]')].some(d => d.tabIndex >= 0 && !d.matches(':disabled') && !d.closest('[inert],[hidden],dialog:not([open])') && d.checkVisibility({visibilityProperty:true}));
+                                const scroller=!e.hasAttribute('tabindex') && !descendants && ((/(auto|scroll)/.test(s.overflowY) && e.scrollHeight>e.clientHeight) || (/(auto|scroll)/.test(s.overflowX) && e.scrollWidth>e.clientWidth));
+                                const reasons=[!connected && 'disconnected', !visible && 'checkVisibility=false', `display:${s.display}`, `visibility:${s.visibility}`, `tabIndex=${e.tabIndex}`, disabled && 'disabled', blocked && 'inert/hidden/dialog', ariaHidden && 'aria-hidden'].filter(Boolean);
+                                return {available:true,connected,visible,display:s.display,visibility:s.visibility,tabIndex:e.tabIndex,disabled,blocked,ariaHidden,tabbableAtPredecessor:connected && visible && (e.tabIndex >= 0 || scroller) && !disabled && !blocked && !ariaHidden, stateReason:reasons.join(', ')};
+                            },item.identity);
+                            await press(); landed=(await focusChain())[0];
+                        }
                         results.push({kind:'missing',...item,...state,predecessor:pred?.selector || 'START',predecessorFocused:!!prior?.focused,landedIdentity:landed?.identity ?? null,landedSelector:landed?.selector ?? 'UNMEASURED'});
                     }
                     for (const item of visited) if (!ei.has(item.identity)) {

@@ -51,3 +51,23 @@ Telemetry B-14 is a child-repository proposal for independent Sol High review of
 parent trust policy, referrer fallback, message validation, compatibility and
 browser threat fixtures. It does not authorize a security change here. Rollback:
 revert the PR coherently, retaining existing release and security gates.
+
+## B-18/B-19 browser suites
+
+B-18 checks application roots, reload and back/forward navigation, the legacy
+stub, article identity and the TYRES race selection. B-19 checks the presentation
+matrix, including themes, keyboard navigation, embeds and selection preservation.
+Run them manually against an assembled artifact with Chrome; browser runs are not
+in CI. A static verifier pass is not browser evidence.
+
+Both harnesses require `--root`, `--label`, `--expected-main-sha` and
+`--expected-tyres-data-sha` for standard runs. `--candidate` permits missing
+expected SHAs and labels identity unverified; retain the flags when available.
+B-18 accepts `--mutate tyres-race|root|legacy|article`; B-19 accepts
+`--mutate selection|flash` for negative checks.
+
+PASS means the measured checks passed; FAIL means a check failed or required
+measurement failed. NOT-MEASURABLE identifies an unverified behavior; NOT
+APPLICABLE identifies a mechanism not established for that application.
+STATE-DEPENDENT identifies a keyboard target measured as untabbable in the
+predecessor's state, with the observation retained in the report.
