@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Fri, 13 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 14 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Carlos Checa: Μια αργοπορημένη ευτυχία.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261115W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261115W/article.html</guid>
+      <pubDate>Sat, 14 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο θρυλικός Ισπανός που σημάδεψε τόσο τα Motogp όσο και το Sbk</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Ricardo Zonta: Πέρα από την Formula 1</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261114W/article.html</link>
@@ -266,15 +275,6 @@
       <pubDate>Sun, 18 Oct 2026 21:00:00 GMT</pubDate>
       <description>Εκείνο το απόγευμα, η Βαρκελώνη έμοιαζε να δοκιμάζει τα όρια όλων. Η βροχή είχε μετατρέψει την πίστα σε μια απαιτητική δοκιμασία, εκεί όπου η ταχύτητα…</description>
       <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Troy Corser: Συνεπής ομαλός και πολύ γρήγορος</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261018W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261018W/article.html</guid>
-      <pubDate>Sat, 17 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Troy Corser δεν ήταν από εκείνους που έδιναν την εντύπωση ότι πολεμούσαν με τη μοτοσυκλέτα τους.</description>
-      <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>

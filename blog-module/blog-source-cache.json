@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261115W",
+      "title": "Carlos Checa: Μια αργοπορημένη ευτυχία.",
+      "author": "Themis Charvalis",
+      "date": "2026-11-15",
+      "dateISO": "2026-11-15",
+      "displayDate": "15 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261115W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261115W/2.webp",
+      "excerpt": "Ο θρυλικός Ισπανός που σημάδεψε τόσο τα Motogp όσο και το Sbk",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261115W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Carlos Checa",
+        "Legend",
+        "Sbk Champion"
+      ],
+      "wordCount": 752,
+      "readingTime": "4 min",
+      "imageWidth": 652,
+      "imageHeight": 391,
+      "backgroundImageWidth": 1351,
+      "backgroundImageHeight": 967,
+      "inputDigest": "d96c9910eb8cab7dd3ddcd5514932af4abb2d924f23e1cc92bfef9b141a1cff8"
+    },
+    {
       "id": "20261114W",
       "title": "Ricardo Zonta: Πέρα από την Formula 1",
       "author": "Themis Charvalis",
@@ -11850,5 +11882,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-14T18:41:48.289Z"
+  "lastUpdated": "2026-11-15T19:50:12.289Z"
 }
