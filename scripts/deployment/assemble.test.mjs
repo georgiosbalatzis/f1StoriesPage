@@ -577,6 +577,14 @@ test('URL preservation validates sitemap input and confined host resolution', t 
     for (const bad of ['not XML', `<urlset xmlns="${ns}"/>`, `<sitemapindex xmlns="${ns}"/>`, '<urlset><url></urlset>']) {
         set(previous, bad); assert.equal(run().status, 2, bad);
     }
+    for (const bad of [sitemap(`${ORIGIN}/\uFFFD`), sitemap(`${ORIGIN}/&unknown;`), '<a xmlns:p=""><p:b/></a>']) {
+        set(previous, bad);
+        const result = run();
+        assert.equal(result.status, 2);
+        assert.match(result.stderr, /malformed sitemap XML/);
+    }
+    set(previous, `<!DOCTYPE urlset>${sitemap(`${ORIGIN}/old/`)}`);
+    assert.match(run().stderr, /malformed or unsupported sitemap XML/);
     for (const bad of [`${ORIGIN}/%2e%2e%2foutside.html`, `${ORIGIN}/bad%ZZ`, 'https://example.com/']) {
         set(previous, sitemap(bad)); assert.equal(run().status, 2, bad);
     }
