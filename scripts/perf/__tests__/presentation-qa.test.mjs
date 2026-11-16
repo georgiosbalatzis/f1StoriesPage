@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { flash, invisibleFocus, focusChainBroken, menuBroken, selectionLost, skipBroken, heightBroken, orderBroken, themeBroken, betcastSelectionBroken, withTimeout, focusCycleEnded, traverseFocus, traceOutcome, classifyPresentedFrames, expectedTabbablesFixture, focusDiff, mergeVisibleStops, classifyMissing, telemetryInvisibleStop } from '../presentation-qa.mjs';
+import { flash, invisibleFocus, focusChainBroken, menuBroken, selectionLost, skipBroken, heightBroken, orderBroken, themeBroken, betcastSelectionBroken, withTimeout, focusCycleEnded, traverseFocus, traceOutcome, classifyPresentedFrames, expectedTabbablesFixture, focusDiff, mergeVisibleStops, classifyMissing, telemetryInvisibleStop, focusState } from '../presentation-qa.mjs';
 assert.equal(flash('white', 'black'), true);
 assert.equal(invisibleFocus({ visible:false, indicator:true, hidden:false }), true);
 assert.equal(menuBroken({ open:true, inside:true, closed:true, restored:false }), true);
@@ -86,8 +86,18 @@ assert.match(hidden.notes.join(' '), /STATE-DEPENDENT.*visibility:hidden/);
 assert.match((await stateProbe({tabbableAtPredecessor:true})).errors.join(' '), /GENUINE/);
 assert.match((await stateProbe({})).errors.join(' '), /UNMEASURED/);
 
-async function telemetryBodyProbe(childTabbableCount, extraFailure = false, frameApp = 'telemetry') {
-    const frame = {identity:2,tag:'IFRAME',telemetry:frameApp === 'telemetry',frameApp,frameSrc:frameApp ? `/${frameApp}/?embed=1` : 'https://youtube.com/embed/example',...visible,indicator:frameApp === 'telemetry'};
+function frameFixture(src) {
+    const element = {tagName:'IFRAME',id:'',getAttribute:name => name === 'src' ? src : null,getBoundingClientRect:() => ({width:10,height:10,bottom:10,top:0,right:10,left:0,x:0,y:0}),closest:() => null,matches:() => true};
+    globalThis.window = {};
+    globalThis.document = {activeElement:element};
+    globalThis.location = new URL('http://127.0.0.1:61155/article/');
+    globalThis.getComputedStyle = () => ({outlineStyle:'solid',outlineWidth:'1px',boxShadow:'none'});
+    globalThis.innerHeight = globalThis.innerWidth = 100;
+    return focusState();
+}
+async function telemetryBodyProbe(childTabbableCount, extraFailure = false, src = '/telemetry/?embed=1') {
+    const info = frameFixture(src);
+    const frame = {...info,identity:2,...visible,indicator:info.telemetry};
     const body = {identity:9,tag:'BODY',selector:'body',...visible,indicator:false,childTabbableCount};
     const chains = [[{identity:1,tag:'BUTTON',...visible}], [frame,body], [{identity:3,tag:'BUTTON',...visible,indicator:!extraFailure}], [{identity:1,tag:'BUTTON',...visible}]];
     let i=0;
@@ -99,11 +109,13 @@ assert.equal(emptyTelemetry.childTabbableCount, 0);
 assert.match(emptyTelemetry.unmeasured, /no-data state/);
 assert.match((await telemetryBodyProbe(2)).errors.join(' '), /invisible focus stop: Telemetry embed document body/);
 assert.match((await telemetryBodyProbe(0, true)).errors.join(' '), /focus .* invisible/);
-const emptyGhost = await telemetryBodyProbe(0, false, 'ghostcar');
+const emptyGhost = await telemetryBodyProbe(0, false, 'http://127.0.0.1:61155/ghostcar/?embed=1#dark');
 assert.deepEqual(emptyGhost.errors, []);
 assert.match(emptyGhost.unmeasured, /^ghostcar embed in no-data state/);
-assert.equal(emptyGhost.frameSrc, '/ghostcar/?embed=1');
-assert.match((await telemetryBodyProbe(2, false, 'ghostcar')).errors.join(' '), /focus body .* invisible/);
-assert.match((await telemetryBodyProbe(0, false, null)).errors.join(' '), /focus body .* invisible/);
+assert.equal(emptyGhost.frameSrc, 'http://127.0.0.1:61155/ghostcar/?embed=1#dark');
+assert.match((await telemetryBodyProbe(2, false, '/ghostcar/?embed=1')).errors.join(' '), /focus body .* invisible/);
+const crossOrigin = await telemetryBodyProbe(0, false, 'https://example.com/ghostcar/?embed=1');
+assert.equal(crossOrigin.frameApp, null);
+assert.match(crossOrigin.errors.join(' '), /focus body .* invisible/);
 assert.doesNotMatch(hidden.errors.join(' '), /expected-but-not-visited/);
 assert.match((await stateProbe({tabbableAtPredecessor:true})).errors.join(' '), /expected-but-not-visited=\["#target"\]/);
