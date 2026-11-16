@@ -1,6 +1,42 @@
 {
   "posts": [
     {
+      "id": "20261116-2G",
+      "title": "Φέτος ΔΕΝ ήταν η χρονιά του",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-16",
+      "dateISO": "2026-11-16",
+      "displayDate": "16 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261116-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261116-2G/1.webp",
+      "excerpt": "Επεξήγηση για ποιόν λόγο ο George Russel έχασε ένα φαινομενικά εύκολο πρωτάθλημα μέσα από τα χέρια του.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261116-2G/article.html",
+      "category": "Drivers",
+      "categories": [
+        "Drivers"
+      ],
+      "tags": [
+        "Mercedes",
+        "George Russel",
+        "Kimi Antonelli",
+        "Toto Wolf",
+        "F1",
+        "WDC",
+        "WCC",
+        "2026"
+      ],
+      "wordCount": 1541,
+      "readingTime": "8 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "5d085c8b58c1a1723b5d8621e8ea538f79b0ec91e26ca97bd021f3e3814cd294"
+    },
+    {
       "id": "20261116G",
       "title": "Γιατί το W13 υπήρχε μόνο στην αεροσήραγγα",
       "author": "Georgios Balatzis",
@@ -11917,5 +11953,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-16T15:08:37.741Z"
+  "lastUpdated": "2026-11-16T16:11:33.931Z"
 }
