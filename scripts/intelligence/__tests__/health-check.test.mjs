@@ -567,20 +567,65 @@ for (const [component, category, remove] of [
     });
 }
 
+function setTotal(op, field, total) {
+    const each = Math.floor(total / op.queries.length);
+    op.queries.forEach(query => { query[field] = each; });
+    op.queries[0][field] += total - each * op.queries.length;
+    op[field] = total;
+}
+
 for (const [ratio, status] of [[0.49, 'HEALTHY'], [0.5, 'HEALTHY'], [0.8, 'DEGRADED'], [1, 'CRITICAL'], [1.01, 'CRITICAL']]) {
-    test(`cost threshold ${ratio * 100}% uses estimated and billed bytes separately`, () => {
+    test(`cost threshold ${ratio * 100}% uses billed bytes`, () => {
         const value = evidence();
         const op = value.operations[2].value;
-        const each = Math.floor(DAILY_MAX_BYTES * ratio / 7);
-        op.queries.forEach(q => { q.estimateBytes = each; });
-        op.queries[0].estimateBytes += Math.round(DAILY_MAX_BYTES * ratio) - each * 7;
-        op.estimateBytes = op.queries.reduce((sum, q) => sum + q.estimateBytes, 0);
+        setTotal(op, 'billedBytes', Math.round(DAILY_MAX_BYTES * ratio));
         const report = assess(value);
         assert.equal(state(report, 'costGuard'), status);
-        assert.equal(report.cost.billedBytes, 70 * 1048576);
+        assert.equal(report.cost.billedBytes, Math.round(DAILY_MAX_BYTES * ratio));
         assert.equal(report.components.costGuard.detail.includes('INFO:'), ratio >= 0.5);
     });
 }
+
+test('planned estimate near the ceiling is healthy with low billing and closes only on observed recovery', () => {
+    const value = evidence();
+    const op = value.operations[2].value;
+    setTotal(op, 'estimateBytes', 1310 * 1048576);
+    const report = assess(value);
+    assert.equal(state(report, 'costGuard'), 'HEALTHY');
+    assert.match(report.components.costGuard.detail, /planned estimate near the preflight ceiling \(per-table floor, by design\)/i);
+    const issue = { number: 501, state: 'open', labels: [LABEL], body: '<!-- intelligence-health:cost-preflight --><!-- intelligence-health-state:DEGRADED -->' };
+    assert.equal(planIncidents([issue], report).find(item => item.category === 'cost-preflight').type, 'close');
+    incident(report, 'cost-preflight').recoveryObserved = false;
+    assert.deepEqual(planIncidents([issue], report).filter(item => item.category === 'cost-preflight'), []);
+});
+
+test('1300 MiB billed is degraded', () => {
+    const value = evidence();
+    setTotal(value.operations[2].value, 'billedBytes', 1300 * 1048576);
+    assert.equal(state(assess(value), 'costGuard'), 'DEGRADED');
+});
+
+test('full-window planned maximum depends on the selected models', () => {
+    for (const [discovery, maximum] of [[false, 1560], [true, 1540]]) {
+        const value = evidence();
+        value.operations[2] = ok(operation({ discovery }));
+        const op = value.operations[2].value;
+        setTotal(op, 'estimateBytes', maximum * 1048576);
+        assert.equal(state(assess(value), 'costGuard'), 'HEALTHY');
+        setTotal(op, 'estimateBytes', maximum * 1048576 + 1);
+        const report = assess(value);
+        assert.equal(state(report, 'costGuard'), 'DEGRADED');
+        assert.match(report.components.costGuard.detail, /exceeds the full-window planned maximum/);
+    }
+});
+
+test('estimate over daily or per-query cap is critical despite low billing', () => {
+    for (const mutate of [op => setTotal(op, 'estimateBytes', 1601 * 1048576), op => { op.queries[0].estimateBytes = 401 * 1048576; }]) {
+        const value = evidence();
+        mutate(value.operations[2].value);
+        assert.equal(state(assess(value), 'costGuard'), 'CRITICAL');
+    }
+});
 
 test('query cap, changed cap and excess query attempts are critical guard violations', () => {
     for (const mutate of [op => { op.queries[0].billedBytes = MAX_BYTES_BILLED + 1; }, op => { op.dailyCapBytes++; }, op => { op.queryCount++; }]) {

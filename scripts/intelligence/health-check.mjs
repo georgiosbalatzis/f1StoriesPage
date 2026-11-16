@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
 import {
     assertEnvelope, windowFor, propertyDay, MATURITY_DAYS, DISCOVERY_EVERY_DAYS, DISCOVERY_MAX_AGE_DAYS,
-    MAX_BYTES_BILLED, DAILY_MAX_BYTES, SNAPSHOT_PATH, STALE_MS, SNAPSHOT_MODELS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY
+    MAX_BYTES_BILLED, DAILY_MAX_BYTES, MIN_BYTES_PER_TABLE, WINDOW_DAYS, modelWindow, scannedTables,
+    SNAPSHOT_PATH, STALE_MS, SNAPSHOT_MODELS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY
 } from './snapshot.mjs';
 
 const HOUR = 3600000;
@@ -228,10 +229,14 @@ export function assessHealth(evidence, { now, config = {} }) {
         const telemetryComplete = complete && bytes(queryOp.estimateBytes) && bytes(queryOp.billedBytes)
             && estimates.reduce((sum, v) => sum + v, 0) === queryOp.estimateBytes && billed.reduce((sum, v) => sum + v, 0) === queryOp.billedBytes;
         costComplete = telemetryComplete;
-        const ratio = Math.max(queryOp.estimateBytes ?? 0, queryOp.billedBytes ?? 0) / DAILY_MAX_BYTES;
+        // Operation summaries do not include counted tables; use the full-window plan for the selected models.
+        const fullWindow = { ...queryOp.window, start: new Date(Date.parse(queryOp.window.end) - (WINDOW_DAYS - 1) * DAY).toISOString().slice(0, 10) };
+        const plannedMaximum = queryOp.runModels.reduce((sum, model) => sum + scannedTables(model, modelWindow(model, fullWindow)) * MIN_BYTES_PER_TABLE, 0);
+        const estimateOverPlan = bytes(queryOp.estimateBytes) && queryOp.estimateBytes > plannedMaximum;
+        const ratio = (queryOp.billedBytes ?? 0) / DAILY_MAX_BYTES;
         const status = violation || (stage === 'preflight' && queryOp.outcome === 'failure') || ratio >= c.costCritical ? 'CRITICAL'
-            : !telemetryComplete ? 'UNKNOWN' : ratio >= c.costWarning ? 'DEGRADED' : 'HEALTHY';
-        set('costGuard', status, `Estimate ${mib(queryOp.estimateBytes)}; actual billed ${mib(queryOp.billedBytes)}${telemetryComplete ? '' : ' (incomplete telemetry)'}; ${queryOp.queryCount} query attempts; daily cap ${mib(DAILY_MAX_BYTES)}, per query ${mib(MAX_BYTES_BILLED)}.${ratio >= c.costInfo ? ` INFO: at least ${c.costInfo * 100}% of daily byte allowance.` : ''}${violation ? ' Guard violation.' : ''}`, queryOp.observedAt, runUrl(queryRun), telemetryComplete);
+            : !telemetryComplete ? 'UNKNOWN' : ratio >= c.costWarning || estimateOverPlan ? 'DEGRADED' : 'HEALTHY';
+        set('costGuard', status, `Estimate ${mib(queryOp.estimateBytes)}; actual billed ${mib(queryOp.billedBytes)}${telemetryComplete ? '' : ' (incomplete telemetry)'}; ${queryOp.queryCount} query attempts; daily cap ${mib(DAILY_MAX_BYTES)}, per query ${mib(MAX_BYTES_BILLED)}.${ratio >= c.costInfo ? ` INFO: billed at least ${c.costInfo * 100}% of daily byte allowance.` : ''}${queryOp.estimateBytes >= c.costWarning * DAILY_MAX_BYTES ? ' Planned estimate near the preflight ceiling (per-table floor, by design).' : ''}${estimateOverPlan ? ` Estimate exceeds the full-window planned maximum of ${mib(plannedMaximum)}.` : ''}${violation ? ' Guard violation.' : ''}`, queryOp.observedAt, runUrl(queryRun), telemetryComplete);
     }
     const jobs = latest && reads.jobs?.[latest.id];
     const authFailed = jobs?.ok && jobs.value.some(job => job.steps?.some(step => step.name === 'Authenticate to Google Cloud (Workload Identity Federation, no key file)' && step.conclusion === 'failure'));
