@@ -35,7 +35,7 @@ test('preview uses current stylesheet hashes and reaches a fixpoint after stampi
     await buildAuthorPreview(scratch, 'preview.js');
     const first = fs.readFileSync(path.join(scratch, 'preview.js'));
     assert.ok(first.includes(`/${rel}?v=${hash}`));
-    assert.ok(first.includes('/unversioned.css')); 
+    assert.ok(first.includes('/unversioned.css'));
     assert.equal(sha256Short(path.relative(root, path.join(scratch, rel))), hash);
     const stamped = template.replace(new RegExp(`(/${rel.replaceAll('.', '\\.')}\\?v=)[a-f0-9]+`), `$1${hash}`);
     assert.ok(stamped.includes(`/${rel}?v=${hash}`));
