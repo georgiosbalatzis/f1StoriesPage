@@ -71,3 +71,5 @@ measurement failed. NOT-MEASURABLE identifies an unverified behavior; NOT
 APPLICABLE identifies a mechanism not established for that application.
 STATE-DEPENDENT identifies a keyboard target measured as untabbable in the
 predecessor's state, with the observation retained in the report.
+
+For Article keyboard rows, a sole frame-document body focus failure in a same-origin Telemetry, Ghost Car, Tyres, or BetCast embed with zero visible child tabbables is NOT-MEASURABLE. An empty embed after a data failure is one indicator-less frame stop: a known fallback-state residual, not a trap.

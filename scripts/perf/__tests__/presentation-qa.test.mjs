@@ -85,3 +85,25 @@ assert.deepEqual(hidden.errors, []);
 assert.match(hidden.notes.join(' '), /STATE-DEPENDENT.*visibility:hidden/);
 assert.match((await stateProbe({tabbableAtPredecessor:true})).errors.join(' '), /GENUINE/);
 assert.match((await stateProbe({})).errors.join(' '), /UNMEASURED/);
+
+async function telemetryBodyProbe(childTabbableCount, extraFailure = false, frameApp = 'telemetry') {
+    const frame = {identity:2,tag:'IFRAME',telemetry:frameApp === 'telemetry',frameApp,frameSrc:frameApp ? `/${frameApp}/?embed=1` : 'https://youtube.com/embed/example',...visible,indicator:frameApp === 'telemetry'};
+    const body = {identity:9,tag:'BODY',selector:'body',...visible,indicator:false,childTabbableCount};
+    const chains = [[{identity:1,tag:'BUTTON',...visible}], [frame,body], [{identity:3,tag:'BUTTON',...visible,indicator:!extraFailure}], [{identity:1,tag:'BUTTON',...visible}]];
+    let i=0;
+    return traverseFocus({articleKeyboard:true,press:async()=>{},observe:async()=>chains[i++],expected:async()=>[1,2,3]});
+}
+const emptyTelemetry = await telemetryBodyProbe(0);
+assert.deepEqual(emptyTelemetry.errors, []);
+assert.equal(emptyTelemetry.childTabbableCount, 0);
+assert.match(emptyTelemetry.unmeasured, /no-data state/);
+assert.match((await telemetryBodyProbe(2)).errors.join(' '), /invisible focus stop: Telemetry embed document body/);
+assert.match((await telemetryBodyProbe(0, true)).errors.join(' '), /focus .* invisible/);
+const emptyGhost = await telemetryBodyProbe(0, false, 'ghostcar');
+assert.deepEqual(emptyGhost.errors, []);
+assert.match(emptyGhost.unmeasured, /^ghostcar embed in no-data state/);
+assert.equal(emptyGhost.frameSrc, '/ghostcar/?embed=1');
+assert.match((await telemetryBodyProbe(2, false, 'ghostcar')).errors.join(' '), /focus body .* invisible/);
+assert.match((await telemetryBodyProbe(0, false, null)).errors.join(' '), /focus body .* invisible/);
+assert.doesNotMatch(hidden.errors.join(' '), /expected-but-not-visited/);
+assert.match((await stateProbe({tabbableAtPredecessor:true})).errors.join(' '), /expected-but-not-visited=\["#target"\]/);
