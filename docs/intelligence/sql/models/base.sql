@@ -2,7 +2,7 @@
 -- inserts it into a model and fills the article lookup from blog-module/blog-index-data.json.
 -- Read-only, aggregate-only. Parameters: @start_day, @end_day, @as_of_day (DATE). @as_of_day is the run date in
 -- the property time zone; it fixes the window so a re-run with the same parameters reads the same tables.
--- Daily tables only (digit suffixes exclude events_intraday_*), at most 90, and only days at least 4 days before
+-- Daily tables only (digit suffixes exclude events_intraday_*), at most 90, and only days at least 2 days before
 -- @as_of_day: a day closes at midnight and GA4 may still update its table for 72 h, so later days are immature.
 -- Models read `editorial` (consented, primary-host events). Only 15-coverage reads `resolved`.
 WITH article_lookup AS (
@@ -13,7 +13,7 @@ WITH article_lookup AS (
   SELECT
     @start_day AS from_day,
     IF(@as_of_day > DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY), ERROR('as_of_day is in the future'),
-      LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 4 DAY))) AS through_day
+      LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 2 DAY))) AS through_day
 ), events AS (
   SELECT
     PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) AS event_day,
@@ -25,7 +25,7 @@ WITH article_lookup AS (
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'article_id') AS article_id_param
   FROM `{{PROJECT_ID}}.analytics_{{GA4_PROPERTY_ID}}.events_*`
   WHERE _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', @start_day)
-      AND FORMAT_DATE('%Y%m%d', LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 4 DAY)))
+      AND FORMAT_DATE('%Y%m%d', LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 2 DAY)))
     AND event_name IN ('page_view', 'article_engaged', 'internal_page_click')
 ), keyed AS (
   SELECT

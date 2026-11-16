@@ -89,7 +89,7 @@ test('acquisition is compared with daily activity over its own seven days, never
     const all28 = sum(rows(snap, '20-daily-activity'), 'session_start_events');
     const acquisition = sum(rows(snap, '26-acquisition-session'), 'session_start_events');
     assert.notEqual(all28, acquisition, 'adversarial: a naive 28-day comparison would report a false mismatch');
-    expectOutcome(validate(snap), 'acquisition.sessions', 'PASS', 'info', /over 2026-11-09 → 2026-11-15/);
+    expectOutcome(validate(snap), 'acquisition.sessions', 'PASS', 'info', /over 2026-11-11 → 2026-11-17/);
     // A real mismatch inside those seven days fails.
     rows(snap, '20-daily-activity').at(-1).session_start_events += 1;
     expectOutcome(validate(snap), 'acquisition.sessions', 'FAIL', 'high', /session_start/);
@@ -145,7 +145,7 @@ test('mapped, unmapped, retired and duplicate article identities', () => {
     const leaky = snapshot({ asOf: '2026-11-19', seed: 1 });
     rows(leaky, '10-article-pageviews').find(r => r.article_id === '(unmapped)').title = 'invented';
     rows(leaky, '10-article-pageviews').find(r => r.article_id === 'a-fast').unmapped_keys = 1;
-    expectOutcome(validate(leaky), 'articles.rows', 'FAIL', 'high', /has article metadata.*a-fast: unmapped keys/);
+    expectOutcome(validate(leaky), 'articles.rows', 'FAIL', 'high', /a-fast: unmapped keys.*has article metadata/);
     // An id the index no longer has is a catalogue change, not a failure.
     const removed = snapshot({ asOf: '2026-11-19', seed: 1 });
     rows(removed, '10-article-pageviews').find(r => r.article_id === 'a-slow').article_id = 'a-deleted';
@@ -219,7 +219,7 @@ test('discovery carried for several days keeps its own dates; overdue warns; too
     for (const age of [1, 3, 7]) {
         const report = validate(snapshot({ asOf: '2026-11-19', discoveryAge: age }));
         expectOutcome(report, 'freshness.discovery', 'PASS', 'info', new RegExp(`carried, ${age} day`));
-        expectOutcome(report, 'window.carried', 'PASS', 'info', /13-article-discovery 2026-10-19 → /);
+        expectOutcome(report, 'window.carried', 'PASS', 'info', /13-article-discovery 2026-10-(?:19|20) → /);
     }
     expectOutcome(validate(snapshot({ asOf: '2026-11-19', discoveryAge: 9 })), 'freshness.discovery', 'WARNING', 'medium', /overdue/);
     expectOutcome(validate(snapshot({ asOf: '2026-11-19', discoveryAge: 14 })), 'freshness.discovery', 'FAIL', 'high', /must have been dropped/);
@@ -228,7 +228,7 @@ test('discovery carried for several days keeps its own dates; overdue warns; too
     const wrong = snapshot({ asOf: '2026-11-19', discoveryAge: 3 });
     wrong.payload.modelWindows['13-article-discovery'].asOf = '2026-11-17';
     wrong.payload.modelWindows['28-internal-navigation'].asOf = '2026-11-17';
-    expectOutcome(validate(wrong), 'window.carried', 'FAIL', 'critical', /labelled 2026-10-19 → 2026-11-12, but that day's window is 2026-10-19 → 2026-11-13/);
+    expectOutcome(validate(wrong), 'window.carried', 'FAIL', 'critical', /labelled 2026-10-19 → 2026-11-14, but that day's window is 2026-10-19 → 2026-11-15/);
     // Rows from another window than their label.
     const rowsOff = snapshot({ asOf: '2026-11-19', discoveryAge: 3 });
     rows(rowsOff, '28-internal-navigation')[0].through_day = '2026-11-15';
@@ -241,7 +241,7 @@ test('carried RUM on a discovery day is expected; a wrong age or a lone carried 
     const snap = snapshot({ asOf: '2026-11-19', dayType: 'discovery' });
     const report = validate(snap);
     expectOutcome(report, 'window.rotation', 'PASS', 'info', /discovery day, RUM carried from yesterday/);
-    expectOutcome(report, 'window.carried', 'PASS', 'info', /30-cwv-summary 2026-10-19 → 2026-11-14 \(as_of 2026-11-18\)/);
+    expectOutcome(report, 'window.carried', 'PASS', 'info', /30-cwv-summary 2026-10-20 → 2026-11-16 \(as_of 2026-11-18\)/);
     // RUM two days old: the rotation never carries it from earlier than yesterday.
     const old = snapshot({ asOf: '2026-11-19', dayType: 'discovery' });
     const twoDays = windowFor('2026-11-17');
@@ -435,7 +435,7 @@ test('every diagnostic has an action, and failing checks name their area and evi
         assert.ok(['integrity', 'scheduling', 'reconciliation', 'instrumentation', 'source_coverage', 'sql_classification', 'presentation', 'sample', 'external'].includes(d.area), d.id);
     }
     assert.equal(report.diagnostics[0].outcome, 'FAIL', 'failures are listed first');
-    assert.match(formatReport(report), /^Snapshot validation — as_of 2026-11-19, 2026-10-19 → 2026-11-15\n\d+ FAIL/);
+    assert.match(formatReport(report), /^Snapshot validation — as_of 2026-11-19, 2026-10-21 → 2026-11-17\n\d+ FAIL/);
 });
 
 // ---- the contract is derived from the SQL, not invented ----

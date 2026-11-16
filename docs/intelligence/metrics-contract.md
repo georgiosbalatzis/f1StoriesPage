@@ -64,7 +64,7 @@ Totals between the two will not match exactly; state which one a number comes fr
 ## Freshness
 
 Daily tables `events_YYYYMMDD` keyed by property-timezone date; documented late events can update a table for up to
-72 h. Rules: report an explicit as-of time, exclude the last 3 days from conclusions, never combine `events_intraday_*`
+72 h. Dashboard/snapshot figures end at `as_of − 2`; the newest days may still change slightly. Experiment conclusions keep the 4-day lag. Report an explicit as-of time, and never combine `events_intraday_*`
 with daily tables for the same day. [sql/01](sql/01-export-tables.sql) measures creation vs last-modified per table
 from metadata only.
 

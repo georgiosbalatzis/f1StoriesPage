@@ -124,7 +124,7 @@ export function validateEditorialInputs(doc) {
         if (['NOT VERIFIED', 'absent'].includes(value.status)) warn(where, `${value.status}; unavailable, never zero`);
         if (['site', 'discovery', 'rum'].includes(kind) && isDay(value.asOf) && isDay(value.period?.start) && isDay(value.period?.end)) {
             const expected = windowFor(value.asOf);
-            if (value.period.start !== expected.start || value.period.end !== expected.end) fail(where, 'expected snapshot mature primary window (asOf minus 4 days, at most 28 days since export start)');
+            if (value.period.start !== expected.start || value.period.end !== expected.end) fail(where, 'expected snapshot mature primary window (asOf minus 2 days, at most 28 days since export start)');
             if (value.timezone !== 'America/Los_Angeles') fail(where, 'snapshot timezone must be America/Los_Angeles');
         }
         if (kind === 'gsc') {

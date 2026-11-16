@@ -132,7 +132,7 @@ Outside the snapshot, always `NOT_VERIFIED`: `external.ga4-stream`, `external.pa
 
 | Situation | How it is reported |
 | --- | --- |
-| Data ends 4 days before `as_of` | Expected GA4 maturity lag; stated in `freshness.snapshot`, never a warning |
+| Data ends 2 days before `as_of` | Expected GA4 maturity lag; stated in `freshness.snapshot`, never a warning |
 | The 03:00 Athens run starts late | Harmless when the snapshot's `as_of` is still its own property day (`payload.as-of` checks exactly that) |
 | Today's run has not happened yet | `freshness.snapshot` PASS, "pending or late" |
 | One or more days without a refresh, or generated > 48 h ago | `freshness.snapshot` WARNING, medium (the dashboard's own stale rule is 48 h) |

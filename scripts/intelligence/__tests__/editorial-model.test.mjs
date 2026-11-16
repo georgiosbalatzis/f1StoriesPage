@@ -129,7 +129,7 @@ test('every model renders read-only, bounded, consented, primary-host SQL', () =
     const FORBIDDEN = /\b(user_pseudo_id|user_id|ga_session_id|user_properties|geo|device|traffic_source|collected_traffic_source|page_referrer|link_text|message|stack)\b/i;
     const WRITES = /\b(INSERT|UPDATE|DELETE|MERGE|TRUNCATE|DROP|ALTER|CREATE|GRANT|EXPORT|LOAD|CALL)\b/i;
     const base = code(template('base'));
-    assert.match(base, /_TABLE_SUFFIX BETWEEN FORMAT_DATE\('%Y%m%d', @start_day\)\s+AND FORMAT_DATE\('%Y%m%d', LEAST\(@end_day, DATE_ADD\(@start_day, INTERVAL 89 DAY\), DATE_SUB\(@as_of_day, INTERVAL 4 DAY\)\)\)/);
+    assert.match(base, /_TABLE_SUFFIX BETWEEN FORMAT_DATE\('%Y%m%d', @start_day\)\s+AND FORMAT_DATE\('%Y%m%d', LEAST\(@end_day, DATE_ADD\(@start_day, INTERVAL 89 DAY\), DATE_SUB\(@as_of_day, INTERVAL 2 DAY\)\)\)/);
     assert.match(base, /analytics_storage = 'Yes' AND page_path IS NOT NULL/);
     assert.equal(base.match(/events_\*/g).length, 1);
     for (const name of MODELS) {

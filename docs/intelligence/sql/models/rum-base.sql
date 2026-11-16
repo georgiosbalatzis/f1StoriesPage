@@ -3,7 +3,7 @@
 -- Parameters: @start_day, @end_day (DATE, NAVIGATION cohort in @report_timezone), @as_of_day (DATE, extraction
 -- cutoff), @report_timezone (STRING). Observations can be revised after their navigation day, so daily tables are
 -- scanned from the day before the cohort (time-zone margin) through the extraction cutoff, not only the cohort days:
--- at most 121 tables, never newer than @as_of_day - 4 (immature), never events_intraday_*. Revisions are resolved
+-- at most 121 tables, never newer than @as_of_day - 2 (immature), never events_intraday_*. Revisions are resolved
 -- FIRST, then observations are filtered by navigation date. The cohort is capped at 90 days and never extends past
 -- the extraction cutoff; window_bounds reports both caps.
 -- Only consented, https://f1-stories.gr, measurement_version 'wv6.2.3-rum1' snapshots with an id and a revision are
@@ -20,7 +20,7 @@ WITH window_bounds AS (
     SELECT
       @start_day AS from_day,
       IF(@as_of_day > DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY), ERROR('as_of_day is in the future'),
-        LEAST(DATE_SUB(@as_of_day, INTERVAL 4 DAY), DATE_ADD(@start_day, INTERVAL 119 DAY))) AS extraction_through
+        LEAST(DATE_SUB(@as_of_day, INTERVAL 2 DAY), DATE_ADD(@start_day, INTERVAL 119 DAY))) AS extraction_through
   )
 ), events AS (
   SELECT
@@ -44,7 +44,7 @@ WITH window_bounds AS (
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'metric_rating') AS library_rating
   FROM `{{PROJECT_ID}}.analytics_{{GA4_PROPERTY_ID}}.events_*`
   WHERE _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', DATE_SUB(@start_day, INTERVAL 1 DAY))
-      AND FORMAT_DATE('%Y%m%d', LEAST(DATE_SUB(@as_of_day, INTERVAL 4 DAY), DATE_ADD(@start_day, INTERVAL 119 DAY)))
+      AND FORMAT_DATE('%Y%m%d', LEAST(DATE_SUB(@as_of_day, INTERVAL 2 DAY), DATE_ADD(@start_day, INTERVAL 119 DAY)))
     AND event_name = 'web_vital'
 ), eligible AS (
   SELECT * FROM events

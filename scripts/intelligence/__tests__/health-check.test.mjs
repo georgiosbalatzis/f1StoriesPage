@@ -28,6 +28,20 @@ const url = id => `https://github.com/example/repo/actions/runs/${id}`;
 function envelope(asOf = AS_OF, generatedAt = GENERATED) {
     return sealSnapshot({}, crypto.randomBytes(32), { window: windowFor(asOf), generatedAt });
 }
+test('envelope metadata accepts current and exact legacy windows only', () => {
+    const current = envelope();
+    assert.equal(envelopeMetadata(current).end, '2026-11-17');
+    const value = JSON.parse(current);
+    const header = JSON.parse(value.header);
+    header.end = '2026-11-15';
+    header.start = '2026-10-19';
+    value.header = JSON.stringify(header);
+    assert.equal(envelopeMetadata(JSON.stringify(value)).end, '2026-11-15');
+    header.end = '2026-11-16';
+    header.start = '2026-10-20';
+    value.header = JSON.stringify(header);
+    assert.throws(() => envelopeMetadata(JSON.stringify(value)), /window is not the mature window/);
+});
 function operation({ asOf = AS_OF, observedAt = GENERATED, discovery = false, age = 1 } = {}) {
     const value = operationalSummary({ mode: 'refresh', now: new Date(observedAt) });
     value.window = windowFor(asOf);
@@ -736,7 +750,7 @@ for (const [now, scheduledAt, asOf] of clockCases) {
     test(`three clocks at ${now}`, () => {
         assert.deepEqual(scheduleClock(new Date(now)), { scheduledAt, asOf });
         const window = windowFor(asOf);
-        assert.equal(Date.parse(asOf) - Date.parse(window.end), 4 * 86400000);
+        assert.equal(Date.parse(asOf) - Date.parse(window.end), 2 * 86400000);
     });
 }
 

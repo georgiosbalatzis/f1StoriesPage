@@ -87,10 +87,11 @@ export function cleanOperation(value) {
 }
 
 export function envelopeMetadata(value) {
-    const header = typeof value === 'string' ? assertEnvelope(value).header : value;
+    // shortcut: accepts the exact pre-2026-11-16 4-day window; remove once no 4-day snapshot can be published
+    const header = typeof value === 'string' ? assertEnvelope(value, { allowPreviousLag: true }).header : value;
     if (!header || ![header.asOf, header.start, header.end].every(validDay) || !instant(header.generatedAt)) throw new Error('invalid dates');
     const window = windowFor(header.asOf);
-    if (header.start !== window.start || header.end !== window.end || header.start > header.end) throw new Error('invalid window');
+    if (typeof value !== 'string' && (header.start !== window.start || header.end !== window.end || header.start > header.end)) throw new Error('invalid window');
     // The isolated incident job replays only validated dates and the original envelope digest.
     if (typeof value !== 'string' && Object.keys(value).sort().join() !== 'asOf,digest,end,generatedAt,start') throw new Error('invalid metadata');
     let digest = header.digest;

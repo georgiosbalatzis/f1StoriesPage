@@ -40,7 +40,7 @@ for `CRITICAL`; `UNKNOWN` and `DEGRADED` exit 0. Workflow infrastructure failure
 | `snapshot` | Public envelope shape, `f1s-dashboard-snapshot` format, version `1`, `AES-256-GCM`, dates, mature window and plausible generation time. Well-formed metadata is not cryptographic authentication. |
 | `publication` | Envelope-upload and `Commit the encrypted snapshot` outcomes, default-branch metadata versus refresh evidence, and evidence of a repository regression. Healthy publication requires an observed successful/skipped publish job and a covering repository snapshot. An intentional no-op is allowed. |
 | `pages` | Relevant direct and reusable-workflow Pages deployments, a successful `Deploy Pages artifact` job (including caller prefixes), matching public/repository `asOf` and `generatedAt`, and SHA-256 digests of canonical `{header, iv, data}`. Equal headers with different digests are immediately critical. Dispatch alone is insufficient. |
-| `freshness` | Public generation age and reporting-day lag relative to the expected schedule, with the four-day maturity lag. |
+| `freshness` | Public generation age and reporting-day lag relative to the expected schedule, with the two-day maturity lag. |
 | `discovery` | Model `13-article-discovery` and `28-internal-navigation` ages from matching publication telemetry/history; history can establish expiry only. Healthy status and recovery require both models in the current publication's run/carried evidence. RUM `30-cwv-summary` and `33-rum-coverage` carry ages are assessed at publication. No payload inspection. |
 | `costGuard` | Estimates, actual billed bytes, query attempts, unchanged caps and complete, consistent telemetry. |
 | `refresh` | Latest execution outcome and structured stage; successful completion or an intentional skip with a covering repository snapshot is required for healthy completion. |
@@ -56,7 +56,7 @@ The schedule clock uses the most recent due Athens instant: 03:00 normally, the 
 DST gap (04:00), and the first 03:00 occurrence on the autumn overlap. Its expected `asOf` is that instant's
 `America/Los_Angeles` date. The producer uses the LA date when it runs, so a late execution can legitimately have a
 newer `asOf`. GitHub timestamps are UTC.
-The mature end is `asOf − 4 days`; the primary window is at most 28 days, acquisition at most 7, never before the
+The mature end is `asOf − 2 days`; the primary window is at most 28 days, acquisition at most 7, never before the
 2026-10-19 export start. Compare dates in these zones, not against the Athens calendar alone.
 
 | Check | Implemented boundary |
@@ -248,7 +248,7 @@ This builds current main and does not query BigQuery. Keep the Pages concurrency
 
 **Symptoms:** `snapshot-stale`; public generation age greater than 48 h or reporting day behind the scheduled day
 beyond grace. **Diagnosis:** compare last refresh, publication and deployment, `asOf`, generation timestamp and
-mature end. A four-day data lag is expected. **Recovery:** fix the first failing upstream stage. If main already has
+mature end. A two-day data lag is expected. **Recovery:** fix the first failing upstream stage. If main already has
 fresh metadata, deploy it; if generation is missing, use the manual snapshot path. Never relabel an old envelope
 or run extra queries just to clear the stale notice.
 The next day's grace excuses only its newly due day. Any reporting day already overdue stays unhealthy until a

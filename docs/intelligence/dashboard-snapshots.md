@@ -40,12 +40,12 @@ The export starts on 2026-10-19, so snapshots are useful as soon as the owner se
 
 | `as_of_day` | Window | Days |
 | --- | --- | --- |
-| 2026-10-26 | 19 → 22 Oct | 4 |
-| 2026-10-29 | 19 → 25 Oct | 7 |
-| 2026-11-19 | 19 Oct → 15 Nov | 28 |
-| 2026-11-20 and later | the latest 28 mature days | 28 |
+| 2026-10-24 | 19 → 22 Oct | 4 |
+| 2026-10-27 | 19 → 25 Oct | 7 |
+| 2026-11-17 | 19 Oct → 15 Nov | 28 |
+| 2026-11-18 and later | the latest 28 mature days | 28 |
 
-No day before the export, no immature day (newer than `as_of_day − 4`) and no synthetic day is ever included. The
+No day before the export, no day newer than `as_of_day − 2` and no synthetic day is ever included. The owner accepted on 2026-11-16 that GA4 may add late events up to 72 hours, so the newest included days may still change slightly. The
 models' SQL, the RUM revision rule and the coverage-class separation are unchanged: the window only sets
 `@start_day` and `@end_day`. The page states the number of days and, while it is under 28, that the window covers
 everything since the export began.
@@ -66,7 +66,7 @@ The envelope check accepts only the window this rule gives for its `as_of_day`.
   query. A failed job is never resubmitted under that id.
 - DST: 03:00 Athens does not exist on the spring-forward Sunday (no run, or a run GitHub shifts; the next day catches
   up) and occurs twice on the fall-back Sunday (the second run is the same `as_of_day`, so it does nothing). A run that
-  starts after midnight Los Angeles (10:00/11:00 Athens) simply refreshes the next `as_of_day`, still 4 days mature.
+  starts after midnight Los Angeles (10:00/11:00 Athens) simply refreshes the next `as_of_day`, still 2 days behind.
 - `concurrency: intelligence-snapshot` (no cancel) serializes runs. The publish job shares `content-publishing` with
   the blog and data publishers, and `commit-and-push` rebases if main moved.
 - No failed or empty refresh can replace the published file: the envelope exists only after every check passed, publish
@@ -296,7 +296,7 @@ raising the limits automatically.
 
 Uses the two **existing, unchanged, production-executed** I-04 models:
 `26-acquisition-session` and `29-audience-coverage`. Both share a **7-day rolling mature window**
-(or fewer while the export is young), ending on the same `as_of_day − 4` as the primary 28-day report.
+(or fewer while the export is young), ending on the same `as_of_day − 2` as the primary 28-day report.
 The authenticated encrypted payload includes `modelWindows` for sub-windows, without modifying the public
 envelope format or re-keying. Old four-/five-model envelopes remain decryptable; the acquisition panel
 shows a pending message until its first successful snapshot.

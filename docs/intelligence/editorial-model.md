@@ -78,7 +78,7 @@ Age buckets: `before_publication`, `day_0`, `day_1`, `days_2_6`, `days_7_29`, `d
 - `privacy_info.analytics_storage = 'Yes'`.
 - `page_location` starts with `https://f1-stories.gr/`.
 - Daily tables only (no `events_intraday_*`), at most 90.
-- Days after `@as_of_day − 4` are excluded as immature: GA4 may update a table for 72 h after the day closes.
+- Days after `@as_of_day − 2` are excluded; GA4 may update the newest included days for up to 72 h after the day closes.
 - `@as_of_day` more than a day in the future aborts the query.
 
 The same parameters re-read the same tables. Only late arrivals inside already-mature tables could change a result.
@@ -98,7 +98,7 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
 
 - **Coverage.** The data covers consented Main-site visits only ([metrics contract](metrics-contract.md#population-and-coverage-bias)).
   The four tools are not in it. Run `15-coverage` with every model result and state what the filter dropped.
-- **Freshness.** `through_day` ≤ `@as_of_day − 4`. Record `@as_of_day` with every result. The catalog is the index at
+- **Freshness.** `through_day` ≤ `@as_of_day − 2`. Record `@as_of_day` with every result. The catalog is the index at
   the render commit: articles published later are absent, and retired articles appear only through their survivor.
 - **Sample counts.** `meets_min_events` flags rows; nothing is dropped. Use `@min_events = 30` before ranking
   articles, comparing categories or quoting the engagement ratio. Do not show cells under 10 events outside the
@@ -123,7 +123,7 @@ rate, and it can exceed 1 (for example after a lost `page_view` beacon). Call it
 I-02 (#353) was closed without merging. The owner's 19–22 Oct Console runs (`as_of_day = 2026-10-26`) cover the
 first execution. The owner reported 219.08 KB for `10`; no figure is recorded for the other models. Still open (see
 [bigquery-validation.md](bigquery-validation.md#outstanding)):
-- The 2026-10-19 → 25 validation; that window is not mature before 2026-10-29.
+- The 2026-10-19 → 25 validation; that window is not eligible before 2026-10-27.
 - GA4 Admin confirmation that property `485678890` is `G-X68J6MQKSM`.
 - Larger samples: 40 article page views in four days. Only aggregate results are recorded, with no
   production-validated claim before these items close.

@@ -262,7 +262,7 @@ test('ambiguous dimensions, property totals, canonical alias overlap and missing
 test('immature, future and unverified periods abstain, even when labels claim final', () => {
     for (const change of [d => { d.gsc.freshness.dataState = 'preliminary'; },
         d => { d.gsc.freshness.dataState = 'NOT VERIFIED'; },
-        d => { d.gsc.asOf = '2026-10-27'; }, d => { d.gsc.asOf = '2026-10-30'; }]) {
+        d => { d.gsc.asOf = '2026-10-26'; }, d => { d.gsc.asOf = '2026-10-30'; }]) {
         const input = fixture(); change(input);
         assert.equal(validateEditorialInputs(input).ok, true);
         const result = evaluate(input);
@@ -281,14 +281,14 @@ test('immature, future and unverified periods abstain, even when labels claim fi
 test('carried discovery retains its own period and never becomes current destination evidence', () => {
     const input = fixture();
     input.site.discovery.asOf = '2026-10-27';
-    input.site.discovery.period.end = '2026-10-23';
+    input.site.discovery.period.end = '2026-10-25';
     input.site.discovery.freshness.carried = true;
     assert.equal(validateEditorialInputs(input).ok, true);
     const result = evaluate(input);
     assert.equal(find(result, 'discovery_dropoff'), undefined);
     assert.ok(abstains(result, 'discovery_dropoff'));
     const linking = find(result, 'weak_internal_linking');
-    assert.equal(linking.exact_period.discovery.end, '2026-10-23');
+    assert.equal(linking.exact_period.discovery.end, '2026-10-25');
     assert.equal(linking.data_source.discovery.asOf, '2026-10-27');
     assert.equal(linking.data_source.discovery.freshness.carried, true);
     assert.equal(linking.exact_period.linkGraph.end, '2026-10-29');

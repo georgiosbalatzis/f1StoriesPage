@@ -27,7 +27,7 @@ export const REPORT_TIMEZONE = 'America/Los_Angeles'; // the property's time zon
 export const WINDOW_DAYS = 28; // primary reporting window
 export const ACQUISITION_WINDOW_DAYS = 7; // bounded session attribution + coverage pair, to preserve 1600 MiB daily cap
 export const EXPORT_START = '2026-10-19'; // the first GA4 daily export table; no earlier day exists
-export const MATURITY_DAYS = 4; // base.sql: days newer than as_of_day - 4 may still change
+export const MATURITY_DAYS = 2; // Owner decision 2026-11-16: GA4 may add late events up to 72 h; accepted for the dashboard.
 export const MIN_SAMPLE = 30; // @min_events and @min_observations, as in the model docs
 // On-demand pricing bills at least 10 MiB per referenced table, so 28-29 daily tables bill >= 280-290 MiB.
 export const MIN_BYTES_PER_TABLE = 10 * 1024 * 1024;
@@ -203,7 +203,7 @@ export function sealSnapshot(payload, key, { generatedAt, window }) {
 }
 
 // The public file's whole allowed shape: a header with dates and a key check, a nonce, and ciphertext.
-export function assertEnvelope(text) {
+export function assertEnvelope(text, { allowPreviousLag = false } = {}) {
     if (typeof text !== 'string' || Buffer.byteLength(text) > MAX_ENVELOPE_BYTES) throw new Error('snapshot envelope: missing or too large');
     const envelope = JSON.parse(text);
     if (!envelope || typeof envelope !== 'object' || Object.keys(envelope).sort().join() !== 'data,header,iv') {
@@ -213,8 +213,12 @@ export function assertEnvelope(text) {
     const header = JSON.parse(headerText);
     if (!header || Object.keys(header).join() !== HEADER_KEYS.join()) throw new Error('snapshot envelope: unexpected header fields');
     if (header.format !== ENVELOPE_FORMAT || header.v !== 1 || header.alg !== 'AES-256-GCM') throw new Error('snapshot envelope: unsupported version');
+    const legacyEnd = ISO_DAY.test(header.asOf) ? addDays(header.asOf, -4) : '';
+    const legacyStart = legacyEnd ? [addDays(legacyEnd, -(WINDOW_DAYS - 1)), EXPORT_START].sort().at(-1) : '';
+    const currentWindow = ISO_DAY.test(header.asOf) && header.end === addDays(header.asOf, -MATURITY_DAYS) && header.start === windowFor(header.asOf).start;
+    const previousWindow = allowPreviousLag && header.end === legacyEnd && header.start === legacyStart;
     if (![header.asOf, header.start, header.end].every(day => ISO_DAY.test(day))
-        || header.end !== addDays(header.asOf, -MATURITY_DAYS) || header.start !== windowFor(header.asOf).start || header.start > header.end) {
+        || !(currentWindow || previousWindow) || header.start > header.end) {
         throw new Error('snapshot envelope: window is not the mature window of its as_of day');
     }
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(header.generatedAt) || !/^[A-Za-z0-9_-]{22}$/.test(header.keyCheck)) {
@@ -279,14 +283,14 @@ const publishedPath = root => path.join(root, SNAPSHOT_PATH);
 
 export function publishedHeader(root = REPO_ROOT) {
     const file = publishedPath(root);
-    return fs.existsSync(file) ? assertEnvelope(fs.readFileSync(file, 'utf8')).header : null;
+    return fs.existsSync(file) ? assertEnvelope(fs.readFileSync(file, 'utf8'), { allowPreviousLag: true }).header : null;
 }
 
 // Whether this run has work to do. A refresh runs once per as_of day: reruns and late schedules are no-ops.
 export function plan({ mode, env, now, root = REPO_ROOT, enabled = ENABLED }) {
     if (mode !== 'refresh' && mode !== 'dry-run') throw new Error(`unknown mode ${mode}`);
     const window = snapshotWindow(now);
-    if (window.start > window.end) return { due: false, window, reason: `no mature daily export yet (the first, ${EXPORT_START}, matures 4 days later)` };
+    if (window.start > window.end) return { due: false, window, reason: `no mature daily export yet (the first, ${EXPORT_START}, matures ${MATURITY_DAYS} days later)` };
     if (mode === 'refresh' && !enabled) return { due: false, window, reason: 'billable refreshes are disabled (snapshot.mjs ENABLED)' };
     const published = publishedHeader(root);
     if (mode === 'refresh' && published && published.asOf >= window.asOf) {

@@ -50,7 +50,7 @@ function classifyPath() {
 }
 
 const WINDOW = /@start_day AS from_day,[\s\S]*?AS through_day/;
-const SUFFIX = /_TABLE_SUFFIX BETWEEN FORMAT_DATE\('%Y%m%d', @start_day\)\s+AND FORMAT_DATE\('%Y%m%d', LEAST\(@end_day, DATE_ADD\(@start_day, INTERVAL 89 DAY\), DATE_SUB\(@as_of_day, INTERVAL 4 DAY\)\)\)/;
+const SUFFIX = /_TABLE_SUFFIX BETWEEN FORMAT_DATE\('%Y%m%d', @start_day\)\s+AND FORMAT_DATE\('%Y%m%d', LEAST\(@end_day, DATE_ADD\(@start_day, INTERVAL 89 DAY\), DATE_SUB\(@as_of_day, INTERVAL 2 DAY\)\)\)/;
 const HOST = /r'\^https:\/\/f1-stories\\\.gr\(\/\[\^\?#\]\*\)'/;
 const CONSENT = "analytics_storage = 'Yes' AND page_path IS NOT NULL";
 

@@ -32,7 +32,7 @@ dry-run without breaking the I-03 models. Article-level metrics stay in I-03 (10
 `@start_day`, `@end_day`, `@as_of_day` (DATE), and `@min_events` (INT64; not used by 29). The rules are those of
 I-03:
 - daily tables only, at most 90;
-- nothing newer than `@as_of_day − 4` (the 72 h late-arrival window);
+- nothing newer than `@as_of_day − 2` (GA4 may still add late events for up to 72 h);
 - a future `@as_of_day` aborts the query.
 
 Every row carries `from_day` and `through_day`.

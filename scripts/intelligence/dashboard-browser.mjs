@@ -63,7 +63,7 @@ const editorialOnly = (() => {
 })();
 const discoveryDay = await seal(new Date(), 2);
 const discoveryCarried = await seal(new Date(), 3);
-const fourDays = await seal(new Date('2026-10-26T23:00:00Z')); // as_of 26 Oct: 19–22 Oct, all the export has
+const fourDays = await seal(new Date('2026-10-24T23:00:00Z')); // as_of 24 Oct: 19–22 Oct, all the export has
 const stale = await seal(propertyDaysBefore(new Date(), 3));
 const tampered = (() => {
     const envelope = JSON.parse(fresh);

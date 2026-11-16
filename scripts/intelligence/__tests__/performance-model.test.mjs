@@ -119,7 +119,7 @@ test('the rules come from the SQL and match the documented contract', () => {
     assert.deepEqual(RULES.thresholds, [['LCP', 2500, 'good'], ['LCP', 4000, 'needs_improvement'], ['INP', 200, 'good'],
         ['INP', 500, 'needs_improvement'], ['CLS', 0.1, 'good'], ['CLS', 0.25, 'needs_improvement']]);
     assert.deepEqual(RULES.metrics, ['LCP', 'INP', 'CLS', 'FCP', 'TTFB']);
-    assert.deepEqual([RULES.scanBefore, RULES.maturity, RULES.scanSpan, RULES.cohortSpan], [1, 4, 119, 89]);
+    assert.deepEqual([RULES.scanBefore, RULES.maturity, RULES.scanSpan, RULES.cohortSpan], [1, 2, 119, 89]);
 });
 
 test('revisions: highest revision wins, INP may decrease, never the maximum value', () => {
@@ -191,9 +191,9 @@ test('navigation dates use the reporting time zone; late revisions count toward 
     assert.equal(byId.tz.nav_day, '2026-10-19', 'scanned through the one-day margin and dated in Athens');
     assert.equal(byId.next, undefined, 'navigates on 2026-10-26 Athens: outside the cohort');
     assert.equal(byId.edge.nav_day, '2026-10-25', '23:30 Athens after the DST change is still the 25th');
-    assert.deepEqual([byId.late.revision, byId.late.native, byId.late.nav_day], [2, 3000, '2026-10-24'],
-        'revision exported after the navigation day counts; the immature 2026-10-27 table is not read');
-    assert.equal(out.extractionThrough, '2026-10-26');
+    assert.deepEqual([byId.late.revision, byId.late.native, byId.late.nav_day], [3, 5000, '2026-10-24'],
+        'revision exported after the navigation day counts; the 2026-10-27 table is now read');
+    assert.equal(out.extractionThrough, '2026-10-28');
     assert.equal(run([], { ...WINDOW, tz: 'UTC' }).through, '2026-10-25');
 });
 
