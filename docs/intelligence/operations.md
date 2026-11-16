@@ -293,10 +293,14 @@ Do not regenerate an already correct repository snapshot.
 
 ## Costs, notifications and owner configuration
 
-`costGuard` compares the larger of estimate and billed total with 1600 MiB. At 50% (800 MiB), it adds an `INFO`
+`costGuard` compares actual billed bytes with 1600 MiB. At 50% (800 MiB), it adds an `INFO`
 note; with complete telemetry the state remains healthy until 80% (1280 MiB), which is `DEGRADED`. At 100%
 (1600 MiB) or above it is `CRITICAL`. Guard violations or a failed preflight are also critical; incomplete telemetry
-otherwise stays unknown. Violations include changed caps, a per-query estimate/billed value greater than 400 MiB,
+otherwise stays unknown. A complete estimate above the full-window planned maximum is also `DEGRADED`.
+The operation summary has no counted-table fields, so this maximum uses the selected run models and the exported
+28-day window, model-window, scanned-table and per-table floor rules; it is not the shorter current window.
+An estimate at or above 80% of the cap is noted as a planned estimate near the preflight ceiling by design.
+Violations include changed caps, a per-query estimate/billed value greater than 400 MiB,
 total estimate/billed bytes greater than 1600 MiB, or more attempts than selected models. Complete cost evidence
 requires all seven queries and matching sums. These defaults are in `CONFIG`; changing them requires a code review.
 
