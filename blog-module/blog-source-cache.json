@@ -1,6 +1,41 @@
 {
   "posts": [
     {
+      "id": "20261116G",
+      "title": "Γιατί το W13 υπήρχε μόνο στην αεροσήραγγα",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-16",
+      "dateISO": "2026-11-16",
+      "displayDate": "16 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261116G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261116G/1.webp",
+      "excerpt": "Γιατί το W13 έδειχνε πανίσχυρο στην αεροσήραγγα αλλά υστερούσε στην πίστα; Το λάθος της Mercedes που ξεκίνησε το 2022 και στοίχισε και το 2023.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261116G/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "W13",
+        "Mercedes",
+        "Hamilton",
+        "Russel",
+        "Toto",
+        "Wolf",
+        "Elliot"
+      ],
+      "wordCount": 1916,
+      "readingTime": "10 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "791a0b2a00ff64ec55248646512b72d881fd0141c0c2043c46aaccadbd2da9f4"
+    },
+    {
       "id": "20261115W",
       "title": "Carlos Checa: Μια αργοπορημένη ευτυχία.",
       "author": "Themis Charvalis",
@@ -11882,5 +11917,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-15T19:50:12.289Z"
+  "lastUpdated": "2026-11-16T15:08:37.741Z"
 }
