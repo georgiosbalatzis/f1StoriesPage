@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { XMLValidator } from 'fast-xml-parser';
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, ParseError } from '@xmldom/xmldom';
 import { ORIGIN } from './release.mjs';
 
 const args = process.argv.slice(2);
@@ -34,7 +34,9 @@ try {
         const xml = fs.readFileSync(path.join(site, 'sitemap.xml'), 'utf8');
         if (/<!DOCTYPE/i.test(xml) || XMLValidator.validate(xml) !== true) throw new Error('malformed or unsupported sitemap XML');
         const errors = [];
-        const doc = new DOMParser({ errorHandler: { warning: message => errors.push(message), error: message => errors.push(message), fatalError: message => errors.push(message) } }).parseFromString(xml, 'application/xml');
+        let doc;
+        try { doc = new DOMParser({ onError: (level, message) => errors.push(message) }).parseFromString(xml, 'application/xml'); }
+        catch (error) { if (error instanceof ParseError) throw new Error('malformed sitemap XML'); throw error; }
         if (errors.length || !doc.documentElement) throw new Error('malformed sitemap XML');
         const root = doc.documentElement;
         if (root.localName === 'sitemapindex') throw new Error('sitemap index unsupported');
