@@ -998,7 +998,7 @@ function stampArticleRuntimeMarkup(dry, manifest) {
 
 // Small sha256-short for font files (content hash based on path, since
 // fonts are woff2 binaries and we don't re-read them on every stamp).
-function sha256Short(input) {
+export function sha256Short(input) {
     const abs = path.join(REPO_ROOT, input);
     const buf = fs.existsSync(abs) ? fs.readFileSync(abs) : Buffer.from(input);
     return crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);

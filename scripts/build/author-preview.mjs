@@ -3,6 +3,10 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { build } from 'esbuild';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { sha256Short } from './stamp-html.mjs';
+
+const buildRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 // Bundle the existing production renderer/parser against a browser-only filesystem.
 // No production renderer, template or article CSS is changed for preview support.
@@ -10,6 +14,13 @@ export async function buildAuthorPreview(root, outRel) {
     const require = createRequire(path.join(root, 'package.json'));
     const { CONFIG } = require(path.join(root, 'blog-module/build/shared.js'));
     const template = fs.readFileSync(path.join(root, 'blog-module/blog/template.html'), 'utf8');
+    const styles = [...template.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(match => {
+        const href = match[1];
+        if (!/[?&]v=/.test(href)) return href;
+        const file = path.resolve(root, '.' + new URL(href, 'https://preview.invalid').pathname);
+        if (!fs.existsSync(file)) throw new Error(`Preview stylesheet missing: ${file}`);
+        return href.replace(/([?&]v=)[^&#]*/, `$1${sha256Short(path.relative(buildRoot, file))}`);
+    });
     const presentation = template.slice(template.indexOf('<main id="main"'), template.indexOf('\n    <section class="rr-partners"')) + '\n</main>';
     const tableIcon = fs.readFileSync(path.join(root, 'node_modules/@fortawesome/fontawesome-free/svgs/solid/table-cells-large.svg'), 'utf8');
     const symbols = [...template.matchAll(/<symbol\b[\s\S]*?<\/symbol>/g)].map(match => match[0]).join('')
@@ -39,7 +50,7 @@ export async function buildAuthorPreview(root, outRel) {
             }));
             plugin.onResolve({ filter: /\/preview-styles$/ }, () => ({ path: 'styles', namespace: 'preview-styles' }));
             plugin.onLoad({ filter: /.*/, namespace: 'preview-styles' }, () => ({
-                contents: 'module.exports = ' + JSON.stringify([...template.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(match => match[1]))
+                contents: 'module.exports = ' + JSON.stringify(styles)
             }));
         } }]
     });
