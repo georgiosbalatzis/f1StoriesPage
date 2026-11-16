@@ -8,7 +8,7 @@ import { inflateRawSync } from 'node:zlib';
 import {
     assertEnvelope, windowFor, propertyDay, MATURITY_DAYS, DISCOVERY_EVERY_DAYS, DISCOVERY_MAX_AGE_DAYS,
     MAX_BYTES_BILLED, DAILY_MAX_BYTES, MIN_BYTES_PER_TABLE, WINDOW_DAYS, modelWindow, scannedTables,
-    SNAPSHOT_PATH, STALE_MS, SNAPSHOT_MODELS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY
+    SNAPSHOT_PATH, STALE_MS, SNAPSHOT_MODELS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY, ENVELOPE_FORMAT
 } from './snapshot.mjs';
 
 const HOUR = 3600000;
@@ -90,8 +90,13 @@ export function envelopeMetadata(value) {
     // shortcut: accepts the exact pre-2026-11-16 4-day window; remove once no 4-day snapshot can be published
     const header = typeof value === 'string' ? assertEnvelope(value, { allowPreviousLag: true }).header : value;
     if (!header || ![header.asOf, header.start, header.end].every(validDay) || !instant(header.generatedAt)) throw new Error('invalid dates');
-    const window = windowFor(header.asOf);
-    if (typeof value !== 'string' && (header.start !== window.start || header.end !== window.end || header.start > header.end)) throw new Error('invalid window');
+    if (typeof value !== 'string') {
+        // Reuse the envelope reader's exact window predicate with a synthetic, structurally valid envelope.
+        const syntheticHeader = JSON.stringify({ format: ENVELOPE_FORMAT, v: 1, alg: 'AES-256-GCM',
+            generatedAt: new Date(header.generatedAt).toISOString(), asOf: header.asOf, start: header.start, end: header.end,
+            keyCheck: 'AAAAAAAAAAAAAAAAAAAAAA' });
+        assertEnvelope(JSON.stringify({ header: syntheticHeader, iv: 'AAAAAAAAAAAAAAAA', data: 'AAAAAAAAAAAAAAAAAAAAAAA=' }), { allowPreviousLag: true });
+    }
     // The isolated incident job replays only validated dates and the original envelope digest.
     if (typeof value !== 'string' && Object.keys(value).sort().join() !== 'asOf,digest,end,generatedAt,start') throw new Error('invalid metadata');
     let digest = header.digest;

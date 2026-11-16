@@ -16,6 +16,7 @@ import {
     ROTATED_FOR_DISCOVERY, STALE_MS, MAX_BYTES_BILLED, DAILY_MAX_BYTES, SNAPSHOT_PATH, PAYLOAD_FORMAT, openSnapshot, schedule
 } from '../snapshot.mjs';
 import { fakeClient, syntheticRows } from './snapshot-fixture.mjs';
+import { validateEditorialInputs } from '../editorial-inputs.mjs';
 
 const NOW = '2026-11-20T09:10:00.000Z'; // 11:10 Athens, LA 01:10; schedule ran for LA Nov 19.
 const AS_OF = '2026-11-19';
@@ -28,6 +29,13 @@ const url = id => `https://github.com/example/repo/actions/runs/${id}`;
 function envelope(asOf = AS_OF, generatedAt = GENERATED) {
     return sealSnapshot({}, crypto.randomBytes(32), { window: windowFor(asOf), generatedAt });
 }
+test('documented synthetic editorial example validates', () => {
+    const doc = fs.readFileSync(new URL('../../../docs/intelligence/editorial-intelligence.md', import.meta.url), 'utf8');
+    const example = doc.match(/```json\s*([\s\S]*?)```/);
+    assert.ok(example);
+    const result = validateEditorialInputs(JSON.parse(example[1]));
+    assert.equal(result.ok, true, JSON.stringify(result.errors));
+});
 test('envelope metadata accepts current and exact legacy windows only', () => {
     const current = envelope();
     assert.equal(envelopeMetadata(current).end, '2026-11-17');
@@ -42,6 +50,33 @@ test('envelope metadata accepts current and exact legacy windows only', () => {
     value.header = JSON.stringify(header);
     assert.throws(() => envelopeMetadata(JSON.stringify(value)), /window is not the mature window/);
 });
+test('legacy and current envelope assessments replay identically from saved metadata', () => {
+    const legacy = sealSnapshot({}, crypto.randomBytes(32), { window: { asOf: AS_OF, start: '2026-10-19', end: '2026-11-15' }, generatedAt: GENERATED });
+    const current = envelope();
+    for (const [repo, publicCopy] of [[legacy, legacy], [current, current], [legacy, current], [current, legacy]]) {
+        const evidence = { repoSnapshot: ok(repo), publicSnapshot: ok(publicCopy) };
+        const saved = { repoSnapshot: ok(envelopeMetadata(repo)), publicSnapshot: ok(envelopeMetadata(publicCopy)) };
+        assert.deepEqual(envelopeMetadata(saved.repoSnapshot.value), saved.repoSnapshot.value);
+        const direct = assessHealth(evidence, { now: NOW });
+        const replay = assessHealth(saved, { now: NOW });
+        assert.deepEqual(Object.fromEntries(Object.entries(replay.components).map(([k, v]) => [k, v.status])),
+            Object.fromEntries(Object.entries(direct.components).map(([k, v]) => [k, v.status])));
+        assert.deepEqual(planIncidents([], replay), planIncidents([], direct));
+        if (repo === publicCopy) {
+            assert.equal(direct.components.snapshot.status, 'HEALTHY');
+            assert.equal(direct.components.freshness.status, 'HEALTHY');
+        }
+    }
+    const metadata = envelopeMetadata(legacy);
+    for (const changes of [{ end: '2026-11-16' }, { end: '2026-11-14' }, { start: '2026-10-20' }]) {
+        const bad = { ...metadata, ...changes };
+        assert.throws(() => envelopeMetadata(bad));
+        const raw = JSON.parse(legacy), header = JSON.parse(raw.header);
+        raw.header = JSON.stringify({ ...header, ...changes });
+        assert.throws(() => envelopeMetadata(JSON.stringify(raw)));
+    }
+});
+
 function operation({ asOf = AS_OF, observedAt = GENERATED, discovery = false, age = 1 } = {}) {
     const value = operationalSummary({ mode: 'refresh', now: new Date(observedAt) });
     value.window = windowFor(asOf);

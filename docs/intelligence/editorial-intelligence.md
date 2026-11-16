@@ -27,7 +27,7 @@ No changes to the 400 MiB per-query or 1600 MiB daily guards; no new SQL, schedu
 | Search impressions | Same GSC export | Eligible result appearances under Google's search-result visibility rules | impressions | Same export selection | Same GSC lag | People, page loads; query-row sum is not guaranteed to equal report totals |
 | Search CTR | Same GSC export | Clicks divided by impressions for this row's grain | ratio 0…1, not percent points | Same export selection | CSV percentages can be rounded | A site conversion rate; never average CTRs across rows |
 | Search position | Same GSC export | Topmost result position per impression, averaged at the declared page/property aggregation | average position (1 is highest); null only without impressions | Same export selection | Same GSC lag | An exact daily rank for every search; never average row averages |
-| Article page views | Snapshot model `10-article-pageviews` | Consented GA4 Main events with article identity; retired aliases resolve to survivors | `page_view` events | Latest ≤28 mature days, or all mature days since 2026-10-19 | Ends at `asOf − 4`; daily | Readers, sessions, unique document visits, whole audience |
+| Article page views | Snapshot model `10-article-pageviews` | Consented GA4 Main events with article identity; retired aliases resolve to survivors | `page_view` events | Latest ≤28 mature days, or all mature days since 2026-10-19 | Ends at `asOf − 2`; daily | Readers, sessions, unique document visits, whole audience |
 | Category counts | Snapshot model `11-category-pageviews` | Same editorial event population, grouped by primary category | `page_view` events | Same primary window as model 10 | Same GA4 maturity; daily | Catalogue size or a count of people |
 | Discovery clicks | Snapshot model `13-article-discovery` | Consented `internal_page_click` events with destination article key | click events | Primary window **of discovery's own asOf day** | Weekly; carried 1–7 days expected, 8–13 overdue, older rejected | Destination loads, visits, unique journeys; clicks do not prove the destination loaded |
 | RUM assessment | Owner's local I-06C4 assessment of models `30-cwv-summary`, `33-rum-coverage` | Consented, revision-deduplicated `wv6.2.3-rum1` observations, keeping coverage classes separate | assessment about observations; v1 carries no p75 values | Primary window **of RUM's own asOf day** | Daily; may be carried exactly one day on discovery days | Whole-audience speed or a production PASS inferred from a valid input shape |
@@ -63,8 +63,8 @@ not independently established by this validator. Defaults for imported GSC data 
 GSC daily dates use `America/Los_Angeles`; recent days can be preliminary. The validator warns when the end
 is newer than `asOf − 3`, and `joinable` refuses such a recent GSC period even if labelled final. This is a
 conservative local display rule, **not a guarantee that three-day-old GSC data is complete**. Confirm the
-export's data state locally. GSC lag is separate from GA4's documented late-arrival updates: the snapshot
-requires the exact primary window from `windowFor(asOf)`, ending at `asOf − 4`, at most 28 days and never
+export's data state locally. GSC lag is separate from GA4's late-arrival updates, which can change counts up to 72 hours after an event: the snapshot
+requires the exact primary window from `windowFor(asOf)`, ending at `asOf − 2`, at most 28 days and never
 before 2026-10-19. An immature or relabelled snapshot window is a FAIL.
 
 The snapshot also holds `20-daily-activity`, `26-acquisition-session`, `28-internal-navigation` and
@@ -255,7 +255,7 @@ discovery and a RUM assessment left NOT VERIFIED.
     "source": "ga4-bigquery",
     "population": "consented-ga4-events",
     "unit": "events",
-    "period": { "start": "2026-10-19", "end": "2026-10-25" },
+    "period": { "start": "2026-10-19", "end": "2026-10-27" },
     "timezone": "America/Los_Angeles",
     "asOf": "2026-10-29",
     "freshness": { "cadence": "daily", "carried": false, "dataState": "final" },
@@ -268,7 +268,7 @@ discovery and a RUM assessment left NOT VERIFIED.
       "source": "ga4-bigquery",
       "population": "consented-ga4-events",
       "unit": "events",
-      "period": { "start": "2026-10-19", "end": "2026-10-23" },
+      "period": { "start": "2026-10-19", "end": "2026-10-25" },
       "timezone": "America/Los_Angeles",
       "asOf": "2026-10-27",
       "freshness": { "cadence": "weekly", "carried": true, "dataState": "final" },
@@ -281,7 +281,7 @@ discovery and a RUM assessment left NOT VERIFIED.
       "source": "ga4-bigquery",
       "population": "consented-rum-observations",
       "unit": "observations",
-      "period": { "start": "2026-10-19", "end": "2026-10-25" },
+      "period": { "start": "2026-10-19", "end": "2026-10-27" },
       "timezone": "America/Los_Angeles",
       "asOf": "2026-10-29",
       "freshness": { "cadence": "daily", "carried": false, "dataState": "final" },
@@ -340,7 +340,7 @@ GSC is optional. Missing, empty, unavailable, preliminary or immature GSC produc
 only for `search_ctr_gap`, `metadata_review` and `evergreen_refresh`. Discovery, linking and explainer
 rules evaluate their own evidence independently, including when no GSC connection exists. Each section
 used must be `present/final`, have `asOf <=` the evaluation day, and satisfy its own maturity lag. GSC
-ends no later than its own `asOf − 3`; site/discovery use their own `asOf − 4` and I-07A snapshot windows.
+ends no later than its own `asOf − 3`; site/discovery use their own `asOf − 2` and I-07A snapshot windows.
 Final labels remain owner assertions. Evaluation on a later date does not relabel old measurements as
 today's data. Invalid contract input still stops every rule with a single data-quality abstention.
 

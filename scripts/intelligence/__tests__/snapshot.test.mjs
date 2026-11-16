@@ -151,12 +151,15 @@ test('envelopes accept any valid 1-28 day window and nothing else', () => {
     const key = crypto.randomBytes(32);
     const seal = window => sealSnapshot({}, key, { generatedAt: NOW.toISOString(), window });
     for (const asOf of ['2026-10-23', '2026-10-26', '2026-10-29', '2026-11-19', '2027-06-01']) assert.ok(assertEnvelope(seal(windowFor(asOf))));
+    assert.deepEqual(windowFor('2026-10-26'), { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-24' });
+    assert.deepEqual(windowFor('2026-11-19'), { asOf: '2026-11-19', start: '2026-10-21', end: '2026-11-17' });
+    assert.deepEqual(windowFor('2026-10-20'), { asOf: '2026-10-20', start: '2026-10-19', end: '2026-10-18' });
     for (const window of [
-        { asOf: '2026-10-26', start: '2026-10-20', end: '2026-10-22' }, // a shorter window than is available
-        { asOf: '2026-10-26', start: '2026-10-18', end: '2026-10-22' }, // a day before the export began
+        { asOf: '2026-10-26', start: '2026-10-20', end: '2026-10-24' }, // a shorter window than is available
+        { asOf: '2026-10-26', start: '2026-10-18', end: '2026-10-24' }, // a day before the export began
         { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-25' }, // an immature day
-        { asOf: '2026-11-20', start: '2026-10-19', end: '2026-11-16' }, // 29 days
-        { asOf: '2026-10-22', start: '2026-10-19', end: '2026-10-18' } // no mature day
+        { asOf: '2026-11-19', start: '2026-10-20', end: '2026-11-17' }, // 29 days
+        { asOf: '2026-10-20', start: '2026-10-19', end: '2026-10-18' } // no mature day
     ]) {
         assert.throws(() => assertEnvelope(seal(window)), /window is not the mature window/, JSON.stringify(window));
     }
