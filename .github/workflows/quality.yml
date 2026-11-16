@@ -64,7 +64,7 @@ jobs:
 
       - name: Run visual focus capture regression
         if: ${{ steps.changes.outputs.content_only != 'true' }}
-        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs
+        run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs scripts/perf/__tests__/presentation-qa.test.mjs scripts/perf/__tests__/qa-portability.test.mjs
 
       - name: Run security policy tests
         run: npm run test:security
