@@ -36,7 +36,7 @@ outcomes; an expected limitation does not excuse a numerical mismatch.
 | Export completeness | NOT VERIFIED | [01 metadata](sql/01-export-tables.sql) / per-day `bq show` evidence of table presence, row-count and modification history for the relevant scan. The pipeline checks table existence; a present but partial export and late arrivals remain possible. Metadata can flag anomalies, not prove all browser events arrived. |
 | Full 28-day reference (Outstanding 5) | NOT VERIFIED | Owner comparison with [perf/rum-pilot/report.sql](../../perf/rum-pilot/report.sql), no earlier than **2026-11-19**, under [matching conditions below](#rum-reference-comparison). Matching counts do not validate pooled p75s. |
 | Small samples and the 30 floor (Outstanding 3) | EXPECTED LIMITATION | [Sample policy](editorial-model.md#coverage-freshness-sample-counts) and [I-05 sample record](bigquery-validation.md#i-05-3033). Keep `min_events=min_observations=30`; flags keep rows visible. A larger sample has no guaranteed date. Abstain from rankings/comparisons framed as stable below the floor; do not lower it to obtain findings. |
-| Four-day maturity lag | EXPECTED LIMITATION | [Window semantics](dashboard-snapshots.md#data) and SQL bases exclude days newer than `as_of_day − 4`. Mature does not mean delivery is complete. A missing table is not a zero day. |
+| Two-day maturity lag | EXPECTED LIMITATION | [Window semantics](dashboard-snapshots.md#data) and SQL bases exclude days newer than `as_of_day − 2`. Mature does not mean delivery is complete. A missing table is not a zero day. |
 | Weekly discovery / one-day carried RUM | EXPECTED LIMITATION | [Rotation](dashboard-snapshots.md#i-06c3--editorial-discovery-weekly-rotation): discovery carries its original window; RUM carries exactly yesterday on discovery days. Discovery age 1–7 days is expected, 8–13 warns, older than 13 must be dropped. Incorrect dates or rotation are defects, not expected limitations. |
 | Consented Main population / delayed RUM (Outstanding 6) | EXPECTED LIMITATION | [Metrics contract](metrics-contract.md#population-and-coverage-bias-r), [performance model](performance-model.md): no total-reader denominator, no tool usage denominator and no full-navigation CWV. The validator's `external.consent-population` necessarily remains NOT VERIFIED. No BigQuery query can recover events never collected. |
 
@@ -109,7 +109,7 @@ Earliest valid owner date: **2026-11-19**. For the first full cohort use:
 | Setting | I-05 models 30 / 33 | Existing reference `report.sql` |
 | --- | --- | --- |
 | Cohort | `start_day=2026-10-19`, `end_day=2026-11-15` | `first_day=2026-10-19` (hard-coded 28 days) |
-| Extraction | `as_of_day=2026-11-19` → cutoff 2026-11-15 | `as_of_day=2026-11-15`, **not** the owner run date |
+| Extraction | `as_of_day=2026-11-19` → cutoff 2026-11-17 | `as_of_day=2026-11-17`, **not** the owner run date |
 | Scan start | 2026-10-18 (time-zone margin) | `deployment_day=2026-10-18` for identical scan bounds |
 | Time zone | `America/Los_Angeles` | `report_timezone=America/Los_Angeles` |
 | Version / coverage | official version; separate coverage classes | `version=wv6.2.3-rum1`, `coverage=all`, `navigation_type=all` (strata remain separate) |

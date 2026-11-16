@@ -417,7 +417,7 @@ export function validateSnapshot({ header, payload, now = null, catalogue = null
     add('window.rotation', rotationErrors.length ? 'FAIL' : 'PASS', rotationErrors.length ? 'high' : 'info', rotationErrors.length ? list(rotationErrors)
         : `${ranToday.length} model(s) computed for as_of ${W.asOf}${rumCarried ? '; discovery day, RUM carried from yesterday' : ''}`);
 
-    // Freshness: the 4-day maturity lag is by design; staleness is measured against the schedule.
+    // Freshness: the 2-day maturity lag is by design; staleness is measured against the schedule.
     if (now) {
         const today = propertyDay(now);
         const behind = dayDiff(today, W.asOf);

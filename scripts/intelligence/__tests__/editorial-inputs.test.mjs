@@ -59,10 +59,10 @@ test('strict types, unknown fields and invalid metadata fail without exposing va
         d => { d.site.unit = 'sessions'; }, d => { d.gsc.timezone = 'Europe/Athens'; },
         d => { d.gsc.asOf = '2026-02-30'; }, d => { d.gsc.period.end = '2026-02-30'; },
         d => { d.gsc.asOf = ['2026-10-29']; }, d => { d.gsc.period.start = ['2026-10-19']; },
-        d => { d.gsc.period.start = '2026-10-26'; }, d => { d.gsc.freshness.carried = 'false'; },
+        d => { d.gsc.period.start = '2026-10-28'; }, d => { d.gsc.freshness.carried = 'false'; },
         d => { d.gsc.freshness = null; }, d => { d.site = []; }, d => { d.gsc.rows = [null]; },
         d => { delete d.gsc.rows[0].country; }, d => { d.gsc.rows[0].device = 'PHONE'; },
-        d => { d.gsc.rows[0].date = '2026-10-26'; }, d => { d.catalogue.rows[0].id = 'wrong'; },
+        d => { d.gsc.rows[0].date = '2026-10-28'; }, d => { d.catalogue.rows[0].id = 'wrong'; },
         d => { d.linkGraph.rows[0].to = article('20260822G'); }
     ];
     for (const mutate of mutations) {

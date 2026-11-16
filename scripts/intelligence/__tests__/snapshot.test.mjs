@@ -24,7 +24,7 @@ const workflow = read('.github/workflows/intelligence-snapshot.yml');
 const job = name => workflow.split(`\n  ${name}:\n`)[1].split(/\n {2}[a-z_]+:\n/)[0];
 const newKey = () => crypto.randomBytes(32).toString('base64');
 const NOW = new Date('2026-11-20T01:00:00Z'); // 03:00 Athens; 17:00 on 19 Nov in Los Angeles
-const WINDOW = { asOf: '2026-11-19', start: '2026-10-19', end: '2026-11-15' };
+const WINDOW = { asOf: '2026-11-19', start: '2026-10-21', end: '2026-11-17' };
 const env = (overrides = {}) => ({
     DASHBOARD_SNAPSHOT_KEY: newKey(),
     WIF_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/github/providers/f1-stories',
@@ -77,21 +77,21 @@ test('the window is the latest mature days in the property time zone: up to 28, 
     assert.deepEqual(snapshotWindow(NOW), WINDOW);
     // The export started on 19 Oct: until 28 days have matured, every mature day since then, with no gap.
     for (const [asOf, start, end, days] of [
-        ['2026-10-23', '2026-10-19', '2026-10-19', 1],
-        ['2026-10-26', '2026-10-19', '2026-10-22', 4],
-        ['2026-10-29', '2026-10-19', '2026-10-25', 7],
-        ['2026-11-19', '2026-10-19', '2026-11-15', 28],
-        ['2026-11-20', '2026-10-20', '2026-11-16', 28]
+        ['2026-10-21', '2026-10-19', '2026-10-19', 1],
+        ['2026-10-24', '2026-10-19', '2026-10-22', 4],
+        ['2026-10-27', '2026-10-19', '2026-10-25', 7],
+        ['2026-11-17', '2026-10-19', '2026-11-15', 28],
+        ['2026-11-18', '2026-10-20', '2026-11-16', 28]
     ]) {
         const window = windowFor(asOf);
         assert.deepEqual(window, { asOf, start, end }, asOf);
         assert.equal(windowDays(window), days, asOf);
     }
     // Before the first export day matures there is no window, and nothing is planned (before any credential is read).
-    assert.ok(windowFor('2026-10-22').start > windowFor('2026-10-22').end);
+    assert.ok(windowFor('2026-10-20').start > windowFor('2026-10-20').end);
     for (const mode of ['dry-run', 'refresh']) {
-        const result = plan({ mode, enabled: true, env: {}, now: new Date('2026-10-23T01:00:00Z'), root: tempRoot() });
-        assert.deepEqual([result.due, result.reason], [false, 'no mature daily export yet (the first, 2026-10-19, matures 4 days later)']);
+        const result = plan({ mode, enabled: true, env: {}, now: new Date('2026-10-21T01:00:00Z'), root: tempRoot() });
+        assert.deepEqual([result.due, result.reason], [false, 'no mature daily export yet (the first, 2026-10-19, matures 2 days later)']);
     }
     for (const [instant, asOf] of [
         ['2026-10-25T01:00:00Z', '2026-10-24'], // EU already on winter time, US still on summer time
@@ -106,13 +106,13 @@ test('the window is the latest mature days in the property time zone: up to 28, 
         assert.equal((Date.parse(window.asOf) - Date.parse(window.end)) / 86400000, MATURITY_DAYS);
         assert.ok(window.start >= EXPORT_START && windowDays(window) >= 1 && windowDays(window) <= WINDOW_DAYS, instant);
     }
-    // The models' own maturity rule is the same 4 days, so the window never asks for more than they read.
+    // The models' own maturity rule is the same 2 days, so the window never asks for more than they read.
     for (const model of Object.keys(SNAPSHOT_MODELS)) {
-        assert.match(renderModel(model, { project: PROJECT, property: PROPERTY, ...readInputs() }), /DATE_SUB\(@as_of_day, INTERVAL 4 DAY\)/);
+        assert.match(renderModel(model, { project: PROJECT, property: PROPERTY, ...readInputs() }), /DATE_SUB\(@as_of_day, INTERVAL 2 DAY\)/);
     }
 });
 
-for (const [asOf, days] of [['2026-10-26', 4], ['2026-10-29', 7], ['2026-11-19', 28]]) {
+for (const [asOf, days] of [['2026-10-24', 4], ['2026-10-27', 7], ['2026-11-17', 28]]) {
     test(`a ${days}-day window refreshes, seals and opens with exactly ${days} daily rows and ${days} checked tables`, async () => {
         const window = windowFor(asOf);
         const keyText = newKey();
@@ -151,12 +151,15 @@ test('envelopes accept any valid 1-28 day window and nothing else', () => {
     const key = crypto.randomBytes(32);
     const seal = window => sealSnapshot({}, key, { generatedAt: NOW.toISOString(), window });
     for (const asOf of ['2026-10-23', '2026-10-26', '2026-10-29', '2026-11-19', '2027-06-01']) assert.ok(assertEnvelope(seal(windowFor(asOf))));
+    assert.deepEqual(windowFor('2026-10-26'), { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-24' });
+    assert.deepEqual(windowFor('2026-11-19'), { asOf: '2026-11-19', start: '2026-10-21', end: '2026-11-17' });
+    assert.deepEqual(windowFor('2026-10-20'), { asOf: '2026-10-20', start: '2026-10-19', end: '2026-10-18' });
     for (const window of [
-        { asOf: '2026-10-26', start: '2026-10-20', end: '2026-10-22' }, // a shorter window than is available
-        { asOf: '2026-10-26', start: '2026-10-18', end: '2026-10-22' }, // a day before the export began
-        { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-23' }, // an immature day
-        { asOf: '2026-11-20', start: '2026-10-19', end: '2026-11-16' }, // 29 days
-        { asOf: '2026-10-22', start: '2026-10-19', end: '2026-10-18' } // no mature day
+        { asOf: '2026-10-26', start: '2026-10-20', end: '2026-10-24' }, // a shorter window than is available
+        { asOf: '2026-10-26', start: '2026-10-18', end: '2026-10-24' }, // a day before the export began
+        { asOf: '2026-10-26', start: '2026-10-19', end: '2026-10-25' }, // an immature day
+        { asOf: '2026-11-19', start: '2026-10-20', end: '2026-11-17' }, // 29 days
+        { asOf: '2026-10-20', start: '2026-10-19', end: '2026-10-18' } // no mature day
     ]) {
         assert.throws(() => assertEnvelope(seal(window)), /window is not the mature window/, JSON.stringify(window));
     }
@@ -193,7 +196,7 @@ test('owner-approved activation preserves cost caps and the nine-model allowlist
 test('acquisition and coverage have the same bounded seven-day mature window', async () => {
     assert.equal(ACQUISITION_WINDOW_DAYS, 7);
     assert.deepEqual(modelWindow('26-acquisition-session', WINDOW),
-        { asOf: WINDOW.asOf, start: '2026-11-09', end: '2026-11-15' });
+        { asOf: WINDOW.asOf, start: '2026-11-11', end: '2026-11-17' });
     assert.deepEqual(modelWindow('29-audience-coverage', WINDOW), modelWindow('26-acquisition-session', WINDOW));
     assert.deepEqual(modelWindow('20-daily-activity', WINDOW), WINDOW);
     assert.deepEqual(modelWindow('26-acquisition-session', windowFor('2026-10-26')), windowFor('2026-10-26'));
@@ -205,7 +208,7 @@ test('acquisition and coverage have the same bounded seven-day mature window', a
     const { header } = assertEnvelope(text);
     assert.equal(header.start, WINDOW.start);
     const query = client.calls.runs.find(r => r.jobId.includes('26_acquisition_session'));
-    assert.deepEqual(query.parameters.filter(p => p.name === 'start_day').map(p => p.parameterValue.value), ['2026-11-09']);
+    assert.deepEqual(query.parameters.filter(p => p.name === 'start_day').map(p => p.parameterValue.value), ['2026-11-11']);
     assert.equal(client.calls.dryRuns.length, 7);
     assert.ok(envelope.data && !text.includes('organic_search'));
     // Browser code will validate the authenticated ciphertext and included sub-window metadata.
@@ -216,7 +219,7 @@ test('estimates count every scanned daily table, even when a dry-run lists the w
     const job = (processed, tables) => ({ statistics: { query: { totalBytesProcessed: processed, referencedTables: Array(tables).fill({ tableId: 'events_*' }) } } });
     // The editorial and audience bases read the window's days; the RUM base also reads the day before.
     assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, WINDOW))), [28, 28, 28, 28, 7, 28, 7, 29, 29]);
-    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, windowFor('2026-10-26')))), [4, 4, 4, 4, 4, 4, 4, 5, 5]);
+    assert.deepEqual(Object.keys(SNAPSHOT_MODELS).map(model => scannedTables(model, modelWindow(model, windowFor('2026-10-26')))), [6, 6, 6, 6, 6, 6, 6, 7, 7]);
     // One listed wildcard table: the 10 MiB per-table minimum still applies to all 28 or 29 tables.
     assert.deepEqual(conservativeBytes(job('1000', 1), 28), { processed: 1000, referenced: 1, tables: 28, estimate: 280 * 1048576 });
     assert.equal(conservativeBytes(job('1000', 1), 29).estimate, 290 * 1048576);
@@ -420,7 +423,7 @@ test('a wrong or malformed key, and any tampering, is rejected without revealing
     assert.equal(await reopen({ ...envelope, iv: flip(envelope.iv) }), 'tampered');
     // The header is authenticated: a forged update time or coverage date breaks decryption.
     assert.equal(await reopen({ ...envelope, header: envelope.header.replace(NOW.toISOString(), '2027-01-01T00:00:00.000Z') }), 'tampered');
-    assert.equal(await reopen({ ...envelope, header: envelope.header.replace('"end":"2026-11-15"', '"end":"2026-11-16"') }), 'tampered');
+    assert.equal(await reopen({ ...envelope, header: envelope.header.replace('"end":"2026-11-17"', '"end":"2026-11-18"') }), 'tampered');
     // A payload sealed for another window cannot be relabelled.
     const other = sealSnapshot({ format: 'f1s-dashboard-snapshot-payload', v: 1, window: { ...WINDOW, end: '2026-11-14' }, models: {} },
         Buffer.from(keyText, 'base64'), { generatedAt: NOW.toISOString(), window: WINDOW });
@@ -646,7 +649,7 @@ test('every supported window, normal or discovery day, plans at most 1560 MiB at
     // Running all nine daily would need 2120 MiB: the rotation exists because that does not fit.
     assert.equal(floor(all, WINDOW), 2120 * MiB);
     let worst = 0;
-    for (let asOf = '2026-10-23'; asOf <= '2026-11-25'; asOf = new Date(Date.parse(`${asOf}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)) {
+    for (let asOf = '2026-10-21'; asOf <= '2026-11-25'; asOf = new Date(Date.parse(`${asOf}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)) {
         const window = windowFor(asOf);
         assert.ok(windowDays(window) >= 1 && windowDays(window) <= 28);
         for (const models of [normal, discoveryDay]) {
@@ -827,3 +830,42 @@ test('fixture day steps are consecutive Los Angeles days across both DST changes
     const now = new Date();
     assert.equal(propertyDaysBefore(now, 0), now);
 });
+
+test('published header compatibility accepts only the exact previous four-day window', () => {
+    const key = crypto.randomBytes(32), asOf = '2026-11-19';
+    const seal = window => sealSnapshot({}, key, { generatedAt: NOW.toISOString(), window });
+    const old = { asOf, start: '2026-10-19', end: '2026-11-15' };
+    assert.equal(assertEnvelope(seal(old), { allowPreviousLag: true }).header.end, old.end);
+    for (const window of [{ ...old, end: '2026-11-16' }, { ...old, end: '2026-11-14' }, { ...old, start: '2026-10-20' }]) {
+        assert.throws(() => assertEnvelope(seal(window), { allowPreviousLag: true }), /window is not the mature window/);
+    }
+});
+
+// Previous published snapshots remain readable for scheduling only; their rows are never carried.
+for (const discoveryDue of [false, true]) {
+    test(`first refresh after lag change with ${discoveryDue ? 'due' : 'recent'} discovery resets safely`, async () => {
+        const root = tempRoot(), keyText = newKey(), key = Buffer.from(keyText, 'base64');
+        const oldWindow = { asOf: '2026-11-19', start: '2026-10-19', end: '2026-11-15' };
+        const models = syntheticRows(oldWindow);
+        const discoveryAsOf = discoveryDue ? '2026-11-12' : oldWindow.asOf;
+        const discoveryEnd = discoveryDue ? '2026-11-08' : oldWindow.end;
+        const modelWindows = Object.fromEntries(DISCOVERY_MODELS.map(model => [model, { asOf: discoveryAsOf, start: '2026-10-19', end: discoveryEnd }]));
+        const old = sealSnapshot({ format: 'f1s-dashboard-snapshot-payload', v: 1, models, modelWindows }, key,
+            { generatedAt: '2026-11-19T23:00:00.000Z', window: oldWindow });
+        const file = path.join(root, SNAPSHOT_PATH);
+        fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, old);
+        assert.throws(() => assertEnvelope(old), /window is not the mature window/);
+        assert.equal(openSnapshot(old, key), null);
+        const now = new Date('2026-11-20T23:00:00Z'), client = fakeClient(windowFor('2026-11-20'));
+        const text = await run({ root, now, client, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) });
+        assert.equal(client.calls.runs.length, 7);
+        assert.ok(client.calls.runs.every(call => !call.jobId.includes('13_article_discovery') && !call.jobId.includes('28_internal_navigation')));
+        assert.equal(install(text, root), true);
+        assert.equal(openSnapshot(text, key).header.end, '2026-11-18');
+        const next = fakeClient(windowFor('2026-11-21'));
+        await run({ root, now: new Date('2026-11-21T23:00:00Z'), client: next, env: env({ DASHBOARD_SNAPSHOT_KEY: keyText }) });
+        assert.equal(next.calls.runs.length, 7);
+        assert.ok(next.calls.runs.some(call => call.jobId.includes('13_article_discovery')));
+        assert.ok(floor(client.calls.runs.map(call => call.jobId.match(/_(\d\d_[a-z_]+)_[0-9a-f]{16}$/)[1].replaceAll('_', '-')), windowFor('2026-11-20')) <= DAILY_MAX_BYTES);
+    });
+}

@@ -170,7 +170,8 @@ const PLAINTEXT_ANALYTICS_PATTERN = /"(?:10-article-pageviews|11-category-pagevi
 function validateSnapshot(errors, relPath, abs) {
     if (relPath === SNAPSHOT_PATH) {
         try {
-            assertEnvelope(fs.readFileSync(abs, 'utf8'));
+            // shortcut: accepts the exact pre-2026-11-16 4-day window; remove once no 4-day snapshot can be published
+            assertEnvelope(fs.readFileSync(abs, 'utf8'), { allowPreviousLag: true });
         } catch (error) {
             errors.push(`${relPath}: not a valid encrypted snapshot envelope (${error.message})`);
         }

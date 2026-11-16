@@ -33,7 +33,7 @@ What is reused, without changing it:
 - **Report conventions:** the value extraction, CLS conversion, valid-value filter, enum lists, navigation-date
   expression, and resolving revisions *before* the cohort filter. The tests require identical text.
 - **Shared intelligence rules:** the consent filter, host regex and future-date guard are the I-03 text, and the
-  maturity rule (no table newer than `@as_of_day − 4`) is the same.
+  maturity rule (no table newer than `@as_of_day − 2`) is the same.
 - **I-01 `03-web-vital-integrity.sql`** stays the per-version integrity check. Model 33 adds only what `03` cannot
   show.
 
@@ -45,7 +45,7 @@ I-05 does not replace it.
 | Parameter | Type | Meaning |
 | --- | --- | --- |
 | `@start_day`, `@end_day` | DATE | Navigation cohort, in `@report_timezone` |
-| `@as_of_day` | DATE | Extraction cutoff (run date); tables after `@as_of_day − 4` are immature and not read |
+| `@as_of_day` | DATE | Extraction cutoff (run date); tables after `@as_of_day − 2` are immature and not read |
 | `@report_timezone` | STRING | Time zone for navigation dates: the property's, `America/Los_Angeles` (confirmed 2026-10-26) |
 | `@min_observations` | INT64 | 30, 31, 32: rows below it are flagged, not hidden |
 | `@period` | STRING | 32 only: `day` or `week` (ISO weeks) |
@@ -65,7 +65,7 @@ automatically.
 
 - **Navigation date vs export date.** An observation belongs to the day of `nav_start_ms` in `@report_timezone`.
   Its revisions can arrive in later daily tables. Tables are therefore scanned from `@start_day − 1` (time-zone
-  margin) through the extraction cutoff `LEAST(@as_of_day − 4, @start_day + 119)`, not just the cohort days.
+  margin) through the extraction cutoff `LEAST(@as_of_day − 2, @start_day + 119)`, not just the cohort days.
   Revisions are resolved first; only then are observations filtered by navigation date. Daily tables only;
   `events_intraday_*` are never read.
 - **Caps.** The cohort is capped at 90 days and at the extraction cutoff. Every row reports `through_day`,

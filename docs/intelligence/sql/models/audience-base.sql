@@ -2,7 +2,7 @@
 -- `scripts/intelligence/editorial-model.mjs render` inserts it with I-01's classify_path (sql/02) and
 -- audience-functions.sql. Parameters, window, maturity rule, consent filter and host rule are the same text as
 -- base.sql (the tests require it): @start_day, @end_day, @as_of_day (DATE); daily tables only, at most 90, none
--- newer than @as_of_day - 4.
+-- newer than @as_of_day - 2.
 -- Raw strings never leave `events`: device, country, sources, mediums, channel groups and enumerated parameters are
 -- reduced by allowlist functions there, and campaign names and click ids only as presence flags. Page and link
 -- paths leave only through classify_path. Models read `site` (consented, primary-host, mature);
@@ -15,7 +15,7 @@ WITH window_bounds AS (
   SELECT
     @start_day AS from_day,
     IF(@as_of_day > DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY), ERROR('as_of_day is in the future'),
-      LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 4 DAY))) AS through_day
+      LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 2 DAY))) AS through_day
 ), events AS (
   SELECT
     PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) AS event_day,
@@ -46,7 +46,7 @@ WITH window_bounds AS (
     channel_class(session_traffic_source_last_click.cross_channel_campaign.default_channel_group) AS session_channel_class
   FROM `{{PROJECT_ID}}.analytics_{{GA4_PROPERTY_ID}}.events_*`
   WHERE _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', @start_day)
-      AND FORMAT_DATE('%Y%m%d', LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 4 DAY)))
+      AND FORMAT_DATE('%Y%m%d', LEAST(@end_day, DATE_ADD(@start_day, INTERVAL 89 DAY), DATE_SUB(@as_of_day, INTERVAL 2 DAY)))
     AND event_name IN ('page_view', 'session_start', 'first_visit', 'user_engagement', 'article_engaged',
       'article_share', 'internal_page_click', 'outbound_click', 'journal_search')
 ), site AS (

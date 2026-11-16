@@ -293,11 +293,30 @@ function cliFixture(t) {
 
 test('validator CLI publishes only a valid encrypted snapshot, and no plaintext analytics or credential anywhere', t => {
     const { dist, run } = cliFixture(t);
-    const window = { asOf: '2026-11-19', start: '2026-10-19', end: '2026-11-15' };
+    const window = { asOf: '2026-11-19', start: '2026-10-21', end: '2026-11-17' };
     const envelope = sealSnapshot({ models: {} }, crypto.randomBytes(32), { generatedAt: '2026-11-20T01:00:00.000Z', window });
     write(dist, 'dashboard/data/snapshot.json', envelope);
     const valid = run();
     assert.equal(valid.status, 0, valid.stdout + valid.stderr);
+    const withEnd = end => {
+        const value = JSON.parse(envelope);
+        const header = JSON.parse(value.header);
+        header.end = end;
+        header.start = end === '2026-11-15' ? '2026-10-19' : '2026-10-20';
+        value.header = JSON.stringify(header);
+        return JSON.stringify(value);
+    };
+    write(dist, 'dashboard/data/snapshot.json', withEnd('2026-11-15'));
+    const legacy = run();
+    assert.equal(legacy.status, 0, legacy.stdout + legacy.stderr);
+    write(dist, 'dashboard/data/snapshot.json', withEnd('2026-11-16'));
+    const invalid = run();
+    assert.equal(invalid.status, 1);
+    assert.match(invalid.stderr, /not a valid encrypted snapshot envelope/);
+    write(dist, 'dashboard/data/snapshot.json', fs.readFileSync(new URL('../../../dashboard/data/snapshot.json', import.meta.url)));
+    const committed = run();
+    assert.equal(committed.status, 0, committed.stdout + committed.stderr);
+    write(dist, 'dashboard/data/snapshot.json', envelope);
     for (const [relPath, content, message] of [
         ['dashboard/data/snapshot.json', envelope.replace('"iv"', '"nonce"'), /dashboard\/data\/snapshot\.json: not a valid encrypted snapshot envelope/],
         ['dashboard/data/snapshot.json', JSON.stringify({ format: 'f1s-dashboard-snapshot-payload', models: { '20-daily-activity': [] } }), /contains plaintext dashboard analytics/],

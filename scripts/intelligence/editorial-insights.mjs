@@ -6,6 +6,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { MATURITY_DAYS } from './snapshot.mjs';
 import { canonicalArticleUrl, joinable, validateEditorialInputs } from './editorial-inputs.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -149,12 +150,12 @@ export function evaluateEditorialInsights(inputs, { asOf } = {}) {
 
     const discovery = site?.discovery;
     const demand = new Map();
-    if (usable(discovery, 4)) for (const row of discovery.rows) {
+    if (usable(discovery, MATURITY_DAYS)) for (const row of discovery.rows) {
         if (row.mapping !== 'mapped') continue;
         const key = url(row.page);
         demand.set(key, (demand.get(key) ?? 0) + row.click_events);
     }
-    const views = new Map((usable(site, 4) ? site.articles : [])
+    const views = new Map((usable(site, MATURITY_DAYS) ? site.articles : [])
         .filter(row => row.mapping === 'mapped').map(row => [url(row.page), row.page_view_events]));
     for (const [subject, clickEvents] of [...demand].sort(([a], [b]) => compare(a, b))) {
         if (!Number.isSafeInteger(clickEvents) || clickEvents < MIN_EVENTS) {
