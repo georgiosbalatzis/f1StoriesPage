@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261116F",
+      "title": "Οι εννέα νίκες που δεν έφτασαν",
+      "author": "F1 Stories Team",
+      "date": "2026-11-16",
+      "dateISO": "2026-11-16",
+      "displayDate": "16 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261116F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261116F/2.webp",
+      "excerpt": "Ferrari 248 F1: Οι εννέα νίκες που δεν έφτασαν",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261116F/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Ferrari",
+        "Michael Schumacher",
+        "2006",
+        "248"
+      ],
+      "wordCount": 1856,
+      "readingTime": "10 min",
+      "imageWidth": 1600,
+      "imageHeight": 803,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 801,
+      "inputDigest": "1e8efd10831eced32f1c2e4dbd19d43ef099e35d639add757296f74bcf18461b"
+    },
+    {
       "id": "20261116-2G",
       "title": "Φέτος ΔΕΝ ήταν η χρονιά του",
       "author": "Georgios Balatzis",
@@ -11953,5 +11985,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-16T16:11:33.931Z"
+  "lastUpdated": "2026-11-16T19:19:34.966Z"
 }

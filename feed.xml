@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 15 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Οι εννέα νίκες που δεν έφτασαν</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261116F/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261116F/article.html</guid>
+      <pubDate>Sun, 15 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ferrari 248 F1: Οι εννέα νίκες που δεν έφτασαν</description>
+      <category>Ομάδες</category>
+      <dc:creator>F1 Stories</dc:creator>
+    </item>
+    <item>
       <title>Φέτος ΔΕΝ ήταν η χρονιά του</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261116-2G/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261116-2G/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Αγώνας 18ος από τους 23 και απομένουν άλλοι 5 μετά από αυτόν. Σε αυτόν τον αγώνα υπάρχει πιθανότητα να στεφθεί πρωταθλητής ο μικρός Kimi από την Bologna.</description>
       <category>Ανάλυση</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Olivier Panis: Μια νίκη ήταν αρκετή.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261021W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261021W/article.html</guid>
-      <pubDate>Tue, 20 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Ο Olivie Panis, o Γάλλος που δεν είχε ποτέ την πολυτέλεια ενός κορυφαίου μονοθεσίου. Δεν κατέκτησε pole position, δεν έγινε παγκόσμιος πρωταθλητής…</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
