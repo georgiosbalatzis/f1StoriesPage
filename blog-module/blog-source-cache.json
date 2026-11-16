@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261117W",
+      "title": "Όταν η αεροδυναμική κέρδισε τον κινητήρα",
+      "author": "Themis Charvalis",
+      "date": "2026-11-17",
+      "dateISO": "2026-11-17",
+      "displayDate": "17 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261117W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261117W/2.webp",
+      "excerpt": "Η Red Bull RB12 και η Ferrari SF16-H αναμετρήθηκαν το 2016 σε μια τεχνική μάχη, όπου η αεροδυναμική υπεροχή υπερίσχυσε της ισχύος του κινητήρα.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261117W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Ferrari sf 16",
+        "Red bull rb12"
+      ],
+      "wordCount": 658,
+      "readingTime": "4 min",
+      "imageWidth": 1080,
+      "imageHeight": 557,
+      "backgroundImageWidth": 993,
+      "backgroundImageHeight": 478,
+      "inputDigest": "b01b7eb820d1a55faf73e8ea33a6f41ab38785c2ddda2e7ea68077196b07bb09"
+    },
+    {
       "id": "20261116F",
       "title": "Οι εννέα νίκες που δεν έφτασαν",
       "author": "F1 Stories Team",
@@ -11985,5 +12015,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-16T19:19:34.966Z"
+  "lastUpdated": "2026-11-16T22:08:04.776Z"
 }

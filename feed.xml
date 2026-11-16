@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sun, 15 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Όταν η αεροδυναμική κέρδισε τον κινητήρα</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261117W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261117W/article.html</guid>
+      <pubDate>Mon, 16 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Η Red Bull RB12 και η Ferrari SF16-H αναμετρήθηκαν το 2016 σε μια τεχνική μάχη, όπου η αεροδυναμική υπεροχή υπερίσχυσε της ισχύος του κινητήρα.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Οι εννέα νίκες που δεν έφτασαν</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261116F/article.html</link>
@@ -267,15 +276,6 @@
       <description>Στις 7 Σεπτεμβρίου 1975 γεννήθηκε στο Τόκιο ένας άνθρωπος που έμελλε να γίνει μία από τις πιο χαρακτηριστικές μορφές της χρυσής εποχής των 500cc.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261022J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261022J/article.html</guid>
-      <pubDate>Wed, 21 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Αγώνας 18ος από τους 23 και απομένουν άλλοι 5 μετά από αυτόν. Σε αυτόν τον αγώνα υπάρχει πιθανότητα να στεφθεί πρωταθλητής ο μικρός Kimi από την Bologna.</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>
