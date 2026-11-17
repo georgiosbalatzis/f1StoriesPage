@@ -23,7 +23,7 @@
     {
       "application": "ghostcar",
       "repository": "georgiosbalatzis/ghostcar",
-      "sha": "877f0ead82acd57734a4cc6611e9b6978070b67c",
+      "sha": "8f5e12c4e9ee2579f4080a4b63750fdf0b2179ea",
       "path": "/ghostcar/",
       "output": "dist",
       "build": "build:f1stories",
@@ -32,7 +32,7 @@
     {
       "application": "tyres",
       "repository": "georgiosbalatzis/Tyres",
-      "sha": "add46fd122e070861a6791f0baada3a7079f0ebf",
+      "sha": "dd08cf2e1d000c515a64b06bedb35332b4a2b94d",
       "path": "/tyres/",
       "output": "dist",
       "build": "build:f1stories",
