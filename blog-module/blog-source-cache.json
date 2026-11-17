@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261117G",
+      "title": "FW19: Το ταχύτερο μονοθέσιο που κυνηγούσε στο Jerez",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-17",
+      "dateISO": "2026-11-17",
+      "displayDate": "17 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261117G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261117G/1.webp",
+      "excerpt": "Williams FW19: Το ταχύτερο μονοθέσιο που έφτασε στο Jerez ως κυνηγός",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261117G/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Williams",
+        "FW19"
+      ],
+      "wordCount": 2403,
+      "readingTime": "13 min",
+      "imageWidth": 1600,
+      "imageHeight": 1070,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1070,
+      "inputDigest": "e0890003c445c7f87b3964262b7d5f178ec3cefb724c538ac49b2f8523c787a8"
+    },
+    {
       "id": "20261117W",
       "title": "Όταν η αεροδυναμική κέρδισε τον κινητήρα",
       "author": "Themis Charvalis",
@@ -12015,5 +12045,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-17T06:38:24.671Z"
+  "lastUpdated": "2026-11-17T07:42:03.004Z"
 }

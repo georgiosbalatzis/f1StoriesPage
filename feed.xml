@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Mon, 16 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>FW19: Το ταχύτερο μονοθέσιο που κυνηγούσε στο Jerez</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261117G/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261117G/article.html</guid>
+      <pubDate>Mon, 16 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Williams FW19: Το ταχύτερο μονοθέσιο που έφτασε στο Jerez ως κυνηγός</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
+    </item>
+    <item>
       <title>Όταν η αεροδυναμική κέρδισε τον κινητήρα</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261117W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261117W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Usa Grand Prix:Από τον Μος και τον Κλαρκ στον Χάμιλτον, τον Φερστάπεν. Σήμερα θα μιλήσουμε για την ιστορία ενός αγώνα που άλλαξε πολλές φορές έδρα…</description>
       <category>Ιστορία</category>
       <dc:creator>Γιώργος Μπαλατζής</dc:creator>
-    </item>
-    <item>
-      <title>Norifumi Abe: Κάνοντας την Suzuka να σωπάσει</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261023W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261023W/article.html</guid>
-      <pubDate>Thu, 22 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Στις 7 Σεπτεμβρίου 1975 γεννήθηκε στο Τόκιο ένας άνθρωπος που έμελλε να γίνει μία από τις πιο χαρακτηριστικές μορφές της χρυσής εποχής των 500cc.</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
