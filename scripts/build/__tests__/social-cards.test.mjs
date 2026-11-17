@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { boundaryDelta } from '../brand-assets.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,7 +10,7 @@ import test from 'node:test';
 import sharp from 'sharp';
 import { XMLParser } from 'fast-xml-parser';
 import media from '../../../blog-module/build/media-meta.js';
-import { buildSocialCards, HOME_SOCIAL_ALT, HOME_SOCIAL_IMAGE, renderSocialCard, socialMetadata } from '../social-cards.mjs';
+import { buildSocialCards, HOME_SOCIAL_ALT, renderSocialCard, socialMetadata } from '../social-cards.mjs';
 import { examples } from '../social-card-examples.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -41,9 +43,19 @@ function assertLayout(layout, minTop = 150) {
     }
 }
 
-test('home bytes remain identical on the recorded environment', async () => {
+test('home card preserves the original outside the wordmark patch', async () => {
     const { data, layout } = await renderSocialCard({ home: true });
-    assert.equal(digest(data), digest(fs.readFileSync(path.join(root, HOME_SOCIAL_IMAGE))));
+    const original = execFileSync('git', ['-C', root, 'show', 'fd063a403:images/social/home-6aadb4e1bf315dbb3090.jpg']);
+    const before = await sharp(original).removeAlpha().raw().toBuffer();
+    const after = await sharp(data).removeAlpha().raw().toBuffer();
+    let difference = 0, count = 0;
+    for (let y = 0; y < 630; y++) for (let x = 0; x < 1200; x++) {
+        // Leave a JPEG block margin around the edited rectangle.
+        if (x >= 40 && x < 403 && y >= 24 && y < 104) continue;
+        for (let c = 0; c < 3; c++) { const i = (y * 1200 + x) * 3 + c; difference += Math.abs(before[i] - after[i]); count++; }
+    }
+    assert.ok(difference / count < 3.5, `outside-patch mean error: ${difference / count}`);
+    assert.ok(await boundaryDelta(data) < 1, 'patch boundary must match surrounding paper');
     assert.equal(HOME_SOCIAL_ALT, 'F1 Stories — Η Formula 1 στα ελληνικά. Νέα, ανάλυση, δεδομένα και Race Desk εργαλεία.');
     assert.equal(layout.displayText, 'Η Formula 1 στα ελληνικά.');
     assert.equal(layout.truncated, false);
