@@ -395,9 +395,9 @@ test("source lock matches reviewed origin, application paths and pinned revision
   assert.equal(lock.origin, "https://f1-stories.gr");
   const expected = {
     main: ["/", undefined],
-    telemetry: ["/telemetry/", "00d00cb9892a1d91a20b987b233fe99c45af9bf9"],
-    ghostcar: ["/ghostcar/", "49c6a7d73fa6276d76246c3a7c6e6224cbfad896"],
-    tyres: ["/tyres/", "bd3d2dfcb217655cdaeb66378ed4caf059ebd68e"],
+    telemetry: ["/telemetry/", "0f6a2170db99688bdeefcf4c34c1f55b65db4786"],
+    ghostcar: ["/ghostcar/", "877f0ead82acd57734a4cc6611e9b6978070b67c"],
+    tyres: ["/tyres/", "add46fd122e070861a6791f0baada3a7079f0ebf"],
   };
   for (const [name, [path, sha]] of Object.entries(expected)) {
     const app = lock.applications.find((item) => item.application === name);
