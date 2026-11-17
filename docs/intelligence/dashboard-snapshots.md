@@ -239,7 +239,7 @@ Do these in order. Nothing in this PR performs them.
 
 - Stop billing runs: a PR setting `ENABLED = false`, or `gh workflow disable intelligence-snapshot.yml`.
 - Revoke access: remove the `workloadIdentityUser` binding (or disable the provider), and the two BigQuery grants.
-- Withdraw the data: commit the deletion of `dashboard/data/snapshot.json` (the page shows its empty state after the
+- Withdraw the data: commit the deletion of `dashboard/data/snapshot.json` (the deploy check accepts the missing file and the page shows its empty state after the
   next deploy) and rotate the key. Earlier envelopes remain in Git history (see key rotation above).
 
 ## First production refresh

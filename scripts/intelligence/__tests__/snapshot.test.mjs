@@ -888,3 +888,29 @@ test('deploy verification rejects invalid and future envelopes and warns on stal
     assert.throws(() => verifyEnvelope(JSON.stringify(damaged), NOW), /unsupported version/);
     assert.throws(() => verifyEnvelope(' '.repeat(1024 * 1024 + 1), NOW), /too large/);
 });
+
+
+test('deploy verification permits only an absent snapshot file', () => {
+    const root = tempRoot();
+    try {
+        const file = path.join(root, 'snapshot.json');
+        const summary = path.join(root, 'summary');
+        const runVerify = () => spawnSync(process.execPath, [path.join(REPO_ROOT, 'scripts/intelligence/snapshot.mjs'), 'verify', file],
+            { encoding: 'utf8', env: { ...process.env, GITHUB_STEP_SUMMARY: summary } });
+        const absent = runVerify();
+        assert.equal(absent.status, 0, absent.stderr);
+        assert.match(absent.stdout, /No dashboard snapshot deployed/);
+        assert.match(fs.readFileSync(summary, 'utf8'), /No dashboard snapshot deployed/);
+        fs.writeFileSync(file, '');
+        const empty = runVerify();
+        assert.notEqual(empty.status, 0);
+    } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test('deploy verification allows five minutes across property midnight', () => {
+    const key = crypto.randomBytes(32);
+    const nextDay = sealSnapshot({}, key, { generatedAt: '2026-11-20T08:01:00.000Z', window: windowFor('2026-11-20') });
+    assert.equal(verifyEnvelope(nextDay, new Date('2026-11-20T07:59:00Z')).header.asOf, '2026-11-20');
+    const future = sealSnapshot({}, key, { generatedAt: '2026-11-20T07:54:00.000Z', window: windowFor('2026-11-20') });
+    assert.throws(() => verifyEnvelope(future, new Date('2026-11-20T07:54:00Z')), /future date/);
+});

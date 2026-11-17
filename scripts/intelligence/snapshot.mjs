@@ -68,6 +68,7 @@ const API = 'https://bigquery.googleapis.com/bigquery/v2';
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 const MAX_ENVELOPE_BYTES = 1024 * 1024;
+const CLOCK_SKEW_MS = 5 * 60000;
 const HEADER_KEYS = ['format', 'v', 'alg', 'generatedAt', 'asOf', 'start', 'end', 'keyCheck'];
 
 const addDays = (day, days) => new Date(Date.parse(`${day}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
@@ -239,7 +240,7 @@ export function verifyEnvelope(text, now = new Date()) {
         || [header.asOf, header.start, header.end].some(day => new Date(`${day}T00:00:00Z`).toISOString().slice(0, 10) !== day)) {
         throw new Error('snapshot envelope: invalid dates');
     }
-    if (header.asOf > propertyDay(now) || generated > +now + 5 * 60000) throw new Error('snapshot envelope: future date');
+    if (header.asOf > propertyDay(new Date(+now + CLOCK_SKEW_MS)) || generated > +now + CLOCK_SKEW_MS) throw new Error('snapshot envelope: future date');
     return { header, stale: +now - generated > STALE_MS };
 }
 
@@ -510,8 +511,12 @@ async function main(argv, env) {
             else if (env.PLAN_OUTCOME === 'failure' || env.REFRESH_OUTCOME === 'failure') summary.outcome = 'failure';
         } else if (command === 'verify') {
             if (rest.length !== 1) throw new Error('usage: snapshot.mjs verify <file>');
-            const { header, stale } = verifyEnvelope(fs.readFileSync(rest[0], 'utf8'), now);
-            const message = `Snapshot envelope valid: as_of ${header.asOf}, generated ${header.generatedAt}.${stale ? ' WARNING: older than 48 hours; refresh may be delayed.' : ''}`;
+            let text;
+            try { text = fs.readFileSync(rest[0], 'utf8'); }
+            catch (error) { if (error.code !== 'ENOENT') throw error; }
+            const result = text === undefined ? null : verifyEnvelope(text, now);
+            const message = result ? `Snapshot envelope valid: as_of ${result.header.asOf}, generated ${result.header.generatedAt}.${result.stale ? ' WARNING: older than 48 hours; refresh may be delayed.' : ''}`
+                : 'No dashboard snapshot deployed (withdrawn or not yet published).';
             console.log(message);
             if (env.GITHUB_STEP_SUMMARY) fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${message}\n`);
         } else if (command === 'install') {
