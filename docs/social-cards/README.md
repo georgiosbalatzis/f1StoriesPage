@@ -1,6 +1,6 @@
 # Social cards
 
-The public artifact builds a 1200 × 630 JPEG for every copied article whose ID is in `blog-module/blog-source-cache.json`. The homepage has a separate, stable card. Article cards use the cinematic-v1 layout: the published OG image fills the frame, with a white headline, author byline and red accent. The official `images/logo-256.webp` sits beside the F1 STORIES wordmark; the domain is at the upper right. The card omits the category.
+The public artifact builds a 1200 × 630 JPEG for every copied article whose ID is in `blog-module/blog-source-cache.json`. The homepage has a separate, stable card. Article cards use the cinematic-v2 layout: the published OG image fills the frame, with a white headline, author byline and red accent. The Header-dark wordmark appears on the dark scrim; the domain is at the upper right. The card omits the category.
 
 ## Image and layout policy
 

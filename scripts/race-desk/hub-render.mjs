@@ -70,8 +70,10 @@ export function renderHub(model, { origin = 'https://f1-stories.gr' } = {}) {
   <meta property="og:title" content="${escape(title)}">
   <meta property="og:description" content="${escape(description)}">
   <meta property="og:url" content="${escape(canonical)}">
-  <meta property="og:image" content="${escape(new URL('/images/icons/icon-512.png', base).href)}">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="${escape(new URL('/images/brand/f1s-og-default.jpg', base).href)}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="600">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="/styles/home-fonts.css">
   <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.css">
   <link rel="stylesheet" href="/styles/shared-nav.css">

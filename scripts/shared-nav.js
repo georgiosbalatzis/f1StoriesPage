@@ -389,6 +389,7 @@
                     storeTheme('light');
                 }
                 syncThemeToggleState();
+                if (window.syncThemeFavicon) window.syncThemeFavicon();
             });
         });
     }

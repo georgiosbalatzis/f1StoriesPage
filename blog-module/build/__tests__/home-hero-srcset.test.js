@@ -112,9 +112,9 @@ test('frame preloads mirror the AVIF source when there is one, and the WebP cand
 
 
 test('changing the homepage lead preserves the stable branded social fallback', async () => {
-    const social = '<meta property="og:image" content="https://f1-stories.gr/images/icons/icon-512.png">'
+    const social = '<meta property="og:image" content="https://f1-stories.gr/images/brand/f1s-og-default.jpg">'
         + '<meta property="og:image:width" content="512"><meta property="og:image:height" content="512">'
-        + '<meta name="twitter:image" content="https://f1-stories.gr/images/icons/icon-512.png">';
+        + '<meta name="twitter:image" content="https://f1-stories.gr/images/brand/f1s-og-default.jpg">';
     const html = await render(all, { heroImageWidth: 1600, heroImageHeight: 900 }, social + shell);
     assert.ok(html.startsWith(social));
     assert.match(html, /id="hero-image"[^>]*src="\/blog-module\/blog-entries\/s1\/1.webp"/);

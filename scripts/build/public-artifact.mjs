@@ -23,12 +23,13 @@ import { hubFiles } from '../race-desk/hub-files.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
-const PUBLIC_LOGO_IMAGE = 'images/icons/icon-512.png';
+const PUBLIC_LOGO_IMAGE = 'images/brand/f1s-logo-600.png';
 const PUBLIC_IMAGE_MAX_BYTES = Number(process.env.PUBLIC_IMAGE_MAX_BYTES || 300 * 1024);
 
 const ROOT_FILES = new Set([
     '.nojekyll',
     '404.html',
+    'favicon.ico',
     'CNAME',
     'generate.html',
     'housekeeping.html',
@@ -382,6 +383,7 @@ function shouldCopyPublicImage(relPath) {
     if (!/\.(?:avif|webp|png|jpe?g|svg)$/i.test(relPath)) return false;
     // Social cards are emitted and accounted for by buildSocialCards.
     if (relPath.startsWith('images/social/')) return false;
+    if (relPath.startsWith('images/brand/')) return true;
     if (PUBLIC_IMAGE_REFS.has(relPath)) return true;
     if (/^images\/drivers\/[^/]+\.webp$/i.test(relPath)) return true;
     if (/^images\/teams\/[^/]+\.webp$/i.test(relPath)) return true;

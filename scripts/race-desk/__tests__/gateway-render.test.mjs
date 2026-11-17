@@ -41,7 +41,7 @@ test('gateway changes only the inserted section and referenced section attribute
   let restored = html.replace(renderGatewaySection(gateway), '');
   for (const section of ['schedule', 'pace', 'stories']) restored = restored.replace(` id="gateway-target-${section}"`, '');
   assert.equal(restored, base);
-  assert.equal(createHash('sha256').update(base).digest('hex'), '1f78b1d9d65885551160aa8116e83baf5d7477002bef17d785484ac6ff6e8dea');
+  assert.equal(createHash('sha256').update(base).digest('hex'), '49f4d25589fc88139e1e4b149d8b5fba22fe74ec3942d90308645d16a75e13be');
 });
 
 test('section labels agree with a rendered hub', () => {

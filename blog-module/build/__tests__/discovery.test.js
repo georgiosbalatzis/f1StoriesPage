@@ -363,7 +363,9 @@ test('metadata escapes Greek, apostrophes, quotes and long input without truncat
     assert.equal(parsed.link.find(item => item.rel === 'prev').href, `${SITE}/?q="πριν"&page=1`);
     assert.equal(parsed.link.find(item => item.rel === 'next').href, `${SITE}/?q="μετά"&page=3`);
     assert.equal((html.match(/<title>/g) || []).length, 1);
-    assert.equal((html.match(/<meta /g) || []).length, 10);
+    assert.equal(meta('og:image:width'), '1200');
+    assert.equal(meta('og:image:height'), '600');
+    assert.equal((html.match(/<meta /g) || []).length, 12);
     assert.equal((html.match(/<link /g) || []).length, 3);
     assert.doesNotMatch(html, /<script>|<μονοθέσια>/);
 });

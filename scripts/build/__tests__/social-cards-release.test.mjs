@@ -12,7 +12,7 @@ const root = fileURLToPath(new URL('../../../', import.meta.url));
 const dist = path.join(root, 'dist');
 const origin = 'https://f1-stories.gr/';
 const reasons = new Set(['source-missing', 'source-invalid', 'source-unreadable', 'source-decode']);
-const normalizeLogo = html => html.replaceAll('https://f1-stories.gr/images/logo.png', 'https://f1-stories.gr/images/icons/icon-512.png');
+const normalizeLogo = html => html.replaceAll('https://f1-stories.gr/images/logo.png', 'https://f1-stories.gr/images/brand/f1s-logo-600.png');
 const jsonLd = html => [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(match => match[1]);
 
 function metaValues(html, attribute, name) {
@@ -73,7 +73,7 @@ test('Pages artifact ships a current cinematic card for every eligible article',
     assert.deepEqual(report.fallbacks, articles.filter(record => record.fallback).map(({ page, fallback }) => ({ page, reason: fallback })));
 
     for (const record of articles) {
-        assert.equal(record.template, 'cinematic-v1', record.page);
+        assert.equal(record.template, 'cinematic-v2', record.page);
         assert.equal(record.rendererKey, socialCards.rendererKey, record.page);
         assert.ok(!record.error, `${record.page}: ${record.error}`);
         if (record.fallback) assert.ok(reasons.has(record.fallback), `${record.page}: unknown fallback`);
@@ -93,9 +93,9 @@ test('Pages artifact ships a current cinematic card for every eligible article',
     const home = homes[0];
     const homeHtml = fs.readFileSync(path.join(dist, home.page), 'utf8');
     if (home.error) {
-        assert.deepEqual(metaValues(homeHtml, 'property', 'og:image'), [origin + 'images/icons/icon-512.png']);
-        assert.deepEqual(metaValues(homeHtml, 'name', 'twitter:image'), [origin + 'images/icons/icon-512.png']);
-        assert.ok(fs.existsSync(path.join(dist, 'images/icons/icon-512.png')));
+        assert.deepEqual(metaValues(homeHtml, 'property', 'og:image'), [origin + 'images/brand/f1s-og-default.jpg']);
+        assert.deepEqual(metaValues(homeHtml, 'name', 'twitter:image'), [origin + 'images/brand/f1s-og-default.jpg']);
+        assert.ok(fs.existsSync(path.join(dist, 'images/brand/f1s-og-default.jpg')));
     } else {
         await checkCard(home, homeHtml, 'home');
     }

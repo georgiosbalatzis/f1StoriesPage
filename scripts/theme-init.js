@@ -32,6 +32,13 @@
         return '';
     }
 
+    window.syncThemeFavicon = function () {
+        document.querySelectorAll('[data-theme-favicon]').forEach(function (icon) {
+            var size = icon.getAttribute('sizes') === '16x16' ? 16 : 32;
+            icon.href = '/images/brand/favicon-' + (root.getAttribute('data-theme') === 'light' ? 'light' : 'dark') + '-' + size + '.png';
+        });
+    };
+
     function applyTheme() {
         var storedTheme = readStoredTheme();
         if (storedTheme === 'light') {
@@ -43,6 +50,7 @@
         } else {
             root.removeAttribute('data-theme');
         }
+        window.syncThemeFavicon();
     }
 
     applyTheme();
