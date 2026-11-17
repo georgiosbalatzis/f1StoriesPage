@@ -798,13 +798,13 @@ body.editorial-page .scroll-to-top-btn.visible {
 
 /* Colophon: the masthead's wordmark and a section index close every page. */
 body.editorial-page footer .footer-colophon { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-inverse); }
-body.editorial-page footer .footer-wordmark { color: var(--paper); font: 700 1.75rem/1 var(--font-brand); letter-spacing: -.035em; text-decoration: none; }
+body.editorial-page footer .footer-wordmark { max-width: 100%; }
+body.editorial-page footer .footer-wordmark img { display: block; width: 134.56px; max-width: 100%; height: auto; }
 body.editorial-page footer .footer-mission { max-width: none; color: var(--text-inverse-secondary); font-size: .875rem; }
 body.editorial-page footer .footer-index { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 24px; }
 body.editorial-page footer .footer-index a { display: inline-flex; align-items: center; min-height: var(--control-height-md); color: var(--paper); font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--signal), var(--signal)) 0 calc(100% - 10px) / 0 2px no-repeat; transition: background-size .25s; }
 body.editorial-page footer .footer-index a:is(:hover, :focus-visible) { background-size: 100% 2px; }
 @media (prefers-reduced-motion: reduce) { body.editorial-page footer .footer-index a { transition: none; } }
-body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--signal); }
 
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
 /* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
