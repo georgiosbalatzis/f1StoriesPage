@@ -56,7 +56,7 @@ const betcastQuery = '?viz=dataTable&from=2&to=4&week=3&cmpA=2&cmpB=3';
 const tyresRace = '/tyres/2026/austin/';
 const tyresEmbeds = ['/tyres/embed/el/2026/austin/compounds/', '/tyres/embed/en/2026/austin/compounds/', '/tyres/embed/el/2026/season/', '/tyres/embed/en/2026/austin/3d/'];
 // What a loaded page shows: embeds have no masthead or h1.
-const readySelector = pathname => pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : pathname.startsWith('/tyres/embed/') ? '.e-root' : 'h1';
+const readySelector = pathname => pathname === '/dashboard/' ? '[data-state="locked"]' : pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : pathname.startsWith('/tyres/embed/') ? '.e-root' : 'h1';
 
 async function createPage(os = 'light', width = 1440) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: os, reducedMotion: 'reduce' });
@@ -196,6 +196,15 @@ try {
         await client.detach();
         results.directLoads.push({ pathname, first, refreshed: page.url(), hardReload: true });
     }
+    // Observe the dashboard's own request and parser; no key or synthetic snapshot is supplied.
+    const snapshotResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/dashboard/data/snapshot.json');
+    await open(page, '/dashboard/');
+    const snapshot = await snapshotResponse;
+    assert.equal(snapshot.status(), 200, 'dashboard snapshot');
+    assert.match(snapshot.headers()['content-type'] || '', /application\/json/i);
+    JSON.parse(await snapshot.text());
+    await page.locator('[data-state="locked"]').waitFor({ state: 'visible' });
+    results.directLoads.push({ pathname: '/dashboard/', snapshot: 200, state: 'locked' });
     // Navigation targets and current Race Desk item; actual clicks for each requested edge.
     const edges = [['/', '/standings/'], ['/', '/telemetry/'], ['/', '/ghostcar/'], ['/', '/tyres/'], ['/', '/betcast/'], ['/standings/', '/telemetry/'], ['/standings/', '/ghostcar/'], ['/standings/', '/tyres/'], ['/telemetry/', '/standings/'], ['/telemetry/', '/ghostcar/'], ['/telemetry/', '/tyres/'], ['/ghostcar/', '/standings/'], ['/ghostcar/', '/telemetry/'], ['/ghostcar/', '/tyres/'], ['/tyres/', '/standings/'], ['/tyres/', '/telemetry/'], ['/tyres/', '/ghostcar/'], ['/tyres/', '/betcast/'], ['/tyres/', '/'], ['/betcast/', '/']];
     for (const [from, to] of edges) {

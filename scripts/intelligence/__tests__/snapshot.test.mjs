@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { readInputs, renderModel } from '../editorial-model.mjs';
 import {
     ACQUISITION_WINDOW_DAYS, DAILY_MAX_BYTES, ENABLED, EXPORT_START, MATURITY_DAYS, MAX_BYTES_BILLED, PROJECT, PROPERTY, REPORT_TIMEZONE, SNAPSHOT_MODELS,
-    SNAPSHOT_PATH, WINDOW_DAYS, assertEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh,
+    SNAPSHOT_PATH, WINDOW_DAYS, assertEnvelope, verifyEnvelope, bigQuery, conservativeBytes, install, parametersFor, plan, preflight, refresh,
     propertyDay, resultRows, scannedTables, sealSnapshot, snapshotWindow, modelWindow, windowDays, windowFor,
     DISCOVERY_EVERY_DAYS, DISCOVERY_MAX_AGE_DAYS, DISCOVERY_MODELS, ROTATED_FOR_DISCOVERY, openSnapshot, schedule
 } from '../snapshot.mjs';
@@ -869,3 +869,22 @@ for (const discoveryDue of [false, true]) {
         assert.ok(floor(client.calls.runs.map(call => call.jobId.match(/_(\d\d_[a-z_]+)_[0-9a-f]{16}$/)[1].replaceAll('_', '-')), windowFor('2026-11-20')) <= DAILY_MAX_BYTES);
     });
 }
+
+
+test('deploy verification rejects invalid and future envelopes and warns on stale ones', () => {
+    const key = crypto.randomBytes(32);
+    const seal = (window, generatedAt = NOW.toISOString()) => sealSnapshot({}, key, { generatedAt, window });
+    const text = seal(WINDOW);
+    assert.equal(verifyEnvelope(text, NOW).stale, false);
+    assert.equal(verifyEnvelope(text, new Date(+NOW + 48 * 3600000 + 1)).stale, true);
+    assert.throws(() => verifyEnvelope(seal(windowFor('2026-11-20')), NOW), /future date/);
+    assert.throws(() => verifyEnvelope(seal(WINDOW, '2026-11-20T02:00:00.000Z'), NOW), /future date/);
+    assert.throws(() => verifyEnvelope(text.slice(0, -10), NOW));
+    const damaged = JSON.parse(text);
+    damaged.iv = 'AAAA';
+    assert.throws(() => verifyEnvelope(JSON.stringify(damaged), NOW), /malformed nonce/);
+    damaged.iv = JSON.parse(text).iv;
+    damaged.header = damaged.header.replace('AES-256-GCM', 'AES-128-GCM');
+    assert.throws(() => verifyEnvelope(JSON.stringify(damaged), NOW), /unsupported version/);
+    assert.throws(() => verifyEnvelope(' '.repeat(1024 * 1024 + 1), NOW), /too large/);
+});

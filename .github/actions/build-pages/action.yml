@@ -93,6 +93,10 @@ runs:
       shell: bash
       run: node scripts/deployment/summary.mjs --site dist --reports .build/priority6/reports >> "$GITHUB_STEP_SUMMARY"
 
+    - name: Verify dashboard snapshot envelope
+      shell: bash
+      run: node scripts/intelligence/snapshot.mjs verify dist/dashboard/data/snapshot.json
+
     - name: Configure Pages
       uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 

@@ -231,6 +231,18 @@ export function assertEnvelope(text, { allowPreviousLag = false } = {}) {
     return { header };
 }
 
+// Deploys remain possible during refresh outages; health monitoring owns stale-snapshot escalation.
+export function verifyEnvelope(text, now = new Date()) {
+    const { header } = assertEnvelope(text, { allowPreviousLag: true });
+    const generated = Date.parse(header.generatedAt);
+    if (!Number.isFinite(generated) || new Date(generated).toISOString() !== header.generatedAt
+        || [header.asOf, header.start, header.end].some(day => new Date(`${day}T00:00:00Z`).toISOString().slice(0, 10) !== day)) {
+        throw new Error('snapshot envelope: invalid dates');
+    }
+    if (header.asOf > propertyDay(now) || generated > +now + 5 * 60000) throw new Error('snapshot envelope: future date');
+    return { header, stale: +now - generated > STALE_MS };
+}
+
 // Decrypts a published envelope with the snapshot key. Returns null when it cannot (rotated key, damage): a refresh
 // then carries nothing and runs the normal set.
 export function openSnapshot(text, key) {
@@ -496,6 +508,12 @@ async function main(argv, env) {
             }
             if (env.AUTH_OUTCOME === 'failure') Object.assign(summary, { stage: 'authentication', outcome: 'failure' });
             else if (env.PLAN_OUTCOME === 'failure' || env.REFRESH_OUTCOME === 'failure') summary.outcome = 'failure';
+        } else if (command === 'verify') {
+            if (rest.length !== 1) throw new Error('usage: snapshot.mjs verify <file>');
+            const { header, stale } = verifyEnvelope(fs.readFileSync(rest[0], 'utf8'), now);
+            const message = `Snapshot envelope valid: as_of ${header.asOf}, generated ${header.generatedAt}.${stale ? ' WARNING: older than 48 hours; refresh may be delayed.' : ''}`;
+            console.log(message);
+            if (env.GITHUB_STEP_SUMMARY) fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${message}\n`);
         } else if (command === 'install') {
             console.log(install(fs.readFileSync(rest[0], 'utf8')) ? `published ${SNAPSHOT_PATH}` : 'unchanged: the published snapshot is as new or newer');
         } else {

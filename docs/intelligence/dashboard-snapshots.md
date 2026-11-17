@@ -23,6 +23,7 @@ or API is involved: GitHub Pages serves one encrypted file, and the browser decr
     commit    .github/actions/commit-and-push (paths: that file only)
   deploy   (actions: write) only after a changed commit
     dispatch  deploy-pages.yml on main → its build checks out main after the push → validated dist/ → Pages
+deploy   keyless artifact envelope validation (48-hour staleness warns); deploy smoke checks the real locked page
 browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the key, Web Crypto decrypts in memory
 ```
 
