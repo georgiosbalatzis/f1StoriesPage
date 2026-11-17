@@ -14,7 +14,7 @@ const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const config = checkLock(JSON.parse(fs.readFileSync(path.resolve(option('--sources') || path.join(mainRoot, 'scripts/deployment/sources.json')))));
 const local = args.includes('--local');
-// --rehearsal: the full pinned release build for the Ecosystem dry run, allowed before releaseReady.
+// --rehearsal: the full pinned release build for the Ecosystem acceptance, allowed before releaseReady.
 const rehearsal = args.includes('--rehearsal');
 const mode = buildMode({ local, rehearsal });
 const allowDirty = local && args.includes('--allow-dirty');

@@ -3,7 +3,7 @@ description: Install Node and the locked npm dependencies.
 
 inputs:
   rehearsal:
-    description: The Ecosystem dry run needs the child toolchains before the lock is release-ready.
+    description: Provision child toolchains for the pinned ecosystem acceptance build.
     required: false
     default: 'false'
   main-only:

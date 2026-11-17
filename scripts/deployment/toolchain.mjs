@@ -1,5 +1,5 @@
 // Prints `extra=<major>` for the setup action: the one child Node major beyond Main's, needed once
-// aggregation is release-ready (unless --main-only), or by the Ecosystem dry run (--rehearsal).
+// aggregation is release-ready (unless --main-only), or by the Ecosystem acceptance (--rehearsal).
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 

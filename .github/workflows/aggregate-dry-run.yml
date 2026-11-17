@@ -1,13 +1,16 @@
-name: Ecosystem dry run
+name: Ecosystem acceptance
 
-# The pinned five-application build on a GitHub-hosted runner, exactly as Deploy Pages would build it once
-# enabled, but in --rehearsal mode: allowed before releaseReady, never published.
+# Pre-merge assembled-site browser acceptance: integration smoke, Race Desk navigation and Grand Prix pages.
+# Deploys retain the integration smoke for freshly refreshed TYRES data; the other browser suites run here.
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
       - 'scripts/deployment/**'
+      - 'scripts/race-desk/**'
+      - 'data/race-desk/**'
+      - 'scripts/build/race-desk-*.mjs'
       - '.github/actions/setup/**'
       - '.github/actions/build-pages/**'
       - '.github/workflows/aggregate-dry-run.yml'
@@ -68,10 +71,6 @@ jobs:
           gate node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs scripts/build/__tests__/social-cards-release.test.mjs
           gate npm run audit:runtime
           exit $status
-      - name: Live API reads (informational)
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        run: node scripts/deployment/live-read.mjs --out "$REPORTS/live-read.json"
       - name: Summary
         if: ${{ !cancelled() }}
         run: |
