@@ -368,7 +368,9 @@ test('the dry run runs every gate the publisher runs on an enabled aggregate', (
     const quality = read('.github/workflows/quality.yml');
     const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
     assert.equal(gates.length, 4);
-    assert.match(publisher, /enabled == 'true' && steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'[\s\S]*?npm run test:integration/);
+    assert.match(publisher, /enabled == 'true' && steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'[\s\S]*?npm run test:integration -- [^\n]*--deploy(?:\s|$)/);
+    assert.match(dryRun, /run: npm run test:integration -- [^\n]+/);
+    assert.doesNotMatch(dryRun, /run: npm run test:integration [^\n]*--deploy/);
     assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:browser -- [^\n]+/);
     assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:hubs -- [^\n]+--deploy/);
     assert.match(dryRun, /run: npm run test:race-desk:hubs -- [^\n]*--deploy\s+--assembled(?:\s|$)/);

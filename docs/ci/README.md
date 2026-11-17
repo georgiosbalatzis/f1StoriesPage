@@ -22,7 +22,7 @@ schedules ──► Deploy Pages (TYRES) │ Site Maintenance (standings) │ In
              Intelligence Health │ Security Headers
 
 build-pages: restore/save image cache → aggregate build (5 apps, Node 22 + 24, Chromium) → static, media,
-release media/domain, runtime audit → smoke (test:integration, except article fast path) → upload
+release media/domain, runtime audit → deploy smoke (test:integration -- --deploy, except article fast path; ecosystem acceptance runs the full suite) → upload
 Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job with pages: write / id-token)
 ```
 
