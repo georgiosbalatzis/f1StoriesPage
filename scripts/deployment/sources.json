@@ -14,7 +14,7 @@
     {
       "application": "telemetry",
       "repository": "georgiosbalatzis/f1-telemetry-dashboard",
-      "sha": "c825b3da4ce92ce0ec8a76ea4ff299da6abada2a",
+      "sha": "0f6a2170db99688bdeefcf4c34c1f55b65db4786",
       "path": "/telemetry/",
       "output": "dist",
       "build": "build:f1stories",
@@ -23,7 +23,7 @@
     {
       "application": "ghostcar",
       "repository": "georgiosbalatzis/ghostcar",
-      "sha": "13fc12afb7c73ccbab6e71fc3d3210d922038d51",
+      "sha": "877f0ead82acd57734a4cc6611e9b6978070b67c",
       "path": "/ghostcar/",
       "output": "dist",
       "build": "build:f1stories",
@@ -32,7 +32,7 @@
     {
       "application": "tyres",
       "repository": "georgiosbalatzis/Tyres",
-      "sha": "058e2a32ae769deb7d7b211ccb84ea05344dd053",
+      "sha": "add46fd122e070861a6791f0baada3a7079f0ebf",
       "path": "/tyres/",
       "output": "dist",
       "build": "build:f1stories",
@@ -46,7 +46,7 @@
     {
       "application": "betcast",
       "repository": "georgiosbalatzis/BetCastVisualisation",
-      "sha": "0524f185be750de3ce4c2a6116188ef6fe333ccc",
+      "sha": "6054dffef32d7cf486622d97a4071987a9b5ccda",
       "path": "/betcast/",
       "output": "build",
       "build": "build:f1stories",

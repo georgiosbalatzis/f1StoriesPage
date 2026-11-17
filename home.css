@@ -447,7 +447,7 @@
 
 /* Footer: the wordmark at full width on ink (the shared partial, styled for the homepage only). */
 body.home-page footer { background: var(--deep); }
-body.home-page footer .footer-wordmark { font: 700 clamp(4rem, 15vw, 14rem)/.78 var(--font-brand); letter-spacing: -.012em; }
+body.home-page footer .footer-wordmark img { width: 346px; }
 
 @media (prefers-reduced-motion: no-preference) {
     .home-page .fade-in { transition: transform .8s var(--ease-editorial); }

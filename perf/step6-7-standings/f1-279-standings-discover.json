@@ -181,7 +181,7 @@
       "transfer": 688
     },
     {
-      "url": "http://127.0.0.1:59350/images/logo-nav.webp",
+      "url": "http://127.0.0.1:59350/images/[retired-nav-image]",
       "type": "Image",
       "start": 481648.555609,
       "initiator": "parser",
@@ -361,7 +361,7 @@
       "transfer": 34
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481648.849622,
       "initiator": "other",
@@ -370,7 +370,7 @@
       "transfer": 2734
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481648.8518,
       "initiator": "other",
@@ -579,7 +579,7 @@
       "transfer": 688
     },
     {
-      "url": "http://127.0.0.1:59350/images/logo-nav.webp",
+      "url": "http://127.0.0.1:59350/images/[retired-nav-image]",
       "type": "Image",
       "start": 481648.555609,
       "initiator": "parser",
@@ -759,7 +759,7 @@
       "transfer": 34
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481648.849622,
       "initiator": "other",
@@ -768,7 +768,7 @@
       "transfer": 2734
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481648.8518,
       "initiator": "other",
@@ -804,7 +804,7 @@
       "transfer": 1956
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481653.852237,
       "initiator": "other",
@@ -894,7 +894,7 @@
       "transfer": 440
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481654.904162,
       "initiator": "other",
@@ -903,7 +903,7 @@
       "transfer": 2734
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481655.316928,
       "initiator": "other",
@@ -939,7 +939,7 @@
       "transfer": 9630
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481656.342143,
       "initiator": "other",
@@ -966,7 +966,7 @@
       "transfer": 16900
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481656.532908,
       "initiator": "other",
@@ -993,7 +993,7 @@
       "transfer": 7931
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481657.367751,
       "initiator": "other",
@@ -1011,7 +1011,7 @@
       "transfer": 61734
     },
     {
-      "url": "http://127.0.0.1:59350/images/favicon.png",
+      "url": "http://127.0.0.1:59350/images/[retired-favicon]",
       "type": "Other",
       "start": 481657.577995,
       "initiator": "other",

@@ -13,13 +13,13 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const FONT = fileURLToPath(new URL('./assets/IBMPlexSans-SemiBold.ttf', import.meta.url));
 // Only the pinned face participates in shaping, including on machines with no system Fontconfig.
 process.env.FONTCONFIG_FILE = fileURLToPath(new URL('./assets/fontconfig.conf', import.meta.url));
-const logo = fs.readFileSync(path.join(ROOT, 'images/logo-256.webp'));
-export const HOME_SOCIAL_IMAGE = 'images/social/home-6aadb4e1bf315dbb3090.jpg';
+const logo = fs.readFileSync(path.join(ROOT, 'images/brand/f1s-header-dark@2x.webp'));
+export const HOME_SOCIAL_IMAGE = 'images/social/home-brand-b2.jpg';
 export const HOME_SOCIAL_ALT = 'F1 Stories — Η Formula 1 στα ελληνικά. Νέα, ανάλυση, δεδομένα και Race Desk εργαλεία.';
 const homeCard = fs.readFileSync(path.join(ROOT, HOME_SOCIAL_IMAGE));
 const themes = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/design-tokens.json'))).themes;
 const tokens = themes.light;
-export const TEMPLATE = 'cinematic-v1';
+export const TEMPLATE = 'cinematic-v2';
 const hash = data => createHash('sha256').update(data).digest('hex');
 export const rendererKey = hash(Buffer.concat([
     fs.readFileSync(fileURLToPath(import.meta.url)), fs.readFileSync(path.join(ROOT, 'blog-module/build/media-meta.js')), fs.readFileSync(FONT), fs.readFileSync(process.env.FONTCONFIG_FILE), logo, homeCard,
@@ -65,20 +65,13 @@ const lineMetrics = new Map();
 let accentLayer;
 async function cinematicHeader() {
     if (!headerLayers) {
-        const icon = await sharp(logo).resize(72, 72).png().toBuffer();
-        // Build the shadow from the logo alpha without changing the official artwork.
-        const alpha = await sharp(icon).ensureAlpha().extractChannel('alpha').linear(0.35).blur(3).raw().toBuffer();
-        const black = await sharp({ create: { width: 72, height: 72, channels: 3, background: '#000000' } }).joinChannel(alpha, { raw: { width: 72, height: 72, channels: 1 } }).png().toBuffer();
-        const word = await textLayer('F1 STORIES', { size: 32, width: 600, color: '#ffffff' });
-        const dot = await textLayer('.', { size: 32, width: 40, color: tokens['--accent'] });
+        const word = await sharp(logo).resize({ height: 42 }).png().toBuffer({ resolveWithObject: true });
         const domain = await textLayer('f1-stories.gr', { size: 23, width: 400, color: '#ffffff' });
-        const baseline = 36 + Math.round((72 + word.height) / 2);
-        const headerBottom = Math.max(baseline, 108);
-        const scrim = ramp(0, headerBottom + 84, [[0, 0.6], [headerBottom + 4, 0.6], [headerBottom + 84, 0]]);
-        headerLayers = { word, domain, baseline, layers: [
-            { input: scrim, left: 0, top: 0 }, { input: black, left: 48, top: 38 },
-            { input: icon, left: 48, top: 36 }, { input: word.data, left: 136, top: baseline - word.height },
-            { input: dot.data, left: 136 + word.width, top: baseline - dot.height },
+        const baseline = 78;
+        const scrim = ramp(0, 192, [[0, 0.6], [112, 0.6], [192, 0]]);
+        headerLayers = { word: { width: word.info.width, height: word.info.height }, domain, baseline, layers: [
+            { input: scrim, left: 0, top: 0 },
+            { input: word.data, left: 48, top: 36 },
             { input: domain.data, left: 1152 - domain.width, top: baseline - domain.height }
         ] };
     }
@@ -194,7 +187,7 @@ export async function renderSocialCard({ title, author = '', image, disclosure =
             stageTime('jpeg');
             if (process.env.SOCIAL_CARD_PROFILE) console.error('SOCIAL_CARD_PROFILE ' + JSON.stringify(timings));
             return { data, layout: { width: headline.width, height: headline.height, fontSize: headline.fontSize, lines: headline.lines, displayText: headline.displayText, truncated: headline.truncated, headlineTop, headlineBottom, headlineRight: 48 + headline.width, accentTop, contained, fallback,
-            wordmarkBox: { left: 136, top: header.baseline - header.word.height, width: header.word.width, height: header.word.height },
+            wordmarkBox: { left: 48, top: 36, width: header.word.width, height: header.word.height },
             domainBox: { left: 1152 - header.domain.width, top: header.baseline - header.domain.height, width: header.domain.width, height: header.domain.height },
             headlineBoxes: Array.from({ length: headline.lines }, (_, i) => ({ left: 48, top: headlineTop + i * headline.pitch, width: headline.width, height: i === headline.lines - 1 ? headline.height - i * headline.pitch : headline.pitch })),
             bylineBox: author ? { left: 48, top: bylineTop, width: byline.width, height: byline.height } : null, disclosureBox } };
@@ -264,7 +257,7 @@ export async function buildSocialCards({ repoRoot = ROOT, distRoot, htmlFiles, c
                         const parsed = new URL(record.source, ORIGIN);
                         const pathname = decodeURIComponent(parsed.pathname);
                         const expected = '/' + path.posix.dirname(page) + '/';
-                        const brand = pathname === '/images/logo-256.webp';
+                        const brand = pathname === '/images/brand/f1s-logo-600.png';
                         if (parsed.origin !== ORIGIN || (!brand && (!pathname.startsWith(expected) || pathname.slice(expected.length).includes('/'))) || !/\.(?:webp|avif|png|jpe?g)$/i.test(pathname)) throw new Error('invalid');
                         const resolved = path.resolve(distRoot, '.' + pathname);
                         if (!brand && !resolved.startsWith(path.resolve(distRoot, path.dirname(page)) + path.sep)) throw new Error('invalid');
@@ -273,7 +266,7 @@ export async function buildSocialCards({ repoRoot = ROOT, distRoot, htmlFiles, c
                         try {
                             const file = localImage(distRoot, record.source);
                             const articleDir = fs.realpathSync(path.join(distRoot, path.dirname(page)));
-                            const brandPath = path.join(fs.realpathSync(distRoot), 'images/logo-256.webp');
+                            const brandPath = path.join(fs.realpathSync(distRoot), 'images/brand/f1s-logo-600.png');
                             if (!file.startsWith(articleDir + path.sep) && file !== brandPath) reason = 'source-invalid';
                             else image = fs.readFileSync(file);
                         } catch (error) {
@@ -355,7 +348,7 @@ export async function buildSocialCards({ repoRoot = ROOT, distRoot, htmlFiles, c
             if (home) {
                 try {
                     const html = fs.readFileSync(htmlPath, 'utf8');
-                    fs.writeFileSync(htmlPath, socialMetadata(html, { url: ORIGIN + '/images/icons/icon-512.png', title: 'F1 Stories', width: 512, height: 512, type: 'image/png', card: 'summary' }));
+                    fs.writeFileSync(htmlPath, socialMetadata(html, { url: ORIGIN + '/images/brand/f1s-og-default.jpg', title: 'F1 Stories', width: 1200, height: 600, type: 'image/jpeg', card: 'summary_large_image' }));
                 } catch { /* The existing homepage fallback cannot repair an unreadable page. */ }
                 warn(`Social card fallback (${page}): ${error.message}`);
             } else {

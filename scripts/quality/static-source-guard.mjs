@@ -143,8 +143,8 @@ const ALLOWED_DUPLICATE_ASSET_GROUPS = new Set([
         'assets/fonts/roboto-700.woff2'
     ]),
     duplicateGroup([
-        'images/favicon.png',
-        'images/icons/favicon-32.png'
+        'images/brand/favicon-dark-32.png',
+        'images/brand/favicon-light-32.png'
     ]),
     duplicateGroup([
         'images/teams/audi.webp',

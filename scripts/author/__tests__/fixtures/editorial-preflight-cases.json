@@ -1,24 +1,24 @@
 [
   {
-    "label": "20261007F-210-no-ledger",
+    "label": "20261007F-212-no-ledger",
     "article": "20261007F",
-    "line": 210,
+    "line": 212,
     "variant": "no-ledger",
     "fault": "unreviewed",
     "expected": []
   },
   {
-    "label": "20261007F-210-reviewed",
+    "label": "20261007F-212-reviewed",
     "article": "20261007F",
-    "line": 210,
+    "line": 212,
     "variant": "reviewed",
     "fault": "unreviewed",
     "expected": []
   },
   {
-    "label": "20261007F-210-fault",
+    "label": "20261007F-212-fault",
     "article": "20261007F",
-    "line": 210,
+    "line": 212,
     "variant": "fault",
     "fault": "unreviewed",
     "expected": [
@@ -26,25 +26,25 @@
     ]
   },
   {
-    "label": "20260930G-179-no-ledger",
+    "label": "20260930G-181-no-ledger",
     "article": "20260930G",
-    "line": 179,
+    "line": 181,
     "variant": "no-ledger",
     "fault": "season",
     "expected": []
   },
   {
-    "label": "20260930G-179-reviewed",
+    "label": "20260930G-181-reviewed",
     "article": "20260930G",
-    "line": 179,
+    "line": 181,
     "variant": "reviewed",
     "fault": "season",
     "expected": []
   },
   {
-    "label": "20260930G-179-fault",
+    "label": "20260930G-181-fault",
     "article": "20260930G",
-    "line": 179,
+    "line": 181,
     "variant": "fault",
     "fault": "season",
     "expected": [
@@ -53,25 +53,25 @@
     ]
   },
   {
-    "label": "20261028W-186-no-ledger",
+    "label": "20261028W-188-no-ledger",
     "article": "20261028W",
-    "line": 186,
+    "line": 188,
     "variant": "no-ledger",
     "fault": "operand",
     "expected": []
   },
   {
-    "label": "20261028W-186-reviewed",
+    "label": "20261028W-188-reviewed",
     "article": "20261028W",
-    "line": 186,
+    "line": 188,
     "variant": "reviewed",
     "fault": "operand",
     "expected": []
   },
   {
-    "label": "20261028W-186-fault",
+    "label": "20261028W-188-fault",
     "article": "20261028W",
-    "line": 186,
+    "line": 188,
     "variant": "fault",
     "fault": "operand",
     "expected": [
@@ -79,25 +79,25 @@
     ]
   },
   {
-    "label": "20261028W-187-no-ledger",
+    "label": "20261028W-189-no-ledger",
     "article": "20261028W",
-    "line": 187,
+    "line": 189,
     "variant": "no-ledger",
     "fault": "sample",
     "expected": []
   },
   {
-    "label": "20261028W-187-reviewed",
+    "label": "20261028W-189-reviewed",
     "article": "20261028W",
-    "line": 187,
+    "line": 189,
     "variant": "reviewed",
     "fault": "sample",
     "expected": []
   },
   {
-    "label": "20261028W-187-fault",
+    "label": "20261028W-189-fault",
     "article": "20261028W",
-    "line": 187,
+    "line": 189,
     "variant": "fault",
     "fault": "sample",
     "expected": [
@@ -106,25 +106,25 @@
     ]
   },
   {
-    "label": "20261015G-209-no-ledger",
+    "label": "20261015G-211-no-ledger",
     "article": "20261015G",
-    "line": 209,
+    "line": 211,
     "variant": "no-ledger",
     "fault": "disputed",
     "expected": []
   },
   {
-    "label": "20261015G-209-reviewed",
+    "label": "20261015G-211-reviewed",
     "article": "20261015G",
-    "line": 209,
+    "line": 211,
     "variant": "reviewed",
     "fault": "disputed",
     "expected": []
   },
   {
-    "label": "20261015G-209-fault",
+    "label": "20261015G-211-fault",
     "article": "20261015G",
-    "line": 209,
+    "line": 211,
     "variant": "fault",
     "fault": "disputed",
     "expected": [
@@ -132,25 +132,25 @@
     ]
   },
   {
-    "label": "20261013G-236-no-ledger",
+    "label": "20261013G-238-no-ledger",
     "article": "20261013G",
-    "line": 236,
+    "line": 238,
     "variant": "no-ledger",
     "fault": "method",
     "expected": []
   },
   {
-    "label": "20261013G-236-reviewed",
+    "label": "20261013G-238-reviewed",
     "article": "20261013G",
-    "line": 236,
+    "line": 238,
     "variant": "reviewed",
     "fault": "method",
     "expected": []
   },
   {
-    "label": "20261013G-236-fault",
+    "label": "20261013G-238-fault",
     "article": "20261013G",
-    "line": 236,
+    "line": 238,
     "variant": "fault",
     "fault": "method",
     "expected": [
@@ -159,37 +159,11 @@
     ]
   },
   {
-    "label": "20261027W-180-no-ledger",
-    "article": "20261027W",
-    "line": 180,
-    "variant": "no-ledger",
-    "fault": "insufficient",
-    "expected": []
-  },
-  {
-    "label": "20261027W-180-reviewed",
-    "article": "20261027W",
-    "line": 180,
-    "variant": "reviewed",
-    "fault": "insufficient",
-    "expected": []
-  },
-  {
-    "label": "20261027W-180-fault",
-    "article": "20261027W",
-    "line": 180,
-    "variant": "fault",
-    "fault": "insufficient",
-    "expected": [
-      "evidence-unresolved"
-    ]
-  },
-  {
     "label": "20261027W-182-no-ledger",
     "article": "20261027W",
     "line": 182,
     "variant": "no-ledger",
-    "fault": "ambiguous",
+    "fault": "insufficient",
     "expected": []
   },
   {
@@ -197,7 +171,7 @@
     "article": "20261027W",
     "line": 182,
     "variant": "reviewed",
-    "fault": "ambiguous",
+    "fault": "insufficient",
     "expected": []
   },
   {
@@ -205,31 +179,57 @@
     "article": "20261027W",
     "line": 182,
     "variant": "fault",
+    "fault": "insufficient",
+    "expected": [
+      "evidence-unresolved"
+    ]
+  },
+  {
+    "label": "20261027W-184-no-ledger",
+    "article": "20261027W",
+    "line": 184,
+    "variant": "no-ledger",
+    "fault": "ambiguous",
+    "expected": []
+  },
+  {
+    "label": "20261027W-184-reviewed",
+    "article": "20261027W",
+    "line": 184,
+    "variant": "reviewed",
+    "fault": "ambiguous",
+    "expected": []
+  },
+  {
+    "label": "20261027W-184-fault",
+    "article": "20261027W",
+    "line": 184,
+    "variant": "fault",
     "fault": "ambiguous",
     "expected": [
       "claim-anchor"
     ]
   },
   {
-    "label": "20261002J-185-no-ledger",
+    "label": "20261002J-187-no-ledger",
     "article": "20261002J",
-    "line": 185,
+    "line": 187,
     "variant": "no-ledger",
     "fault": "decimal",
     "expected": []
   },
   {
-    "label": "20261002J-185-reviewed",
+    "label": "20261002J-187-reviewed",
     "article": "20261002J",
-    "line": 185,
+    "line": 187,
     "variant": "reviewed",
     "fault": "decimal",
     "expected": []
   },
   {
-    "label": "20261002J-185-fault",
+    "label": "20261002J-187-fault",
     "article": "20261002J",
-    "line": 185,
+    "line": 187,
     "variant": "fault",
     "fault": "decimal",
     "expected": [
@@ -238,25 +238,25 @@
     ]
   },
   {
-    "label": "20261024J-183-no-ledger",
+    "label": "20261024J-185-no-ledger",
     "article": "20261024J",
-    "line": 183,
+    "line": 185,
     "variant": "no-ledger",
     "fault": "unreviewed",
     "expected": []
   },
   {
-    "label": "20261024J-183-reviewed",
+    "label": "20261024J-185-reviewed",
     "article": "20261024J",
-    "line": 183,
+    "line": 185,
     "variant": "reviewed",
     "fault": "unreviewed",
     "expected": []
   },
   {
-    "label": "20261024J-183-fault",
+    "label": "20261024J-185-fault",
     "article": "20261024J",
-    "line": 183,
+    "line": 185,
     "variant": "fault",
     "fault": "unreviewed",
     "expected": [

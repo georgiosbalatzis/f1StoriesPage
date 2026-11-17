@@ -31,7 +31,7 @@ test('renders static schedule, canonical metadata, includes and tool destination
   assert.match(html, /<details><summary>Στοιχεία τεκμηρίου<\/summary>/);
   assert.match(html, /Δεδομένα περιόδου: μη συνδεδεμένα σε αυτή τη σελίδα/);
   assert.match(html, /Η λίστα μπορεί να είναι ελλιπής/);
-  assert.match(html, /images\/icons\/icon-512\.png/);
+  assert.match(html, /images\/brand\/f1s-og-default\.jpg/);
   assert.match(html, /href="\/styles\/home-fonts\.css"/);
   assert.doesNotMatch(html, /href="\/styles\/fonts\.css"/);
   assert.match(html, /Ελεύθερες δοκιμές 1/);

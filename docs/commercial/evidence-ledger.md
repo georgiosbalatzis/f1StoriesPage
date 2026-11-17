@@ -36,7 +36,7 @@ All entries in the tables below are `VERIFIED_REPOSITORY` unless marked otherwis
 |---|---|---|
 | R01 | The canonical domain is `f1-stories.gr`, and the sitemap uses it throughout | `CNAME#L1`, `index.html#L31`, `sitemap.xml` |
 | R02 | The site name in title, OG, Twitter and JSON-LD is "F1 Stories" ("F1 Stories \| Formula 1 στα ελληνικά") | `index.html#L15`, `#L17`, `#L27`, `#L55-L78`; `partials/head-meta.html#L3` |
-| R03 | The logo puts the "F1 STORIES" wordmark next to a red single-seater. The source file is gitignored, so its authorship is not recorded in the repo. `VERIFIED_REPOSITORY` (visual) / `UNVERIFIED` (authorship) | `images/icons/icon-512.png`, `images/logo-256.webp`, `images/logo-nav.webp`; `.gitignore#L53`; `scripts/build/optimize-logo.mjs` |
+| R03 | The logo puts the "F1 STORIES" wordmark next to a red single-seater. The source file is gitignored, so its authorship is not recorded in the repo. `VERIFIED_REPOSITORY` (visual) / `UNVERIFIED` (authorship) | Owner-supplied brand kit; `images/brand/README.md` |
 | R04 | Social handles contain "f1" | `partials/footer.html#L17-L19`; `index.html#L65-L69` |
 | R05 | No site-level "unofficial / not associated with Formula 1" disclaimer exists. Terms §3 only says third-party and team logos are used for informational or quotation purposes | Repo search (unofficial, ανεπίσημ, affiliated, Formula One Licensing, trademark, εμπορικ σήμ); `privacy/terms.html#L127-L129` |
 | R06 | The only "unofficial, not associated with Formula 1" wording is in the Race Desk timeline and pace sections, attached to OpenF1 data. Those sections also carry the CC BY-NC-SA notice | `scripts/race-desk/timeline-render.mjs#L47`, `scripts/race-desk/pace-render.mjs#L58` |

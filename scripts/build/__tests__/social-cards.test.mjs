@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { boundaryDelta } from '../brand-assets.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,7 +9,7 @@ import test from 'node:test';
 import sharp from 'sharp';
 import { XMLParser } from 'fast-xml-parser';
 import media from '../../../blog-module/build/media-meta.js';
-import { buildSocialCards, HOME_SOCIAL_ALT, HOME_SOCIAL_IMAGE, renderSocialCard, socialMetadata } from '../social-cards.mjs';
+import { buildSocialCards, HOME_SOCIAL_ALT, renderSocialCard, socialMetadata } from '../social-cards.mjs';
 import { examples } from '../social-card-examples.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -26,7 +27,7 @@ function fixture(t) {
     fs.writeFileSync(path.join(dir, 'blog-module/blog-source-cache.json'), JSON.stringify({ posts: [{ id: 'story', title: 'Ειδήσεις & αναλύσεις', author: 'Unknown author' }] }));
     fs.writeFileSync(path.join(dir, article), page);
     fs.writeFileSync(path.join(dir, 'index.html'), page);
-    fs.copyFileSync(path.join(root, 'images/logo-256.webp'), path.join(dir, 'blog-module/blog-entries/story/1.webp'));
+    fs.copyFileSync(path.join(root, 'images/brand/f1s-logo-600.png'), path.join(dir, 'blog-module/blog-entries/story/1.webp'));
     return { dir, article, cache: path.join(dir, '.build/public-images/social-cards'), options: { repoRoot: dir, distRoot: dir, htmlFiles: ['index.html', article], warn() {} } };
 }
 
@@ -41,10 +42,19 @@ function assertLayout(layout, minTop = 150) {
     }
 }
 
-test('home bytes remain identical on the recorded environment', async () => {
+test('home card preserves the original outside the wordmark patch', async () => {
     const { data, layout } = await renderSocialCard({ home: true });
-    assert.equal(digest(data), '6aadb4e1bf315dbb30905d5ea528169165b98b85bacec62729358eb7ff05d8e5');
-    assert.equal(HOME_SOCIAL_IMAGE, `images/social/home-${digest(data).slice(0, 20)}.jpg`);
+    const original = fs.readFileSync(path.join(root, 'scripts/build/assets/home-social-source.jpg'));
+    const before = await sharp(original).removeAlpha().raw().toBuffer();
+    const after = await sharp(data).removeAlpha().raw().toBuffer();
+    let difference = 0, count = 0;
+    for (let y = 0; y < 630; y++) for (let x = 0; x < 1200; x++) {
+        // Leave a JPEG block margin around the edited rectangle.
+        if (x >= 40 && x < 403 && y >= 24 && y < 104) continue;
+        for (let c = 0; c < 3; c++) { const i = (y * 1200 + x) * 3 + c; difference += Math.abs(before[i] - after[i]); count++; }
+    }
+    assert.ok(difference / count < 3.5, `outside-patch mean error: ${difference / count}`);
+    assert.ok(await boundaryDelta(data) < 1, 'patch boundary must match surrounding paper');
     assert.equal(HOME_SOCIAL_ALT, 'F1 Stories — Η Formula 1 στα ελληνικά. Νέα, ανάλυση, δεδομένα και Race Desk εργαλεία.');
     assert.equal(layout.displayText, 'Η Formula 1 στα ελληνικά.');
     assert.equal(layout.truncated, false);
@@ -106,13 +116,13 @@ test('official logo remains recognizable and no accent stripe crosses the header
     const image = await source();
     const { data } = await renderSocialCard({ title: 'Δοκιμή', image });
     const card = await sharp(data).raw().toBuffer({ resolveWithObject: true });
-    const logo = await sharp(path.join(root, 'images/logo-256.webp')).resize(72, 72).ensureAlpha().raw().toBuffer();
+    const logo = await sharp(path.join(root, 'images/brand/f1s-header-dark@2x.webp')).resize({ height: 42 }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const pairs = [];
-    for (let y = 0; y < 72; y++) for (let x = 0; x < 72; x++) {
-        const i = (y * 72 + x) * 4;
-        if (logo[i + 3] < 240) continue;
+    for (let y = 0; y < logo.info.height; y++) for (let x = 0; x < logo.info.width; x++) {
+        const i = (y * logo.info.width + x) * 4;
+        if (logo.data[i + 3] < 240) continue;
         const j = ((y + 36) * 1200 + x + 48) * card.info.channels;
-        pairs.push([logo[i] + logo[i + 1] + logo[i + 2], card.data[j] + card.data[j + 1] + card.data[j + 2]]);
+        pairs.push([logo.data[i] + logo.data[i + 1] + logo.data[i + 2], card.data[j] + card.data[j + 1] + card.data[j + 2]]);
     }
     const means = [0, 1].map(c => pairs.reduce((sum, pair) => sum + pair[c], 0) / pairs.length);
     const covariance = pairs.reduce((sum, pair) => sum + (pair[0] - means[0]) * (pair[1] - means[1]), 0);
@@ -120,7 +130,7 @@ test('official logo remains recognizable and no accent stripe crosses the header
     assert.ok(covariance / Math.sqrt(variance[0] * variance[1]) > 0.75, 'rendered logo correlates with the official asset');
     let redPixels = 0;
     for (let y = 0; y < 140; y++) for (let x = 0; x < 200; x++) {
-        if (x >= 48 && x < 120 && y >= 36 && y < 108) continue;
+        if (x >= 48 && x < 48 + logo.info.width && y >= 36 && y < 78) continue;
         const i = (y * 1200 + x) * card.info.channels;
         if (card.data[i] > 120 && card.data[i] > card.data[i + 1] * 1.8 && card.data[i] > card.data[i + 2] * 1.8) redPixels++;
     }
@@ -141,10 +151,11 @@ test('white and checkerboard sources retain dark backgrounds around every text r
             fontfile: path.join(root, 'scripts/build/assets/IBMPlexSans-SemiBold.ttf'), width, wrap: 'word-char', rgba: true, dpi: 72, spacing: 4
         } }).png().toBuffer();
         const maskLayers = await Promise.all([
-            ['F1 STORIES', 32, 600, layout.wordmarkBox], ['f1-stories.gr', 23, 400, layout.domainBox],
+            ['f1-stories.gr', 23, 400, layout.domainBox],
             [layout.displayText, layout.fontSize, 1104, { left: 48, top: layout.headlineTop }],
             ['Γιώργος Μπαλατζής', 26, 650, layout.bylineBox], [media.AI_LABEL, 17, 440, layout.disclosureBox]
         ].map(async ([text, size, width, box]) => ({ input: await textMask(text, size, width), left: box.left, top: box.top })));
+        maskLayers.push({ input: await sharp(path.join(root, 'images/brand/f1s-header-dark@2x.webp')).resize({ height: 42 }).png().toBuffer(), left: 48, top: 36 });
         const maskBase = await sharp({ create: { width: 1200, height: 630, channels: 3, background: '#000' } }).composite(maskLayers).png().toBuffer();
         const mask = await sharp(maskBase).greyscale().extractChannel(0).raw().toBuffer();
         for (const box of [layout.wordmarkBox, layout.domainBox, ...layout.headlineBoxes, layout.bylineBox, layout.disclosureBox]) {
@@ -213,7 +224,7 @@ test('cold and warm builds produce immutable names and validate cache and proven
     assert.equal(calls, 0);
     assert.deepEqual(warm.records.map(r => [r.file, r.sha256]), initial.records.map(r => [r.file, r.sha256]));
     for (const record of warm.records) assert.match(record.file, /^images\/social\/(home|article)-[a-f0-9]{20}\.jpg$/);
-    assert.equal(warm.records[1].template, 'cinematic-v1');
+    assert.equal(warm.records[1].template, 'cinematic-v2');
     assert.match(warm.records[1].rendererKey, /^[a-f0-9]{64}$/);
     const sidecars = fs.readdirSync(f.cache).filter(file => /^[a-f0-9]{64}\.json$/.test(file));
     assert.equal(sidecars.length, 2);
@@ -301,9 +312,9 @@ test('warm cache does not decode source bytes', async t => {
 
 test('recognized brand assets are valid sources', async t => {
     const f = fixture(t);
-    fs.mkdirSync(path.join(f.dir, 'images'), { recursive: true });
-    fs.copyFileSync(path.join(root, 'images/logo-256.webp'), path.join(f.dir, 'images/logo-256.webp'));
-    fs.writeFileSync(path.join(f.dir, f.article), page.replaceAll('https://f1-stories.gr/blog-module/blog-entries/story/1.webp', 'https://f1-stories.gr/images/logo-256.webp'));
+    fs.mkdirSync(path.join(f.dir, 'images/brand'), { recursive: true });
+    fs.copyFileSync(path.join(root, 'images/brand/f1s-logo-600.png'), path.join(f.dir, 'images/brand/f1s-logo-600.png'));
+    fs.writeFileSync(path.join(f.dir, f.article), page.replaceAll('https://f1-stories.gr/blog-module/blog-entries/story/1.webp', 'https://f1-stories.gr/images/brand/f1s-logo-600.png'));
     const result = await buildSocialCards({ ...f.options, htmlFiles: [f.article] });
     assert.equal(result.records[0].fallback, undefined);
 });

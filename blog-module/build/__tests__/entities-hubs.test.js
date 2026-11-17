@@ -19,7 +19,7 @@ function fixture(type = 'driver', count = 3) {
     const entity = { id: `${type}:fixture`, type, slug: 'fixture', name: 'Fixture', labelEl: 'Ελληνικό όνομα', aliases: [{ value: 'Fixture', scope: 'article-tag' }],
         hub: { review: review(), introduction: { heading: 'Εγκεκριμένος ελληνικός τίτλος', text: 'Ακριβές εγκεκριμένο κείμενο.\n\nΔεύτερη παράγραφος.', review: review() } } };
     const articles = Array.from({ length: count }, (_, i) => ({ id: `fixture${String(i).padStart(3, '0')}`, title: `Πρωτότυπος τίτλος ${i}`, date: `2026-10-${i % 2 ? '02' : '01'}`,
-        author: 'Georgios Balatzis', categories: ['Analysis'], tags: [], image: '/images/icons/icon-512.png', excerpt: 'Πρωτότυπο απόσπασμα.' }));
+        author: 'Georgios Balatzis', categories: ['Analysis'], tags: [], image: '/images/brand/f1s-og-default.jpg', excerpt: 'Πρωτότυπο απόσπασμα.' }));
     const associations = articles.map(article => ({ entityId: entity.id, articleId: article.id, role: 'primary', discipline: 'f1', substantive: true, review: review(), tags: [], flags: [],
         evidence: { path: `blog-module/blog-entries/${article.id}/source.txt`, line: 3, quote: 'Reviewed subject.', note: 'Human reviewed F1 subject context.' } }));
     return { registry: { version: 1, entities: [entity] }, manifest: { version: 1, baseline: 'synthetic-only', associations }, articles, entity };

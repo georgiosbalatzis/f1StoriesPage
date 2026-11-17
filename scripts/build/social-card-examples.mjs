@@ -60,8 +60,8 @@ async function main() {
                 fs.cpSync(path.join(root, dir), path.join(scratch, dir), { recursive: true });
                 return `${dir}/article.html`;
             });
-            fs.mkdirSync(path.join(scratch, 'images'), { recursive: true });
-            fs.copyFileSync(path.join(root, 'images/logo-256.webp'), path.join(scratch, 'images/logo-256.webp'));
+            fs.mkdirSync(path.join(scratch, 'images/brand'), { recursive: true });
+            fs.copyFileSync(path.join(root, 'images/brand/f1s-logo-600.png'), path.join(scratch, 'images/brand/f1s-logo-600.png'));
             const rendered = new Map();
             const result = await buildSocialCards({ repoRoot: root, distRoot: scratch, htmlFiles, cacheRoot: path.join(scratch, 'cache'), render: async (...input) => {
                 const start = performance.now();

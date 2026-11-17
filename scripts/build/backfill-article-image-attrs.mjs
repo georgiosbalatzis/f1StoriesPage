@@ -61,7 +61,7 @@ async function patchImgTag(tag, articlePath) {
     const imageId = getAttr(tag, 'id');
     const fileName = path.basename(src || '');
     const isHero = /\barticle-header-img\b/.test(className);
-    const isLogo = src === '/images/logo-nav.webp';
+    const isLogo = src.startsWith('/images/brand/f1s-header-');
     const absPath = resolveImagePath(articlePath, src);
     const dims = await getDimensions(absPath);
 

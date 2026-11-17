@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>404 — F1 Stories</title>
   <script defer src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
-  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/brand/favicon-light-16.png" data-theme-favicon>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-light-32.png" data-theme-favicon>
+<link rel="apple-touch-icon" href="/images/brand/apple-touch-icon.png">
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
   <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
@@ -14,19 +16,19 @@
     :root:not([data-theme="light"]) { --paper: #1b1a19; --ink: #eee8db; --muted: #b6bbac; --accent: #ff775f; --line: #4b5146; --cta-bg: #eee8db; --cta-text: #20251f; }
     * { box-sizing: border-box; } body { margin: 0; min-height: 100svh; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", sans-serif; }
     .page { width: min(1200px, 100%); min-height: 100svh; margin: auto; padding: clamp(24px, 5vw, 64px) clamp(22px, 6vw, 86px); display: grid; grid-template-rows: auto 1fr auto; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); } .brand { display: inline-flex; align-items: center; gap: 11px; min-height: 44px; color: inherit; font: 700 1.75rem/1 "Barlow Condensed", sans-serif; letter-spacing: -.035em; text-decoration: none; } .brand img { width: 38px; height: 38px; object-fit: contain; } .signal { color: var(--signal); } .issue { color: var(--muted); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); } .brand { display: inline-flex; align-items: center; gap: 11px; flex: 0 1 auto; width: 182px; min-width: 0; min-height: 44px; color: inherit; font: 700 1.75rem/1 "Barlow Condensed", sans-serif; letter-spacing: -.035em; text-decoration: none; } .brand img { width: auto; height: auto; max-width: 100%; max-height: 36px; } @media (max-width: 575.98px) { .brand { width: 152px; } .brand img { max-height: 30px; } } .brand .brand-light { display: none; } [data-theme="light"] .brand .brand-light { display: block; } [data-theme="light"] .brand .brand-dark { display: none; } .signal { color: var(--signal); } .issue { color: var(--muted); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
     main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(32px, 8vw, 120px); padding: 8vh 0; } .kicker { margin: 0; color: var(--muted); font-size: .75rem; font-weight: 600; letter-spacing: .13em; }
     h1 { max-width: 680px; margin: 18px 0 20px; font: 600 clamp(2.5rem, 6vw, 4.5rem)/1.15 "IBM Plex Sans", sans-serif; letter-spacing: -.025em; } .message { max-width: 480px; margin: 0; color: var(--muted); font-size: 1.125rem; line-height: 1.6; }
     .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 32px; } a.button { display: inline-flex; min-height: 47px; align-items: center; padding: 0 22px; border-radius: 2px; background: var(--cta-bg); color: var(--cta-text); font-size: .875rem; font-weight: 600; text-decoration: none; } a.button:hover { background: var(--signal); color: var(--signal-ink); } a.link { display: inline-flex; min-height: 44px; align-items: center; border-bottom: 1px solid currentColor; color: var(--ink); font-size: .875rem; font-weight: 600; text-decoration: none; } a.link:hover { color: var(--accent); } :is(a.button, a.link, .brand):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
     .numeral { color: var(--line); font: 700 clamp(6rem, 16vw, 13rem)/.8 "Barlow Condensed", sans-serif; letter-spacing: -.03em; }
     footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; letter-spacing: .08em; }
-    @media (max-width: 680px) { main { grid-template-columns: 1fr; align-content: start; gap: 24px; padding: 6vh 0; } .numeral { order: -1; font-size: 6rem; } .issue { display: none; } }
+    @media (max-width: 680px) { .brand { width: 177.97px; } main { grid-template-columns: 1fr; align-content: start; gap: 24px; padding: 6vh 0; } .numeral { order: -1; font-size: 6rem; } .issue { display: none; } }
   </style>
-    <script src="/scripts/theme-init.min.js?v=d8c05277"></script>
+    <script src="/scripts/theme-init.min.js?v=f53d0e2b"></script>
 </head>
 <body>
   <div class="page">
-    <header><a class="brand" href="/"><img src="/images/logo-256.avif" alt="" width="256" height="256"><span>F1 STORIES<span class="signal">.</span></span></a><span class="issue">ΣΦΑΛΜΑ ΠΛΟΗΓΗΣΗΣ / 404</span></header>
+    <header><a class="brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img class="brand-light" src="/images/brand/f1s-header-light.webp" srcset="/images/brand/f1s-header-light.webp 1x, /images/brand/f1s-header-light@2x.webp 2x" alt="" width="182" height="36"><img class="brand-dark" src="/images/brand/f1s-header-dark.webp" srcset="/images/brand/f1s-header-dark.webp 1x, /images/brand/f1s-header-dark@2x.webp 2x" alt="" width="173" height="36"></a><span class="issue">ΣΦΑΛΜΑ ΠΛΟΗΓΗΣΗΣ / 404</span></header>
     <main aria-labelledby="page-title"><section><p class="kicker">ΕΚΤΟΣ ΔΙΑΔΡΟΜΗΣ</p><h1 id="page-title">Λάθος στροφή<span class="signal">.</span></h1><p class="message">Ο σύνδεσμος που ακολούθησες δεν βρίσκεται πια στο grid. Γύρνα στην αρχική ή συνέχισε με τις τελευταίες ιστορίες.</p><div class="actions"><a class="button" href="/">Πήγαινε στην αρχική</a><a class="link" href="/blog-module/blog/index.html">Δες τα άρθρα</a></div></section><div class="numeral" aria-hidden="true">404</div></main>
     <footer><span>F1 STORIES</span><span>PURE RACING · REAL STORIES</span></footer>
   </div>

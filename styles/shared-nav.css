@@ -406,8 +406,7 @@
 @media (max-width: 575.98px) {
     /* Keep the header focused on brand, theme and menu at phone widths. */
     .blog-nav-countdown-mobile { display: none; }
-    .blog-nav-brand { min-width: 44px; min-height: 44px; }
-    .blog-nav-brand img { max-width: 38px; max-height: 38px; }
+    .blog-nav-brand { min-width: 0; min-height: 44px; }
     .blog-nav-hamburger {
         display: flex !important;
         top: 11px;

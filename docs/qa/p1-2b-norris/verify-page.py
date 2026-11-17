@@ -50,7 +50,7 @@ assert page.meta('twitter:card') == 'summary'
 for prefix in ['og:', 'twitter:']:
     assert page.meta(prefix + 'title') == titles[0]
     assert page.meta(prefix + 'description') == page.meta('description')
-    assert page.meta(prefix + 'image') == site + '/images/icons/icon-512.png'
+    assert page.meta(prefix + 'image') == site + '/images/brand/f1s-og-default.jpg'
 assert not re.search(r'noindex|localhost|127\.0\.0\.1|/preview', html, re.I)
 assert len([1 for t, a in page.tags if t == 'h1']) == 1
 schemas = [json.loads(s) for s in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)]
