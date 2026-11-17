@@ -222,7 +222,7 @@ Earlier evidence (GitHub-hosted, ubuntu24 20261023.334.3, Node 22.23.3 + 24.21.0
 PRs that change deployment or Race Desk code and data) on `ubuntu-latest` with Node 22 and the lock's
 Node 24, Chromium plus system libraries: `build.mjs --rehearsal` (the pinned
 release build, allowed before `releaseReady`, never used by a publisher), public
-URL integrity, assembled integration and Race Desk browser suites, publisher gates and a step summary.
+URL integrity, assembled integration and Race Desk browser suites including the full GP visual and accessibility matrix, publisher gates and a step summary. Deploys run integration smoke, Race Desk navigation and the fast GP identity subset.
 It uploads reports only; it has no Pages, OIDC or write permission.
 
 **Pinned sources** (merged `main` commits; each tree identical to its reviewed PR

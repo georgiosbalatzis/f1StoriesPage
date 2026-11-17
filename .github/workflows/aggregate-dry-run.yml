@@ -1,7 +1,7 @@
 name: Ecosystem acceptance
 
 # Pre-merge assembled-site browser acceptance: integration smoke, Race Desk navigation and Grand Prix pages.
-# Deploys retain the integration smoke for freshly refreshed TYRES data; the other browser suites run here.
+# Deploys run smoke, navigation and the Grand Prix data-identity subset; full visual and accessibility matrices run here pre-merge.
 on:
   workflow_dispatch:
   pull_request:

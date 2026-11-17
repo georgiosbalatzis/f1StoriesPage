@@ -18,6 +18,7 @@ const option = (name, fallback) => { const i = args.indexOf(name); if (i < 0) re
 const site = path.resolve(option('--site', 'dist'));
 const reports = path.resolve(option('--reports', '.build/race-desk-r03'));
 const assembled = args.includes('--assembled');
+const deploy = args.includes('--deploy');
 const registry = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/registry.v1.json')));
 const lock = JSON.parse(fs.readFileSync(path.join(repo, 'scripts/deployment/sources.json')));
 const evidence = JSON.parse(fs.readFileSync(path.join(repo, 'data/race-desk/hub-evidence.v1.json')));
@@ -86,7 +87,7 @@ const nativeTyres = {
   '2025-singapore-gp': ['Marina Bay Street Circuit', 'a26affb3980cb9c7f383f9c73373d43e9370185e'],
   '2026-mexican-gp': ['Autódromo Hermanos Rodríguez', 'be59dff04cae56bcd7966c16df20d70ac59d6673'],
 };
-const report = { site, assembled, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), officialCaptures: models.map(({ raceId, scheduleEvidence }) => ({ raceId, url: scheduleEvidence.url, observedAt: scheduleEvidence.observedAt, sha256: scheduleEvidence.sha256, bytes: scheduleEvidence.bytes })), nativeTyresEvidence: { revision: '058e2a32ae769deb7d7b211ccb84ea05344dd053', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
+const report = { site, assembled, deploy, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), officialCaptures: models.map(({ raceId, scheduleEvidence }) => ({ raceId, url: scheduleEvidence.url, observedAt: scheduleEvidence.observedAt, sha256: scheduleEvidence.sha256, bytes: scheduleEvidence.bytes })), nativeTyresEvidence: { revision: '058e2a32ae769deb7d7b211ccb84ea05344dd053', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
 fs.mkdirSync(reports, { recursive: true });
 let server, browser;
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif', '.jpg': 'image/jpeg' };
@@ -135,6 +136,28 @@ try {
     return { context, page, requests, bodies, errors };
   }
   const ready = async page => { await page.waitForLoadState('networkidle', { timeout: 6000 }).catch(() => {}); await page.evaluate(() => document.fonts.ready); };
+  const identityChecks = async (page, model) => {
+    const race = races.get(model.raceId);
+    assert.equal(await page.locator('h1').count(), 1);
+    const title = await page.locator('h1').innerText();
+    assert.ok(title.includes(model.displayName), `h1 must contain ${model.displayName}`);
+    assert.ok(title.includes(String(race.season)), `h1 must contain ${race.season}`);
+    const main = await page.locator('main').innerText();
+    assert.ok(main.includes(model.venue.name));
+    const toolLinks = page.locator('.race-desk-tools li');
+    for (const tool of model.tools) {
+      const item = toolLinks.filter({ has: page.getByRole('link', { name: new RegExp('^' + tool.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }) });
+      assert.equal(await item.count(), 1, `tool ${tool.target}`);
+      const href = await item.locator('a').getAttribute('href');
+      const destination = new URL(href, 'https://f1-stories.gr');
+      assert.equal(destination.href, new URL(tool.url, 'https://f1-stories.gr').href, `${tool.target} destination`);
+      if (deploy && assembled) {
+        assert.equal(destination.origin, 'https://f1-stories.gr');
+        assert.equal((await page.request.get(origin + destination.pathname + destination.search)).status(), 200, `${tool.target} must resolve`);
+      }
+      if (!deploy && tool.kind === 'generic') assert.match(await item.innerText(), /Γενική προβολή|επίλεξε αγώνα/i);
+    }
+  };
   const pageChecks = async (run, model, javascriptEnabled) => {
     const { page } = run, race = races.get(model.raceId);
     const response = await page.goto(origin + model.path, { waitUntil: 'domcontentloaded' });
@@ -282,8 +305,7 @@ try {
     const canonical = `https://f1-stories.gr${model.path}`;
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), canonical);
     assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'), canonical);
-    assert.equal(await page.locator('h1').count(), 1);
-    assert.ok((await page.locator('h1').innerText()).includes(model.displayName), `h1 must contain ${model.displayName}`);
+    await identityChecks(page, model);
     const fonts = await page.evaluate(() => ({
       title: getComputedStyle(document.querySelector('h1')).fontFamily,
       body: getComputedStyle(document.querySelector('body')).fontFamily,
@@ -294,7 +316,6 @@ try {
     assert.match(fonts.title, /Barlow Condensed/i); assert.match(fonts.body, /IBM Plex Sans/i);
     assert.ok(fonts.greekReady && fonts.faces.some(face => /IBM Plex Sans/i.test(face.family) && /370/i.test(face.unicodeRange) && face.status === 'loaded'), `Greek font must be naturally loaded: ${JSON.stringify(fonts)}`);
     assert.ok(fonts.brandReady && fonts.faces.some(face => /Barlow Condensed/i.test(face.family) && face.status === 'loaded'), `brand font must be naturally loaded: ${JSON.stringify(fonts)}`);
-    assert.ok((await page.locator('main').innerText()).includes(model.venue.name));
     const table = page.locator('.race-desk-table-wrap[aria-label="Πίνακας προγράμματος"] table');
     assert.equal(await table.count(), 1);
     assert.deepEqual(await table.locator('tbody time').evaluateAll(nodes => nodes.map(node => node.getAttribute('datetime'))), race.sessions.filter(s => s.startUtc).map(s => s.startUtc));
@@ -355,14 +376,6 @@ try {
       const detailText = await details.innerText(); assert.ok(detailText.includes(source.revision)); assert.ok(detailText.includes(source.path));
     }
     assert.equal(await page.locator('script[type="application/json"]').count(), 0, 'source evidence must not be hidden in JSON');
-    const toolLinks = page.locator('.race-desk-tools li');
-    for (const tool of model.tools) {
-      const item = toolLinks.filter({ has: page.getByRole('link', { name: new RegExp('^' + tool.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }) });
-      assert.equal(await item.count(), 1, `tool ${tool.target}`);
-      const href = await item.locator('a').getAttribute('href');
-      assert.equal(new URL(href, 'https://f1-stories.gr').href, new URL(tool.url, 'https://f1-stories.gr').href, `${tool.target} destination`);
-      if (tool.kind === 'generic') assert.match(await item.innerText(), /Γενική προβολή|επίλεξε αγώνα/i);
-    }
     assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl] : [], 'only the shared navigation calendar request is allowed');
     assert.deepEqual(run.errors, []);
     const reload = await page.reload({ waitUntil: 'domcontentloaded' }); assert.equal(reload.status(), 200);
@@ -371,6 +384,16 @@ try {
     assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl, calendarUrl] : [], 'reload must only repeat the shared navigation calendar request');
     assert.deepEqual(run.errors, []);
   };
+  if (deploy) {
+    for (const model of models) {
+      const run = await open();
+      await check(`${model.raceId}: deploy identity and destinations`, async () => {
+        assert.equal((await run.page.goto(origin + model.path, { waitUntil: 'domcontentloaded' })).status(), 200);
+        await identityChecks(run.page, model);
+      });
+      await run.context.close();
+    }
+  } else {
   const baseline = await open();
   await check('incumbent shared navigation calendar on authors baseline', async () => {
     assert.equal((await baseline.page.goto(origin + '/authors/', { waitUntil: 'domcontentloaded' })).status(), 200); await ready(baseline.page);
@@ -523,6 +546,7 @@ try {
     assert.deepEqual(schedule.errors, []);
   });
   await schedule.context.close();
+  }
   if (assembled) {
     for (const model of models) {
       const race = races.get(model.raceId), tyres = model.tools.find(tool => tool.target === 'tyres');

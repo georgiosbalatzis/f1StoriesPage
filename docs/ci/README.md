@@ -35,7 +35,7 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 | --- | --- | --- |
 | **A** mandatory PR | classify, `build:public`, static guard, size budgets, media QA, blog URL contracts, countdown QA, Race Desk contracts, standings, security policy, deployment negative cases, publishing/workflow regressions, author tool, research prototype (mocked), intelligence + dashboard (synthetic keys), countdown/visual-focus/tablet-CLS units | Article build and URL contracts, CSP/security policy, workflow privileges, encrypted dashboard privacy, deploy refusal paths |
 | **B** conditional PR | full route: release media/domain, runtime audit, Race Desk navigation, GP hubs, Edition, consent/RUM, tablet CLS browser. Ecosystem acceptance on deployment/Race Desk data and code/setup/build-pages/workflow paths | Code changes to public runtime, consent, navigation; assembled five-app integrity before merge |
-| **C** release | `build-pages` (aggregate build, static/media/domain/audit gates, smoke, upload), Deploy Pages deploy, Site Maintenance routing/commit, author PR guard + merge, Dependabot merge | The exact artifact that ships: source pins, canonical/sitemap/domain files, assembled navigation, CSP refusals, 404s |
+| **C** release | `build-pages` (aggregate build, static/media/domain/audit gates, smoke, navigation, fast GP identity, upload), Deploy Pages deploy, Site Maintenance routing/commit, author PR guard + merge, Dependabot merge | The exact artifact that ships: source pins, canonical/sitemap/domain files, assembled navigation, CSP refusals, 404s |
 | **D** scheduled | Deploy Pages TYRES refresh (6 h Thu–Mon, daily Tue–Wed), standings (Fri 23:59, Sat/Mon 07:01 Athens), Intelligence Snapshot (03:00) and Health (11:00/17:00), Security Headers (Mon) | Data freshness, live header drift, analytics pipeline health |
 | **E** manual / diagnostic | Ecosystem acceptance dispatch, Deploy Pages dispatch, Security Headers `--strict`, `npm run verify` extras (`qa:visual`, `perf:lighthouse`, `perf:images`, `perf:article-media`, `qa:author-images`), `qa:embeds`, `qa:audio-player`, `qa:embed-dialog`, `dashboard-browser.mjs --screenshots`, perf profilers (`global-runtime-profile`, `global-cues-profile`, `standings-performance`, `standings-dirty-air-performance`, `rum-performance`, `shared-nav-cues-qa`, `grid-round-pin-qa`) | Investigation; not merge gates |
 | **F** removed | PR-title-gated I-06D screenshot capture/upload (its extra dashboard session now always runs). Already gone before this program: "Rehearsal - publish without mtime restore (temporary)", "Scheduled Publish" | — |
@@ -45,7 +45,7 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 
 - Site Quality builds `dist/` in each suite job (up to four parallel builds). It's the price of latency: every suite sees the
   built tree it saw in the old single job (Sol review: identical test counts did not prove identical inputs).
-- Race Desk browsers run on standalone `dist/` in Site Quality and on the assembled artifact in Ecosystem acceptance.
+- Race Desk navigation and fast GP identity checks run on deploy; the full GP visual and accessibility matrix runs in Site Quality and Ecosystem acceptance before merge.
 - `test:deployment` runs in Site Quality and the dry run (1 s); the dry run can also be dispatched alone.
 - The aggregate installs main twice (`setup` and the snapshot's `npm ci`, ~8 s each). The snapshot install is part of the
   hermetic release build.

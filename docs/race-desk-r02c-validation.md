@@ -42,7 +42,7 @@ Lead checks use Node 22.23.4 and the unchanged dependency lock. Independent Sol 
 
 The disabled browser run used an isolated copy with a disabled projection and matching fixture lock. It is explicitly a derived QA fixture, not an actual disabled production release or a byte-identical rollback. It changed neither the candidate artifact nor the production source lock.
 
-The actual assembled gate requires both Japanese and Bahrain/Sepang TYRES paths to return 200 and select the expected native year/race ID, title and venue. It runs against the real assembled directory in Ecosystem acceptance before merge. Site Quality runs the Main-only browser checks and uploads diagnostic reports. Provider reads are mocked in browser tests.
+The actual assembled gate requires both Japanese and Bahrain/Sepang TYRES paths to return 200 and select the expected native year/race ID, title and venue. It runs against the real assembled directory in Ecosystem acceptance before merge and before Pages upload. Site Quality runs the Main-only browser checks and uploads diagnostic reports. Provider reads are mocked in browser tests.
 
 ## Measurements and visual evidence
 
