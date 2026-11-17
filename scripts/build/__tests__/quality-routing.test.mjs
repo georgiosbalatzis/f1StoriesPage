@@ -180,7 +180,7 @@ test('Quality gates reports one conclusion that requires every suite job', () =>
     assert.match(gates, /^    name: Quality gates$/m);
     assert.match(gates, /^    if: \$\{\{ always\(\) \}\}$/m);
     const suites = jobIds.filter(id => id !== 'gates');
-    assert.deepEqual(suites, ['modules', 'built', 'artifact', 'browser']);
+    assert.deepEqual(suites, ['modules', 'artifact', 'browser']);
     assert.equal(gates.match(/^    needs: \[(.*)\]$/m)[1], suites.join(', '));
     assert.equal((workflow.match(/name: Quality gates/g) || []).length, 1);
     const script = gates.split('        run: |\n')[1].split('\n').map(line => line.slice(10)).join('\n');
@@ -202,7 +202,7 @@ test('Quality gates reports one conclusion that requires every suite job', () =>
 
 test('every suite job builds before testing; only full checks run packaging gates and browsers', () => {
     assert.doesNotMatch(workflow, /github.head_ref|startsWith\(|I-06D/);
-    for (const id of ['modules', 'built', 'artifact', 'browser']) {
+    for (const id of ['modules', 'artifact', 'browser']) {
         assert.match(step(id, 'Checkout'), /fetch-depth: 2/);
         assert.match(step(id, 'Checkout'), /filter: blob:none/);
         assert.match(step(id, 'Classify changed files'), /run: node scripts\/build\/classify-quality.mjs/);
@@ -219,17 +219,17 @@ test('every suite job builds before testing; only full checks run packaging gate
     }
     const always = {
         modules: ['Build public artifact', 'Run standings module tests', 'Run countdown schedule tests',
-            'Run security policy tests', 'Run aggregate deployment gate tests', 'Run tablet CLS guard tests'],
-        built: ['Build public artifact', 'Run author module tests', 'Run publishing regression tests'],
+            'Run security policy tests', 'Run aggregate deployment gate tests', 'Run tablet CLS guard tests',
+            'Run article-dependent author tests', 'Run publishing regression tests'],
         artifact: ['Build public artifact', 'Run static source guard', 'Verify asset size budgets', 'Verify generated editorial media',
             'Run blog module tests', 'Verify next-race countdown'],
     };
     const full = {
         modules: ['Run newsletter foundation tests (mock provider only, no network)', 'Run race desk contract tests',
-            'Test isolated research prototype (DEMO and mocked provider only)', 'Run visual focus capture regression',
+            'Run visual focus capture regression',
             'Run dashboard snapshot tests (synthetic data and generated keys only, no network)',
-            'Run author research notebook browser tests', 'Run consent and RUM regressions'],
-        built: ['Verify Race Desk navigation and offline URL compatibility'],
+            'Run author module tests', 'Run consent and RUM regressions',
+            'Verify Race Desk navigation and offline URL compatibility'],
         artifact: ['Verify release media and primary domain', 'Audit runtime dependencies', 'Verify static Grand Prix pilot pages'],
         browser: ['Setup dependencies for browser regressions', 'Restore optimized article images',
             'Build public artifact for browser regressions', 'Run Edition discovery regression',
@@ -243,19 +243,26 @@ test('every suite job builds before testing; only full checks run packaging gate
             for (const name of names) assert.equal(runsFor(id, name, contentOnly), contentOnly !== 'true', `${id}: ${name}`);
         }
     }
-    assert.match(step('built', 'Run publishing regression tests'), /quality-routing.test.mjs/);
+    assert.match(step('modules', 'Run publishing regression tests'), /quality-routing.test.mjs/);
 });
 
-test('the two author steps together run exactly the test:author files, each once', () => {
+test('author steps cover each test once, with article-dependent checks always enabled', () => {
     const root = fileURLToPath(new URL('../../../', import.meta.url));
     const command = step => step.match(/run: node --test (.*)/)[1];
-    const list = script => spawnSync('bash', ['-c', `printf '%s\\n' ${script}`], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n');
-    const built = list(command(step('built', 'Run author module tests')));
-    const modules = list(command(step('modules', 'Run author research notebook browser tests')));
+    const list = script => spawnSync('bash', ['-c', `printf '%s\n' ${script}`], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n');
+    const article = list(command(step('modules', 'Run article-dependent author tests')));
+    const script = step('modules', 'Run author module tests').split('        run: |\n')[1].split('\n').map(line => line.slice(10)).join('\n');
+    const full = spawnSync('bash', ['-c', script.replace('node --test', `printf '%s\\n'`)], { cwd: root, encoding: 'utf8' }).stdout.trim().split('\n');
     const all = list(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts['test:author'].replace('node --test ', ''));
-    assert.ok(all.length > 5);
-    assert.deepEqual(modules, ['scripts/author/__tests__/research-browser.test.mjs']);
-    assert.deepEqual([...built, ...modules].sort(), [...all].sort());
+    assert.deepEqual([...article, ...full].sort(), [...all].sort());
+    assert.ok(full.includes('scripts/author/__tests__/research-browser.test.mjs'));
+    assert.ok(!article.includes('scripts/author/__tests__/research-browser.test.mjs'));
+});
+
+test('race desk diagnostics upload only after failure in full checks', () => {
+    for (const [id, name] of [['modules', 'Upload Race Desk navigation diagnostics'], ['artifact', 'Upload Grand Prix pilot diagnostics']]) {
+        assert.match(step(id, name), /if: \$\{\{ failure\(\) && steps\.changes\.outputs\.content_only != 'true' \}\}/);
+    }
 });
 
 test('PRs restore the same image cache key deployment saves, and never save one', () => {
