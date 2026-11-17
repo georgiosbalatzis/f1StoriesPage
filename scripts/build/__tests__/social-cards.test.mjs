@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
 import { boundaryDelta } from '../brand-assets.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -45,7 +44,7 @@ function assertLayout(layout, minTop = 150) {
 
 test('home card preserves the original outside the wordmark patch', async () => {
     const { data, layout } = await renderSocialCard({ home: true });
-    const original = execFileSync('git', ['-C', root, 'show', 'fd063a403:images/social/home-6aadb4e1bf315dbb3090.jpg']);
+    const original = fs.readFileSync(path.join(root, 'scripts/build/assets/home-social-source.jpg'));
     const before = await sharp(original).removeAlpha().raw().toBuffer();
     const after = await sharp(data).removeAlpha().raw().toBuffer();
     let difference = 0, count = 0;

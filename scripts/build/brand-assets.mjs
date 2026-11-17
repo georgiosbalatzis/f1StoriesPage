@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const HOME_SOURCE_SHA256 = '6aadb4e1bf315dbb30905d5ea528169165b98b85bacec62729358eb7ff05d8e5';
@@ -67,7 +66,7 @@ await sharp(path.join(kit, '01-Original/F1-Stories-B-Original-Master.png')).resi
 await fs.copyFile(path.join(kit, '04-Favicons/F1-Stories-B-Favicon-Light-180.png'), `${out}/apple-touch-icon.png`);
 await fs.copyFile(path.join(kit, '04-Favicons/favicon-light.ico'), 'favicon.ico');
 
-const original = process.argv[3] ? await fs.readFile(process.argv[3]) : execFileSync('git', ['-C', repo, 'show', 'fd063a403:images/social/home-6aadb4e1bf315dbb3090.jpg']);
+const original = await fs.readFile(process.argv[3] || path.join(repo, 'scripts/build/assets/home-social-source.jpg'));
 await fs.mkdir('images/social', { recursive: true });
 await fs.writeFile('images/social/home-brand-b2.jpg', await makeHomeCard(original, path.join(kit, '03-Header/F1-Stories-B-Header-Light.png')));
 }
