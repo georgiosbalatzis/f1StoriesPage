@@ -61,7 +61,7 @@ test('both preparation modes retain validation and upload only validated dist', 
     assert.match(preparation, /run: npm run build:public/);
     assert.match(preparation, /run: npm run quality:static/);
     assert.match(preparation, /run: npm run audit:runtime/);
-    assert.match(preparation, /npm run test:integration -- --site dist/);
+    assert.match(preparation, /npm run test:integration -- --deploy --site dist/);
     assert.match(preparation, /path: dist/);
     assert.ok(preparation.indexOf('run: npm run audit:runtime') < preparation.indexOf('name: Upload Pages artifact'));
     assert.ok(preparation.indexOf('npm run test:integration') < preparation.indexOf('name: Upload Pages artifact'));

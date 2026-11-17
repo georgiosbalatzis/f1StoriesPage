@@ -72,7 +72,7 @@ runs:
       shell: bash
       run: |
         node_modules/.bin/playwright-core install --with-deps chromium
-        npm run test:integration -- --site dist --reports .build/priority6/reports
+        npm run test:integration -- --deploy --site dist --reports .build/priority6/reports
 
     - name: Verify Race Desk navigation before publication
       if: steps.assembly.outputs.mode != 'ARTICLE_FAST_PATH'

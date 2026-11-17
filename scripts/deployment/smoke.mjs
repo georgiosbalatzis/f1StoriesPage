@@ -7,9 +7,11 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import sharp from 'sharp';
+import { smokePhases } from './smoke-phases.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
+const phases = smokePhases(args);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const site = path.resolve(option('--site') || '.build/priority6/site');
 const reports = path.resolve(option('--reports') || '.build/priority6/reports');
@@ -39,7 +41,7 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 const executablePath = process.env.CHROME_PATH || (fs.existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome') ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined);
 const browser = await chromium.launch({ executablePath, headless: true, args: ['--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const failures = [];
-const results = { origin, directLoads: [], themes: [], navigation: [], visuals: [], performance: [], accessibility: [], flows: [] };
+const results = { mode: phases.mode, origin, directLoads: [], themes: [], navigation: [], visuals: [], performance: [], accessibility: [], flows: [] };
 if (option('--flow-report')) {
     const previous = JSON.parse(fs.readFileSync(option('--flow-report')));
     results.flows = JSON.parse(JSON.stringify(previous.flows).replaceAll(previous.origin, origin));
@@ -96,8 +98,7 @@ async function createPage(os = 'light', width = 1440) {
     return { context, page };
 }
 
-// settle: keep the old fixed 900 ms for checks that follow asynchronous work after the ready selector
-// (lazy chunks, Standings' late link enhancement, the worker cleanup); other loads skip it unless controlled.
+// Some lazy chunks and the retired-worker reload have no completion marker yet.
 async function open(page, pathname, { settle = false } = {}) {
     const response = await page.goto(origin + pathname, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200, pathname);
@@ -107,6 +108,7 @@ async function open(page, pathname, { settle = false } = {}) {
     // when a service worker controls it. Uncontrolled pages cannot reload, so only controlled ones wait it out.
     // A context destroyed mid-check means that reload has started.
     if (settle || await page.evaluate(() => !!navigator.serviceWorker?.controller).catch(() => true)) {
+        // shortcut: fixed wait, no readiness signal; replace when worker reload and lazy chunks expose one.
         await page.waitForTimeout(900);
         await page.locator(readySelector(pathname)).first().waitFor();
     }
@@ -133,7 +135,7 @@ const products = [ ['main', '/', '/'], ['grid', '/standings/', '/standings/'], [
 try {
     if (!args.includes('--visual-only') && !args.includes('--external-only')) {
     // Preference is set through Main's UI, then carried naturally by same-origin navigation.
-    for (const os of ['light', 'dark']) {
+    if (phases.themes) for (const os of ['light', 'dark']) {
         const { context, page } = await createPage(os);
         await open(page, '/');
         for (const mode of ['light', 'dark', 'auto']) {
@@ -232,6 +234,7 @@ try {
     assert.equal(new URL(page.url()).searchParams.get('lap'), '52');
     results.flows.push({ compatibilityRedirect: 'query/hash preserved', invalidNestedPaths: 'root 404' });
 
+    if (phases.fixtureFlows) {
     for (const tab of ['telemetry', 'energy', 'trackmap', 'positions', 'intervals', 'tires', 'radio', 'incidents', 'weather', 'broadcast']) {
         await open(page, '/telemetry/' + telemetryQuery.replace('tab=telemetry', 'tab=' + tab), { settle: true });
         results.flows.push({ lazyTelemetryTab: tab, loaded: true });
@@ -266,7 +269,7 @@ try {
     assert.equal(await dialog.count(), 0);
     results.flows.push({ ghostEmbed, dialogEscape: true });
     await open(page, '/ghostcar/' + ghostQuery + '&tv=3d');
-    await page.waitForFunction(() => window.__ghostcar3d?.ready, { timeout: 30000 });
+    await page.waitForFunction(() => window.__ghostcar3d?.ready, null, { timeout: 30000 });
     const geometry = await page.evaluate(() => ({ triangles: window.__ghostcar3d.info().render.triangles, calls: window.__ghostcar3d.info().render.calls }));
     assert.ok(geometry.triangles > 0);
     assert.ok(await page.locator('canvas').count());
@@ -291,7 +294,9 @@ try {
     assert.ok(csv.toString().includes('Ποντάρισμα (€)'));
     results.flows.push({ betcastShare, betcastEmbed, csvFilename: download.suggestedFilename(), csvRows: csv.toString().trim().split('\n').length - 1 });
 
+    }
     // TYRES: race and season selection move between prerendered pages that also load directly.
+    if (phases.tyresFlows) {
     await open(page, tyresRace);
     await page.locator('#race').selectOption({ label: await page.locator('#race option').filter({ hasText: 'Miami' }).first().textContent() });
     await page.waitForURL(url => url.pathname === '/tyres/2026/miami/');
@@ -320,6 +325,7 @@ try {
     await page.locator('#canvas-host.has-3d').waitFor({ timeout: 30000 });
     results.flows.push({ tyresEmbed, tyres3D: { app: true, embed: true }, modelUrl: '/tyres/models/f1car.glb' });
 
+    }
     // Published articles embed Telemetry and Ghost Car; assembly makes those frames same-origin.
     for (const article of ['/blog-module/blog-entries/20260329G/article.html', '/blog-module/blog-entries/20260331J/article.html']) {
         await open(page, article);
@@ -367,6 +373,7 @@ try {
         await page.evaluate(() => document.fonts.ready);
         const unavailableFonts = await settleFonts(page);
         await page.mouse.move(0, 899);
+        // shortcut: fixed wait, no readiness signal; replace when visual components expose one.
         await page.waitForTimeout(1800);
         if (name === 'main') {
             await page.waitForLoadState('networkidle');
@@ -382,8 +389,9 @@ try {
             servedRoot = path.resolve(baseline);
             await open(page, oldPath + query);
             await settleFonts(page);
-        await page.mouse.move(0, 899);
-        await page.waitForTimeout(1800);
+            await page.mouse.move(0, 899);
+            // shortcut: fixed wait, no readiness signal; replace when visual components expose one.
+            await page.waitForTimeout(1800);
             if (name === 'main') {
                 await page.waitForLoadState('networkidle');
                 await page.locator('#hero-image').evaluate(image => image.decode());
@@ -420,19 +428,24 @@ try {
     // Exercise all BetCast visualizations and generated embeds from a foreign publisher origin.
     if (!args.includes('--visual-only') && !option('--product')) {
         const { context, page } = await createPage();
+        if (phases.fixtureFlows) {
         await open(page, '/betcast/' + betcastQuery);
         const visualizations = await page.locator('#chart-select option').evaluateAll(options => options.map(o => o.value));
         for (const viz of visualizations) {
             await page.locator('#chart-select').selectOption(viz);
+            // shortcut: fixed wait, no readiness signal; replace when BetCast exposes one
             await page.waitForTimeout(150);
         }
         results.flows.push({ application: 'betcast', visualizations: visualizations.length });
+        }
         const snippets = [
             ['telemetry', results.flows.find(flow => flow.telemetryEmbed)?.telemetryEmbed],
             ['ghostcar', results.flows.find(flow => flow.ghostEmbed)?.ghostEmbed],
             ['tyres', results.flows.find(flow => flow.tyresEmbed)?.tyresEmbed],
             ['betcast', results.flows.find(flow => flow.betcastEmbed)?.betcastEmbed]
         ];
+        // Deploy produces only the TYRES snippet; full mode requires every producer.
+        const checkedSnippets = phases.fixtureFlows ? snippets : snippets.filter(([application]) => application === 'tyres');
         // Use a simulated public HTTPS app host for this third-party test. Chrome's
         // local-network access policy would otherwise block a public HTTPS publisher
         // from framing the loopback server; that is unrelated to production Pages.
@@ -443,7 +456,7 @@ try {
             const response = await context.request.get(origin + url.pathname + url.search);
             await route.fulfill({ response });
         });
-        for (const [application, snippet] of snippets) {
+        for (const [application, snippet] of checkedSnippets) {
             assert(snippet, `${application}: generated embed missing`);
             await context.route(publisher, route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>External publisher</title>' + snippet.replaceAll(origin, publicTestOrigin) }));
             await page.goto(publisher);
@@ -455,6 +468,7 @@ try {
             results.flows.push({ application, externalIframe: true, publisherOrigin: new URL(publisher).origin, productOrigin: publicTestOrigin });
             await context.unroute(publisher);
         }
+        if (phases.fixtureFlows) {
         // BetCast obeys host-theme messages only from the f1-stories.gr article origin; the retired domain is refused.
         await context.route('https://f1-stories.gr/**', async route => {
             const url = new URL(route.request().url());
@@ -469,7 +483,11 @@ try {
             const bodyClass = () => frame.locator('body').evaluate(body => body.className);
             const before = await bodyClass();
             await page.evaluate(() => document.getElementById('frame').contentWindow.postMessage({ type: 'betcast:theme', theme: 'dark' }, 'https://f1-stories.gr'));
-            await page.waitForTimeout(500);
+            if (trusted) await frame.locator('body.dark-mode').waitFor({ timeout: 30000 });
+            else {
+                // shortcut: fixed wait, no readiness signal; replace when rejected host messages expose one.
+                await page.waitForTimeout(500);
+            }
             const after = await bodyClass();
             assert.match(before, /light-mode/, `${parent}: light before the host message`);
             assert.equal(/dark-mode/.test(after), trusted, `${parent}: host theme ${trusted ? 'accepted' : 'refused'}`);
@@ -477,6 +495,7 @@ try {
             await context.unroute(probe);
         }
         await context.unroute('https://f1-stories.gr/**');
+        }
         for (const invalid of ['/__invalid__/', '/telemetry/__invalid__/', '/ghostcar/__invalid__/', '/tyres/__invalid__/', '/tyres/2026/__invalid__/', '/betcast/__invalid__/']) assert.equal((await context.request.get(origin + invalid)).status(), 404);
         await context.close();
     }
@@ -490,5 +509,5 @@ try {
     server.closeAllConnections();
     await new Promise(resolve => server.close(resolve));
 }
-console.log(JSON.stringify({ origin, themes: results.themes.length, directLoads: results.directLoads.length, navigation: results.navigation.length, screenshots: results.visuals.length, failures }, null, 2));
+console.log(JSON.stringify({ mode: phases.mode, origin, themes: results.themes.length, directLoads: results.directLoads.length, navigation: results.navigation.length, screenshots: results.visuals.length, failures }, null, 2));
 if (failures.length) process.exitCode = 1;
