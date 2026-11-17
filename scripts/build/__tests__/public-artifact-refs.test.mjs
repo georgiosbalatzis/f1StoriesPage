@@ -204,7 +204,7 @@ function cliFixture(t) {
     // The committed disabled newsletter config: the validator rejects anything else.
     write(root, 'data/audience/newsletter.v1.json', fs.readFileSync(new URL('../../../data/audience/newsletter.v1.json', import.meta.url)));
     write(root, 'scripts/build/security-policy.mjs', fs.readFileSync(new URL('../security-policy.mjs', import.meta.url)));
-    for (const module of ['snapshot.mjs', 'editorial-model.mjs']) {
+    for (const module of ['snapshot.mjs', 'snapshot-parity.mjs', 'editorial-model.mjs']) {
         write(root, `scripts/intelligence/${module}`, fs.readFileSync(new URL(`../../intelligence/${module}`, import.meta.url)));
     }
     write(root, 'blog-module/search-destinations.js', fs.readFileSync(new URL('../../../blog-module/search-destinations.js', import.meta.url)));
