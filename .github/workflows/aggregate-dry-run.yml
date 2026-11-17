@@ -1,7 +1,7 @@
 name: Ecosystem acceptance
 
 # Pre-merge assembled-site browser acceptance: integration smoke, Race Desk navigation and Grand Prix pages.
-# Deploys run smoke, navigation and the Grand Prix data-identity subset; full visual and accessibility matrices run here pre-merge.
+# The full Grand Prix visual matrix runs in Site Quality on dist; this workflow runs the assembled identity subset.
 on:
   workflow_dispatch:
   pull_request:
@@ -56,8 +56,8 @@ jobs:
         run: npm run test:integration -- --site "$SITE" --reports "$REPORTS"
       - name: Race Desk navigation on the assembled artifact
         run: npm run test:race-desk:browser -- --site "$SITE" --assembled --reports "$REPORTS/race-desk"
-      - name: Grand Prix pages on the assembled artifact
-        run: npm run test:race-desk:hubs -- --site "$SITE" --assembled --reports "$REPORTS/race-desk-gp"
+      - name: Grand Prix assembled identity subset (full visual matrix in Site Quality on dist)
+        run: npm run test:race-desk:hubs -- --site "$SITE" --deploy --assembled --reports "$REPORTS/race-desk-gp"
       # The gates build-pages runs on dist once aggregation is enabled, on this aggregate; kept in step by a test.
       - name: Publisher gates on the aggregate
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}

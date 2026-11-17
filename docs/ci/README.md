@@ -45,7 +45,7 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 
 - Site Quality builds `dist/` in each suite job (up to four parallel builds). It's the price of latency: every suite sees the
   built tree it saw in the old single job (Sol review: identical test counts did not prove identical inputs).
-- Race Desk navigation and fast GP identity checks run on deploy; the full GP visual and accessibility matrix runs in Site Quality and Ecosystem acceptance before merge.
+- Race Desk navigation and fast GP identity checks run on deploy and in Ecosystem acceptance on the assembled artifact; the full GP visual and accessibility matrix runs in Site Quality on dist before merge.
 - `test:deployment` runs in Site Quality and the dry run (1 s); the dry run can also be dispatched alone.
 - The aggregate installs main twice (`setup` and the snapshot's `npm ci`, ~8 s each). The snapshot install is part of the
   hermetic release build.

@@ -365,13 +365,15 @@ test('the dry run cannot publish, and the publisher never builds a rehearsal', (
 test('the dry run runs every gate the publisher runs on an enabled aggregate', () => {
     const publisher = read('.github/actions/build-pages/action.yml');
     const dryRun = read('.github/workflows/aggregate-dry-run.yml');
+    const quality = read('.github/workflows/quality.yml');
     const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
     assert.equal(gates.length, 4);
     assert.match(publisher, /enabled == 'true' && steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'[\s\S]*?npm run test:integration/);
     assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:browser -- [^\n]+/);
     assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:hubs -- [^\n]+--deploy/);
-    assert.match(dryRun, /run: npm run test:race-desk:hubs -- [^\n]+--assembled[^\n]*/);
-    assert.doesNotMatch(dryRun, /run: npm run test:race-desk:hubs [^\n]*--deploy/);
+    assert.match(dryRun, /run: npm run test:race-desk:hubs -- [^\n]*--deploy\s+--assembled(?:\s|$)/);
+    assert.match(quality, /artifact:[\s\S]*?- name: Verify static Grand Prix pilot pages\n\s+if: \$\{\{ steps\.changes\.outputs\.content_only != 'true' \}\}\n\s+run: npm run test:race-desk:hubs -- --site dist --reports [^\n]+/);
+    assert.doesNotMatch(quality, /run: npm run test:race-desk:hubs [^\n]*--deploy/);
     for (const suite of ['test:integration', 'test:race-desk:browser', 'test:race-desk:hubs']) assert.ok(dryRun.includes(`npm run ${suite}`));
     for (const filter of ['scripts/race-desk/**', 'data/race-desk/**', 'scripts/build/race-desk-*.mjs']) assert.ok(dryRun.includes(filter));
     for (const gate of gates) assert.ok(dryRun.includes(`gate ${gate}`), `dry run lacks: ${gate}`);
