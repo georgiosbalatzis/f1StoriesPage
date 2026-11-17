@@ -23,6 +23,7 @@ or API is involved: GitHub Pages serves one encrypted file, and the browser decr
     commit    .github/actions/commit-and-push (paths: that file only)
   deploy   (actions: write) only after a changed commit
     dispatch  deploy-pages.yml on main → its build checks out main after the push → validated dist/ → Pages
+deploy   keyless artifact envelope validation (48-hour staleness warns); deploy smoke checks the real locked page
 browser  /dashboard/ fetches /dashboard/data/snapshot.json, the user types the key, Web Crypto decrypts in memory
 ```
 
@@ -238,7 +239,7 @@ Do these in order. Nothing in this PR performs them.
 
 - Stop billing runs: a PR setting `ENABLED = false`, or `gh workflow disable intelligence-snapshot.yml`.
 - Revoke access: remove the `workloadIdentityUser` binding (or disable the provider), and the two BigQuery grants.
-- Withdraw the data: commit the deletion of `dashboard/data/snapshot.json` (the page shows its empty state after the
+- Withdraw the data: commit the deletion of `dashboard/data/snapshot.json` (the deploy check accepts a missing artifact only when the source is also absent, and the page shows its empty state after the
   next deploy) and rotate the key. Earlier envelopes remain in Git history (see key rotation above).
 
 ## First production refresh

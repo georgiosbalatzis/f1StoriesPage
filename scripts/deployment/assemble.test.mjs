@@ -366,8 +366,8 @@ test('the dry run runs every gate the publisher runs on an enabled aggregate', (
     const publisher = read('.github/actions/build-pages/action.yml');
     const dryRun = read('.github/workflows/aggregate-dry-run.yml');
     const quality = read('.github/workflows/quality.yml');
-    const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
-    assert.equal(gates.length, 4);
+    const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+|node scripts\/intelligence\/snapshot\.mjs verify [^\n]+)/g)].map(match => match[1].trim());
+    assert.equal(gates.length, 5);
     assert.match(publisher, /enabled == 'true' && steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'[\s\S]*?npm run test:integration -- [^\n]*--deploy(?:\s|$)/);
     assert.match(dryRun, /run: npm run test:integration -- [^\n]+/);
     assert.doesNotMatch(dryRun, /run: npm run test:integration [^\n]*--deploy/);

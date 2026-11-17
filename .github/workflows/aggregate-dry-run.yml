@@ -66,6 +66,7 @@ jobs:
           set -o pipefail
           status=0
           gate() { echo "::group::$*"; "$@" 2>&1 | tee -a "$REPORTS/publisher-gates.log" || { status=1; echo "FAILED: $*" | tee -a "$REPORTS/publisher-gates.log"; }; echo "::endgroup::"; }
+          gate node scripts/intelligence/snapshot.mjs verify dist/dashboard/data/snapshot.json
           gate npm run quality:static
           gate npm run qa:media
           gate node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs scripts/build/__tests__/social-cards-release.test.mjs

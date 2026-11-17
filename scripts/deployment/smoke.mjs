@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import sharp from 'sharp';
 import { smokePhases } from './smoke-phases.mjs';
+import { SNAPSHOT_PATH, snapshotArtifact } from '../intelligence/snapshot-parity.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -17,6 +18,8 @@ const site = path.resolve(option('--site') || '.build/priority6/site');
 const reports = path.resolve(option('--reports') || '.build/priority6/reports');
 const baseline = option('--baseline');
 let servedRoot = site;
+const hasSnapshot = snapshotArtifact(path.join(site, SNAPSHOT_PATH)) !== null;
+let expectedSnapshot404s = 0;
 fs.mkdirSync(reports, { recursive: true });
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp', '.ico': 'image/x-icon', '.avif': 'image/avif', '.glb': 'model/gltf-binary' };
 const server = http.createServer((req, res) => {
@@ -56,7 +59,7 @@ const betcastQuery = '?viz=dataTable&from=2&to=4&week=3&cmpA=2&cmpB=3';
 const tyresRace = '/tyres/2026/austin/';
 const tyresEmbeds = ['/tyres/embed/el/2026/austin/compounds/', '/tyres/embed/en/2026/austin/compounds/', '/tyres/embed/el/2026/season/', '/tyres/embed/en/2026/austin/3d/'];
 // What a loaded page shows: embeds have no masthead or h1.
-const readySelector = pathname => pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : pathname.startsWith('/tyres/embed/') ? '.e-root' : 'h1';
+const readySelector = pathname => pathname === '/dashboard/' ? `[data-state="${hasSnapshot ? 'locked' : 'empty'}"]` : pathname.includes('/ghostcar/') && pathname.includes('embed=1') ? '.embed' : pathname.startsWith('/tyres/embed/') ? '.e-root' : 'h1';
 
 async function createPage(os = 'light', width = 1440) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: os, reducedMotion: 'reduce' });
@@ -91,7 +94,10 @@ async function createPage(os = 'light', width = 1440) {
         Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
     }, betcast.data);
     const page = await context.newPage();
-    page.on('response', response => { if (response.url().startsWith(origin) && response.status() >= 400 && !response.url().includes('__invalid__')) failures.push({ url: response.url(), status: response.status() }); });
+    page.on('response', response => {
+        if (!hasSnapshot && response.url() === origin + '/dashboard/data/snapshot.json' && response.status() === 404 && expectedSnapshot404s++ === 0) return;
+        if (response.url().startsWith(origin) && response.status() >= 400 && !response.url().includes('__invalid__')) failures.push({ url: response.url(), status: response.status() });
+    });
     page.on('pageerror', error => failures.push({ page: page.url(), error: error.message }));
     // Content Security Policy refusals only reach the console; any of them is a release defect.
     page.on('console', message => { if (message.type() === 'error' && /Content Security Policy|Refused to (?:load|execute|frame|connect|apply)/i.test(message.text())) failures.push({ page: page.url(), csp: message.text().slice(0, 300) }); });
@@ -196,6 +202,18 @@ try {
         await client.detach();
         results.directLoads.push({ pathname, first, refreshed: page.url(), hardReload: true });
     }
+    // Observe the dashboard's own request and parser; no key or synthetic snapshot is supplied.
+    const snapshotResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/dashboard/data/snapshot.json');
+    await open(page, '/dashboard/');
+    const snapshot = await snapshotResponse;
+    assert.equal(snapshot.status(), hasSnapshot ? 200 : 404, 'dashboard snapshot');
+    if (hasSnapshot) {
+        assert.match(snapshot.headers()['content-type'] || '', /application\/json/i);
+        JSON.parse(await snapshot.text());
+    }
+    const dashboardState = hasSnapshot ? 'locked' : 'empty';
+    await page.locator(`[data-state="${dashboardState}"]`).waitFor({ state: 'visible' });
+    results.directLoads.push({ pathname: '/dashboard/', snapshot: snapshot.status(), state: dashboardState });
     // Navigation targets and current Race Desk item; actual clicks for each requested edge.
     const edges = [['/', '/standings/'], ['/', '/telemetry/'], ['/', '/ghostcar/'], ['/', '/tyres/'], ['/', '/betcast/'], ['/standings/', '/telemetry/'], ['/standings/', '/ghostcar/'], ['/standings/', '/tyres/'], ['/telemetry/', '/standings/'], ['/telemetry/', '/ghostcar/'], ['/telemetry/', '/tyres/'], ['/ghostcar/', '/standings/'], ['/ghostcar/', '/telemetry/'], ['/ghostcar/', '/tyres/'], ['/tyres/', '/standings/'], ['/tyres/', '/telemetry/'], ['/tyres/', '/ghostcar/'], ['/tyres/', '/betcast/'], ['/tyres/', '/'], ['/betcast/', '/']];
     for (const [from, to] of edges) {
