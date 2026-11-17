@@ -2,7 +2,7 @@
 
 Certification baseline: main `4301e13e` (R-07B), audited 2026-11-02. Fixes: #426 (R-09A), #427 (R-09B). This replaces the earlier gap inventory written at `2fe5679c`.
 
-Evidence labels: **LOCAL** (coordinator machine), **CI** (Site Quality / Ecosystem dry run on the PR head), **PROD** (https://f1-stories.gr). A dry run is a read-only rehearsal, not a deployment; a successful Pages job alone does not certify every route.
+Evidence labels: **LOCAL** (coordinator machine), **CI** (Site Quality / Ecosystem acceptance on the PR head), **PROD** (https://f1-stories.gr). A dry run is a read-only rehearsal, not a deployment; a successful Pages job alone does not certify every route.
 
 ## Verdict
 
@@ -12,8 +12,8 @@ Evidence labels: **LOCAL** (coordinator machine), **CI** (Site Quality / Ecosyst
 
 | Revision | Evidence |
 | --- | --- |
-| `4c262bda` (#426 head) | CI Site Quality [41526363305](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363305) success; Ecosystem dry run [41526363418](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363418) success |
-| `68292154` (#427 head) | CI Site Quality [41526370404](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370404) success; Ecosystem dry run [41526370150](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370150) success; LOCAL `test:race-desk:hubs`, `test:consent` pass |
+| `4c262bda` (#426 head) | CI Site Quality [41526363305](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363305) success; Ecosystem acceptance [41526363418](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526363418) success |
+| `68292154` (#427 head) | CI Site Quality [41526370404](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370404) success; Ecosystem acceptance [41526370150](https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/41526370150) success; LOCAL `test:race-desk:hubs`, `test:consent` pass |
 | `3327974d` (main + #426 + #427 + this document) | LOCAL `build:public`, `build:check`, `test:race-desk` 245/245, `test:deployment` 66/66, `test:security` 33/33, `test:standings` 21/21, `test:blog` 437/437, `test:author` 125/125, `validate:race-desk`, `quality:static`, `perf:budget` (budgets unchanged), `test:consent` 15/15, `test:race-desk:hubs`, `test:race-desk:browser`, `qa:edition`. Independent Codex Sol (xhigh) review: GO WITH EXPLICIT NONBLOCKING LIMITATIONS; its four documentation corrections are applied here. |
 
 Production verification after the merges is recorded in the release PRs, not in this file.
@@ -59,7 +59,7 @@ Checked and sound (no defect reproduced): workflow trust boundaries (no `pull_re
 
 ### Every Race Desk / deployment PR
 1. Site Quality "Quality gates" green on the exact head (modules, built, artifact and browser jobs).
-2. Ecosystem dry run green when `scripts/deployment/**`, the Pages actions or workflows change, or when generated hubs change (dispatch with `gh workflow run aggregate-dry-run.yml --ref <branch>`).
+2. Ecosystem acceptance green when `scripts/deployment/**`, the Pages actions or workflows change, or when generated hubs change (dispatch with `gh workflow run aggregate-dry-run.yml --ref <branch>`).
 3. Locally, when hubs change: `npm run build:public` (stamped output; never commit unstamped `node scripts/build/race-desk-hubs.mjs` output), `npm run build:check`, `npm run test:race-desk`, `npm run test:race-desk:hubs`.
 4. Never run `perf:budget:update`; budget changes need an explicit owner decision.
 

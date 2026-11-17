@@ -181,7 +181,7 @@ preserving query and hash, and a visible link. That is a client-side transition,
 not an HTTP redirect. The old deployments stay untouched until then.
 
 **Activation** (all must hold): reviewed upstream commits merged and pinned;
-`releaseReady:true`; the manual Ecosystem dry run passes on CI (build, 4 tool roots,
+`releaseReady:true`; the manual Ecosystem acceptance passes on CI (build, 4 tool roots,
 canonicals, sitemap, assets, freshness, browser smoke); then `enabled:true` in its own
 reviewed commit, published by the existing Deploy Pages workflow.
 
@@ -218,12 +218,11 @@ Earlier evidence (GitHub-hosted, ubuntu24 20261023.334.3, Node 22.23.3 + 24.21.0
   the same with the three open fix PRs pinned on a throwaway branch (evidence
   only): **every step passes**, publisher gates included; 5,240 files, 372.0 MB.
 
-**Hosted dry run.** `Ecosystem dry run` (`aggregate-dry-run.yml`; manual, and on
-PRs that change the deployment) on `ubuntu-latest` with Node 22 and the lock's
+**Hosted dry run.** `Ecosystem acceptance` (`aggregate-dry-run.yml`; manual, and on
+PRs that change deployment or Race Desk code and data) on `ubuntu-latest` with Node 22 and the lock's
 Node 24, Chromium plus system libraries: `build.mjs --rehearsal` (the pinned
 release build, allowed before `releaseReady`, never used by a publisher), public
-URL integrity, the browser suite, then every gate `build-pages` runs on an
-enabled aggregate, a live read-only API probe (informational) and a step summary.
+URL integrity, assembled integration and Race Desk browser suites including the full GP visual and accessibility matrix, publisher gates and a step summary. Deploys run integration smoke, Race Desk navigation and the fast GP identity subset.
 It uploads reports only; it has no Pages, OIDC or write permission.
 
 **Pinned sources** (merged `main` commits; each tree identical to its reviewed PR
@@ -236,7 +235,7 @@ head, directly on the previous pin): Telemetry
 Dependabot bumps #17/#18, stays at the pin until re-pinned and re-validated.
 
 **Re-pinning later:** pin only merged commits whose tree equals the reviewed head,
-and require a green `Ecosystem dry run` on that commit before marking readiness.
+and require a green `Ecosystem acceptance` on that commit before marking readiness.
 
 **Freshness evidence:** three hosted builds with the same TYRES data commit
 (`c780d95f`, digest `02bc0a5e5135` before refresh) each refreshed schedules and

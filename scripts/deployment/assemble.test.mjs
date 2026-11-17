@@ -367,17 +367,14 @@ test('the dry run runs every gate the publisher runs on an enabled aggregate', (
     const dryRun = read('.github/workflows/aggregate-dry-run.yml');
     const gates = [...publisher.matchAll(/run: (npm run (?:quality:static|qa:media|audit:runtime)|node --test scripts\/build\/__tests__\/[^\n]+)/g)].map(match => match[1].trim());
     assert.equal(gates.length, 4);
+    assert.match(publisher, /enabled == 'true' && steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'[\s\S]*?npm run test:integration/);
+    assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:browser -- [^\n]+/);
+    assert.match(publisher, /if: steps\.assembly\.outputs\.mode != 'ARTICLE_FAST_PATH'\n\s+shell: bash\n\s+run: npm run test:race-desk:hubs -- [^\n]+--deploy/);
+    assert.match(dryRun, /run: npm run test:race-desk:hubs -- [^\n]+--assembled[^\n]*/);
+    assert.doesNotMatch(dryRun, /run: npm run test:race-desk:hubs [^\n]*--deploy/);
+    for (const suite of ['test:integration', 'test:race-desk:browser', 'test:race-desk:hubs']) assert.ok(dryRun.includes(`npm run ${suite}`));
+    for (const filter of ['scripts/race-desk/**', 'data/race-desk/**', 'scripts/build/race-desk-*.mjs']) assert.ok(dryRun.includes(filter));
     for (const gate of gates) assert.ok(dryRun.includes(`gate ${gate}`), `dry run lacks: ${gate}`);
-});
-
-test('the dry run reports every endpoint the tools read at runtime, from the new origin', async () => {
-    const { ENDPOINTS, readable } = await import('./live-read.mjs');
-    assert.deepEqual(ENDPOINTS.map(([, , url]) => new URL(url).host), ['api.openf1.org', 'api.multiviewer.app', 'api.jolpi.ca', 'docs.google.com']);
-    assert.equal(readable(200, '*'), true);
-    assert.equal(readable(200, 'https://f1-stories.gr'), true);
-    assert.equal(readable(200, 'https://f1stories.gr'), false);
-    assert.equal(readable(429, '*'), false);
-    assert.equal(readable(500, '*'), false);
 });
 
 test('dirty or mismatched release sources are refused', () => {

@@ -2,7 +2,7 @@ name: TYRES pin update
 
 # Follows Tyres' Pirelli check (Wed + Thu 23:59 Athens), which merges new race data into Tyres main.
 # When Tyres main moved past the pinned revision, this opens the pin PR, runs Site Quality and the
-# Ecosystem dry run on it, merges when both pass and deploys. A failing check leaves the PR open.
+# Ecosystem acceptance on it, merges when both pass and deploys. A failing check leaves the PR open.
 on:
   schedule:
     # Thu + Fri 01:59 Athens (EET); 02:59 during EEST.
@@ -60,7 +60,7 @@ jobs:
           git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$branch"
           if ! gh pr view "$branch" --json state -q .state 2>/dev/null | grep -q OPEN; then
             gh pr create --head "$branch" --base main --title "chore(tyres): pin Tyres ${new:0:7}" \
-              --body "Automated TYRES pin bump ${old:0:7} → ${new:0:7} ([changes](https://github.com/georgiosbalatzis/Tyres/compare/$old...$new)). Merged automatically when Site Quality and the Ecosystem dry run pass."
+              --body "Automated TYRES pin bump ${old:0:7} → ${new:0:7} ([changes](https://github.com/georgiosbalatzis/Tyres/compare/$old...$new)). Merged automatically when Site Quality and the Ecosystem acceptance pass."
           fi
           {
             echo "branch=$branch"

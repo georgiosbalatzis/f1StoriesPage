@@ -105,7 +105,7 @@ and the pins updated. Main local HEAD is `9972e16d…`; remote Main advanced to
 `f1687304…` during this audit. Reconcile that drift before release without losing
 local work. Child current/pinned HEADs are `69d5c7eb…`, `2b5d2d10…`, `14ab8a1a…`.
 
-Recommended first release: owner-reviewed pins, manual Ecosystem dry run, then
+Recommended first release: owner-reviewed pins, manual Ecosystem acceptance, then
 explicit activation and Main's existing Deploy Pages workflow. The reusable Main
 publisher assembles whenever enabled, so future editorial maintenance cannot
 replace the aggregate with Main-only content. A separate dry-run workflow has
@@ -277,7 +277,7 @@ Ordered cutover checklist (future, **not executed**):
 2. Update `scripts/deployment/sources.json` to exact committed migration SHAs;
    set `releaseReady:true`, retain `enabled:false` until cutover authorization.
    Record Main's exact release checkout, lockfiles and CI Node 22 toolchain.
-3. Run the full pinned Ecosystem dry run (build + safety tests + single-origin
+3. Run the full pinned Ecosystem acceptance (build + safety tests + single-origin
    browser integration); review its manifest/collision/visual evidence. Local Node
    26 rehearsal is not a substitute for the committed Node 22 CI run.
 4. Immediately before cutover, record Pages GET responses/domain/HTTPS/source,
