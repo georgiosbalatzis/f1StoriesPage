@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261117F",
+      "title": "Η παγίδα των 2.240 μέτρων",
+      "author": "F1 Stories Team",
+      "date": "2026-11-17",
+      "dateISO": "2026-11-17",
+      "displayDate": "17 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261117F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261117F/1.webp",
+      "excerpt": "Γιατί στο Μεξικό οι ομάδες ανοίγουν τα μονοθέσια από πίσω",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261117F/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Technical",
+        "Aerodynamic",
+        "Mexico GP"
+      ],
+      "wordCount": 1380,
+      "readingTime": "7 min",
+      "imageWidth": 547,
+      "imageHeight": 365,
+      "backgroundImageWidth": 547,
+      "backgroundImageHeight": 365,
+      "inputDigest": "f9d3d30ac90bef54a52feb3d15bce6b84ffe296e6cdd908aa5592be1ad4619a1"
+    },
+    {
       "id": "20261117G",
       "title": "FW19: Το ταχύτερο μονοθέσιο που κυνηγούσε στο Jerez",
       "author": "Georgios Balatzis",
@@ -12045,5 +12076,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-17T07:42:03.004Z"
+  "lastUpdated": "2026-11-17T12:08:59.164Z"
 }

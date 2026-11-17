@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Mon, 16 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Η παγίδα των 2.240 μέτρων</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261117F/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261117F/article.html</guid>
+      <pubDate>Mon, 16 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Γιατί στο Μεξικό οι ομάδες ανοίγουν τα μονοθέσια από πίσω</description>
+      <category>Ανάλυση</category>
+      <dc:creator>F1 Stories</dc:creator>
+    </item>
+    <item>
       <title>FW19: Το ταχύτερο μονοθέσιο που κυνηγούσε στο Jerez</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261117G/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261117G/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Πρωταθλητής ή όχι ο Kimi μετά από αυτό το GP... Δεν το ξέρουμε. Όμως ξέρουμε σίγουρα ότι θα έχουμε μεγάλες μάχες.</description>
       <category>Στοίχημα</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Gp Usa: Από τον Moss και τον Bruce McLaren στους σημερινούς ήρωες.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261023G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261023G/article.html</guid>
-      <pubDate>Thu, 22 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Usa Grand Prix:Από τον Μος και τον Κλαρκ στον Χάμιλτον, τον Φερστάπεν. Σήμερα θα μιλήσουμε για την ιστορία ενός αγώνα που άλλαξε πολλές φορές έδρα…</description>
-      <category>Ιστορία</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>
