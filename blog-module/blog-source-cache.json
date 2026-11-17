@@ -54,13 +54,13 @@
         "2006",
         "248"
       ],
-      "wordCount": 1856,
+      "wordCount": 1852,
       "readingTime": "10 min",
       "imageWidth": 1600,
       "imageHeight": 803,
       "backgroundImageWidth": 1600,
       "backgroundImageHeight": 801,
-      "inputDigest": "1e8efd10831eced32f1c2e4dbd19d43ef099e35d639add757296f74bcf18461b"
+      "inputDigest": "378495c1718f00ad002ce7b94bc4099d2c9a648cc0e199e484861dba2338a500"
     },
     {
       "id": "20261116-2G",
@@ -12015,5 +12015,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-16T22:08:04.776Z"
+  "lastUpdated": "2026-11-17T06:38:24.671Z"
 }
