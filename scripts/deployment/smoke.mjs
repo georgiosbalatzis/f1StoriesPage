@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import sharp from 'sharp';
 import { smokePhases } from './smoke-phases.mjs';
+import { SNAPSHOT_PATH, snapshotArtifact } from '../intelligence/snapshot-parity.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -17,7 +18,7 @@ const site = path.resolve(option('--site') || '.build/priority6/site');
 const reports = path.resolve(option('--reports') || '.build/priority6/reports');
 const baseline = option('--baseline');
 let servedRoot = site;
-const hasSnapshot = fs.existsSync(path.join(site, 'dashboard/data/snapshot.json'));
+const hasSnapshot = snapshotArtifact(path.join(site, SNAPSHOT_PATH)) !== null;
 let expectedSnapshot404s = 0;
 fs.mkdirSync(reports, { recursive: true });
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp', '.ico': 'image/x-icon', '.avif': 'image/avif', '.glb': 'model/gltf-binary' };

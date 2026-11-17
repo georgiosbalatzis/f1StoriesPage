@@ -14,6 +14,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PARAMETERS, RUM_MODELS, queryParameters, readInputs, renderModel } from './editorial-model.mjs';
+import { SNAPSHOT_PATH, snapshotArtifact } from './snapshot-parity.mjs';
+export { SNAPSHOT_PATH } from './snapshot-parity.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -35,7 +37,6 @@ export const MAX_BYTES_BILLED = 400 * 1024 * 1024; // per query, enforced by Big
 export const DAILY_MAX_BYTES = 1600 * 1024 * 1024; // all queries of one refresh: planned by estimate, then by billed bytes
 // Keep the watchdog aligned with the dashboard's 48-hour stale notice (checked by the monitoring tests).
 export const STALE_MS = 48 * 60 * 60 * 1000;
-export const SNAPSHOT_PATH = 'dashboard/data/snapshot.json';
 export const ENVELOPE_FORMAT = 'f1s-dashboard-snapshot';
 export const PAYLOAD_FORMAT = 'f1s-dashboard-snapshot-payload';
 export const KEY_CHECK_LABEL = 'f1s-dashboard-snapshot-key-check-v1\u0000';
@@ -511,10 +512,8 @@ async function main(argv, env) {
             else if (env.PLAN_OUTCOME === 'failure' || env.REFRESH_OUTCOME === 'failure') summary.outcome = 'failure';
         } else if (command === 'verify') {
             if (rest.length !== 1) throw new Error('usage: snapshot.mjs verify <file>');
-            let text;
-            try { text = fs.readFileSync(rest[0], 'utf8'); }
-            catch (error) { if (error.code !== 'ENOENT') throw error; }
-            const result = text === undefined ? null : verifyEnvelope(text, now);
+            const artifact = snapshotArtifact(rest[0]);
+            const result = artifact === null ? null : verifyEnvelope(artifact.toString('utf8'), now);
             const message = result ? `Snapshot envelope valid: as_of ${result.header.asOf}, generated ${result.header.generatedAt}.${result.stale ? ' WARNING: older than 48 hours; refresh may be delayed.' : ''}`
                 : 'No dashboard snapshot deployed (withdrawn or not yet published).';
             console.log(message);

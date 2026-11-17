@@ -890,17 +890,32 @@ test('deploy verification rejects invalid and future envelopes and warns on stal
 });
 
 
-test('deploy verification permits only an absent snapshot file', () => {
+test('deploy verification requires source and artifact snapshot parity', () => {
     const root = tempRoot();
     try {
         const file = path.join(root, 'snapshot.json');
         const summary = path.join(root, 'summary');
+        const source = path.join(root, SNAPSHOT_PATH);
         const runVerify = () => spawnSync(process.execPath, [path.join(REPO_ROOT, 'scripts/intelligence/snapshot.mjs'), 'verify', file],
-            { encoding: 'utf8', env: { ...process.env, GITHUB_STEP_SUMMARY: summary } });
+            { cwd: root, encoding: 'utf8', env: { ...process.env, GITHUB_STEP_SUMMARY: summary } });
         const absent = runVerify();
         assert.equal(absent.status, 0, absent.stderr);
         assert.match(absent.stdout, /No dashboard snapshot deployed/);
         assert.match(fs.readFileSync(summary, 'utf8'), /No dashboard snapshot deployed/);
+        fs.mkdirSync(path.dirname(source), { recursive: true });
+        const now = new Date();
+        const valid = sealSnapshot({}, crypto.randomBytes(32), { generatedAt: now.toISOString(), window: snapshotWindow(now) });
+        fs.writeFileSync(source, valid);
+        const missing = runVerify();
+        assert.notEqual(missing.status, 0);
+        assert.match(missing.stderr, /snapshot present in source but missing from artifact/);
+        fs.writeFileSync(file, valid + '\n');
+        const mismatch = runVerify();
+        assert.notEqual(mismatch.status, 0);
+        assert.match(mismatch.stderr, /snapshot artifact bytes differ from source/);
+        fs.writeFileSync(file, valid);
+        assert.equal(runVerify().status, 0);
+        fs.writeFileSync(source, '');
         fs.writeFileSync(file, '');
         const empty = runVerify();
         assert.notEqual(empty.status, 0);
