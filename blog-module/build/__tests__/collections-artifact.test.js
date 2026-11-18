@@ -40,9 +40,9 @@ test('collection artifact checks enforce membership, order, sitemap and approved
     errors = [];
     validateDiscoveryGraph(errors, discovery, new Set(), { distRoot: root, approvedFiles: new Set(), approvedCollectionFiles: approvedFiles, today: options.today });
     assert.match(errors.join('\n'), /not an approved collection/);
-    // Sol re-review: an unquoted href with zero eligible collections must still be caught.
+    // an unquoted href with zero eligible collections must still be caught.
     for (const html of ['<a href=/blog-module/blog/collections/pending/>x</a>', '<a class=x href = /blog-module/blog/collections/>x</a>',
-        // Second re-review: `>` inside a quoted value, %-encoded and character-referenced paths.
+        // `>` inside a quoted value, %-encoded and character-referenced paths.
         '<a title=">" href = /blog-module/blog/collections/pending/>x</a>', '<a href = /blog-module/blog/%63ollections/pending/>x</a>',
         '<a href="&#47;blog-module/blog/collections/pending/">x</a>', '<a href="&#x2F;blog-module&#47;blog/collections/pending/">x</a>']) {
         const unquoted = newDiscovery();
@@ -57,7 +57,7 @@ test('collection artifact checks enforce membership, order, sitemap and approved
     assert.deepEqual(shadow.anchors.get('x.html'), ['index.html']);
 });
 
-// Sol final review counterexamples: unquoted/spaced attributes and URL suffixes must not pass.
+// unquoted/spaced attributes and URL suffixes must not pass.
 test('artifact checks reject unquoted noindex, spaced refresh and non-canonical member links', async t => {
     const { validateCollections } = await import('../../../scripts/build/validate-public-artifact.mjs');
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'collections-artifact-'));
@@ -82,7 +82,7 @@ test('artifact checks reject unquoted noindex, spaced refresh and non-canonical 
     assert.match(run(), /visible collection order does not match/);
 });
 
-// Sol third re-review: the validator must read links and robots as a browser would, or fail closed.
+// the validator must read links and robots as a browser would, or fail closed.
 test('tokenizer follows HTML parsing and the validator fails closed on what it cannot read', async t => {
     const { tags, pageIsIndexable } = require('../html-attributes');
     const { collectDiscovery, newDiscovery, validateDiscoveryGraph, validateCollections } = await import('../../../scripts/build/validate-public-artifact.mjs');
@@ -98,7 +98,7 @@ test('tokenizer follows HTML parsing and the validator fails closed on what it c
     // An unknown reference in an attribute that cannot change the decision is not a failure.
     assert.equal(pageIsIndexable(`<link rel=canonical href=${article('a')}><meta name=description content="Τέλος&hellip;">`, article('a')), true);
     assert.equal(linkErrors('<a title="&hellip;" href="/">x</a>'), '');
-    // Sol fourth re-review (nonblocking): a bare `&name=` in a URL is literal; `<!-->` closes the comment at once.
+    // a bare `&name=` in a URL is literal; `<!-->` closes the comment at once.
     assert.equal(tags('<a href="https://example.invalid/?x=1&foo=2">x</a>')[0].attrs.href, 'https://example.invalid/?x=1&foo=2');
     assert.deepEqual(tags('<a href="/?x=1&foo=2">x</a>')[0].unresolved, []);
     const canonicalA = article('a');

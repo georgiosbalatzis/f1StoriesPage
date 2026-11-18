@@ -170,11 +170,11 @@ test('contradictory duplicate pairs fail; multiple subjects in one article are l
     assert.throws(() => validate(data), /contradictory association/);
 });
 
-test('agent proposals cannot claim confirmed membership or approval', () => {
+test('unreviewed proposals cannot claim confirmed membership or approval', () => {
     const data = fixture();
     data.manifest.associations[0].role = 'primary';
     assert.throws(() => validate(data), /pending review cannot confirm/);
-    data.manifest.associations[0].review = { status: 'approved', kind: 'agent', by: 'automation', date: '2026-10-21' };
+    data.manifest.associations[0].review = { status: 'approved', kind: 'automation', by: 'automation', date: '2026-10-21' };
     assert.throws(() => validate(data), /human reviewer/);
 });
 

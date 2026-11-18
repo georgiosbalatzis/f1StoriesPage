@@ -57,7 +57,7 @@ Source of truth: [`data/audience/reading-journeys.v1.json`](../../data/audience/
 1. An editor adds or edits a journey as `draft` / `pending`, bumps `revised`, opens a PR. CI validates the structure.
 2. The reviewer reads the member articles in order and checks each transition sentence against the articles.
 3. To publish, the reviewer records **their own** approval: `status: "published"` and an approved `review` with their name,
-   the real date and the printed digest. Agents never record approvals; no approval is inherited from a collection, hub or
+   the real date and the printed digest. Approvals require a named human reviewer; no approval is inherited from a collection, hub or
    article review.
 4. `npm run journeys:validate -- --strict` must pass (it fails when a `published` journey would be withheld). The same PR
    commits the rebuilt member `article.html` files; `build:check` fails otherwise.
@@ -135,7 +135,7 @@ Feature acceptance (approved, accessible, correct) is separate from any claim of
 
 ## Pilot proposals
 
-Both `draft` / `pending`. Agent research proposals, **not approvals**. Members checked on 2026-11-03 against the
+Both `draft` / `pending`. Unreviewed research proposals, **not approvals**. Members checked on 2026-11-03 against the
 current article pages: published, indexable, self-canonical, not retired.
 
 ### 1. «McLaren MCL39 σε τέσσερα μέρη» — `mclaren-mcl39-se-tessera-meri`

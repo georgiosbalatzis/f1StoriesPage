@@ -62,8 +62,6 @@ images/avatars/Poulikidis.webp
 perf/visual-qa/
 /audit/
 
-# Local code-graph cache (graphify); regenerate with /graphify
-graphify-out/
 
 # Independent-source aggregate builds and local migration evidence
 .build/aggregate/

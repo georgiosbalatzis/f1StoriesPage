@@ -83,7 +83,7 @@ Source of truth: [`data/audience/race-gateways.v1.json`](../../data/audience/rac
    σε εξέλιξη); betting previews and opinion pieces named as such; editorial interpretation kept apart from recorded
    observations.
 3. To publish, the reviewer records **their own** approval: `status: "published"` and an approved `review` with their name,
-   the real date and the printed digest. Agents never record approvals. An R-05 association clearance, an A-02 collection
+   the real date and the printed digest. Approvals require a named human reviewer. An R-05 association clearance, an A-02 collection
    or A-03 journey approval does not approve gateway copy, order or interpretation.
 4. `npm run gateways:validate -- --strict` must pass (it fails when a `published` gateway would be withheld). The same PR
    commits the rebuilt hub `index.html` (tracked; `build:check` fails otherwise).

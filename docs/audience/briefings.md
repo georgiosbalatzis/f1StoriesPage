@@ -78,7 +78,7 @@ Procedure:
    No result, quote, statistic, ranking or claim that the linked articles do not support; betting and opinion pieces named
    as such; no audience or popularity claims.
 3. To publish, the reviewer records **their own** approval (`status: "published"`, their name, the real date, the printed
-   digest). Agents never record approvals; an approval of a collection, journey, gateway or article is not an approval of
+   digest). Approvals require a named human reviewer; an approval of a collection, journey, gateway or article is not an approval of
    an edition.
 4. `npm run briefings:validate -- --strict` must pass. The same PR commits the rebuilt generated pages under
    `blog-module/blog/briefing/` and the edition index; `build:check` fails otherwise.

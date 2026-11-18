@@ -29,7 +29,7 @@ The candidate scanner checks both tag scopes to build a review queue. A match in
 | Field | Meaning |
 | --- | --- |
 | `role` | Confirmed `primary`, `secondary`, `mention`, `excluded`, or `unresolved` |
-| `proposedRole` | Agent proposal while review is pending; never confirmed membership |
+| `proposedRole` | Unreviewed proposal; never confirmed membership |
 | `review` | `pending`, or `approved` with `kind: human`, `by` and ISO calendar `date` |
 | `discipline` | `f1`, `wec`, `wrc`, `motogp`, `other`, `mixed`, or `unknown`; supported by context, not merely a tag |
 | `tags` | Exact metadata tags that raised the candidate; empty for a future manual association |
@@ -37,7 +37,7 @@ The candidate scanner checks both tag scopes to build a review queue. A match in
 | `flags` | Editorial questions; they do not create relationships or silently repair source claims |
 | `substantive` | Human assessment required when confirming a primary/secondary subject |
 
-The original 97 associations were seeded as unresolved agent proposals. **Six subject classifications now have explicit human approval; the remaining 91 retain `role: unresolved` and `review.status: pending`.** Historical factual claims have not been independently fact-checked. The validator verifies that evidence still occurs on the quoted source line; it cannot certify that the claim is true or that a reviewer identity represents a real approval.
+The original 97 associations were seeded as unresolved research proposals. **Six subject classifications now have explicit human approval; the remaining 91 retain `role: unresolved` and `review.status: pending`.** Historical factual claims have not been independently fact-checked. The validator verifies that evidence still occurs on the quoted source line; it cannot certify that the claim is true or that a reviewer identity represents a real approval.
 
 To confirm an association, a human editor checks the source and context, selects `role`, adds their review identity/date and (for subjects) `substantive`. An exclusion is an explicit human decision and cannot be overridden by tag matching. Several primary/secondary subjects in one article are valid; two decisions for the same article/entity pair are not. Tag-only matches remain unresolved or become explicit exclusions after human review.
 
