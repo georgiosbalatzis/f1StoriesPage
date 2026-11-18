@@ -3,8 +3,9 @@ const os = require('os');
 const path = require('path');
 const { buildEmbedHtml } = require('../embed-render');
 const { extractEmbedPlaceholders, getYouTubeVideoId, resolveEmbedPlaceholders } = require('../embeds');
+const { convertTxtToHtml } = require('../parse-txt');
 
-function verifyEmbedHardeningGuard() {
+async function verifyEmbedHardeningGuard() {
     const failures = [];
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-embed-hardening-'));
 
@@ -114,6 +115,22 @@ function verifyEmbedHardeningGuard() {
         });
         if (!svgFile.includes('Embed blocked') || svgFile.includes('<svg')) {
             failures.push('local SVG embed did not fail closed');
+        }
+
+        const sourcePath = path.join(tempDir, 'source.txt');
+        for (const line of [
+            'https://www.youtube.com/watch?v=abcdefghijk&a=</p><img/src/onerror=alert(1)>',
+            'https://x.com/team/status/123?q=</p><svg/onload=alert(1)>',
+            '<a href="https://youtu.be/abcdefghijk">x</p><img/src/onerror=alert(1)></a>'
+        ]) {
+            fs.writeFileSync(sourcePath, `---\ntitle: t\n---\nIntro.\n\n${line}\n\nOutro.\n`);
+            const html = await convertTxtToHtml(sourcePath);
+            if (/<[a-z][^>]*on(?:error|load)=/i.test(html)) failures.push(`standalone link line injected markup: ${line}`);
+        }
+        fs.writeFileSync(sourcePath, '---\ntitle: t\n---\nhttps://www.youtube.com/watch?v=abcdefghijk&t=30s\n\n<a href="https://x.com/team/status/123">View</a>\n');
+        const embedded = await convertTxtToHtml(sourcePath);
+        if (!embedded.includes('data-youtube-id="abcdefghijk"') || !embedded.includes('https://x.com/team/status/123') || /<p>\s*(?:https?:|<a)/.test(embedded)) {
+            failures.push('standalone link lines must still render as embeds');
         }
     } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });

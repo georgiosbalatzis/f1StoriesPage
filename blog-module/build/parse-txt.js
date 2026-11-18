@@ -1,6 +1,9 @@
 const { fs, path } = require('./shared');
 const {
+    buildStandaloneEmbedHtml,
     extractEmbedPlaceholders,
+    getStandaloneEmbedInfo,
+    isEmbedPlaceholderToken,
     isStandaloneEmbedLine,
     splitParagraphsAroundStandaloneEmbeds,
     processStandaloneLinkEmbeds,
@@ -142,7 +145,10 @@ async function convertTxtToHtml(filePath) {
 
             if (isStandaloneEmbedLine(line)) {
                 flushParagraph();
-                htmlContent += `<p>${line}</p>\n`;
+                // Emit the embed built from the parsed URL; the raw line is untrusted markup.
+                htmlContent += isEmbedPlaceholderToken(line)
+                    ? `<p>${line}</p>\n`
+                    : `${buildStandaloneEmbedHtml(getStandaloneEmbedInfo(line))}\n`;
                 continue;
             }
 

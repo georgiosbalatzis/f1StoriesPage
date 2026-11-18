@@ -27,7 +27,7 @@ function tryParseUrl(value) {
 
 function extractAnchorHref(html) {
     const trimmed = String(html || '').trim();
-    const match = trimmed.match(/^<a\b[^>]*href=(["'])(.*?)\1[^>]*>[\s\S]*<\/a>$/i);
+    const match = trimmed.match(/^<a\b[^>]*href=(["'])([^"'<>]*)\1[^>]*>[^<]*<\/a>$/i);
     return match ? normalizeUrlCandidate(match[2]) : null;
 }
 
@@ -35,7 +35,7 @@ function extractStandaloneLinkUrl(textOrHtml) {
     const trimmed = String(textOrHtml || '').trim();
     if (!trimmed) return null;
 
-    if (/^https?:\/\/\S+$/i.test(trimmed)) return normalizeUrlCandidate(trimmed);
+    if (/^https?:\/\/[^\s<>"']+$/i.test(trimmed)) return normalizeUrlCandidate(trimmed);
     return extractAnchorHref(trimmed);
 }
 

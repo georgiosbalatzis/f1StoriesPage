@@ -282,7 +282,7 @@ async function updateGoldenSnapshots() {
         throw new Error(`CSV escaping guard failed:\n${csvGuardFailures.join('\n')}`);
     }
 
-    const embedGuardFailures = embedGuard();
+    const embedGuardFailures = await embedGuard();
     if (embedGuardFailures.length) {
         throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
@@ -327,7 +327,7 @@ async function verifyGoldenSnapshots() {
         });
     });
 
-    embedGuard().forEach(message => {
+    (await embedGuard()).forEach(message => {
         failures.push({
             name: `embed-hardening: ${message}`,
             expectedPath: fixtureLabel('embed-hardening'),
