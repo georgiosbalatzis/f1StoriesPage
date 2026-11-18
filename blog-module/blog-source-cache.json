@@ -1,6 +1,40 @@
 {
   "posts": [
     {
+      "id": "20261118G",
+      "title": "Το λάθος πριν το φρενάρισμα του Hamilton",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-18",
+      "dateISO": "2026-11-18",
+      "displayDate": "18 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261118G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261118G/2.webp",
+      "excerpt": "Baku 2021: Το λάθος που έγινε πριν πατήσει ο Hamilton φρένο",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261118G/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Lewis Hamilton",
+        "Max Verstappen",
+        "Mercedes",
+        "Red Bull",
+        "Baku",
+        "2021"
+      ],
+      "wordCount": 2740,
+      "readingTime": "14 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1004,
+      "inputDigest": "5e8e88d295855e489ac8a9628255ccb5cc07a715044d15b3250eab0a71abd38b"
+    },
+    {
       "id": "20261118W",
       "title": "Tommi Makinen ο θρύλος της Mitsubishi",
       "author": "Themis Charvalis",
@@ -12107,5 +12141,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-18T06:47:41.779Z"
+  "lastUpdated": "2026-11-18T08:12:11.428Z"
 }
