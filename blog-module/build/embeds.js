@@ -2,7 +2,6 @@ const { decodeHtmlEntities } = require('./metadata');
 const {
     buildYouTubeEmbed,
     buildSocialEmbed,
-    sanitizeRawSocialEmbedHtml,
     buildStandaloneEmbedHtml,
     isUrlWhitelisted,
     normalizeWhitespace,
@@ -277,30 +276,41 @@ function extractRawSocialBlocks(text) {
     const patterns = [
         {
             regex: /<blockquote\b[^>]*class=["'][^"']*\btwitter-tweet\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*platform\.twitter\.com\/widgets\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
-            createInfo: match => ({ type: 'raw-social', platform: 'x', value: match[0] })
+            platform: 'x', attribute: 'href'
         },
         {
             regex: /<blockquote\b[^>]*class=["'][^"']*\binstagram-media\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*(?:www\.)?instagram\.com\/embed\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
-            createInfo: match => ({ type: 'raw-social', platform: 'instagram', value: match[0] })
+            platform: 'instagram', attribute: 'data-instgrm-permalink'
         },
         {
             regex: /<blockquote\b[^>]*class=["'][^"']*\btext-post-media\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*(?:www\.)?threads\.(?:net|com)\/embed\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
-            createInfo: match => ({ type: 'raw-social', platform: 'threads', value: match[0] })
+            platform: 'threads', attribute: 'data-text-post-permalink'
         },
         {
             regex: /(?:<div\b[^>]*id=["']fb-root["'][^>]*>\s*<\/div>\s*)?(?:<script\b[^>]*src=["'][^"']*connect\.facebook\.net\/[^"']*sdk\.js[^"']*["'][^>]*>\s*<\/script>\s*)?(<div\b[^>]*class=["'][^"']*\bfb-(post|video)\b[^"']*["'][^>]*>[\s\S]*?<\/div>)/gi,
-            createInfo: match => ({ type: 'raw-social', platform: 'facebook', kind: (match[2] || 'post').toLowerCase(), value: match[0] })
+            platform: 'facebook', attribute: 'data-href'
         }
     ];
 
     patterns.forEach(pattern => {
+        const { platform, attribute } = pattern;
+        const linkAttribute = new RegExp(`\\s${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i');
         let match;
         while ((match = pattern.regex.exec(text)) !== null) {
+            const value = match[0];
+            const tags = platform === 'x'
+                ? (value.match(/<a\s[^>]*>/gi) || []).reverse()
+                : [(match[1] || value).split('>', 1)[0]];
+            const social = tags.map(tag => {
+                const href = tag.match(linkAttribute);
+                const url = href && normalizeUrlCandidate(href[1] ?? href[2]);
+                return /^https:\/\//i.test(url) ? getStandaloneEmbedInfo(url) : null;
+            }).find(info => info && info.platform === platform);
             matches.push({
                 start: match.index,
-                end: match.index + match[0].length,
-                fullBlock: match[0],
-                info: pattern.createInfo(match)
+                end: match.index + value.length,
+                fullBlock: value,
+                info: { type: 'raw-social', platform, value, social }
             });
         }
     });
@@ -430,9 +440,17 @@ function extractEmbedPlaceholders(rawText, entryPath, insertTokens) {
 
     let cleanedText = processedLines.join('\n');
 
+    const socialBlocks = extractRawSocialBlocks(cleanedText);
+    socialBlocks.forEach(block => {
+        const key = makeKey(block.fullBlock);
+        placeholders[key] = block.info;
+        if (insertTokens) cleanedText = cleanedText.replace(block.fullBlock, key);
+    });
+    const withoutSocial = insertTokens ? cleanedText : removeMatchedBlocks(cleanedText, socialBlocks);
+
     const iframeRegex = /<iframe\s[^>]*src=["']([^"']+)["'][^>]*>[\s\S]*?<\/iframe>/gi;
     let iframeMatch;
-    while ((iframeMatch = iframeRegex.exec(cleanedText)) !== null) {
+    while ((iframeMatch = iframeRegex.exec(insertTokens ? cleanedText : withoutSocial)) !== null) {
         const fullBlock = iframeMatch[0];
         const src = iframeMatch[1];
         const key = makeKey(fullBlock);
@@ -443,14 +461,7 @@ function extractEmbedPlaceholders(rawText, entryPath, insertTokens) {
         }
     }
 
-    const socialBlocks = extractRawSocialBlocks(cleanedText);
-    socialBlocks.forEach(block => {
-        const key = makeKey(block.fullBlock);
-        placeholders[key] = block.info;
-        if (insertTokens) cleanedText = cleanedText.replace(block.fullBlock, key);
-    });
-
-    const widgetSourceText = insertTokens ? cleanedText : removeMatchedBlocks(cleanedText, socialBlocks);
+    const widgetSourceText = insertTokens ? cleanedText : withoutSocial;
     const widgetBlocks = extractTopLevelStyledDivs(widgetSourceText);
     widgetBlocks.forEach(block => {
         if (block.includes('<iframe')) return;
@@ -477,7 +488,6 @@ module.exports = {
     getFacebookEmbedInfo,
     getStandaloneEmbedInfo,
     buildSocialEmbed,
-    sanitizeRawSocialEmbedHtml,
     buildStandaloneEmbedHtml,
     isEmbedPlaceholderToken,
     isStandaloneEmbedLine,

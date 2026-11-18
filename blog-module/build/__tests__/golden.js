@@ -220,12 +220,14 @@ function verifyCsvEscapingGuards() {
     }
 
     const richHtml = createResponsiveTableFromCSV(
-        'Name\n<strong>Ok</strong>',
+        '<strong>Name</strong><img src=x>\n<em>Ok &amp; fine</em><a href=example.test>link</a><b class=unsafe>Bold</b>',
         'rich.csv',
         { allowHtml: true }
     );
-    if (!richHtml.includes('<strong>Ok</strong>')) {
-        failures.push('CSV rich HTML opt-in did not preserve explicit cell markup');
+    if (!richHtml.includes('<th><strong>Name</strong>&lt;img src=x&gt;</th>')
+        || (richHtml.match(/<em>Ok &amp; fine<\/em>/g) || []).length !== 2
+        || /<img|<a href|<b class/.test(richHtml)) {
+        failures.push('CSV rich HTML opt-in must allow only inline formatting in headers, rows and cards');
     }
 
     const richTags = enhancedExtractCSVTags('<p>CSV_TABLE_HTML:rich.csv</p>');

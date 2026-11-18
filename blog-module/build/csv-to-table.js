@@ -41,6 +41,12 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function sanitizeRichCell(value) {
+    // Only attribute-free inline formatting and text entities may pass through.
+    const allowed = /(<\/?(?:abbr|b|code|del|em|i|ins|mark|s|small|strong|sub|sup|u)\s*>|<br\s*\/?>|&(?:#[0-9]+|#x[0-9a-f]+|[a-z][a-z0-9]*);)/gi;
+    return value.split(allowed).map((part, index) => index % 2 ? part : escapeHtml(part)).join('');
+}
+
 function stripCellParagraphs(html) {
     return String(html || '')
         .trim()
@@ -194,7 +200,7 @@ function findCSVFile(csvFileName, entryPath) {
 
 function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
     try {
-        const allowHtml = Boolean(options.allowHtml);
+        const renderCell = options.allowHtml ? sanitizeRichCell : escapeHtml;
         const rows = csvContent.split(/\r?\n/).filter(row => row.trim() !== '');
         if (!rows.length) return '<div class="csv-error">Κενό CSV αρχείο</div>';
 
@@ -210,7 +216,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
             const raw = String(header || '').trim() || `Column ${index + 1}`;
             const label = htmlToPlainText(raw) || `Column ${index + 1}`;
             return {
-                html: allowHtml ? raw : escapeHtml(raw),
+                html: renderCell(raw),
                 label,
                 cardLabel: escapeHtml(label)
             };
@@ -254,7 +260,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
             html += '<tr>';
             for (let j = 0; j < headerMeta.length; j++) {
                 const cellValue = j < cells.length ? String(cells[j] || '') : '';
-                const cellHtml = allowHtml ? cellValue : escapeHtml(cellValue);
+                const cellHtml = renderCell(cellValue);
                 html += `<td data-label="${escapeHtmlAttribute(headerMeta[j].label)}">${cellHtml}</td>`;
             }
             html += '</tr>';
@@ -274,7 +280,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
             html += '<div class="data-card">';
             for (let j = 0; j < headerMeta.length; j++) {
                 const cellValue = j < cells.length ? String(cells[j] || '') : '';
-                const cellHtml = allowHtml ? cellValue : escapeHtml(cellValue);
+                const cellHtml = renderCell(cellValue);
                 html += `
                     <div class="card-field">
                         <div class="card-label">${headerMeta[j].cardLabel}</div>
@@ -343,7 +349,7 @@ function processEmbeddedCSV(htmlContent, entryPath) {
                 ? createResponsiveTableFromCSV(content, tag.fileName, { allowHtml: tag.allowHtml, caption: tag.caption, source: tag.source })
                 : createCSVErrorMessage(tag.fileName);
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), replacement);
+            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), () => replacement);
         } catch (error) {
             console.error(`Error processing CSV tag: ${error.message}`);
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
