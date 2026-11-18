@@ -245,21 +245,6 @@ function isRawWidgetAllowed(html) {
     return { ok: true, reason: '' };
 }
 
-function sanitizeRawSocialEmbedHtml(info) {
-    const sanitized = stripUnsafeHtmlAttributes(String(info.value || '')
-        .replace(/<div\b[^>]*id=["']fb-root["'][^>]*>\s*<\/div>/gi, '')
-        .replace(/<script\b[^>]*src=["'][^"']*(?:platform\.twitter\.com\/widgets\.js|(?:www\.)?instagram\.com\/embed\.js|(?:www\.)?threads\.(?:net|com)\/embed\.js|connect\.facebook\.net\/[^"']*sdk\.js)[^"']*["'][^>]*>\s*<\/script>/gi, '')
-        .trim());
-
-    if (info.platform === 'facebook') {
-        const facebookMatch = sanitized.match(/<div\b[^>]*class=["'][^"']*\bfb-(?:post|video)\b[^"']*["'][^>]*>[\s\S]*?<\/div>/i);
-        return facebookMatch ? facebookMatch[0].trim() : sanitized;
-    }
-
-    const blockquoteMatch = sanitized.match(/<blockquote\b[\s\S]*?<\/blockquote>/i);
-    return blockquoteMatch ? blockquoteMatch[0].trim() : sanitized;
-}
-
 function buildStandaloneEmbedHtml(info) {
     if (info.type === 'youtube') return buildYouTubeEmbed(info.videoId);
     if (info.type === 'social') return buildSocialEmbed(info);
@@ -379,9 +364,9 @@ function buildEmbedHtml(info) {
     }
 
     if (info.type === 'raw-social') {
-        const sanitized = sanitizeRawSocialEmbedHtml(info);
+        if (!info.social) return buildEmbedError('Embed blocked', 'no supported social post URL.');
         console.log(`  💬 Raw ${info.platform.toUpperCase()} embed`);
-        return `<div class="social-embed social-embed-${info.platform}">\n${sanitized}\n</div>`;
+        return buildSocialEmbed(info.social);
     }
 
     if (info.type === 'raw-iframe') {
@@ -509,7 +494,6 @@ function resolveEmbedPlaceholders(htmlContent, placeholders) {
 module.exports = {
     buildYouTubeEmbed,
     buildSocialEmbed,
-    sanitizeRawSocialEmbedHtml,
     buildStandaloneEmbedHtml,
     isUrlWhitelisted,
     normalizeWhitespace,

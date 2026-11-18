@@ -58,11 +58,11 @@ test('the measured standings shell ceiling is enforced independently of per-file
     assert.match(result.stderr, /standings bundle budget exceeded/);
 });
 
-test('shared imports cannot hide an initial graph over the unchanged 68 KiB ceiling', t => {
+test('shared imports cannot hide an initial graph over the 70 KiB ceiling', t => {
     const { write, run } = fixture(t);
     const imports = 'import "./chunks/a.min.js";import "./chunks/b.min.js";';
     write('standings/standings.min.js', imports.padEnd(48 * 1024, ' '));
-    for (const name of ['a', 'b']) write(`standings/chunks/${name}.min.js`, 'x'.repeat(11 * 1024));
+    for (const name of ['a', 'b']) write(`standings/chunks/${name}.min.js`, 'x'.repeat(12 * 1024));
     const result = run();
     assert.equal(result.status, 1);
     assert.match(result.stderr, /standings initial graph/);

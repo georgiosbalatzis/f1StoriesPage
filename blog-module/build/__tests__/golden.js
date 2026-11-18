@@ -7,7 +7,7 @@ const { classifyEntry } = require('../index');
 const { CONFIG } = require('../shared');
 const { primeImageDimensions } = require('../image-sizes');
 const { convertTxtToHtml } = require('../parse-txt');
-const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
+const { createResponsiveTableFromCSV, enhancedExtractCSVTags, processEmbeddedCSV } = require('../csv-to-table');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
 const metaGuard = require('./metadata-escaping-guard');
@@ -220,17 +220,47 @@ function verifyCsvEscapingGuards() {
     }
 
     const richHtml = createResponsiveTableFromCSV(
-        'Name\n<strong>Ok</strong>',
+        '<strong>Name</strong><img src=x>\n<em>Ok &amp; fine</em><a href=example.test>link</a><b class=unsafe>Bold</b>',
         'rich.csv',
         { allowHtml: true }
     );
-    if (!richHtml.includes('<strong>Ok</strong>')) {
-        failures.push('CSV rich HTML opt-in did not preserve explicit cell markup');
+    if (!richHtml.includes('<th><strong>Name</strong>&lt;img src=x&gt;</th>')
+        || (richHtml.match(/<em>Ok &amp; fine<\/em>/g) || []).length !== 2
+        || /<img|<a href|<b class/.test(richHtml)) {
+        failures.push('CSV rich HTML opt-in must allow only inline formatting in headers, rows and cards');
     }
 
     const richTags = enhancedExtractCSVTags('<p>CSV_TABLE_HTML:rich.csv</p>');
     if (!richTags.length || !richTags[0].allowHtml || richTags[0].fileName !== 'rich.csv') {
         failures.push('CSV_TABLE_HTML marker was not parsed as an explicit rich HTML opt-in');
+    }
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-csv-'));
+    const blogDir = CONFIG.BLOG_DIR;
+    try {
+        CONFIG.BLOG_DIR = tempDir;
+        const entry = path.join(tempDir, 'article');
+        const data = path.join(tempDir, 'data');
+        fs.mkdirSync(entry);
+        fs.mkdirSync(data);
+        fs.mkdirSync(path.join(entry, 'folder.csv'));
+        fs.writeFileSync(path.join(entry, 'Local.csv'), 'Name\nLocal data');
+        fs.writeFileSync(path.join(data, 'shared.csv'), 'Name\nShared data');
+        fs.writeFileSync(path.join(entry, 'wrong.txt'), 'Name\nOutside data');
+        fs.writeFileSync(path.join(tempDir, 'outside.csv'), 'Name\nOutside data');
+        fs.symlinkSync(path.join(tempDir, 'outside.csv'), path.join(entry, 'link.csv'));
+        const render = file => processEmbeddedCSV(`<p>CSV_TABLE:${file}</p>`, entry);
+        if (!render('local.csv').includes('Local data') || !render('shared.csv').includes('Shared data')) {
+            failures.push('CSV directives did not find article and shared files');
+        }
+        for (const file of ['../outside.csv', 'outside.csv', 'link.csv', 'folder.csv', 'wrong.txt', 'Local']) {
+            if (!render(file).includes('CSV αρχείο δεν βρέθηκε:') || render(file).includes('Outside data')) {
+                failures.push(`CSV directive accepted an invalid file: ${file}`);
+            }
+        }
+    } finally {
+        CONFIG.BLOG_DIR = blogDir;
+        fs.rmSync(tempDir, { recursive: true, force: true });
     }
 
     return failures;
@@ -252,7 +282,7 @@ async function updateGoldenSnapshots() {
         throw new Error(`CSV escaping guard failed:\n${csvGuardFailures.join('\n')}`);
     }
 
-    const embedGuardFailures = embedGuard();
+    const embedGuardFailures = await embedGuard();
     if (embedGuardFailures.length) {
         throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
@@ -297,7 +327,7 @@ async function verifyGoldenSnapshots() {
         });
     });
 
-    embedGuard().forEach(message => {
+    (await embedGuard()).forEach(message => {
         failures.push({
             name: `embed-hardening: ${message}`,
             expectedPath: fixtureLabel('embed-hardening'),

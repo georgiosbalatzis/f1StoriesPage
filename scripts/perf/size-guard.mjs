@@ -170,7 +170,8 @@ function loadBudget() {
 const STANDINGS_BUNDLE_BUDGET = {
     // Released embed controls bring the 57b1231a shell to 49,097 bytes; keep a tight 48 KiB ceiling.
     shellBytes: 48 * 1024,
-    initialGraphBytes: 68 * 1024,
+    // Payload validation for external standings data adds ~1.1 KiB to startup.
+    initialGraphBytes: 70 * 1024,
     lazyEntryBytes: 34 * 1024,
     sharedChunkBytes: 12 * 1024,
     lazyTotalBytes: 190 * 1024

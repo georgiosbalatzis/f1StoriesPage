@@ -2,9 +2,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { buildEmbedHtml } = require('../embed-render');
-const { getYouTubeVideoId } = require('../embeds');
+const { extractEmbedPlaceholders, getYouTubeVideoId, resolveEmbedPlaceholders } = require('../embeds');
+const { convertTxtToHtml } = require('../parse-txt');
 
-function verifyEmbedHardeningGuard() {
+async function verifyEmbedHardeningGuard() {
     const failures = [];
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-embed-hardening-'));
 
@@ -35,6 +36,35 @@ function verifyEmbedHardeningGuard() {
         }
         if (rawIframe.includes('onload') || rawIframe.includes('srcdoc') || rawIframe.includes('<script')) {
             failures.push('raw iframe unsafe attributes were not stripped');
+        }
+
+        const rawSocial = '<blockquote class="twitter-tweet"><button>Follow</button>'
+            + '<iframe src="https://www.youtube.com/embed/abcdefghijk"></iframe>'
+            + '<a href="https://twitter.com/team/status/123">View</a></blockquote>';
+        for (const insertTokens of [true, false]) {
+            const { cleanedText, placeholders } = extractEmbedPlaceholders(rawSocial, tempDir, insertTokens);
+            const paragraph = cleanedText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const html = resolveEmbedPlaceholders(`<p>${paragraph}</p>`, placeholders);
+            if (!html.includes('https://x.com/team/status/123') || /<button|<iframe|Follow/.test(html)) {
+                failures.push('raw social embeds must render only the supported post');
+            }
+        }
+        for (const [snippet, url] of [
+            ['<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/example/">View</blockquote>', 'https://www.instagram.com/p/example/'],
+            ['<blockquote class="text-post-media" data-text-post-permalink="https://www.threads.com/@team/post/example">View</blockquote>', 'https://www.threads.net/@team/post/example'],
+            ['<div id="fb-root"></div><div class="fb-post" data-href="https://www.facebook.com/team/posts/123">View</div>', 'https://www.facebook.com/team/posts/123']
+        ]) {
+            const { placeholders } = extractEmbedPlaceholders(snippet, tempDir, true);
+            if (!buildEmbedHtml(Object.values(placeholders)[0]).includes(url)) {
+                failures.push(`raw social embed lost its supported post URL: ${url}`);
+            }
+        }
+        const { placeholders } = extractEmbedPlaceholders(
+            '<blockquote class="instagram-media" data-instgrm-permalink="https://example.test/p/test/">View</blockquote>',
+            tempDir, true
+        );
+        if (!buildEmbedHtml(Object.values(placeholders)[0]).includes('Embed blocked')) {
+            failures.push('raw social embeds must reject unsupported URLs');
         }
 
         const blockedFile = buildEmbedHtml({
@@ -85,6 +115,22 @@ function verifyEmbedHardeningGuard() {
         });
         if (!svgFile.includes('Embed blocked') || svgFile.includes('<svg')) {
             failures.push('local SVG embed did not fail closed');
+        }
+
+        const sourcePath = path.join(tempDir, 'source.txt');
+        for (const line of [
+            'https://www.youtube.com/watch?v=abcdefghijk&a=</p><img/src/onerror=alert(1)>',
+            'https://x.com/team/status/123?q=</p><svg/onload=alert(1)>',
+            '<a href="https://youtu.be/abcdefghijk">x</p><img/src/onerror=alert(1)></a>'
+        ]) {
+            fs.writeFileSync(sourcePath, `---\ntitle: t\n---\nIntro.\n\n${line}\n\nOutro.\n`);
+            const html = await convertTxtToHtml(sourcePath);
+            if (/<[a-z][^>]*on(?:error|load)=/i.test(html)) failures.push(`standalone link line injected markup: ${line}`);
+        }
+        fs.writeFileSync(sourcePath, '---\ntitle: t\n---\nhttps://www.youtube.com/watch?v=abcdefghijk&t=30s\n\n<a href="https://x.com/team/status/123">View</a>\n');
+        const embedded = await convertTxtToHtml(sourcePath);
+        if (!embedded.includes('data-youtube-id="abcdefghijk"') || !embedded.includes('https://x.com/team/status/123') || /<p>\s*(?:https?:|<a)/.test(embedded)) {
+            failures.push('standalone link lines must still render as embeds');
         }
     } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });

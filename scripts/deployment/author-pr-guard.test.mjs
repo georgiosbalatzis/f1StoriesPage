@@ -71,17 +71,18 @@ test('paths outside one article folder and unknown branches are refused', async 
     assert.deepEqual(await check('author/edit/x', []), ['the PR changes no files']);
 });
 
-test('the CLI reads every page of files, both folder listings, and refuses a moved PR', async t => {
+test('the CLI requires a complete, bounded file list for the tested head', async t => {
     const realFetch = globalThis.fetch, token = process.env.GH_TOKEN, exit = process.exitCode;
     t.after(() => { globalThis.fetch = realFetch; process.env.GH_TOKEN = token; process.exitCode = exit; });
     process.env.GH_TOKEN = 'test-token';
     const files = Array.from({ length: 101 }, (_, i) => changed('20260227Τ', `${i}.webp`, i ? 'modified' : 'removed'));
+    let changedFiles = files.length;
     const seen = [];
     globalThis.fetch = async url => {
         const route = new URL(url);
         seen.push(decodeURIComponent(route.pathname + route.search));
         const json = body => ({ ok: true, status: 200, json: async () => body });
-        if (route.pathname.endsWith('/pulls/9')) return json({ head: { sha: 'tested', ref: 'author/edit/20260227-x' }, base: { sha: 'main-sha' } });
+        if (route.pathname.endsWith('/pulls/9')) return json({ changed_files: changedFiles, head: { sha: 'tested', ref: 'author/edit/20260227-x' }, base: { sha: 'main-sha' } });
         if (route.pathname.endsWith('/pulls/9/files')) return json(route.searchParams.get('page') === '1' ? files.slice(0, 100) : files.slice(100));
         if (route.pathname.includes('/contents/')) return json([{ type: 'file', name: 'article.html' }, { type: 'dir', name: 'embeds' }]);
         return { ok: false, status: 500 };
@@ -93,6 +94,20 @@ test('the CLI reads every page of files, both folder listings, and refuses a mov
     assert.deepEqual(seen.filter(route => route.includes('/contents/')), [
         `/repos/o/r/contents/${ENTRIES}20260227Τ?ref=main-sha`, `/repos/o/r/contents/${ENTRIES}20260227Τ?ref=tested`]);
     await assert.rejects(main(['--repo', 'o/r', '--pr', '9', '--sha', 'other']), /moved to tested; other was tested/);
+
+    const args = ['--repo', 'o/r', '--pr', '9', '--sha', 'tested'];
+    for (const count of [100, 102]) {
+        seen.length = 0;
+        changedFiles = count;
+        await assert.rejects(main(args), new RegExp(`reported ${count} changed files, but GitHub returned 101`));
+        assert.equal(seen.some(route => route.includes('/contents/')), false);
+    }
+    for (const count of [301, undefined, '101']) {
+        seen.length = 0;
+        changedFiles = count;
+        await assert.rejects(main(args), /must report between 1 and 300 changed files/);
+        assert.deepEqual(seen, ['/repos/o/r/pulls/9']);
+    }
 });
 
 test('Publish Article runs the guard from main on the tested commit before merging', () => {
@@ -101,6 +116,10 @@ test('Publish Article runs the guard from main on the tested commit before mergi
     assert.ok(step('Resolve trusted author PR') < step('Check out the URL guard'));
     assert.ok(step('Check out the URL guard') < step('Keep published article URLs'));
     assert.ok(step('Keep published article URLs') < step('Merge author PR'));
+    const eligibility = workflow.slice(step('Resolve trusted author PR'), step('Check out the URL guard'));
+    assert.match(eligibility, /\.changed_files \| select\(type == "number" and floor == \. and \. >= 1 and \. <= 300\)/);
+    assert.match(eligibility, /--paginate --slurp .*\/files\?per_page=100/);
+    assert.match(eligibility, /\(add \| length == \$count\)[\s\S]*?exit 1[\s\S]*?publish=true/);
     const checkout = workflow.slice(step('Check out the URL guard'), step('Keep published article URLs'));
     assert.match(checkout, /ref: \$\{\{ github\.event\.repository\.default_branch \}\}/);
     assert.match(checkout, /persist-credentials: false/);
