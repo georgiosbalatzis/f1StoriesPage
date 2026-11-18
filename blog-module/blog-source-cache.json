@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261118W",
+      "title": "Tommi Makinen ο θρύλος της Mitsubishi",
+      "author": "Themis Charvalis",
+      "date": "2026-11-18",
+      "dateISO": "2026-11-18",
+      "displayDate": "18 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261118W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261118W/2.webp",
+      "excerpt": "Ο Tommi Makinen, ο Φινλανδός θρύλος του WRC με τα τέσσερα συνεχόμενα παγκόσμια πρωταθλήματα και την ιστορική κυριαρχία με τη Mitsubishi.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261118W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Tommi Makinen",
+        "WRC",
+        "Champion"
+      ],
+      "wordCount": 583,
+      "readingTime": "3 min",
+      "imageWidth": 414,
+      "imageHeight": 300,
+      "backgroundImageWidth": 322,
+      "backgroundImageHeight": 199,
+      "inputDigest": "86bb79e624fe859688723478c69ac2e8bac4d8fa06fe0e580bfb00e7d9135202"
+    },
+    {
       "id": "20261117F",
       "title": "Η παγίδα των 2.240 μέτρων",
       "author": "F1 Stories Team",
@@ -12076,5 +12107,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-17T12:08:59.164Z"
+  "lastUpdated": "2026-11-18T06:47:41.779Z"
 }

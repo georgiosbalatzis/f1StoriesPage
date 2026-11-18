@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Mon, 16 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 17 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Tommi Makinen ο θρύλος της Mitsubishi</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261118W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261118W/article.html</guid>
+      <pubDate>Tue, 17 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο Tommi Makinen, ο Φινλανδός θρύλος του WRC με τα τέσσερα συνεχόμενα παγκόσμια πρωταθλήματα και την ιστορική κυριαρχία με τη Mitsubishi.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Η παγίδα των 2.240 μέτρων</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261117F/article.html</link>
@@ -267,15 +276,6 @@
       <description>Από τα παιδικά χρόνια στα συνεργεία της Νορβηγίας μέχρι την κορυφή του WRC, ο Petter Solberg έζησε το ράλι ως τρόπο ζωής.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>BetCast #277 : Με 4 ομάδες στο παιχνίδι ...</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261024J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261024J/article.html</guid>
-      <pubDate>Fri, 23 Oct 2026 21:00:00 GMT</pubDate>
-      <description>Πρωταθλητής ή όχι ο Kimi μετά από αυτό το GP... Δεν το ξέρουμε. Όμως ξέρουμε σίγουρα ότι θα έχουμε μεγάλες μάχες.</description>
-      <category>Στοίχημα</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>
