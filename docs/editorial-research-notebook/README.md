@@ -59,7 +59,7 @@ The notebook owns its panel and research state. Generate captures its validated 
 - Zero external requests, including zero `api.github.com` requests.
 - Unsaved notebook edits disappear on reload; explicitly saved research returns when its draft is reopened.
 
-Other focused tests cover unsafe URL schemes/credentials, hostile HTML in manual notes and index records, unsafe article IDs, malformed/wrong-round data, missing/offline resources, clipboard denial, UTF-8 downloads, clear cancellation/confirmation, cache reuse, and late search/round responses. External data is rendered through text nodes. Requests use approved same-origin paths, omit credentials, reject redirects and have timeouts; there is no arbitrary URL fetcher, AI service or analytics event.
+Other focused tests cover unsafe URL schemes/credentials, hostile HTML in manual notes and index records, unsafe article IDs, malformed/wrong-round data, missing/offline resources, clipboard denial, UTF-8 downloads, clear cancellation/confirmation, cache reuse, and late search/round responses. External data is rendered through text nodes. Requests use approved same-origin paths, omit credentials, reject redirects and have timeouts; there is no arbitrary URL fetcher or analytics event.
 
 ## Validation
 
@@ -117,7 +117,7 @@ Minified JavaScript remains generated/ignored under the existing repository poli
 
 Unsaved notes live only in this page's memory: refresh, closing the tab or navigating away loses anything not saved with **Αποθήκευση ως πρόχειρο** or exported. There is no sync between browsers or devices.
 
-Metadata matching cannot answer arbitrary research questions or assess the truth of an article. Historical snapshot coverage is limited to files actually present. No latest-snapshot substitution, live data, FIA-document retrieval, source crawling, external tool ingestion, paid odds feed, AI API or backend is included. Manual verification remains the author's responsibility. No article was published and no live GitHub publication flow was exercised; publishing tests use mocks. The implementation PR must be reviewed and merged separately.
+Metadata matching cannot answer arbitrary research questions or assess the truth of an article. Historical snapshot coverage is limited to files actually present. No latest-snapshot substitution, live data, FIA-document retrieval, source crawling, external tool ingestion, paid odds feed or backend is included. Manual verification remains the author's responsibility. No article was published and no live GitHub publication flow was exercised; publishing tests use mocks. The implementation PR must be reviewed and merged separately.
 
 ## E-01: local research workspaces
 

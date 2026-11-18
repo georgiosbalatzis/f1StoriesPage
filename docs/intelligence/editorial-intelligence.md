@@ -443,7 +443,7 @@ observations, never a conversion funnel or a reconciliation.
 
 Topic recognition uses exact primary-category labels after trimming/lowercasing: `standings`,
 `βαθμολογίες`, `telemetry`, `τηλεμετρία`, `tyres`, `ελαστικά`, `ghost-car`, `ghostcar`. There is no title/query
-guessing, free-text inference or LLM classification. An unrecognised category produces no topic finding.
+guessing, free-text inference or automated text classification. An unrecognised category produces no topic finding.
 This intentionally abstains when the current catalogue taxonomy does not encode a supported topic.
 The existing article is counterevidence against creating redundant coverage.
 

@@ -4,9 +4,6 @@
   "description": "F1 Stories static website \u2014 build scripts for the blog publishing pipeline.",
   "private": true,
   "scripts": {
-    "research:dev": "node experiments/ai-research/server.mjs",
-    "test:research": "node --test experiments/ai-research/test/*.test.mjs",
-    "research:examples": "node experiments/ai-research/examples.mjs",
     "build": "npm run build:html && npm run build:blog && npm run build:assets",
     "build:blog": "node blog-module/build/index.js && node scripts/build/stamp-html.mjs --articles-only",
     "build:blog:force": "node blog-module/build/index.js --force && node scripts/build/stamp-html.mjs --articles-only",

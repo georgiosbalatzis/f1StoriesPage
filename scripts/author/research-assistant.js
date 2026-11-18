@@ -1108,7 +1108,7 @@
             var head = el('div', null, 'gb-research-actions'), heading = el('h2', 'Ερευνητικό σημειωματάριο'); heading.id = 'research-heading';
             head.append(heading, button('Κλείσιμο έρευνας', hide)); panel.append(head,
                 el('p', 'Το σημειωματάριο αποθηκεύεται μαζί με το άρθρο μόνο με “Αποθήκευση ως πρόχειρο”. Δεν γίνεται αυτόματη αποθήκευση. Τα δεδομένα μένουν σε αυτόν τον browser, στην ίδια διεύθυνση ιστοτόπου (origin: πρωτόκολλο, όνομα και θύρα). localhost, 127.0.0.1 και διαφορετικές θύρες έχουν ξεχωριστά πρόχειρα. Δεν συγχρονίζονται μεταξύ συσκευών.', 'gb-hint'),
-                el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη, ID και κείμενο δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Πίνακες, εικόνες και ενσωματωμένα εργαλεία δεν αναζητούνται. Δεν δίνεται απάντηση με AI.', 'gb-hint'));
+                el('p', 'Αναζήτηση σε τίτλο, περίληψη, ετικέτες, συντάκτη, ID και κείμενο δημοσιευμένων άρθρων. Γενικές ετικέτες (F1, Racing, News, χρονιά) δεν μετρούν. Πίνακες, εικόνες και ενσωματωμένα εργαλεία δεν αναζητούνται.', 'gb-hint'));
             status = el('p', '', 'gb-hint'); status.id = 'research-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); panel.appendChild(status);
             question = field(panel, 'question', 'Εκδοτικό ερώτημα / λέξεις αναζήτησης');
             question.addEventListener('input', function () { ++searchRevision; hits = []; articles.replaceChildren(); more.hidden = true; });

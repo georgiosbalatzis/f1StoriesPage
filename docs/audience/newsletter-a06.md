@@ -194,8 +194,7 @@ excluded.
 ## Operational ownership
 
 Each of these must be a named person before activation: provider account owner, privacy/legal reviewer, operator for
-access/deletion requests, incident owner, and launch approver. Agents cannot hold any of these roles or record their
-approvals.
+access/deletion requests, incident owner, and launch approver.
 
 ## Activation evidence and process
 
@@ -251,4 +250,4 @@ loopback-only mock. Prefer a provider-hosted page or a native POST at activation
 **Consequences:** nothing reaches readers, and the public artifact is unchanged. Activation is a separate PR with a
 real adapter and named-human evidence.
 
-**Review:** proposed and reviewed by Codex Sol (architect), then independently re-reviewed on the final head (see the PR).
+**Review details:** see the PR.

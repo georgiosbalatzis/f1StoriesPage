@@ -10,7 +10,7 @@ It does not authorize activation, and a completed row is not legal advice.
 every artifact validation and every Pages upload.
 
 - An item is `{ "status": "open" }` or `{ "status": "complete", "by", "date", "reference" }`.
-- `by` is a named human. It is never an agent and never contains `SYNTHETIC`.
+- `by` must identify a named human and must not contain `SYNTHETIC`.
 - `date` is `YYYY-MM-DD`, a real calendar day, not after today in Athens.
 - `reference` is public-safe: a document title, PR number or ticket id. It contains no email address and no URL query.
   Store private evidence (contracts, DPA copies, provider screenshots) outside the repository.

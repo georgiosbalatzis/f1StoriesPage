@@ -80,7 +80,6 @@ Aggregation is enabled in [sources.json](scripts/deployment/sources.json): the P
 
 | Directory | Contents |
 | --- | --- |
-| `.claude/` | Coding-assistant settings. |
 | `.github/` | Actions, workflows and dependency configuration. |
 | `assets/` | Fonts and their licences. |
 | `authors/` | Generated author pages. |
@@ -88,7 +87,7 @@ Aggregation is enabled in [sources.json](scripts/deployment/sources.json): the P
 | `dashboard/` | Intelligence dashboard and snapshot. |
 | `data/` | Site data, manifests and provider captures. |
 | `docs/` | Maintainer guides and operational documentation. |
-| `experiments/` | Research and editorial experiments. |
+| `experiments/` | Editorial growth experiments. |
 | `f1telemetry/` | Legacy telemetry redirect. |
 | `ghostcar/` | GhostCar fallback page. |
 | `images/` | Site and editorial image assets. |

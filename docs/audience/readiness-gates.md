@@ -123,17 +123,17 @@ acceptance of the foundation is separate from editorial approval of any edition:
 
 **Scope:** in scope — versioned manifest, validation, approval digest, static archive and edition pages, local preview,
 content exports, withdrawal. Out of scope — signup, subscriber data, email sending, providers, unsubscribe, scheduling,
-automatic selection or summarisation, AI-written claims, new analytics.
+automatic selection or summarisation, automatically written claims, new analytics.
 
 **Depends on:** A-01; the A-02 [collections](collections.md) publication pattern (manifest → generator → artifact
 allowlist → sitemap → dist validation); [editorial review](../editorial-review.md) for article publication itself.
 
 **Editorial ownership:** the editorial owner (or a named human they delegate) writes, orders and approves each edition.
-Agents may draft candidate editions as `draft` / `pending` only and never record an approval.
+Candidate editions remain `draft` / `pending` until approved by a named human reviewer.
 
-**Data sources:** the manifest `data/audience/briefings.v1.json` (editorial text and choices only) and existing
+**Data sources (exhaustive):** the manifest `data/audience/briefings.v1.json` (editorial text and choices only) and existing
 authoritative article metadata: `blog-source-cache.json` (title, author, date), canonical article URLs and the rendered
-public article page (canonical, indexability). No private drafts, research notebooks, claim ledgers, analytics or AI output.
+public article page (canonical, indexability). No other editorial sources are eligible.
 
 **Article eligibility:** every linked article must be published (not future-dated), not retired, self-canonical, indexable
 and a direct story (no redirect) on the build's Athens day. An article published inside the edition's ISO week is ordinary; an older

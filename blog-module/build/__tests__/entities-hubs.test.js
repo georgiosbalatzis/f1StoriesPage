@@ -98,7 +98,7 @@ test('publication approval is separate from introduction/count approval and fail
     assert.equal(build(f).pages.length, 0);
     f.entity.hub.review = undefined;
     assert.throws(() => build(f), /invalid review/);
-    f.entity.hub.review = { status: 'approved', kind: 'agent', by: 'agent', date: today };
+    f.entity.hub.review = { status: 'approved', kind: 'automation', by: 'automation', date: today };
     assert.throws(() => build(f), /human reviewer/);
 });
 test('missing, pending, undated or future introduction/heading approval prevents a page', () => {
@@ -131,7 +131,7 @@ test('only F1 or explicitly human-reviewed mixed subject context counts', () => 
         const f = fixture(); f.manifest.associations[0].discipline = discipline; assert.equal(build(f).pages.length, 0);
     }
     const f = fixture(); f.manifest.associations[0].discipline = 'mixed'; assert.equal(build(f).pages.length, 1);
-    f.manifest.associations[0].review.kind = 'agent'; assert.throws(() => build(f), /human reviewer/);
+    f.manifest.associations[0].review.kind = 'automation'; assert.throws(() => build(f), /human reviewer/);
 });
 test('invalid references, duplicates, stale evidence and invalid registry fail the entire build', () => {
     const f = fixture(); f.manifest.associations[0].entityId = 'driver:unknown'; assert.throws(() => build(f), /unknown entity reference/);

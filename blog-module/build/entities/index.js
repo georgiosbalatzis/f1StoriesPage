@@ -170,7 +170,7 @@ function coverageReport(registry, manifest, articles) {
 
 function renderCoverage(report) {
     const lines = ['# Pilot entity coverage', '', `Baseline: ${report.baseline}`, '', report.rule, '',
-        'Proposals are agent assessments, not editorial approvals. Candidate tags never establish article membership.', '',
+        'Proposals require editorial approval. Candidate tags never establish article membership.', '',
         '| Entity | Tag candidates | Primary | Secondary | Mentions | Excluded | Unresolved | Needs review | Subject dates | Eligible |',
         '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |'];
     for (const entity of report.entities) {

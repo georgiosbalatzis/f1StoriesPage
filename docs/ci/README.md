@@ -43,7 +43,7 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 ## Intentional duplication
 
 - Site Quality builds `dist/` in each suite job (up to four parallel builds). It's the price of latency: every suite sees the
-  built tree it saw in the old single job (Sol review: identical test counts did not prove identical inputs).
+  built tree it saw in the old single job (identical test counts did not prove identical inputs).
 - Race Desk navigation and fast GP identity checks run on deploy and in Ecosystem acceptance on the assembled artifact; the full GP visual and accessibility matrix runs in Site Quality on dist before merge.
 - `test:deployment` runs in Site Quality and the dry run (1 s); the dry run can also be dispatched alone.
 - The aggregate installs main twice (`setup` and the snapshot's `npm ci`, ~8 s each). The snapshot install is part of the
@@ -55,7 +55,7 @@ Deploy Pages: [gate] → build (or caller's ready artifact) → deploy (only job
 | --- | --- |
 | npm download cache | `setup` incl. `npm ci` takes 14 s; the owner removed npm caching in #215 (817 MB of per-PR caches) |
 | Node 24 only for aggregate callers | ~4 s per job; any missed caller fails the release toolchain |
-| Skip scheduled deploys when main + TYRES SHAs match the live manifest | `weekend:update` fetches live schedules/forecasts and stamps `retrievedAt`; date-dependent main output (Sol: unsafe) |
+| Skip scheduled deploys when main + TYRES SHAs match the live manifest | `weekend:update` fetches live schedules/forecasts and stamps `retrievedAt`; date-dependent main output |
 | Release browser suites as parallel jobs | Modelled ~1.6 min gain over the image cache alone, for new smoke sections, exact-SHA checkouts and artifact hand-offs across three privileged workflows |
 | Path-based skipping of suites | Most suites read all of `dist/` or cross modules; only ~30 s of narrow suites qualify |
 | Running browser suites concurrently in one job | Fixed-window "nothing changed" assertions can pass falsely under CPU contention |

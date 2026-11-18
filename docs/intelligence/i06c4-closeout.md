@@ -4,7 +4,7 @@ Status: **offline audit PASS; production snapshot reconciliation NOT VERIFIED**.
 not evidence that an owner check has happened. Baseline: `eb641a8342a0f31650f27eb60460db4bc7eb2306`.
 No key, credential, decrypted payload or production query result was accessed for this audit. No network call,
 billable query, workflow dispatch or GitHub write was made. All examples below are instructions for the owner
-on their own machine, outside chat, CI and agent sessions.
+on their own machine, outside chat and CI.
 
 ## Evidence matrix
 
@@ -136,7 +136,7 @@ also reports one dimension at a time, so it does not supply the joint reference 
 Use a trusted, non-recorded local terminal in your checkout. Use the existing encrypted
 `dashboard/data/snapshot.json` (or pass a local encrypted-envelope path as the CLI's first positional argument).
 No Google login or network is needed. Do not put a key, decrypted report, analytics number or query result in
-chat, an agent prompt, a PR, CI logs or artifacts. Do not ask an agent to run this block with your key.
+chat, a PR, CI logs or artifacts. Run this block yourself and keep your key private.
 
 The following starts a clean Bash process from either Bash or zsh. `read` takes hidden input from the terminal,
 not from the heredoc; the interactive shell records only the script, not the entered key. The key is an unexported
@@ -184,7 +184,7 @@ create a key file in this worktree, use a literal key in argv/env assignments, o
 
 ## Existing owner checks, billing and scan bounds
 
-These are a plan for the owner, **not authorization for an agent or CI to execute queries**. Use the owner's own
+These are a plan for the owner, **not authorization for anyone else or CI to execute queries**. Use the owner's own
 account, never the workflow service account. The existing [owner commands](bigquery-validation.md#owner-commands-free-metadata-and-dry-runs-only)
 generate only free dry-runs. Rendering SQL locally is also free. Execute a billable query only after its real
 dry-run and owner cost review, with the existing cap. No SQL, schedule, workflow or cost guard is added here.

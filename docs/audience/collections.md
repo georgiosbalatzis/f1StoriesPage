@@ -67,8 +67,7 @@ Unicode-normalised: any change, including NFC↔NFD, requires a new review. Prin
 2. The owner or a named editor reviews it locally: `npm run build:public && npm run collections:preview`
    ([preview](#local-preview)).
 3. To publish, the reviewer records **their own** approval in the PR: `status: "published"` and an approved `review`
-   with their name, the actual approval day and the digest printed for the reviewed content. An agent never records
-   an approval, and no approval is inherited from article, hub or Editorial OS approvals.
+   with their name, the actual approval day and the digest printed for the reviewed content. Approvals require a named human reviewer, and no approval is inherited from article, hub or Editorial OS approvals.
 4. `npm run collections:validate -- --strict` must pass: it fails when a `published` collection would be withheld.
 5. Merge and deployment follow the normal reviewed GitHub Pages process.
 
@@ -181,7 +180,7 @@ pagination, per-collection analytics, personalisation, client-side behaviour, an
 
 ## Pilot proposals
 
-Both are `draft` / `pending` in the manifest. They are agent research proposals, **not editorial approvals**. Members
+Both are `draft` / `pending` in the manifest. They are unreviewed research proposals, **not editorial approvals**. Members
 were checked on 2026-11-03 against the public article pages with the hub publication gate (all published, indexable,
 self-canonical, none retired).
 

@@ -70,7 +70,7 @@ These files should not be reviewed as source and should not reach production:
 - `node_modules/`
 - `dist/`
 - `*.min.css`, `*.min.js`, `scripts/build/asset-manifest.json`, `styles/vendor/bootstrap.slim.css`, `images/icons/sprite.svg` (rebuilt by `npm run build:assets` on every build, including CI)
-- `perf/visual-qa/`, `audit/`, `graphify-out/`
+- `perf/visual-qa/`, `audit/`
 - `blog-module/blog-entries/*/extracted/`
 - minified source maps
 - local task notes such as `nextsteps.txt`, `laststeps.txt`, `appdev.txt`, and `context.md`

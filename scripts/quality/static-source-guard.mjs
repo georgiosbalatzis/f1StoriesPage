@@ -25,7 +25,7 @@ const BANNED_TRACKED_PATHS = [
     },
     {
         pattern: /^context\.md$/,
-        reason: 'AI/operator context is local working context; move durable project docs under docs/ with a project-specific name'
+        reason: 'Local working context; move durable project docs under docs/ with a project-specific name'
     },
     {
         pattern: /^appdev\.txt$/,
