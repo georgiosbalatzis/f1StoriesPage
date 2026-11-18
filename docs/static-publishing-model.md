@@ -10,7 +10,7 @@ The repository is a static-first publishing system.
 - Some generated files are committed because GitHub Pages, local preview, and review workflows need deterministic browser assets and article output.
 - Production is not served from the repository root. It is served from `dist/`, produced by `npm run build:public`.
 - `dist/` is generated, validated, ignored by git, and uploaded as the GitHub Pages artifact.
-- Author tools are local/editorial surfaces. They create content changes and pull requests, but they are not part of the production artifact.
+- Author tools are editorial surfaces that create content changes and pull requests. `generate.html` and `housekeeping.html` are included in the production artifact.
 
 When in doubt, treat `npm run build:public` as the public boundary. Anything that reaches `dist/` must be intentional and visitor-facing.
 
@@ -53,7 +53,6 @@ These files are generated but intentionally committed:
 - `blog-module/blog-index-data.json`
 - `blog-module/blog-source-cache.json`
 - `blog-module/home-latest.json`
-- `assets/youtube-latest.json`
 - `standings/standings-cache.json`
 - `standings/rounds/*.json`
 - `standings/dirty-air-cache.json` and its published split `standings/dirty-air/*.json`
@@ -175,7 +174,7 @@ The normal full build is:
 npm run build
 ```
 
-It expands shared HTML, refreshes the local YouTube snapshot, rebuilds the blog, builds icons and Bootstrap, minifies browser assets, and stamps HTML references.
+It expands shared HTML, rebuilds the blog, builds icons and Bootstrap, minifies browser assets, and stamps HTML references.
 
 The publishable artifact build is:
 
@@ -186,10 +185,11 @@ npm run build:public
 That command runs:
 
 1. `npm run pages:guard`
-2. `npm run build:html`, `npm run build:blog`, `npm run build:assets` (no YouTube fetch; the blog build never fetches data, so `dist/` is built from committed state)
-3. `npm run build:data-contracts`
-4. `node scripts/build/public-artifact.mjs`
-5. `node scripts/build/validate-public-artifact.mjs`
+2. `npm run newsletter:check`
+3. `npm run build:html`, `npm run build:blog`, `npm run build:assets` (the blog build does not fetch data, so `dist/` is built from committed state)
+4. `npm run build:data-contracts`
+5. `node scripts/build/public-artifact.mjs`
+6. `node scripts/build/validate-public-artifact.mjs`
 
 `public-artifact.mjs` assembles `dist/` from allowlisted public files and referenced article/media assets. `validate-public-artifact.mjs` rejects private files, source files, stale references, missing required files, broken metadata URLs, bad sitemap links, missing security policy output, and representative route failures.
 
@@ -199,8 +199,8 @@ Production deploys use GitHub Actions.
 
 - `.github/workflows/quality.yml` runs on pull requests and manual dispatch. It builds and validates, but it does not deploy.
 - `.github/workflows/auto-publish-author-pr.yml` owns the trusted author PR merge, generated blog artifacts, and the article deployment call.
-- `.github/workflows/publish-blog.yml` owns scheduled/manual generated-content maintenance for blog artifacts, standings data, and the YouTube snapshot. It calls deployment only after committing a real change.
-- `.github/workflows/deploy-pages.yml` is both the reusable deployment called by publishing workflows and the direct `push`/manual deployment entry point. It builds `dist/`, runs the deploy gate, uploads the Pages artifact, and deploys through `actions/deploy-pages`.
+- `.github/workflows/publish-blog.yml` owns main-push routing and scheduled/manual maintenance for blog artifacts and standings data. A successful blog job calls deployment even without generated changes; standings maintenance requires a changed commit.
+- `.github/workflows/deploy-pages.yml` is the reusable deployment called by publishing workflows, with manual and scheduled entry points. It builds `dist/`, runs the deploy gate, uploads the Pages artifact, and deploys through `actions/deploy-pages`.
 - Repository Pages settings must use **GitHub Actions** as the publishing source. Branch/root (`legacy`) publishing is not part of this model.
 
 The author-article deploy sequence is:
@@ -210,7 +210,7 @@ The author-article deploy sequence is:
 3. Its reusable deployment job runs `npm run build:public` and the quality/runtime gates.
 4. Only `dist/` is uploaded with `actions/upload-pages-artifact` and deployed.
 
-For ordinary source pushes, `Deploy Pages` runs directly once. For scheduled or manual maintenance, `Site Maintenance` calls the same reusable deployment only when its selected task committed a change. Workflow-authored `[skip ci]` commits do not depend on another push-triggered workflow.
+For ordinary source pushes, `Site Maintenance` calls `Deploy Pages` once. Successful blog maintenance calls deployment even without generated changes; standings maintenance calls it when it commits a change. Workflow-authored `[skip ci]` commits do not depend on another push-triggered workflow.
 
 Never treat a root-level preview as proof that production will include the same files. Production includes what `dist/` includes.
 
@@ -220,8 +220,8 @@ Use the smallest command that covers the change while iterating, then use the fu
 
 | Command | Protects |
 | --- | --- |
-| `npm run pages:guard` | Author-only and private pages do not slip into public page ownership. |
-| `npm run build` | Shared HTML, YouTube snapshot, blog output, minified assets, stamped refs. |
+| `npm run pages:guard` | Pages deployment and author-tool source boundary checks. |
+| `npm run build` | Shared HTML, blog output, minified assets, stamped refs. |
 | `npm run build:public` | Full public artifact assembly and artifact validation. |
 | `npm run build:data-contracts` | Generated JSON/cache schema and version expectations. |
 | `npm run build:check` | Generated drift against tracked outputs. |
@@ -286,17 +286,17 @@ Consequence: Generator changes must include expected generated drift and blog go
 
 Decision: Production deploys only the validated `dist/` artifact.
 
-Reason: The repository root contains private notes, author tools, source documents, build scripts, tests, raw inputs, and generated intermediates that should not be served to readers.
+Reason: The repository root contains private notes, source documents, build scripts, tests, raw inputs, and generated intermediates that should not be served to readers.
 
 Consequence: Public file ownership must be allowlisted and validated. New public routes or assets require build and artifact validator updates.
 
-### DR-005: Author Tools Stay Local
+### DR-005: Author Tools
 
-Decision: `generate.html` and `housekeeping.html` remain local/editorial tools, not production pages.
+Decision: `generate.html` and `housekeeping.html` are editorial tools included in `dist/`.
 
-Reason: They require a GitHub token and perform repository write operations. Static hosting does not provide authentication or server-side authorization.
+Reason: They create content changes and pull requests using a GitHub token.
 
-Consequence: Author pages can exist in the repo for local use, but `build:public` must exclude them from `dist/`.
+Consequence: The public artifact includes the tools and their required assets; publishing uses GitHub authorization.
 
 ### DR-006: Public Runtime Uses Browser-Native Code
 
