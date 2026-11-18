@@ -50,12 +50,14 @@ jobs:
             def single_npm:
               def version: "(?:0|[1-9][0-9]{0,8})" | . + "\\." + . + "\\." + .;
               def parts: split(".") | map(tonumber);
+              # Caret ranges: 0.x minor and 0.0.x patch bumps are breaking.
+              def line: if .[0] > 0 then .[:1] elif .[1] > 0 then .[:2] else . end;
               .head.ref as $branch |
               ((.title | capture("^chore\\(deps\\): bump (?<name>(?:@[a-z0-9._-]+/)?[a-z0-9._-]+) from (?<old>" + version + ") to (?<new>" + version + ")$")) // null) as $update |
               if $update == null then false else
                 ($update.old | parts) as $old | ($update.new | parts) as $new |
                 $branch == ("dependabot/npm_and_yarn/" + ($update.name | ltrimstr("@")) + "-" + $update.new) and
-                $old[0] == $new[0] and $old < $new
+                ($old | line) == ($new | line) and $old < $new
               end;
             .state == "open" and .draft == false and
             .user.login == "dependabot[bot]" and
@@ -80,14 +82,14 @@ jobs:
             exit 0
           fi
 
-          # Grouped and transitive updates can still cross a major version inside the lockfile.
+          # Grouped and transitive updates can still cross a major version (or a 0.x minor) inside the lockfile.
           base_sha="$(printf '%s' "$pr_json" | jq -r '.base.sha')"
           gh api -H 'Accept: application/vnd.github.raw+json' "repos/$REPO/contents/package-lock.json?ref=$base_sha" > "$RUNNER_TEMP/base-lock.json"
           gh api -H 'Accept: application/vnd.github.raw+json' "repos/$REPO/contents/package-lock.json?ref=$TESTED_SHA" > "$RUNNER_TEMP/head-lock.json"
           if ! jq -n -e --slurpfile base "$RUNNER_TEMP/base-lock.json" --slurpfile head "$RUNNER_TEMP/head-lock.json" '
             def majors: [.packages | to_entries[] | select(.value.version != null) | {
               name: (.value.name // (.key | sub("^.*node_modules/"; ""))),
-              major: (.value.version | tostring | (capture("^(?<m>0|[1-9][0-9]*)\\.").m // .))
+              major: (.value.version | tostring | (capture("^(?<m>[1-9][0-9]*(?=\\.)|0\\.[1-9][0-9]*(?=\\.)|0\\.0\\.(?:0|[1-9][0-9]*))").m // .))
             }];
             if ($base | length) != 1 or ($head | length) != 1 then false
             elif ($base[0].packages | type) != "object" or ($head[0].packages | type) != "object" then false

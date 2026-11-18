@@ -42,11 +42,15 @@ test('dependency auto-merge only accepts the tested, same-repository Dependabot 
 test('only supported npm patch and minor titles and branches qualify', () => {
     const npm = (title, ref, count = 2) => eligible({ ...pr, title, head: { ...pr.head, ref }, changed_files: count });
     assert.equal(npm('chore(deps): bump @scope/example from 1.9.8 to 1.10.0', 'dependabot/npm_and_yarn/scope/example-1.10.0'), true);
+    assert.equal(npm('chore(deps): bump example from 1.2.0 to 1.3.0', 'dependabot/npm_and_yarn/example-1.3.0'), true);
+    assert.equal(npm('chore(deps): bump example from 0.8.1 to 0.8.2', 'dependabot/npm_and_yarn/example-0.8.2'), true);
     for (const group of ['dev-tooling', 'build-runtime']) {
         assert.equal(npm(`chore(deps): bump the ${group} group with 4 updates`, `dependabot/npm_and_yarn/${group}-35653276c1`), true);
     }
     for (const [title, ref, count] of [
         ['chore(deps): bump example from 1.2.3 to 2.0.0', 'dependabot/npm_and_yarn/example-2.0.0'],
+        ['chore(deps): bump example from 0.8.4 to 0.9.0', 'dependabot/npm_and_yarn/example-0.9.0'],
+        ['chore(deps): bump example from 0.0.1 to 0.0.2', 'dependabot/npm_and_yarn/example-0.0.2'],
         ['chore(deps): bump example from 1.2.3 to 1.2.2', 'dependabot/npm_and_yarn/example-1.2.2'],
         ['chore(deps): bump example from 1.2.3 to 1.2.4-beta.1', 'dependabot/npm_and_yarn/example-1.2.4-beta.1'],
         [pr.title, 'dependabot/npm_and_yarn/example-2.0.0'],
@@ -81,7 +85,9 @@ test('dependency auto-merge rejects lockfile entries that move to a new major ve
         'node_modules/example': { version: '1.2.3' },
         'node_modules/@scope/tool': { version: '0.4.1' },
         'node_modules/other/node_modules/example': { version: '2.0.0' },
-        'node_modules/linked': { link: true }
+        'node_modules/linked': { link: true },
+        'node_modules/@xmldom/xmldom': { version: '0.8.10' },
+        'node_modules/tiny': { version: '0.0.3' }
     });
     const accepts = (head, baseLock = base) => matches(null, [
         '-n', '--slurpfile', 'base', write('base.json', baseLock), '--slurpfile', 'head', write('head.json', head)
@@ -94,11 +100,15 @@ test('dependency auto-merge rejects lockfile entries that move to a new major ve
             'node_modules/example': { version: '2.1.0' },
             'node_modules/@scope/tool': { version: '0.4.9' },
             'node_modules/other/node_modules/example': { version: '1.9.0' },
-            'node_modules/new-transitive': { version: '7.0.0' }
+            'node_modules/new-transitive': { version: '7.0.0' },
+            'node_modules/@xmldom/xmldom': { version: '0.8.11' },
+            'node_modules/tiny': { version: '0.0.3' }
         })), true);
         for (const packages of [
             { 'node_modules/example': { version: '3.0.0' } },
             { 'node_modules/@scope/tool': { version: '1.0.0' } },
+            { 'node_modules/@xmldom/xmldom': { version: '0.9.0' } },
+            { 'node_modules/tiny': { version: '0.0.4' } },
             { 'node_modules/nested/node_modules/@scope/tool': { version: '1.0.0' } },
             { 'node_modules/example': { version: 'git+https://example.invalid/example.git' } }
         ]) assert.equal(accepts(lockfile(packages)), false, JSON.stringify(packages));
