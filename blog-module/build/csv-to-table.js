@@ -154,39 +154,42 @@ function createCSVErrorMessage(csvFileName) {
 }
 
 function findCSVFile(csvFileName, entryPath) {
-    const resolvedEntryPath = (!entryPath || typeof entryPath !== 'string') ? CONFIG.BLOG_DIR : entryPath;
-    const possiblePaths = [
-        path.join(resolvedEntryPath, csvFileName),
-        path.join(CONFIG.BLOG_DIR, 'data', csvFileName),
-        path.join(CONFIG.BLOG_DIR, csvFileName)
-    ];
+    const missing = { filePath: null, content: null };
+    if (typeof csvFileName !== 'string' || !/\.csv$/i.test(csvFileName)) return missing;
 
-    for (const filePath of possiblePaths) {
-        if (fs.existsSync(filePath)) {
-            try {
-                return { filePath, content: fs.readFileSync(filePath, 'utf8') };
-            } catch (error) {
-                console.error(`Error reading ${filePath}: ${error.message}`);
-            }
+    const entryDir = typeof entryPath === 'string' && entryPath;
+    const dataDir = path.join(CONFIG.BLOG_DIR, 'data');
+
+    function readWithin(dir, name) {
+        const candidate = path.join(dir, name);
+        if (!fs.existsSync(candidate)) return null;
+        try {
+            // Resolve the parent so a symlink replacing the lookup directory cannot redefine the boundary.
+            const root = path.join(fs.realpathSync(path.dirname(dir)), path.basename(dir));
+            const filePath = fs.realpathSync(candidate);
+            const relative = path.relative(root, filePath);
+            if (!relative || relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)
+                || !/\.csv$/i.test(filePath) || !fs.statSync(filePath).isFile()) return null;
+            return { filePath, content: fs.readFileSync(filePath, 'utf8') };
+        } catch (error) {
+            console.error(`Error reading ${candidate}: ${error.message}`);
+            return null;
         }
     }
+
+    const exact = (entryDir && readWithin(entryDir, csvFileName)) || readWithin(dataDir, csvFileName);
+    if (exact) return exact;
+    if (!entryDir) return missing;
 
     try {
-        const entryDir = fs.readdirSync(resolvedEntryPath);
         const lowercaseFileName = csvFileName.toLowerCase();
-        const matchingFile = entryDir.find(fileName =>
-            fileName.toLowerCase() === lowercaseFileName || fileName.toLowerCase() === `${lowercaseFileName}.csv`
-        );
-
-        if (matchingFile) {
-            const filePath = path.join(resolvedEntryPath, matchingFile);
-            return { filePath, content: fs.readFileSync(filePath, 'utf8') };
-        }
+        const matchingFile = fs.readdirSync(entryDir).find(fileName => fileName.toLowerCase() === lowercaseFileName);
+        if (matchingFile) return readWithin(entryDir, matchingFile) || missing;
     } catch (error) {
-        console.error(`Error reading directory ${resolvedEntryPath}: ${error.message}`);
+        console.error(`Error reading directory ${entryDir}: ${error.message}`);
     }
 
-    return { filePath: null, content: null };
+    return missing;
 }
 
 function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
@@ -329,14 +332,13 @@ function enhancedExtractCSVTags(htmlContent) {
 }
 
 function processEmbeddedCSV(htmlContent, entryPath) {
-    const resolvedEntryPath = entryPath || CONFIG.BLOG_DIR;
     const csvTags = enhancedExtractCSVTags(htmlContent);
     if (!csvTags.length) return htmlContent;
 
     let processedContent = htmlContent;
     csvTags.forEach(tag => {
         try {
-            const { content } = findCSVFile(tag.fileName, resolvedEntryPath);
+            const { content } = findCSVFile(tag.fileName, entryPath);
             const replacement = content
                 ? createResponsiveTableFromCSV(content, tag.fileName, { allowHtml: tag.allowHtml, caption: tag.caption, source: tag.source })
                 : createCSVErrorMessage(tag.fileName);
