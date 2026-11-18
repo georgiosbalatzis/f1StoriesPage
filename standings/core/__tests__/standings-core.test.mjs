@@ -86,6 +86,24 @@ assert.throws(
     () => payloads.validateOpenF1ArrayPayload({}, 'OpenF1 payload'),
     /OpenF1 payload must be an array/
 );
+const driverRow = { position: '1', points: '42.5' };
+standingsPayload.MRData.StandingsTable.StandingsLists[0].DriverStandings.push(driverRow);
+assert.equal(payloads.validateJolpicaStandingsPayload(standingsPayload), standingsPayload);
+driverRow.position = '<b>1</b>';
+assert.throws(() => payloads.validateStandingsSnapshotPayload(snapshot), /position must be a finite number/);
+
+const championship = { numericFields: ['position_current', 'points_current'] };
+const rows = [{ position_current: 1, points_current: '42.5' }];
+assert.equal(payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), rows);
+for (const points of ['42.5<b>points</b>', Infinity, null, ' ']) {
+    rows[0].points_current = points;
+    assert.throws(() => payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), /points_current must be a finite number/);
+}
+
+const raceList = { MRData: { RaceTable: { Races: [{ round: '2' }] } } };
+assert.equal(payloads.validateJolpicaRaceListPayload(raceList), raceList);
+raceList.MRData.RaceTable.Races[0].round = '<b>2</b>';
+assert.throws(() => payloads.validateJolpicaRaceListPayload(raceList), /round must be a finite number/);
 
 const lifecycle = loadBrowserModule('standings/core/lifecycle.js', {
     setTrustedHtml(target, html, reason) {

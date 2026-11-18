@@ -8,6 +8,7 @@
 // only as an emergency rollback artifact outside the live asset graph.
 
 import { esc, escAttr, formatWinsLabel, formatEditorialDate } from './core/format.js';
+import { parseNumberValue } from './tabs/_shared.js';
 import {
     getCanonicalTeamColor,
     getTeamLogo
@@ -1316,8 +1317,9 @@ function loadFromOpenF1Fallback() {
             ]);
         })
         .then(function(r) {
-            validateOpenF1ArrayPayload(r[0], 'OpenF1 championship drivers');
-            validateOpenF1ArrayPayload(r[1], 'OpenF1 championship teams');
+            const championshipFields = { numericFields: ['position_current', 'points_current'] };
+            validateOpenF1ArrayPayload(r[0], 'OpenF1 championship drivers', championshipFields);
+            validateOpenF1ArrayPayload(r[1], 'OpenF1 championship teams', championshipFields);
             validateOpenF1ArrayPayload(r[2], 'OpenF1 drivers');
             renderDriversFromOpenF1(r[0], r[2]);
             renderConstructorsFromOpenF1(r[1], r[2]);
@@ -1347,7 +1349,7 @@ function renderDrivers(standings, openf1Map) {
         return;
     }
 
-    const maxPts = parseFloat(standings[0].points) || 1;
+    const maxPts = normalizePoints(standings[0].points) || 1;
     renderDriverStandingsPolish(standings, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Οδηγός / Ομάδα');
 
@@ -1361,9 +1363,9 @@ function renderDrivers(standings, openf1Map) {
         const name = (driver.givenName || '') + ' ' + (driver.familyName || '');
         const teamName = constructor ? constructor.name : '';
         const tc = getCanonicalTeamColor(cId, teamName, '');
-        const pts = parseFloat(s.points) || 0;
-        const wins = parseInt(s.wins) || 0;
-        const pos = s.position;
+        const pts = normalizePoints(s.points);
+        const wins = Math.trunc(normalizePoints(s.wins));
+        const pos = parseNumberValue(s.position) || 0;
         const prev = index > 0 ? standings[index - 1] : null;
         const next = standings[index + 1] || null;
         const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
@@ -1407,7 +1409,7 @@ function renderDrivers(standings, openf1Map) {
         const of1 = openf1Map[(driver.familyName || '').toLowerCase()] || {};
         const tc = getCanonicalTeamColor(cId, constructor ? constructor.name : '', of1.teamColor);
         const label = (driver.code || driver.driverId.substring(0, 3)).toUpperCase();
-        const pts = parseFloat(s.points) || 0;
+        const pts = normalizePoints(s.points);
         const pct = Math.max(4, (pts / maxPts) * 100);
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
@@ -1443,7 +1445,7 @@ function renderConstructors(standings, driverStandings) {
 
     const teamDrivers = teamDriverCodes(driverStandings);
 
-    const maxPts = parseFloat(standings[0].points) || 1;
+    const maxPts = normalizePoints(standings[0].points) || 1;
     renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, latestStandingsSeason || YEAR);
     let html = tableHeadHTML('Κατασκευαστής / Οδηγοί');
 
@@ -1454,9 +1456,9 @@ function renderConstructors(standings, driverStandings) {
         const logo = getTeamLogo(cId, teamName);
         const tc = getCanonicalTeamColor(cId, teamName, '');
         const drivers = teamDrivers[cId] || [];
-        const pts = parseFloat(s.points) || 0;
-        const wins = parseInt(s.wins) || 0;
-        const pos = s.position;
+        const pts = normalizePoints(s.points);
+        const wins = Math.trunc(normalizePoints(s.wins));
+        const pos = parseNumberValue(s.position) || 0;
         const prev = index > 0 ? standings[index - 1] : null;
         const next = standings[index + 1] || null;
         const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
@@ -1496,7 +1498,7 @@ function renderConstructors(standings, driverStandings) {
         const cId = c.constructorId;
         const tc = getCanonicalTeamColor(cId, c.name || '', '');
         const label = (c.name || '').substring(0, 3).toUpperCase();
-        const pts = parseFloat(s.points) || 0;
+        const pts = normalizePoints(s.points);
         const pct = Math.max(4, (pts / maxPts) * 100);
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
@@ -1511,7 +1513,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
     const dMap = {};
     (driverInfo || []).forEach(function(d) { dMap[d.driver_number] = d; });
     standings.sort(function(a, b) { return a.position_current - b.position_current; });
-    const maxPts = standings[0].points_current || 1;
+    const maxPts = normalizePoints(standings[0].points_current) || 1;
     let html = '';
 
     standings.forEach(function(s, index) {
@@ -1521,17 +1523,19 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         const hs = getCachedHeadshotResult('', name, d.headshot_url || '');
         const team = d.team_name || '';
         const acr = d.name_acronym || '';
-        const barPct = Math.max(2, (s.points_current / maxPts) * 100);
+        const pts = normalizePoints(s.points_current);
+        const pos = parseNumberValue(s.position_current) || 0;
+        const barPct = Math.max(2, (pts / maxPts) * 100);
         const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
-            + '<div class="st-pos">' + s.position_current + '</div>'
+            + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
                    + '<div class="st-avatar-fallback" style="display:none;">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
-            + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div></div>'
+            + '<div class="st-points-area"><div class="st-points">' + pts + '</div></div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
@@ -1542,10 +1546,11 @@ function renderDriversFromOpenF1(standings, driverInfo) {
     standings.slice(0, 10).forEach(function(s) {
         const d = dMap[s.driver_number] || {};
         const tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
-        const label = d.name_acronym || ('P' + s.position_current);
-        const pct = Math.max(4, (s.points_current / maxPts) * 100);
+        const label = d.name_acronym || ('P' + (parseNumberValue(s.position_current) || 0));
+        const pts = normalizePoints(s.points_current);
+        const pct = Math.max(4, (pts / maxPts) * 100);
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
+            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'OpenF1 fallback driver chart rows');
     if (driversChart) driversChart.style.display = 'block';
@@ -1563,21 +1568,23 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
         teamColors[d.team_name] = getCanonicalTeamColor('', d.team_name, d.team_colour);
     });
     standings.sort(function(a, b) { return a.position_current - b.position_current; });
-    const maxPts = standings[0].points_current || 1;
+    const maxPts = normalizePoints(standings[0].points_current) || 1;
     let html = '';
 
     standings.forEach(function(s) {
         const tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
         const drivers = teamDrivers[s.team_name] || [];
         const shortName = (s.team_name || '').substring(0, 3).toUpperCase();
-        const barPct = Math.max(2, (s.points_current / maxPts) * 100);
+        const pts = normalizePoints(s.points_current);
+        const pos = parseNumberValue(s.position_current) || 0;
+        const barPct = Math.max(2, (pts / maxPts) * 100);
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
-            + '<div class="st-pos">' + s.position_current + '</div>'
+            + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + '<div class="st-team-swatch" data-team-short="' + escAttr(shortName) + '" style="background:#' + esc(tc) + ';"><span class="swatch-text">' + esc(shortName) + '</span></div>'
             + '<div class="st-name-block"><div class="st-name">' + esc(s.team_name) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
-            + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div></div>'
+            + '<div class="st-points-area"><div class="st-points">' + pts + '</div></div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
@@ -1587,9 +1594,10 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
     standings.forEach(function(s) {
         const tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
         const label = (s.team_name || '').substring(0, 3).toUpperCase();
-        const pct = Math.max(4, (s.points_current / maxPts) * 100);
+        const pts = normalizePoints(s.points_current);
+        const pct = Math.max(4, (pts / maxPts) * 100);
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
+            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'OpenF1 fallback constructor chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';

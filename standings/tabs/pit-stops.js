@@ -407,7 +407,7 @@ function renderPitStops(raceData, race, races) {
     }).length;
 
     const selectOptions = races.map(function(r) {
-        return '<option value="' + esc(r.round) + '"' + (String(r.round) === String(state.selectedRound) ? ' selected' : '') + '>R' + r.round + ' · ' + esc(r.raceName) + '</option>';
+        return '<option value="' + esc(r.round) + '"' + (String(r.round) === String(state.selectedRound) ? ' selected' : '') + '>R' + esc(r.round) + ' · ' + esc(r.raceName) + '</option>';
     }).join('');
 
     let html = '<div class="pit-stops-card' + (state.activeView === 'season' ? ' is-season-view' : '') + '">'
