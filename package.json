@@ -110,10 +110,10 @@
     "bootstrap": "^5.3.9",
     "chrome-launcher": "^1.2.3",
     "esbuild": "^0.28.2",
-    "fast-xml-parser": "^5.12.0",
+    "fast-xml-parser": "^5.12.1",
     "lighthouse": "^13.6.0",
     "lightningcss": "^1.33.0",
-    "playwright-core": "^1.65.0",
+    "playwright-core": "^1.65.1",
     "puppeteer-core": "^25.17.0",
     "sass": "^1.108.2",
     "web-vitals": "6.2.3"
