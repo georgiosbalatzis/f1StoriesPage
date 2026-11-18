@@ -6,6 +6,7 @@
 import path from 'node:path';
 
 export const ENTRIES = 'blog-module/blog-entries/';
+const MAX_CHANGED_FILES = 300;
 const FOLDER = /^[\p{L}\p{N}_-]+$/u;
 // What the blog build accepts as an article source (shared.js isSourceDocument), or a source-less legacy page.
 const publishes = names => names.some(name => name === 'article.html'
@@ -62,11 +63,19 @@ export async function main(args) {
     const pr = await github(token, `repos/${repo}/pulls/${number}`);
     if (!pr) throw new Error(`PR #${number} not found`);
     if (pr.head.sha !== sha) throw new Error(`PR #${number} moved to ${pr.head.sha}; ${sha} was tested`);
+    const expected = pr.changed_files;
+    if (!Number.isInteger(expected) || expected < 1 || expected > MAX_CHANGED_FILES) {
+        throw new Error(`PR #${number} must report between 1 and ${MAX_CHANGED_FILES} changed files`);
+    }
     const files = [];
     for (let page = 1; ; page++) {
         const batch = await github(token, `repos/${repo}/pulls/${number}/files?per_page=100&page=${page}`);
+        if (!Array.isArray(batch)) throw new Error(`PR #${number} returned an invalid changed-file list`);
         files.push(...batch);
-        if (batch.length < 100) break;
+        if (files.length > expected || batch.length < 100) break;
+    }
+    if (files.length !== expected) {
+        throw new Error(`PR #${number} reported ${expected} changed files, but GitHub returned ${files.length}`);
     }
     const refs = { base: pr.base.sha, head: sha };
     const list = async (folder, side) => {

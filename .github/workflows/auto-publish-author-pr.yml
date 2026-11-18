@@ -78,14 +78,19 @@ jobs:
               ;;
           esac
 
-          files="$(gh api --paginate "repos/$REPO/pulls/$pr_number/files" --jq '.[].filename')"
-          if [ -z "$files" ]; then
-            echo "PR #$pr_number has no changed files."
-            echo "publish=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          if ! changed_files="$(printf '%s' "$pr_json" | jq -er '.changed_files | select(type == "number" and floor == . and . >= 1 and . <= 300)')"; then
+            echo "PR #$pr_number must report between 1 and 300 changed files."
+            exit 1
+          fi
+          file_pages="$(gh api --paginate --slurp "repos/$REPO/pulls/$pr_number/files?per_page=100")"
+          if ! printf '%s' "$file_pages" | jq -e --argjson count "$changed_files" '
+            type == "array" and all(.[]; type == "array") and (add | length == $count)
+          ' > /dev/null; then
+            echo "PR #$pr_number has an incomplete or inconsistent changed-file list."
+            exit 1
           fi
 
-          invalid_files="$(printf '%s\n' "$files" | awk 'NF && $0 !~ /^blog-module\/blog-entries\//')"
+          invalid_files="$(printf '%s' "$file_pages" | jq -r 'add[] | .filename | select(startswith("blog-module/blog-entries/") | not)')"
           if [ -n "$invalid_files" ]; then
             echo "PR #$pr_number contains files outside blog entries:"
             printf '%s\n' "$invalid_files"
