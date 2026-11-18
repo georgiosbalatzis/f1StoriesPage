@@ -39,14 +39,44 @@ jobs:
             exit 0
           fi
 
-          if ! gh api "repos/$REPO/pulls/$number" | jq -e --arg repo "$REPO" --arg sha "$TESTED_SHA" '
+          pr_json="$(gh api "repos/$REPO/pulls/$number")"
+          # The named npm groups are limited to minor and patch in dependabot.yml.
+          # Other PRs must use a matching npm branch and stable version pair in the title.
+          if ! printf '%s' "$pr_json" | jq -e --arg repo "$REPO" --arg sha "$TESTED_SHA" '
+            def grouped_npm:
+              . as $pr | ["dev-tooling", "build-runtime"] | any(. as $group |
+                ($pr.head.ref | test("^dependabot/npm_and_yarn/" + $group + "-[0-9a-f]{10}$")) and
+                ($pr.title | test("^chore\\(deps\\): bump the " + $group + " group with [1-9][0-9]* updates?$")));
+            def single_npm:
+              def version: "(?:0|[1-9][0-9]{0,8})" | . + "\\." + . + "\\." + .;
+              def parts: split(".") | map(tonumber);
+              .head.ref as $branch |
+              ((.title | capture("^chore\\(deps\\): bump (?<name>(?:@[a-z0-9._-]+/)?[a-z0-9._-]+) from (?<old>" + version + ") to (?<new>" + version + ")$")) // null) as $update |
+              if $update == null then false else
+                ($update.old | parts) as $old | ($update.new | parts) as $new |
+                $branch == ("dependabot/npm_and_yarn/" + ($update.name | ltrimstr("@")) + "-" + $update.new) and
+                $old[0] == $new[0] and $old < $new
+              end;
             .state == "open" and .draft == false and
             .user.login == "dependabot[bot]" and
             .base.ref == "main" and .base.repo.full_name == $repo and
             .head.repo.full_name == $repo and
-            (.head.ref | startswith("dependabot/")) and .head.sha == $sha
+            (.head.ref | startswith("dependabot/")) and .head.sha == $sha and
+            (.title | type == "string") and (grouped_npm or single_npm) and
+            (.changed_files == 1 or .changed_files == 2)
           ' > /dev/null; then
             echo "PR is no longer eligible for automatic merging."
+            exit 0
+          fi
+
+          changed_files="$(printf '%s' "$pr_json" | jq '.changed_files')"
+          files="$(gh api "repos/$REPO/pulls/$number/files?per_page=100")"
+          if ! printf '%s' "$files" | jq -e --argjson count "$changed_files" '
+            type == "array" and length == $count and
+            all(.[]; .status == "modified" and (.filename == "package.json" or .filename == "package-lock.json")) and
+            (map(.filename) | unique | length == $count)
+          ' > /dev/null; then
+            echo "PR #$number must change only npm package files to merge automatically."
             exit 0
           fi
 

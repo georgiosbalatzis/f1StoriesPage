@@ -1,8 +1,8 @@
 version: 2
 
 # Weekly update PRs for the two dependency surfaces of this repo.
-# Dependabot PRs automatically merge after Site Quality passes on their current
-# commit, then deploy Pages. See auto-merge-dependencies.yml.
+# Eligible npm minor and patch PRs merge after Site Quality passes on their
+# current commit, then deploy Pages. See auto-merge-dependencies.yml.
 updates:
   - package-ecosystem: npm
     directory: /
