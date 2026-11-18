@@ -1317,7 +1317,7 @@ function loadFromOpenF1Fallback() {
             ]);
         })
         .then(function(r) {
-            const championshipFields = { numericFields: ['position_current', 'points_current'] };
+            const championshipFields = { numericFields: ['position_current', 'points_current'], optionalPositionFields: ['position_current'] };
             validateOpenF1ArrayPayload(r[0], 'OpenF1 championship drivers', championshipFields);
             validateOpenF1ArrayPayload(r[1], 'OpenF1 championship teams', championshipFields);
             validateOpenF1ArrayPayload(r[2], 'OpenF1 drivers');
@@ -1331,6 +1331,12 @@ function loadFromOpenF1Fallback() {
             showError(constructorsTable);
             setStandingsDataStatus('error');
         });
+}
+
+// Unclassified rows carry no position; show Jolpica's "-" placeholder instead.
+function positionLabel(value) {
+    const pos = parseNumberValue(value);
+    return isFinite(pos) ? pos : '-';
 }
 
 // Rows expand to a detail row on the full page; in an embed they are static.
@@ -1365,7 +1371,7 @@ function renderDrivers(standings, openf1Map) {
         const tc = getCanonicalTeamColor(cId, teamName, '');
         const pts = normalizePoints(s.points);
         const wins = Math.trunc(normalizePoints(s.wins));
-        const pos = parseNumberValue(s.position) || 0;
+        const pos = positionLabel(s.position);
         const prev = index > 0 ? standings[index - 1] : null;
         const next = standings[index + 1] || null;
         const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
@@ -1458,7 +1464,7 @@ function renderConstructors(standings, driverStandings) {
         const drivers = teamDrivers[cId] || [];
         const pts = normalizePoints(s.points);
         const wins = Math.trunc(normalizePoints(s.wins));
-        const pos = parseNumberValue(s.position) || 0;
+        const pos = positionLabel(s.position);
         const prev = index > 0 ? standings[index - 1] : null;
         const next = standings[index + 1] || null;
         const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
@@ -1524,7 +1530,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         const team = d.team_name || '';
         const acr = d.name_acronym || '';
         const pts = normalizePoints(s.points_current);
-        const pos = parseNumberValue(s.position_current) || 0;
+        const pos = positionLabel(s.position_current);
         const barPct = Math.max(2, (pts / maxPts) * 100);
         const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
 
@@ -1546,7 +1552,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
     standings.slice(0, 10).forEach(function(s) {
         const d = dMap[s.driver_number] || {};
         const tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
-        const label = d.name_acronym || ('P' + (parseNumberValue(s.position_current) || 0));
+        const label = d.name_acronym || ('P' + positionLabel(s.position_current));
         const pts = normalizePoints(s.points_current);
         const pct = Math.max(4, (pts / maxPts) * 100);
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
@@ -1576,7 +1582,7 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
         const drivers = teamDrivers[s.team_name] || [];
         const shortName = (s.team_name || '').substring(0, 3).toUpperCase();
         const pts = normalizePoints(s.points_current);
-        const pos = parseNumberValue(s.position_current) || 0;
+        const pos = positionLabel(s.position_current);
         const barPct = Math.max(2, (pts / maxPts) * 100);
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'

@@ -91,10 +91,33 @@ standingsPayload.MRData.StandingsTable.StandingsLists[0].DriverStandings.push(dr
 assert.equal(payloads.validateJolpicaStandingsPayload(standingsPayload), standingsPayload);
 driverRow.position = '<b>1</b>';
 assert.throws(() => payloads.validateStandingsSnapshotPayload(snapshot), /position must be a finite number/);
+for (const position of [undefined, null, '', '-']) {
+    driverRow.position = position;
+    assert.equal(payloads.validateStandingsSnapshotPayload(snapshot), snapshot);
+}
+driverRow.points = undefined;
+assert.throws(() => payloads.validateStandingsSnapshotPayload(snapshot), /points must be a finite number/);
+driverRow.points = '42.5';
 
-const championship = { numericFields: ['position_current', 'points_current'] };
+const committedSnapshots = ['standings/standings-cache.json'].concat(
+    fs.readdirSync(path.join(REPO_ROOT, 'standings/rounds'))
+        .filter(name => name.endsWith('.json'))
+        .map(name => 'standings/rounds/' + name)
+);
+assert.ok(committedSnapshots.length > 1);
+for (const relPath of committedSnapshots) {
+    const data = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8'));
+    assert.doesNotThrow(() => payloads.validateStandingsSnapshotPayload(data), relPath);
+}
+
+const championship = { numericFields: ['position_current', 'points_current'], optionalPositionFields: ['position_current'] };
 const rows = [{ position_current: 1, points_current: '42.5' }];
 assert.equal(payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), rows);
+rows[0].position_current = null;
+assert.equal(payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), rows);
+rows[0].position_current = '<b>1</b>';
+assert.throws(() => payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), /position_current must be a finite number/);
+rows[0].position_current = 1;
 for (const points of ['42.5<b>points</b>', Infinity, null, ' ']) {
     rows[0].points_current = points;
     assert.throws(() => payloads.validateOpenF1ArrayPayload(rows, 'OpenF1 championship', championship), /points_current must be a finite number/);
