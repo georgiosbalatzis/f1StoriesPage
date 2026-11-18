@@ -26,7 +26,7 @@ This prototype **does not independently establish semantic support for live clai
 3. Model source IDs must map to those real records. An annotation can be associated with a claim only if its offsets lie within that exact, unique claim string in the provider's original JSON text. Nearby citations and references elsewhere in the JSON do not qualify.
 4. A citation association is **not** an entailment check. Live factual candidates, statistics and causal explanations remain in the unverified section. Contradictions retain their own section, with explicit unverified labels. No live claim is automatically labelled verified.
 5. Each moved claim retains its original section, classification, valid source links and reason. The UI distinguishes a provider citation from a model-only reference. A rejected citation is removed; the unsupported statement remains visibly unverified.
-6. Only the specific static DEMO claim/source pairs reviewed during implementation can have `fixture_inspected` status. This means an inspected example, **not** a newly retrieved record or human editorial approval. See [source inspection notes](evidence/source-review.md).
+6. Only the specific static DEMO claim/source pairs reviewed during implementation can have `fixture_inspected` status. This means an inspected example, **not** a newly retrieved record or human editorial approval.
 
 Publication dates are not inferred from retrieval dates. The live source metadata used here does not establish publication dates; these remain `null` / «άγνωστη». Model-supplied titles/dates do not override source metadata. A provider title absent from annotations is marked unavailable. Retrieval times come from the server. Fixture inspection dates are fixed and explicitly labelled.
 
@@ -106,12 +106,7 @@ npm run test:security
 
 Browser tests use the repository's `playwright-core` and installed Chrome (or `CHROME_PATH`). They intercept external browser traffic and fail on unexpected requests. All server tests pass explicit environments and fake providers; adapter tests pass a fake fetch. Adding a real shell API key cannot enable paid test calls.
 
-The experiment remains outside the existing public-artifact allowlist. Its interface is reachable only from `research:dev`; no production author-page asset was modified to expose it. See [validation report](evidence/validation.md), the [four example dossiers](evidence/dossiers/), and screenshots:
-
-| | Dark | Light |
-| --- | --- | --- |
-| Desktop 1440px | [Screenshot](evidence/demo-1440-dark.png) | [Screenshot](evidence/demo-1440-light.png) |
-| Mobile 390px | [Screenshot](evidence/demo-390-dark.png) | [Screenshot](evidence/demo-390-light.png) |
+The experiment remains outside the existing public-artifact allowlist. Its interface is reachable only from `research:dev`; no production author-page asset was modified to expose it.
 
 ## Architecture and P2.3b recommendation
 
@@ -121,4 +116,4 @@ P2.3a demonstrates a local workflow, source provenance validation and conservati
 
 ## E-08 offline decision
 
-The experiment remains isolated; **NO-GO for workspace import or production integration**. The fixed offline evaluation and its limitations are documented in [evaluation-2026-10.md](evidence/evaluation-2026-10.md). Human adjudication remains pending, and a deliberately mis-scoped fixture exposes a promotion the classifier cannot detect. Live quality, latency and cost are unavailable because no live call was made. A future live evaluation requires an explicit owner budget; offline success alone would not authorize integration.
+The experiment remains isolated; **NO-GO for workspace import or production integration**. Human adjudication remains pending, and a deliberately mis-scoped fixture exposes a promotion the classifier cannot detect. Live quality, latency and cost are unavailable because no live call was made. A future live evaluation requires an explicit owner budget; offline success alone would not authorize integration.

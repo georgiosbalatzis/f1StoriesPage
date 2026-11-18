@@ -1,7 +1,7 @@
 // inline-head-css.mjs — dist-only: replace each render-blocking local stylesheet <link> in <head>
 // with a <style> holding the complete file, in place, so first paint skips the CSS round trip.
 // Order, and with it the cascade, is unchanged; nothing is subset. Sources keep their <link>s.
-// Measured in issue #279 step 2: perf/sprint-279/step2-css.md.
+// Measured in issue #279 step 2.
 
 import path from 'node:path';
 

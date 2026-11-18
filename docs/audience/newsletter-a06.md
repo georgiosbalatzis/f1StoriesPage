@@ -5,7 +5,7 @@ Status: **engineering foundation, production-disabled.** Base `origin/main` `8af
 | Item | Status |
 | --- | --- |
 | A-06 engineering foundation | Completed in this PR: domain contract, activation gate, local mock preview, tests |
-| Provider | **Not selected.** Research only: [provider evaluation](newsletter-provider-evaluation.md) |
+| Provider | **Not selected.** Research only: provider evaluation |
 | Signup | **Not activated.** No public form, endpoint, script, CSP origin or privacy-page change |
 | Subscribers | **None collected.** No newsletter address is processed anywhere in production (the separate TEAM RADIO contact form still sends its messages via Formspree, unchanged) |
 | Emails | **None sent.** The mock provider has an in-memory outbox and no network access |
@@ -181,7 +181,7 @@ questions, **not legal advice or a legal review**.
 | Data | None | Email address, consent evidence, confirmation status, suppression; no profile or reading behaviour |
 | Retention | None | Pending expiry, retention after unsubscribe, suppression-record retention, account closure |
 | Access / deletion requests | — | Who handles them, through which provider tool, within what time |
-| Sub-processors / transfers | — | Review the selected provider's list and any non-EU transfer ([evaluation](newsletter-provider-evaluation.md)) |
+| Sub-processors / transfers | — | Review the selected provider's list and any non-EU transfer |
 | DPA / DPIA | Not applicable while disabled | Reviewer records whether each applies, the decision and the date |
 | Privacy notice | Unchanged ("no newsletter" is accurate) | Activation PR updates it before collection starts |
 | Incident response | — | Named incident owner; provider breach-notice terms; how to disable the form |
@@ -231,7 +231,7 @@ Opens are not reading. A-06 provides no send path, no job and no segmentation.
 
 ## Owner decisions required
 
-1. Select a provider (or the selection process), weighing EU hosting against simplicity ([evaluation](newsletter-provider-evaluation.md)).
+1. Select a provider (or the selection process), weighing EU hosting against simplicity.
 2. Name the operator, the privacy/legal reviewer, the incident owner and the launch approver.
 3. Legal-review outcome for the lawful basis, consent wording and privacy notice; DPA acceptance; DPIA decision.
 4. Retention: pending expiry, post-unsubscribe retention, suppression-record retention.

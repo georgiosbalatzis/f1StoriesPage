@@ -25,7 +25,7 @@ values into it.
 
 | Key | What must be true | Typical reviewer |
 | --- | --- | --- |
-| `provider-approval` | Owner chose the provider in writing, with reasons ([evaluation](newsletter-provider-evaluation.md)) | Owner |
+| `provider-approval` | Owner chose the provider in writing, with reasons | Owner |
 | `provider-account-configuration` | The production account exists with owner-controlled login, 2FA and least-privilege users. List, form, sender and Greek confirmation/unsubscribe copy are configured. No API key is in the repo or in CI unless an adapter needs it and that need is reviewed | Account owner |
 | `processor-dpa-transfer-review` | DPA accepted, sub-processor list reviewed, transfer mechanism assessed for any non-EU processing | Privacy/legal reviewer |
 | `dpia-decision` | A recorded decision on whether a DPIA is required, with the reason; the DPIA itself if required | Privacy/legal reviewer |

@@ -3,8 +3,7 @@
 Priority 4A establishes **`styles/editorial.css` as the authoritative source**.
 This document specifies its shared primitives; [design-tokens.json](design-tokens.json)
 is a resolved-value snapshot, not another source. Run `npm run check:tokens`
-to compare both documents with CSS. The [audit](design-token-audit.md) records
-existing exceptions and retained legacy code.
+to compare both documents with CSS.
 
 Tokens currently live on `body.editorial-page` / `.editorial-preview`; dark is
 the default and `[data-theme="light"]` supplies light values. Subapplications

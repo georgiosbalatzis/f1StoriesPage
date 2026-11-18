@@ -178,7 +178,7 @@ export const CHECKS = {
     'acquisition.coverage': { title: 'Coverage (29) kept events equal attribution (26) totals', area: 'reconciliation', action: '29 repeats the site filter: a mismatch means the filters diverged.' },
     'acquisition.gaps-reconcile': { title: 'Unattributed/other counts in 29 match 26\'s classes', area: 'reconciliation', action: 'The class functions diverged between 26 and 29.' },
     'acquisition.stages': { title: 'Filter stages never grow', area: 'integrity', action: 'Kept events above consented or on-host events cannot happen: inspect 29.' },
-    'acquisition.filters': { title: 'Events removed by the consent and host filters', area: 'source_coverage', action: 'Non-consented or off-host events reached GA4: see validation.md tracking recommendation 1.' },
+    'acquisition.filters': { title: 'Events removed by the consent and host filters', area: 'source_coverage', action: 'Non-consented or off-host events reached GA4: see docs/intelligence/operations.md.' },
     'acquisition.attribution': { title: 'Unattributed or unclassified session attribution', area: 'source_coverage', action: 'Reported as its own class, never as Direct: tag campaign links; do not compare with Search Console.' },
     'discovery.within-navigation': { title: 'Article clicks (13) do not exceed internal clicks (28)', area: 'reconciliation', action: 'editorial ⊂ site in the SQL: exceeding it means the filters diverged.' },
     'discovery.by-section': { title: 'Article clicks per link section fit internal clicks', area: 'reconciliation', action: 'link_section classes diverged between 13 and 28.' },

@@ -34,7 +34,7 @@ These gates apply to every later A-0x, scaled to the proposed scope.
 3. **Baseline:** identify an applicable mature window, time zone, source, status and missing coverage before comparisons. Export begins 2026-10-19 in `America/Los_Angeles`; the owner-reported aggregates cover 19–22 October only. [Validation record](../intelligence/bigquery-validation.md). Snapshot windows and maturity differ by model; use [snapshot data](../intelligence/dashboard-snapshots.md#data), not an assumed common window.
 4. **Evidence:** all 20 Intelligence models are `PRODUCTION_EXECUTED`, none `PRODUCTION_VALIDATED` as recorded in [Intelligence README](../intelligence/README.md) and [production evidence](../intelligence/data-quality.md#production-evidence). Validate the specific source and grain before an impact claim. A successful synthetic test, model execution or healthy pipeline is not analytical validation.
 5. **Privacy:** close applicable [review items](privacy-data-flow.md#future-feature-review-matrix), assign an owner, and satisfy [instrumentation restrictions](privacy-data-flow.md#restrictions-on-new-instrumentation). Analytics is consented-population data and can be biased by consent; absent evidence is not a zero.
-6. **Reuse:** check existing [Intelligence contracts](../intelligence/README.md), [editorial review](../editorial-review.md), [entity hubs](../entity-hubs.md), and [Race Desk program](../race-desk-program.md) as applicable. Do not duplicate their model, publishing, identity or operations contracts.
+6. **Reuse:** check existing [Intelligence contracts](../intelligence/README.md), [editorial review](../editorial-review.md), [entity hubs](../entity-hubs.md), and [Race Desk context contract](../race-desk-context.md) as applicable. Do not duplicate their model, publishing, identity or operations contracts.
 7. **Decision:** record owner approval, accountable operations, failure and rollback/removal behaviour, and unresolved risks. A feature can be ready to ship with its measurement gap disclosed; it is not ready to claim an audience effect until relevant evidence is validated.
 
 Unless a cited existing contract supplies a threshold for that particular measurement, **acceptance threshold: owner to set after baseline**. Do not treat a small-sample flag as proof of impact.
@@ -94,7 +94,7 @@ For existing RUM reports, `min_observations = 30` is a sample flag, not a genera
 
 **Status:** technical foundation merged (#433); contract, approval procedure and pilot proposals in [race-gateways.md](race-gateways.md). No gateway is approved or published; A-02 collection and A-03 journey pilots remain pending.
 
-**Depends on:** A-01; [Race Desk architecture](../race-desk-architecture.md), [link contract](../race-desk-links.md), [editorial associations](../race-desk-editorial.md), [program](../race-desk-program.md).
+**Depends on:** A-01; [Race Desk architecture](../race-desk-architecture.md), [link contract](../race-desk-links.md), [editorial associations](../race-desk-editorial.md), [context contract](../race-desk-context.md).
 
 **KPIs:** [KPI 6 Race-weekend audience behaviour; KPI 14 Article→Race Desk; KPI 15 Core Web Vitals guardrails](measurement-contract.md).
 
@@ -190,7 +190,7 @@ links the archive, and when (if ever) A-06/A-07 start.
 
 **Feature:** offer an independently consented newsletter, subject to owner and legal decisions. A-06 owns signup, consent and preferences; A-07 owns delivery and editorial approval of each issue. Both must pass this gate; A-07 cannot start before A-06's consent and unsubscribe flow is approved.
 
-**Status (A-06, 2026-11-03):** engineering foundation completed and **disabled**: lifecycle and consent contract, fail-closed activation gate, local mock preview ([newsletter-a06.md](newsletter-a06.md)). Provider **not selected** ([evaluation](newsletter-provider-evaluation.md)); signup **not activated**; **no subscribers collected**; **no emails sent**; every [activation evidence item](newsletter-activation-checklist.md) open. A-07 **not started**.
+**Status (A-06, 2026-11-03):** engineering foundation completed and **disabled**: lifecycle and consent contract, fail-closed activation gate, local mock preview ([newsletter-a06.md](newsletter-a06.md)). Provider **not selected**; signup **not activated**; **no subscribers collected**; **no emails sent**; every [activation evidence item](newsletter-activation-checklist.md) open. A-07 **not started**.
 
 **Depends on:** A-01; [privacy flow](privacy-data-flow.md), [acquisition model](../intelligence/audience-model.md), [editorial review](../editorial-review.md).
 

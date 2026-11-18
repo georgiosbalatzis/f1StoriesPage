@@ -25,8 +25,7 @@ The site is split by runtime surface. Each rule has one owner: put a selector in
 [`design-tokens.md`](design-tokens.md) specifies core light/dark values, fonts,
 focus, geometry and product exceptions. `docs/design-tokens.json` is a snapshot,
 checked against CSS and the specification by `npm run check:tokens` (included
-in `quality:static`). Existing home/reading editions and retained legacy values
-are recorded in [`design-token-audit.md`](design-token-audit.md).
+in `quality:static`).
 
 **Category inks** (`styles/editorial.css`). `blog-module/taxonomy.js` names each public category's kind (`categoryKind`: news, analysis, technical, history, opinion, betting, drivers, teams, season). Markup carries it as `data-kind` (Journal) or `data-article-kind` (article container and sticky mini-bar). The map sets two custom properties on those elements:
 
