@@ -22,9 +22,7 @@ Any new event named in these documents is a **recommendation only**.
 
 | File | Answers | Owner |
 |---|---|---|
-| [infrastructure-audit.md](infrastructure-audit.md) | What exists today, where it lives, which phase owns it, what a Phase 4 feature would duplicate | A-01 |
 | [measurement-contract.md](measurement-contract.md) | The 15 audience KPIs: definition, population, source, limits, evidence label. Also defines the [evidence labels](measurement-contract.md#evidence-labels) | A-01 |
-| [baseline-evidence.md](baseline-evidence.md) | Which production evidence exists, which windows are mature, sample-size limits, what is still missing | A-01 |
 | [privacy-data-flow.md](privacy-data-flow.md) | Consent, storage, processors and personal data today; review items for each future feature; rules for any new instrumentation | A-01 |
 | [readiness-gates.md](readiness-gates.md) | Owner-approved A-02..A-09 roadmap, prerequisites, GO / NO-GO conditions and owner decisions | A-01; roadmap A-02 |
 | [collections.md](collections.md) | Curated collections: schema, approval and publication gates, build integration, removal, measurement limits | A-02 |
@@ -32,13 +30,12 @@ Any new event named in these documents is a **recommendation only**.
 | [race-gateways.md](race-gateways.md) | Race weekend reader gateway on GP Hubs: Race Desk ownership, schema, approval, evidence and tool binding, build integration, rollback, measurement limits, pilots | A-04 |
 | [briefings.md](briefings.md) | Weekly briefing: schema, ISO-week editions, approval and digest, eligibility, public archive, content exports, preview, withdrawal, A-06/A-07 handoff, candidates | A-05 |
 | [newsletter-a06.md](newsletter-a06.md) | Newsletter foundation: lifecycle, independent consent, double opt-in, preferences/unsubscribe, disabled mode, mock preview, CSP, privacy review record, rollback, A-07 contract | A-06 |
-| [newsletter-provider-evaluation.md](newsletter-provider-evaluation.md) | Brevo / MailerLite / Buttondown research matrix with sources; provisional preference; no provider selected | A-06 |
 | [newsletter-activation-checklist.md](newsletter-activation-checklist.md) | The 18 evidence items the activation gate checks, reviewers and the activation PR outline | A-06 |
 
 Authoritative sources stay where they are. Phase 4 links them and never re-defines them:
 Intelligence ([README](../intelligence/README.md), [metrics contract](../intelligence/metrics-contract.md),
 [audience model](../intelligence/audience-model.md), [data quality](../intelligence/data-quality.md)), Editorial OS
-([editorial review](../editorial-review.md)), Race Desk ([program](../race-desk-program.md)) and the
+([editorial review](../editorial-review.md)), Race Desk ([context contract](../race-desk-context.md)) and the
 [privacy policy](../../privacy/privacy.html).
 
 ## Executive findings
@@ -74,7 +71,7 @@ Details and evidence: each linked document. Every claim there cites a repository
 | Item | Status |
 |---|---|
 | Six A-01 documents | Draft for owner review |
-| KPI coverage | See [measurement contract](measurement-contract.md) and [baseline](baseline-evidence.md) |
+| KPI coverage | See [measurement contract](measurement-contract.md) |
 | Production validation of any audience KPI | None. Nothing in A-01 is `PRODUCTION_VALIDATED` |
 | A-02 | Curated Collections Foundation: merged (#431), no collection approved; see [collections.md](collections.md) |
 | A-03 | Article Reading Journeys: merged (#432), no journey approved; see [journeys.md](journeys.md) |
@@ -101,11 +98,8 @@ The full numbered register is in [readiness-gates.md](readiness-gates.md#owner-d
 
 - A-02..A-09 must cite a KPI from [measurement-contract.md](measurement-contract.md) or declare a gap, and must pass
   [readiness-gates.md](readiness-gates.md) before implementation.
-- Six stale statements found in existing Intelligence and Race Desk documents are listed in
-  [infrastructure-audit.md](infrastructure-audit.md#stale-statements-in-existing-documents) for separately owned
-  follow-up. A-01 does not edit them.
 - Article→GP-hub links do not exist in committed article pages today; GP hubs link to articles and tools, and the
-  homepage links to selected hubs ([infrastructure audit, Race Desk](infrastructure-audit.md#phase-3-race-desk)).
+  homepage links to selected hubs.
 
 ## Rollback
 

@@ -1,5 +1,6 @@
 // Paired public-artifact CPU x4 interaction profiles, with recorded provider responses.
-// Usage and environment variables: perf/step5-global-runtime/README.md
+// Set GLOBAL_BASELINE_ROOT and GLOBAL_CANDIDATE_ROOT to public-artifact directories and GLOBAL_PROVIDER_FIXTURES to the provider fixtures directory.
+// Usage: node scripts/perf/global-cues-profile.cjs [output-dir] [runs] [widths] [profiles]
 const fs = require("fs"), http = require("http"), path = require("path"), zlib = require("zlib");
 const { chromium } = require(process.cwd() + "/node_modules/playwright-core");
 const { Launcher } = require(process.cwd() + "/node_modules/chrome-launcher");

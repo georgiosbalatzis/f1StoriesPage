@@ -1,7 +1,6 @@
 # CI/CD map
 
-How checks reach a release, why each one exists, and what was deliberately not changed. Baseline numbers:
-[baseline-2026-11-02.md](baseline-2026-11-02.md). Reproduce any timing with `scripts/ci/`.
+How checks reach a release, why each one exists, and what was deliberately not changed. Reproduce timings with `scripts/ci/`.
 
 ## Flow
 

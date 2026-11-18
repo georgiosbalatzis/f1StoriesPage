@@ -89,13 +89,13 @@ P1.2 may consume only human-approved subject associations, independently apply p
 
 ## P1.1d Norris editorial preparation
 
-P1.1d prepared a proposed Greek introduction in `hub.introduction.text`, with `review.status: pending`. At that stage, neither decision had a human reviewer/date. Hub publication remains separately pending. See [the editorial preparation](norris-editorial-preparation.md) for the proposed heading, wording adjustment, statement-level source evidence, verified publication dates, outstanding decisions and the bounded next P1.2 scope. The six article approvals and all other association decisions are unchanged. No public page generation is implemented.
+See the [entity hubs guide](../../../docs/entity-hubs.md) for the current editorial and publication process.
 
 ## P1.1e Norris introduction approval
 
 The owner explicitly approved the exact Greek heading and body on `2026-10-21`. They are stored in `hub.introduction.heading` and the unchanged `hub.introduction.text`, with `review: { status: approved, kind: human, by: georgiosbalatzis, date: 2026-10-21 }`. This review covers both fields; it does not approve public hub publication. The optional heading field is validated as nonempty text when present.
 
-Norris meets the subject-count/date, discipline and introduction requirements. Its only remaining editorial eligibility blocker is `Public hub approval pending`; `hub.review` remains exactly `{ status: pending }`. The association manifest, all six article approvals, all 91 pending records, Hamilton and the other four entities are unchanged. No public hub generation, routes, sitemap/navigation changes or P1.2 implementation is included. See [the evidence and preparation record](norris-editorial-preparation.md) for source context and remaining decisions.
+See the [entity hubs guide](../../../docs/entity-hubs.md) for current eligibility and review requirements.
 
 ## Original P1.1 validation
 

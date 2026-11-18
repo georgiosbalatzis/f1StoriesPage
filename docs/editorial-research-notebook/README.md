@@ -35,7 +35,7 @@ BetCast, GridCast and AnalystCast remain article series. Their actual categories
 
 ## Public examples and provenance
 
-[public-examples.json](public-examples.json) records reproducible public-index search examples and a pinned record, without independently certifying their claims:
+Public-index search examples and a pinned record do not independently certify their claims:
 
 - `BetCast` finds `20261010J`, **Betcast #276 - Singapore GP**, Betting, 2026-10-10, Giannis Poulikidis.
 - `GridCast` finds `20261022J`, **GridCast #02 | COTA: Μπορούμε να έχουμε Πρωταθλητή;**, Analysis, 2026-10-22.
@@ -74,16 +74,11 @@ Other focused tests cover unsafe URL schemes/credentials, hostile HTML in manual
 
 The mechanical design detector reported existing shared-page rules (legacy transitions, panels, preview styling), not new notebook rules. These unrelated styles were left unchanged. A notebook-scoped text color prevents inherited Bootstrap text from losing contrast.
 
-Screenshots are compressed WebP captures of the tested viewports. A dummy token is used in isolated browser profiles; no credential value is shown. Public dataset records shown are not independent editorial verification. To reproduce PNG captures: `F1S_RESEARCH_QA_DIR=/tmp/f1-research-qa npm run test:author`.
-
-| Viewport | Light | Dark | Light standings | Dark standings |
-| --- | --- | --- | --- | --- |
-| 1440 × 1000 | [Notebook](screenshots/1440-light.webp) | [Notebook](screenshots/1440-dark.webp) | [Record](screenshots/1440-light-standings.webp) | [Record](screenshots/1440-dark-standings.webp) |
-| 390 × 1000 | [Notebook](screenshots/390-light.webp) | [Notebook](screenshots/390-dark.webp) | [Record](screenshots/390-light-standings.webp) | [Record](screenshots/390-dark-standings.webp) |
+To reproduce PNG captures: `F1S_RESEARCH_QA_DIR=/tmp/f1-research-qa npm run test:author`.
 
 ## Transfer sizes and published artifact
 
-[transfer-sizes.json](transfer-sizes.json) records raw bytes and per-file gzip estimates. Actual HTTP compression and caching depend on the host.
+The following table records raw bytes and per-file gzip estimates. Actual HTTP compression and caching depend on the host.
 
 | Resource | Raw bytes | Gzip bytes |
 | --- | ---: | ---: |
@@ -99,16 +94,7 @@ Screenshots are compressed WebP captures of the tested viewports. A dummy token 
 
 No research datasets load at page startup. Successful reads are reused during the session; failed or invalid reads can be retried. Initial script totals exclude the existing on-demand article preview bundle. No dependencies were added. The notebook minifier emits UTF-8; other outputs retain their existing settings.
 
-[artifact-comparison.json](artifact-comparison.json) compares SHA-256 hashes from clean baseline and candidate public builds:
-
-- Baseline: 4,104 public files. Candidate: 4,106.
-- 4,102 existing files are byte-identical, including all 410 published articles, homepage, RSS, sitemap, article/search indexes, entity pages and public article JavaScript/CSS.
-- Changed: `generate.html`, `styles/author/generate.css`.
-- Added: `scripts/author/research-assistant.min.js`, `scripts/author/research-catalog.json`.
-- Removed: none. GitHub workflows are unchanged.
-- Documentation, tests and screenshots are excluded from the public artifact.
-
-## Exact source and evidence files
+## Source files
 
 ```text
 generate.html
@@ -123,21 +109,6 @@ scripts/build/minify.mjs
 scripts/build/public-artifact.mjs
 styles/author/generate.css
 docs/editorial-research-notebook/README.md
-docs/editorial-research-notebook/artifact-comparison.json
-docs/editorial-research-notebook/public-examples.json
-docs/editorial-research-notebook/transfer-sizes.json
-docs/editorial-research-notebook/screenshots/1440-dark.webp
-docs/editorial-research-notebook/screenshots/1440-dark-standings.webp
-docs/editorial-research-notebook/screenshots/1440-light.webp
-docs/editorial-research-notebook/screenshots/1440-light-standings.webp
-docs/editorial-research-notebook/screenshots/390-dark.webp
-docs/editorial-research-notebook/screenshots/390-dark-standings.webp
-docs/editorial-research-notebook/screenshots/390-light.webp
-docs/editorial-research-notebook/screenshots/390-light-standings.webp
-docs/editorial-research-notebook/screenshots/archive-1440-dark.webp
-docs/editorial-research-notebook/screenshots/archive-1440-light.webp
-docs/editorial-research-notebook/screenshots/archive-390-dark.webp
-docs/editorial-research-notebook/screenshots/archive-390-light.webp
 ```
 
 Minified JavaScript remains generated/ignored under the existing repository policy; CI rebuilds it. The original notebook PR changed no article, draft-system, preview-renderer or publishing implementation; E-01 (below) later connected the notebook to local drafts.
