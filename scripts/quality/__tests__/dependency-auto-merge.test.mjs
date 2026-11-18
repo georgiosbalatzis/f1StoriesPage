@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 
@@ -64,4 +66,46 @@ test('dependency auto-merge verifies the complete list contains only modified np
     assert.equal(eligibleFiles([lock, lock]), false);
     assert.equal(eligibleFiles([lock, { ...manifest, status: 'renamed' }]), false);
     assert.equal(eligibleFiles([lock, { ...manifest, filename: '.github/workflows/quality.yml' }]), false);
+});
+
+test('dependency auto-merge rejects lockfile entries that move to a new major version', () => {
+    const lockFilter = workflow.match(/--slurpfile head "\$RUNNER_TEMP\/head-lock.json" '([\s\S]*?)' > \/dev\/null/)[1];
+    const dir = mkdtempSync(path.join(tmpdir(), 'lock-majors-'));
+    const write = (name, value) => {
+        const file = path.join(dir, name);
+        writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value));
+        return file;
+    };
+    const lockfile = packages => ({ lockfileVersion: 3, packages: { '': { name: 'site', version: '1.0.0' }, ...packages } });
+    const base = lockfile({
+        'node_modules/example': { version: '1.2.3' },
+        'node_modules/@scope/tool': { version: '0.4.1' },
+        'node_modules/other/node_modules/example': { version: '2.0.0' },
+        'node_modules/linked': { link: true }
+    });
+    const accepts = (head, baseLock = base) => matches(null, [
+        '-n', '--slurpfile', 'base', write('base.json', baseLock), '--slurpfile', 'head', write('head.json', head)
+    ], lockFilter);
+    try {
+        assert.equal(accepts(base), true);
+        const repoLock = readFileSync(new URL('../../../package-lock.json', import.meta.url), 'utf8');
+        assert.equal(accepts(repoLock, repoLock), true);
+        assert.equal(accepts(lockfile({
+            'node_modules/example': { version: '2.1.0' },
+            'node_modules/@scope/tool': { version: '0.4.9' },
+            'node_modules/other/node_modules/example': { version: '1.9.0' },
+            'node_modules/new-transitive': { version: '7.0.0' }
+        })), true);
+        for (const packages of [
+            { 'node_modules/example': { version: '3.0.0' } },
+            { 'node_modules/@scope/tool': { version: '1.0.0' } },
+            { 'node_modules/nested/node_modules/@scope/tool': { version: '1.0.0' } },
+            { 'node_modules/example': { version: 'git+https://example.invalid/example.git' } }
+        ]) assert.equal(accepts(lockfile(packages)), false, JSON.stringify(packages));
+        assert.equal(accepts({ lockfileVersion: 1, dependencies: {} }), false);
+        assert.equal(accepts(base, { lockfileVersion: 1, dependencies: {} }), false);
+        assert.equal(accepts('{"packages": {}}\n{"packages": {}}'), false);
+    } finally {
+        rmSync(dir, { recursive: true, force: true });
+    }
 });

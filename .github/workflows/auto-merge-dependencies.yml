@@ -80,6 +80,27 @@ jobs:
             exit 0
           fi
 
+          # Grouped and transitive updates can still cross a major version inside the lockfile.
+          base_sha="$(printf '%s' "$pr_json" | jq -r '.base.sha')"
+          gh api -H 'Accept: application/vnd.github.raw+json' "repos/$REPO/contents/package-lock.json?ref=$base_sha" > "$RUNNER_TEMP/base-lock.json"
+          gh api -H 'Accept: application/vnd.github.raw+json' "repos/$REPO/contents/package-lock.json?ref=$TESTED_SHA" > "$RUNNER_TEMP/head-lock.json"
+          if ! jq -n -e --slurpfile base "$RUNNER_TEMP/base-lock.json" --slurpfile head "$RUNNER_TEMP/head-lock.json" '
+            def majors: [.packages | to_entries[] | select(.value.version != null) | {
+              name: (.value.name // (.key | sub("^.*node_modules/"; ""))),
+              major: (.value.version | tostring | (capture("^(?<m>0|[1-9][0-9]*)\\.").m // .))
+            }];
+            if ($base | length) != 1 or ($head | length) != 1 then false
+            elif ($base[0].packages | type) != "object" or ($head[0].packages | type) != "object" then false
+            else
+              (reduce ($base[0] | majors[]) as $p ({}; .[$p.name] += [$p.major])) as $known |
+              $head[0] | majors | all(.[]; . as $p | ($known[$p.name] // []) as $seen |
+                ($seen | length) == 0 or ($seen | any(.[]; . == $p.major)))
+            end
+          ' > /dev/null; then
+            echo "PR #$number moves a package-lock.json entry to a new major version."
+            exit 0
+          fi
+
           if ! merge_output="$(gh pr merge "$number" --repo "$REPO" --merge --delete-branch --match-head-commit "$TESTED_SHA" 2>&1)"; then
             case "$merge_output" in
               *"is not mergeable: the merge commit cannot be cleanly created"*)
