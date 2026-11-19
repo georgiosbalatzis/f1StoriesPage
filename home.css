@@ -449,6 +449,25 @@
 body.home-page footer { background: var(--deep); }
 body.home-page footer .footer-wordmark img { width: 346px; }
 
+@media screen and (prefers-reduced-motion: no-preference) {
+    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word { clip-path: inset(0 100% 0 0); }
+    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word > span { opacity: 0; }
+
+    .home-page .fade-in.is-observed.visible .pd-mast__word { animation: home-wordmark-wipe .65s var(--ease-editorial); }
+    .home-page .fade-in.is-observed.visible .pd-mast__word > span { animation: home-wordmark-dot .24s var(--ease-out) .65s backwards; }
+
+    @keyframes home-wordmark-wipe {
+        from { clip-path: inset(-.2em 100% -.2em -.1em); }
+        to { clip-path: inset(-.2em -.1em); }
+    }
+
+    /* Grow the visible ink around the period's center without changing its inline box. */
+    @keyframes home-wordmark-dot {
+        from { opacity: 0; clip-path: circle(.032em at .112em .925em); }
+        to { opacity: 1; clip-path: circle(.12em at .112em .925em); }
+    }
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .home-page .fade-in { transition: transform .8s var(--ease-editorial); }
     .home-page .fade-in.is-observed:not(.visible) { transform: translateY(18px); }
