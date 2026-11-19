@@ -5,7 +5,7 @@ const STORY_ROOT = '/stories/';
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 // First path segments the site, its tools and its generators already own, plus names a future route may need.
 const RESERVED = new Set([
-    '404', 'archive', 'assets', 'authors', 'betcast', 'blog', 'blog-module', 'cname', 'dashboard', 'entities', 'f1telemetry',
+    '404', 'archive', 'assets', 'authors', 'betcast', 'blog', 'blog-module', 'cname', 'dashboard', 'data', 'entities', 'f1telemetry',
     'feed', 'generate', 'ghostcar', 'housekeeping', 'images', 'index', 'node_modules', 'page', 'privacy',
     'race-desk', 'robots', 'scripts', 'search', 'section', 'sitemap', 'standings', 'stories', 'styles', 'sw', 'telemetry', 'tyres'
 ]);
