@@ -145,6 +145,7 @@ let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
 let standingsObserver = null;
 const pendingStandingsMotion = new Set();
+const PLAYING_MOTION_SELECTOR = '[data-st-enter="play"]';
 const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
@@ -1006,6 +1007,7 @@ function activateStandingsTab(tabName, options) {
 
     standingsPanels.forEach(function(panel) {
         const isActive = panel.id === 'panel-' + nextTab;
+        if (!isActive && !panel.hidden) panel.querySelectorAll(PLAYING_MOTION_SELECTOR).forEach(finishStandingsMotion);
         panel.classList.toggle('active', isActive);
         panel.hidden = !isActive;
         if (isActive) {
@@ -1017,10 +1019,7 @@ function activateStandingsTab(tabName, options) {
 
     refreshEmbedVisibility();
     // Start pending entrances in the same task that shows the panel.
-    const activePanel = document.getElementById('panel-' + nextTab);
-    [...pendingStandingsMotion].filter(group =>
-        activePanel?.contains(group) && isStandingsGroupInView(group, STANDINGS_OBSERVER_MARGIN)
-    ).forEach(playStandingsMotion);
+    releasePendingStandingsMotion(document.getElementById('panel-' + nextTab));
     if (nextTab === 'drivers' && driversTable) hydrateStandingsLazyImages(driversTable);
     if (nextTab === 'constructors' && constructorsTable) hydrateStandingsLazyImages(constructorsTable);
     if (!options || !options.skipURL) writeStandingsURLState(true);
@@ -1036,10 +1035,11 @@ function activateStandingsTab(tabName, options) {
     }
 }
 
-function finalizeRenderedPanel(tabName, animate = true) {
+function finalizeRenderedPanel(tabName, animate = true, revealPending = false) {
     refreshEmbedVisibility();
     if (animate !== null) {
-        const groups = document.getElementById('panel-' + tabName)?.querySelectorAll(
+        const panel = document.getElementById('panel-' + tabName);
+        const groups = panel?.querySelectorAll(
             '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
         ) ?? [];
         if (!animate) {
@@ -1047,6 +1047,7 @@ function finalizeRenderedPanel(tabName, animate = true) {
         } else if (!prefersReducedMotion()) {
             const newGroups = Array.from(groups).filter(group => !group.dataset.stEnter);
             const inView = newGroups.map(group => isStandingsGroupInView(group));
+            if (revealPending) releasePendingStandingsMotion(panel);
             newGroups.forEach(function(group, index) {
                 if (inView[index]) {
                     playStandingsMotion(group);
@@ -1062,6 +1063,12 @@ function finalizeRenderedPanel(tabName, animate = true) {
     }
     if (activeStandingsTab === tabName) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
+}
+
+function releasePendingStandingsMotion(panel) {
+    [...pendingStandingsMotion].filter(group =>
+        panel?.contains(group) && isStandingsGroupInView(group, STANDINGS_OBSERVER_MARGIN)
+    ).forEach(playStandingsMotion);
 }
 
 function isStandingsGroupInView(group, margin = 0) {
@@ -1094,15 +1101,15 @@ function playStandingsMotion(group) {
 }
 
 reducedMotion?.addListener(function(event) {
-    if (event.matches) document.querySelectorAll('[data-st-enter="play"]').forEach(finishStandingsMotion);
+    if (event.matches) document.querySelectorAll(PLAYING_MOTION_SELECTOR).forEach(finishStandingsMotion);
 });
 
 document.addEventListener('focusin', function(event) {
-    finishStandingsMotion(event.target.closest('[data-st-enter="play"]'));
-});
+    finishStandingsMotion(event.target.closest(PLAYING_MOTION_SELECTOR));
+}, true);
 
 document.addEventListener('animationcancel', function(event) {
-    const group = event.target.closest('[data-st-enter="play"]');
+    const group = event.target.closest(PLAYING_MOTION_SELECTOR);
     if (group && !group.getClientRects().length) finishStandingsMotion(group);
 });
 

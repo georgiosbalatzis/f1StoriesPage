@@ -109,8 +109,8 @@ export function ensureLoaded(forceReload) {
     loadAndRenderDirtyAir(true);
 }
 
-function fireRendered(animate) {
-    if (onRendered) onRendered('dirty-air', animate);
+function fireRendered(animate, revealPending) {
+    if (onRendered) onRendered('dirty-air', animate, revealPending);
 }
 
 function sanitizeView(value) {
@@ -189,7 +189,7 @@ function handleTableClick(event) {
     applyViewState();
     // The existing report now represents this view; keep it on the next tab visit.
     if (lastRender && dirtyAirTable.firstElementChild === lastRender.node) lastRender.key = renderKey();
-    fireRendered();
+    fireRendered(true, true);
 }
 
 function handleSessionChange(event) {
