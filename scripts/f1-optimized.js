@@ -12,12 +12,12 @@
     }
 
     function initFadeIns() {
-        var sections = document.querySelectorAll('.fade-in');
-        if (!sections.length) return;
+        var targets = document.querySelectorAll('.fade-in, #numbers :is(.grid-tower, .grid-share, .grid-pace)');
+        if (!targets.length) return;
 
         if (!('IntersectionObserver' in window)) {
-            sections.forEach(function (section) {
-                section.classList.add('visible');
+            targets.forEach(function (target) {
+                target.classList.add('visible');
             });
             return;
         }
@@ -30,14 +30,26 @@
                 }
             });
         }, {
-            // Reveal on the first visible pixel: a tall section's top (wordmark, charts) must never sit on screen unrevealed.
+            // Reveal each section or chart as it enters the viewport.
             threshold: 0,
             rootMargin: '0px'
         });
 
-        sections.forEach(function (section) {
-            section.classList.add('is-observed');
-            observer.observe(section);
+        var viewport = document.documentElement;
+        var width = viewport.clientWidth;
+        var height = viewport.clientHeight;
+        var inView = Array.from(targets, function (target) {
+            var rect = target.getBoundingClientRect();
+            return rect.bottom > 0 && rect.right > 0 && rect.top < height && rect.left < width;
+        });
+
+        targets.forEach(function (target, index) {
+            if (inView[index]) {
+                target.classList.add('is-observed', 'visible', 'is-settled');
+            } else {
+                target.classList.add('is-observed');
+                observer.observe(target);
+            }
         });
     }
 
