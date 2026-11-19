@@ -147,3 +147,22 @@ body.race-desk-page .cookie-footer { display: flex; flex-wrap: wrap; gap: 8px 16
 .gp-pace .gp-pace-details summary { cursor: pointer; overflow-wrap: anywhere; }
 .gp-pace .gp-pace-details summary:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
 .gp-pace .gp-pace-source { color: var(--text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) and (animation-range: entry 0% entry 40%) {
+    /* Keep horizontal scrolling, but let the page drive the block-axis timelines. */
+    .race-desk-main :is(.race-desk-table-wrap, .gp-results-table-wrap) {
+      overflow-y: clip;
+    }
+
+    .race-desk-main :is(.race-desk-table-wrap, .gp-results-table-wrap) > table > tbody > tr {
+      animation: race-desk-row-in auto ease-out forwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+
+    @keyframes race-desk-row-in {
+      from { opacity: .4; transform: translateY(4px); }
+    }
+  }
+}
