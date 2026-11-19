@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261119G",
+      "title": "Brabham BT46: Το μονοθέσιο με το φουρφούρι!",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-19",
+      "dateISO": "2026-11-19",
+      "displayDate": "19 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261119G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261119G/1.webp",
+      "excerpt": "Brabham BT46: Οι δύο νίκες και το πείραμα που κράτησε έναν αγώνα",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261119G/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Brabham",
+        "Alfa Romeo"
+      ],
+      "wordCount": 3597,
+      "readingTime": "18 min",
+      "imageWidth": 474,
+      "imageHeight": 350,
+      "backgroundImageWidth": 474,
+      "backgroundImageHeight": 350,
+      "inputDigest": "5a9ade6b9a6772464f05795de05d4ef63db5a5dc947827ed76c90ff01866a4d3"
+    },
+    {
       "id": "20261118G",
       "title": "Το λάθος πριν το φρενάρισμα του Hamilton",
       "author": "Georgios Balatzis",
@@ -12141,5 +12171,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-18T13:29:25.396Z"
+  "lastUpdated": "2026-11-19T15:27:40.279Z"
 }
