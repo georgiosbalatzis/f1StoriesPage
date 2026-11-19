@@ -46,7 +46,8 @@ let onRendered = null;
 let lastRender = null;
 
 function renderKey() {
-    return String(state.selectedRound) + '|' + sanitizeDebriefView(state.activeView);
+    const view = state.activeView;
+    return state.selectedRound + '|' + (view === 'team-ideal' ? view + '|' + state.idealChartView : view);
 }
 let onRoundChange = null;
 let onViewChange = null;
@@ -107,7 +108,7 @@ export function ensureLoaded(forceReload) {
     if (state.loading) return;
     if (state.loaded && state.snapshot && !forceReload) {
         if (lastRender && lastRender.snapshot === state.snapshot && lastRender.key === renderKey() && debriefTable.firstElementChild === lastRender.node) {
-            fireRendered();
+            fireRendered(null);
             return;
         }
         renderDebrief(state.snapshot);
@@ -132,8 +133,8 @@ export function ensureLoaded(forceReload) {
 
 
 const DEBRIEF_METHOD_NOTE = 'Από τις ολοκληρωμένες συνεδρίες Παρασκευής του OpenF1. Γρήγορος γύρος και ιδανικός γύρος ομάδας από το FP2 ή τα Sprint Qualifying· ρυθμός stint, φθορά ελαστικών και ρυθμός αγώνα από το FP2, ή το FP1 σε σαββατοκύριακα sprint.';
-function fireRendered() {
-    if (onRendered) onRendered('debrief');
+function fireRendered(animate) {
+    if (onRendered) onRendered('debrief', animate);
 }
 
 function sanitizeDebriefView(value) {
@@ -450,7 +451,7 @@ function buildDebriefPaceChartHTML(title, rows) {
 
     return '<div class="debrief-figure">'
         + '<div class="debrief-figure-title">' + esc(title) + '</div>'
-        + '<div class="debrief-hchart-shell">'
+        + '<div class="st-motion debrief-hchart-shell">'
         + rowsHTML
         + '<div class="debrief-hchart-axis">' + axisHTML + '</div>'
         + '<div class="debrief-hchart-xlabel">Διαφορά από τον ταχύτερο γύρο (s)</div>'
@@ -476,7 +477,7 @@ function buildDebriefSingleLapHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Χρόνος γύρου</th><th>Διαφορά</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.singleLap.length);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Χρόνος γύρου</th><th>Διαφορά</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody class="st-motion">' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.singleLap.length);
 }
 
 function buildDebriefLongRunHTML(round) {
@@ -497,7 +498,7 @@ function buildDebriefLongRunHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.longRun.length);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody class="st-motion">' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.longRun.length);
 }
 
 function buildDebriefTyreDegHTML(round) {
@@ -537,7 +538,7 @@ function buildDebriefTyreDegHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.tyreDeg.length);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody class="st-motion">' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.tyreDeg.length);
 }
 
 function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
@@ -580,7 +581,7 @@ function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
             + '</g>';
     }).join('');
 
-    return '<div class="debrief-ideal-panel">'
+    return '<div class="st-motion debrief-ideal-panel">'
         + '<div class="debrief-ideal-panel-title">' + esc(title) + '</div>'
         + '<svg class="debrief-ideal-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + esc(title) + '">'
         + gridHTML + pointsHTML
@@ -625,7 +626,7 @@ function buildDebriefIdealGapBarsHTML(rows) {
         + '<div class="debrief-ideal-bars-ytitle">Gap (s)</div>'
         + '<div class="debrief-ideal-bars-chart">'
         + '<div class="debrief-ideal-bars-axis">' + ticksHTML + '</div>'
-        + '<div class="debrief-ideal-bars-grid" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">' + barsHTML + '</div>'
+        + '<div class="st-motion debrief-ideal-bars-grid" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">' + barsHTML + '</div>'
         + '</div>'
         + '</div>';
 }
@@ -747,7 +748,7 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
 
     return '<div class="debrief-corner-panel">'
         + '<div class="debrief-corner-title">' + esc(title) + '</div>'
-        + '<div class="debrief-corner-shell">'
+        + '<div class="st-motion debrief-corner-shell">'
         + rowsHTML
         + '<div class="debrief-corner-axis">' + ticksHTML + '</div>'
         + '<div class="debrief-corner-xlabel">Διαφορά από τον ταχύτερο (s)</div>'
@@ -809,6 +810,11 @@ function renderDebrief(snapshot) {
     }
     if (!selectedRound) selectedRound = snapshot.rounds[snapshot.rounds.length - 1];
     state.selectedRound = String(selectedRound.round);
+    const key = renderKey();
+    if (lastRender?.snapshot === snapshot && lastRender.key === key && debriefTable.firstElementChild === lastRender.node) {
+        fireRendered(null);
+        return;
+    }
 
     const singleLapLeader = selectedRound.singleLap[0] || null;
     const longRunLeader = selectedRound.longRun[0] || null;
@@ -840,7 +846,7 @@ function renderDebrief(snapshot) {
         + '<div class="debrief-view-panel' + (state.activeView === 'corners' ? ' active' : '') + '" data-debrief-panel="corners">' + buildDebriefCornerPerfHTML(selectedRound) + '</div>'
         + '<div class="debrief-view-panel' + (state.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>', 'debrief report template');
 
-    lastRender = { snapshot: snapshot, key: renderKey(), node: debriefTable.firstElementChild };
+    lastRender = { snapshot: snapshot, key: key, node: debriefTable.firstElementChild };
     fireRendered();
 }
 

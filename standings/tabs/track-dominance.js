@@ -108,8 +108,10 @@ export function ensureLoaded(forceReload) {
     loadAndRenderTrackDominance(true);
 }
 
-function fireRendered() {
-    if (onRendered) onRendered('track-dominance');
+let lastRender = null;
+
+function fireRendered(animate) {
+    if (onRendered) onRendered('track-dominance', animate);
 }
 
 function notifySelectionChange() {
@@ -188,6 +190,7 @@ function handleTableChange(event) {
     const sessionSelect = event.target.closest('[data-track-dom-session]');
     if (sessionSelect) {
         event.stopImmediatePropagation();
+        if (sessionSelect.value === String(state.selectedSessionKey)) return;
         state.selectedSessionKey = sessionSelect.value;
         state.leftDriverKey = '';
         state.rightDriverKey = '';
@@ -201,6 +204,7 @@ function handleTableChange(event) {
     if (!driverSelect) return;
 
     event.stopImmediatePropagation();
+    if (driverSelect.value === (driverSelect.dataset.trackDomDriver === 'left' ? state.leftDriverKey : state.rightDriverKey)) return;
     if (driverSelect.getAttribute('data-track-dom-driver') === 'left') {
         state.leftDriverKey = driverSelect.value;
         const cachedLeftSession = state.sessionCache[String(state.selectedSessionKey)];
@@ -911,7 +915,7 @@ function renderTrackDominanceMetricStrip(side, comparison) {
         : ['speedTrap', 'sector1', 'sector2', 'sector3'];
     const textKey = side === 'right' ? 'rightText' : 'leftText';
     const stateKey = side === 'right' ? 'rightState' : 'leftState';
-    let html = '<div class="track-dom-team-metrics ' + side + '">';
+    let html = '<div class="st-motion track-dom-team-metrics ' + side + '">';
 
     order.forEach(function(metricKey) {
         const metric = comparison && comparison[metricKey] ? comparison[metricKey] : null;
@@ -942,6 +946,12 @@ function renderTrackDominanceDriverCard(side, driver, colorChannels, metricCompa
 
 function renderTrackDominance(sessionData, pairData, session) {
     if (!trackDominanceTable) return;
+    const selection = state.leftDriverKey + '|' + state.rightDriverKey;
+    if (lastRender && lastRender.sessionData === sessionData && lastRender.pairData === pairData
+        && lastRender.selection === selection && trackDominanceTable.firstElementChild === lastRender.node) {
+        fireRendered(null);
+        return;
+    }
 
     if (!sessionData || !session || !sessionData.drivers || sessionData.drivers.length < 2) {
         setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
@@ -1019,10 +1029,10 @@ function renderTrackDominance(sessionData, pairData, session) {
 
         html += '<div class="track-dom-map-card">'
             + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Χάρτης κυριαρχίας πίστας</div><div class="track-dom-map-note">Πέρασε τον δείκτη πάνω από την πίστα για τη διαφορά σε κάθε σημείο · η καρό γραμμή δείχνει την εκκίνηση/τερματισμό.</div></div>'
-            + '<div class="track-dom-track-shell" data-track-dom-shell>' + svg + '<div class="track-dom-tooltip" data-track-dom-tooltip></div></div>'
+            + '<div class="st-motion track-dom-track-shell" data-track-dom-shell>' + svg + '<div class="track-dom-tooltip" data-track-dom-tooltip></div></div>'
             + '<div class="track-dom-advantage">'
             + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(leftDriver)) + ' μπροστά ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right' + (visualPalette.second ? ' is-second' : '') + '" style="--team-color:' + esc(rightChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(rightDriver)) + ' μπροστά ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
-            + '<div class="track-dom-advantage-bar"><span class="track-dom-advantage-fill left" style="--team-color:' + esc(leftChannels) + ';width:' + pairData.leftLeadPct.toFixed(2) + '%;"></span><span class="track-dom-advantage-fill right" style="--team-color:' + esc(rightChannels) + ';width:' + pairData.rightLeadPct.toFixed(2) + '%;"></span></div>'
+            + '<div class="st-motion track-dom-advantage-bar"><span class="track-dom-advantage-fill left" style="--team-color:' + esc(leftChannels) + ';width:' + pairData.leftLeadPct.toFixed(2) + '%;"></span><span class="track-dom-advantage-fill right" style="--team-color:' + esc(rightChannels) + ';width:' + pairData.rightLeadPct.toFixed(2) + '%;"></span></div>'
             + '<div class="track-dom-advantage-note">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's έναντι ' + finishTrailer) + ' · μέγιστη διαφορά ' + esc(Math.abs(pairData.peakDelta).toFixed(3)) + 's</div>'
             + '</div>'
             + '</div>';
@@ -1031,6 +1041,7 @@ function renderTrackDominance(sessionData, pairData, session) {
     html += '<p class="track-dom-footnote">Πηγή: OpenF1. Κάθε οδηγός εκπροσωπείται από τον ταχύτερο γύρο του στη συνεδρία.</p></div>';
 
     setTrustedHtml(trackDominanceTable, html, 'track dominance report template');
+    lastRender = { sessionData: sessionData, pairData: pairData, selection: selection, node: trackDominanceTable.firstElementChild };
     fireRendered();
 }
 

@@ -34,13 +34,13 @@ export function pointsText(value) {
 }
 
 export function tableHeadHTML(identityLabel) {
-    return '<div class="st-table-head" aria-hidden="true">'
+    return '<div class="st-table-head st-static" aria-hidden="true">'
         + '<span>Θέση</span><span>' + esc(identityLabel) + '</span><span>Βαθμοί</span>'
         + '</div>';
 }
 
 export function detailRowHTML(id, items) {
-    return '<div class="st-detail-row" id="' + escAttr(id) + '" aria-hidden="true">'
+    return '<div class="st-detail-row st-static" id="' + escAttr(id) + '" aria-hidden="true">'
         + (items || []).map(function(item) {
             return '<div class="st-detail-item"><span class="st-detail-label">' + esc(item.label) + '</span><span class="st-detail-value">' + esc(item.value) + '</span></div>';
         }).join('')

@@ -73,7 +73,7 @@ export function ensureLoaded(forceReload) {
         if (lastRender && lastRender.data === state.cache[String(state.selectedSessionKey)]
             && lastRender.sessionKey === String(state.selectedSessionKey)
             && tyrePaceTable.firstElementChild === lastRender.node) {
-            fireRendered();
+            fireRendered(null);
             return;
         }
         renderSelectedSession(false);
@@ -106,8 +106,8 @@ export function ensureLoaded(forceReload) {
     });
 }
 
-function fireRendered() {
-    if (onRendered) onRendered('tyre-pace');
+function fireRendered(animate) {
+    if (onRendered) onRendered('tyre-pace', animate);
 }
 
 function ensureSelectedSessionExists() {
@@ -162,6 +162,7 @@ function handleSessionChange(event) {
     if (!raceSelect) return;
 
     event.stopImmediatePropagation();
+    if (raceSelect.value === String(state.selectedSessionKey)) return;
     state.selectedSessionKey = raceSelect.value;
     if (onSessionChange) onSessionChange(state.selectedSessionKey);
     renderSelectedSession(true);
@@ -506,6 +507,12 @@ export function buildTyrePaceSessionData(session, drivers, laps, stints) {
 
 function renderTyrePace(data, session) {
     if (!tyrePaceTable) return;
+    const sessionKey = String(session?.session_key);
+    if (lastRender && lastRender.data === data && lastRender.sessionKey === sessionKey
+        && tyrePaceTable.firstElementChild === lastRender.node) {
+        fireRendered(null);
+        return;
+    }
 
     if (!data || !session || !data.rows || !data.rows.length) {
         setTrustedHtml(tyrePaceTable, '<div class="tyre-pace-empty-card">'
@@ -543,7 +550,7 @@ function renderTyrePace(data, session) {
     });
 
     html += '</div>'
-        + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
+        + '<div class="st-motion tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (s)</span><div class="tyre-pace-axis-layer">';
 
     axisValues.forEach(function(value) {
@@ -574,7 +581,7 @@ function renderTyrePace(data, session) {
     html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
-    lastRender = { data: data, sessionKey: String(session.session_key), node: tyrePaceTable.firstElementChild };
+    lastRender = { data: data, sessionKey: sessionKey, node: tyrePaceTable.firstElementChild };
     fireRendered();
 }
 

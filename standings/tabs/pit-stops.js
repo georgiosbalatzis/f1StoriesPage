@@ -133,6 +133,7 @@ function handleRoundChange(event) {
     const sel = event.target.closest('[data-pitstop-select]');
     if (!sel) return;
     event.stopImmediatePropagation();
+    if (sel.value === state.selectedRound) return;
     state.selectedRound = sel.value;
     state.activeView = 'race';
     renderTrustedHtml(pitStopsTable, createPitStopsSkeleton(), 'pit stops round-change loading skeleton');
@@ -165,8 +166,10 @@ function handleViewClick(event) {
 
     const seasonPanel = pitStopsTable.querySelector('[data-pitstop-panel="season"]');
     if (!seasonPanel) return;
+    if (seasonPanel.querySelector('.st-motion')) return;
     if (state.seasonCache) {
         renderTrustedHtml(seasonPanel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops cached season-best panel');
+        fireRendered();
         return;
     }
 
@@ -174,8 +177,9 @@ function handleViewClick(event) {
     loadSeasonPitStops(state.races).then(function() {
         state.seasonCache = buildSeasonBestCache(state.races);
         const panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
-        if (panel && state.activeView === 'season') {
+        if (panel && state.activeView === 'season' && !panel.querySelector('.st-motion')) {
             renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
+            fireRendered();
         }
     }).catch(function(e) {
         console.error('Season pit stops error:', e);
@@ -319,7 +323,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     let html = disclaimer;
 
     if (teamBest.length) {
-        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Ρεκόρ σεζόν ομάδων</p><div class="pit-stops-team-rows">';
+        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Ρεκόρ σεζόν ομάδων</p><div class="st-motion pit-stops-team-rows">';
         const teamFastest = teamBest[0].duration;
         teamBest.forEach(function(entry, idx) {
             const rgb = hexToRgbChannels(entry.teamColor);
@@ -345,7 +349,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     }
 
     if (driverBest.length) {
-        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="pit-stops-rows">';
+        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="st-motion pit-stops-rows">';
         const driverFastest = driverBest[0].duration;
         capEmbedRows(driverBest).forEach(function(entry, idx) {
             const modifiedEntry = Object.assign({}, entry, {
@@ -435,7 +439,7 @@ function renderPitStops(raceData, race, races) {
             + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Συνολικές στάσεις</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'
             + '</div></div>';
 
-        html += '<div class="pit-stops-rows">';
+        html += '<div class="st-motion pit-stops-rows">';
         capEmbedRows(sorted).forEach(function(entry, idx) {
             html += buildPitStopsDriverRowHTML(entry, idx, p1.duration);
         });

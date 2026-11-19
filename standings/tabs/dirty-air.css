@@ -89,7 +89,7 @@
 
 .dirty-air-view-panel { display: none; }
 
-.dirty-air-view-panel.active { display: block; animation: panelIn 0.28s ease-out; }
+.dirty-air-view-panel.active { display: block; }
 
 .dirty-air-summary-list { display: flex; flex-direction: column; gap: 0.45rem; }
 

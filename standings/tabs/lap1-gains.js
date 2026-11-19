@@ -44,6 +44,7 @@ let onRendered = null;
 let onViewChange = null;
 let onSessionChange = null;
 let listenersBound = false;
+let lastView = null;
 
 export function sanitizeView(value) {
     return value === 'race-detail' ? 'race-detail' : 'overview';
@@ -68,7 +69,7 @@ export function setSelectedSession(value) {
     const next = value == null ? '' : String(value);
     if (state.selectedSessionKey === next) return;
     state.selectedSessionKey = next;
-    if (state.loaded && state.rows && state.rows.length) renderLap1Gains(state.rows);
+    if (state.loaded && state.activeView === 'race-detail') renderLap1Gains(state.rows);
 }
 
 export function initLap1Gains(options) {
@@ -102,6 +103,7 @@ function handleRaceSelectChange(event) {
     if (!raceSelect) return;
 
     event.stopImmediatePropagation();
+    if (state.activeView === 'race-detail' && raceSelect.value === String(state.selectedSessionKey)) return;
     state.selectedSessionKey = raceSelect.value;
     if (state.activeView !== 'race-detail') state.activeView = 'race-detail';
     renderLap1Gains(state.rows || []);
@@ -385,7 +387,7 @@ function renderLap1OverviewContent(rows) {
     const chartMinWidth = Math.max(620, 76 + rows.length * 84);
     let html = '<div class="lap1-overview-card">'
         + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Κινήσεις 1ου γύρου</h3><p class="lap1-overview-note">Ολοκληρωμένοι αγώνες και sprint, με χρονολογική σειρά.</p></div><div class="lap1-overview-meta">' + rows.length + ' συνεδρίες</div></div>'
-        + '<div class="lap1-chart-scroll" data-horizontal-chart-scroll><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
+        + '<div class="st-motion lap1-chart-scroll" data-horizontal-chart-scroll><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="lap1-axis"><span class="lap1-axis-title">Θέσεις στον 1ο γύρο</span><div class="lap1-axis-scale">';
 
     axisValues.forEach(function(value) {
@@ -417,7 +419,7 @@ function renderLap1OverviewContent(rows) {
             + '</article>';
     });
 
-    html += '</div></div></div></div></div><div class="lap1-gains-cards">';
+    html += '</div></div></div></div></div><div class="st-motion lap1-gains-cards">';
 
     rows.forEach(function(row) {
         const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || UNKNOWN_DRIVER_COLOR);
@@ -469,7 +471,7 @@ function renderLap1RaceDetailContent(rows, selectedRow) {
         + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
         + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Μεγαλύτερη άνοδος</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Καλύτερο κέρδος</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Οδηγοί</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
         + '</div>'
-        + '<div class="lap1-race-rows">' + capEmbedRows(selectedRow.moves, EMBED_LAP1_MOVES).map(renderLap1RaceDriverRow).join('') + '</div>'
+        + '<div class="st-motion lap1-race-rows">' + capEmbedRows(selectedRow.moves, EMBED_LAP1_MOVES).map(renderLap1RaceDriverRow).join('') + '</div>'
         + embedCapLinkHTML(selectedRow.moves.length, EMBED_LAP1_MOVES)
         + '</div>';
 }
@@ -497,6 +499,11 @@ function renderLap1Gains(rows) {
         return String(row.sessionKey) === String(state.selectedSessionKey);
     })[0] || rows[rows.length - 1];
     const activeView = state.activeView === 'race-detail' ? 'race-detail' : 'overview';
+    const shown = activeView === 'race-detail' ? selectedRow : rows;
+    if (lastView?.shown === shown && lastView.node === lap1GainsTable.firstElementChild) {
+        if (onRendered) onRendered('lap1-gains', null);
+        return;
+    }
     const viewContent = activeView === 'race-detail'
         ? renderLap1RaceDetailContent(rows, selectedRow)
         : renderLap1OverviewContent(rows);
@@ -508,6 +515,7 @@ function renderLap1Gains(rows) {
         + viewContent;
 
     setTrustedHtml(lap1GainsTable, html, 'lap 1 gains report template');
+    lastView = { shown: shown, node: lap1GainsTable.firstElementChild };
     if (onRendered) onRendered('lap1-gains');
 }
 

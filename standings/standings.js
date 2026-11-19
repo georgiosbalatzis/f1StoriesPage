@@ -142,7 +142,8 @@ let latestStandingsSeason = '';
 // ?round=N: standings as of that round, never refreshed live (see core/rounds.js).
 let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
-let standingsLazyImageObserver = null;
+let standingsObserver = null;
+const pendingStandingsMotion = new Set();
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -1028,10 +1029,42 @@ function activateStandingsTab(tabName, options) {
     }
 }
 
-function finalizeRenderedPanel(tabName) {
+function finalizeRenderedPanel(tabName, animate = true) {
     refreshEmbedVisibility();
+    // Memo hits skip the scan. A live refresh can only end motion already in progress.
+    if (animate !== null && !prefersReducedMotion()) {
+        for (const group of pendingStandingsMotion) {
+            if (group.isConnected) continue;
+            standingsObserver.unobserve(group);
+            pendingStandingsMotion.delete(group);
+        }
+        document.getElementById('panel-' + tabName)?.querySelectorAll(
+            '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
+        ).forEach(function(group) {
+            if (!animate) {
+                if (group.dataset.stEnter === 'play') group.classList.remove('st-enter');
+                return;
+            }
+            if (group.dataset.stEnter || (!group.matches('.st-motion') && !group.querySelector('.st-row, .chart-fill'))) return;
+            group.dataset.stEnter = 'pending';
+            group.classList.add('st-enter');
+            if (observeStandingsElement(group)) pendingStandingsMotion.add(group);
+            else playStandingsMotion(group);
+        });
+    }
     if (activeStandingsTab === tabName) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
+}
+
+function playStandingsMotion(group) {
+    group.dataset.stEnter = 'play';
+    function finish() {
+        group.classList.remove('st-enter');
+        group.dataset.stEnter = 'done';
+        group.removeEventListener('animationcancel', finish);
+    }
+    group.addEventListener('animationcancel', finish);
+    window.setTimeout(finish, 620);
 }
 
 function showError(el) {
@@ -1068,7 +1101,24 @@ function loadStandingsLazyImage(img) {
     if (!src) return;
     img.removeAttribute('data-standings-lazy-src');
     img.src = src;
-    if (standingsLazyImageObserver) standingsLazyImageObserver.unobserve(img);
+    standingsObserver?.unobserve(img);
+}
+
+function observeStandingsElement(element) {
+    if (!('IntersectionObserver' in window)) return false;
+    standingsObserver ||= new IntersectionObserver(function(entries) {
+        for (const { target, isIntersecting } of entries) {
+            if (!isIntersecting) continue;
+            if (pendingStandingsMotion.delete(target)) {
+                standingsObserver.unobserve(target);
+                if (target.isConnected) playStandingsMotion(target);
+            } else {
+                loadStandingsLazyImage(target);
+            }
+        }
+    }, { rootMargin: '80px 0px' });
+    standingsObserver.observe(element);
+    return true;
 }
 
 function hydrateStandingsLazyImages(root) {
@@ -1083,19 +1133,7 @@ function hydrateStandingsLazyImages(root) {
         return;
     }
 
-    if (!standingsLazyImageObserver) {
-        standingsLazyImageObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting || entry.intersectionRatio > 0) {
-                    loadStandingsLazyImage(entry.target);
-                }
-            });
-        }, { rootMargin: '80px 0px' });
-    }
-
-    imgs.forEach(function(img) {
-        standingsLazyImageObserver.observe(img);
-    });
+    imgs.forEach(observeStandingsElement);
 }
 
 function getStandingsLists(payload) {
@@ -1194,8 +1232,8 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     refreshEmbedFooter();
 
     clearRaceDeskScopes();
-    renderDrivers(dStandings, {});
-    renderConstructors(cStandings, dStandings);
+    renderDrivers(dStandings, {}, !meta?.background);
+    renderConstructors(cStandings, dStandings, !meta?.background);
     acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
     return true;
 }
@@ -1228,7 +1266,8 @@ function renderPrimaryStandings(useFallback) {
         renderStandingsPayload(payload.driverStandings, payload.constructorStandings, {
             updatedAt: new Date().toISOString(),
             source: 'Jolpica F1',
-            live: true
+            live: true,
+            background: !useFallback
         });
     }).catch(function(err) {
         if (!useFallback) {
@@ -1344,7 +1383,7 @@ function rowInteractionAttrs(detailId) {
     return IS_EMBED ? '' : ' role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '"';
 }
 
-function renderDrivers(standings, openf1Map) {
+function renderDrivers(standings, openf1Map, animate) {
     if (!standings || !standings.length) {
         renderMessage(driversTable, {
             stateClass: 'standings-empty',
@@ -1422,7 +1461,7 @@ function renderDrivers(standings, openf1Map) {
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'driver standings chart rows');
     if (driversChart) driversChart.style.display = 'block';
-    finalizeRenderedPanel('drivers');
+    finalizeRenderedPanel('drivers', animate);
 }
 
 function teamDriverCodes(driverStandings) {
@@ -1438,7 +1477,7 @@ function teamDriverCodes(driverStandings) {
     return teamDrivers;
 }
 
-function renderConstructors(standings, driverStandings) {
+function renderConstructors(standings, driverStandings, animate) {
     if (!standings || !standings.length) {
         renderMessage(constructorsTable, {
             stateClass: 'standings-empty',
@@ -1511,7 +1550,7 @@ function renderConstructors(standings, driverStandings) {
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'constructor standings chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
-    finalizeRenderedPanel('constructors');
+    finalizeRenderedPanel('constructors', animate);
 }
 
 function renderDriversFromOpenF1(standings, driverInfo) {

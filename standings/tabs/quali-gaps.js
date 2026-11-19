@@ -43,6 +43,7 @@ let onViewChange = null;
 let onSessionChange = null;
 let listenersBound = false;
 let documentClickBound = false;
+let lastView = null;
 
 export function sanitizeView(value) {
     return value === 'race-detail' ? 'race-detail' : 'overview';
@@ -138,6 +139,7 @@ function handleRaceSelectChange(event) {
     const raceSelect = event.target.closest('[data-quali-race-select]');
     if (!raceSelect) return;
     event.stopImmediatePropagation();
+    if (state.activeView === 'race-detail' && raceSelect.value === String(state.selectedSessionKey)) return;
 
     state.selectedSessionKey = raceSelect.value;
     if (state.activeView !== 'race-detail') state.activeView = 'race-detail';
@@ -700,7 +702,7 @@ function qualiAxisLabel(value, max) {
 
 function renderQualifyingGapOverview(rows) {
     const laneOffsets = [28, 40, 52, 64, 34, 58];
-    let html = '<div class="quali-gaps-list">';
+    let html = '<div class="st-motion quali-gaps-list">';
 
     capEmbedRows(rows, EMBED_OVERVIEW_PAIRS).forEach(function(row) {
         const leftMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, -dot.signedGap); }, 0);
@@ -798,7 +800,7 @@ function renderQualifyingGapRaceView(rows, selectedRow) {
     let html = '<div class="quali-race-card">'
         + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Κενά συμπαικτών ανά συνεδρία</h3><p class="quali-race-head-note">Ο ταχύτερος συμπαίκτης είναι επάνω, ο πιο αργός κάτω, και οι ομάδες ταξινομούνται από τη μικρότερη στη μεγαλύτερη διαφορά.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή κατατακτήριων για τα κενά συμπαικτών">' + selectorOptions + '</select></label></div>'
         + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Ομάδες</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μικρότερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μεγαλύτερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μέσος όρος</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
-        + '<div class="quali-race-chart-scroll"><div class="quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
+        + '<div class="quali-race-chart-scroll"><div class="st-motion quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
 
     selectedRow.pairs.forEach(function(pair) {
         const fasterColor = getDriverAccentColor(pair.faster, pair.teamColor, 24);
@@ -854,6 +856,11 @@ function renderQualifyingGaps(data) {
     if (!overviewRows.length && selectedRow) state.activeView = 'race-detail';
 
     const activeView = state.activeView === 'race-detail' && selectedRow ? 'race-detail' : 'overview';
+    const shown = activeView === 'race-detail' ? selectedRow : overviewRows;
+    if (lastView?.shown === shown && lastView.node === qualifyingGapsTable.firstElementChild) {
+        if (onRendered) onRendered('quali-gaps', null);
+        return;
+    }
     const viewContent = activeView === 'race-detail'
         ? renderQualifyingGapRaceView(raceRows, selectedRow)
         : renderQualifyingGapOverview(overviewRows);
@@ -867,6 +874,7 @@ function renderQualifyingGaps(data) {
     }
 
     setTrustedHtml(qualifyingGapsTable, html + viewContent, 'qualifying gaps report template');
+    lastView = { shown: shown, node: qualifyingGapsTable.firstElementChild };
     if (onRendered) onRendered('quali-gaps');
 }
 
