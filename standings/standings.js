@@ -64,6 +64,7 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const STANDINGS_ROW_HEIGHT = 62;
 const ABOVE_FOLD_DRIVER_IMAGES = 10;
 const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
+const STANDINGS_OBSERVER_MARGIN = 80;
 const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
 const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
@@ -142,7 +143,10 @@ let latestStandingsSeason = '';
 // ?round=N: standings as of that round, never refreshed live (see core/rounds.js).
 let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
-let standingsLazyImageObserver = null;
+let standingsObserver = null;
+const pendingStandingsMotion = new Set();
+const PLAYING_MOTION_SELECTOR = '[data-st-enter="play"]';
+const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -405,7 +409,7 @@ function showShareFeedback(message) {
 }
 
 function prefersReducedMotion() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    return reducedMotion?.matches;
 }
 
 function scrollStandingsTabIntoView(tabName, smooth) {
@@ -1003,6 +1007,7 @@ function activateStandingsTab(tabName, options) {
 
     standingsPanels.forEach(function(panel) {
         const isActive = panel.id === 'panel-' + nextTab;
+        if (!isActive && !panel.hidden) panel.querySelectorAll(PLAYING_MOTION_SELECTOR).forEach(finishStandingsMotion);
         panel.classList.toggle('active', isActive);
         panel.hidden = !isActive;
         if (isActive) {
@@ -1013,6 +1018,8 @@ function activateStandingsTab(tabName, options) {
     });
 
     refreshEmbedVisibility();
+    // Start pending entrances in the same task that shows the panel.
+    releasePendingStandingsMotion(document.getElementById('panel-' + nextTab));
     if (nextTab === 'drivers' && driversTable) hydrateStandingsLazyImages(driversTable);
     if (nextTab === 'constructors' && constructorsTable) hydrateStandingsLazyImages(constructorsTable);
     if (!options || !options.skipURL) writeStandingsURLState(true);
@@ -1028,11 +1035,83 @@ function activateStandingsTab(tabName, options) {
     }
 }
 
-function finalizeRenderedPanel(tabName) {
+function finalizeRenderedPanel(tabName, animate = true, revealPending = false) {
     refreshEmbedVisibility();
+    if (animate !== null) {
+        const panel = document.getElementById('panel-' + tabName);
+        const groups = panel?.querySelectorAll(
+            '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
+        ) ?? [];
+        if (!animate) {
+            groups.forEach(retireStandingsMotion);
+        } else if (!prefersReducedMotion()) {
+            const newGroups = Array.from(groups).filter(group => !group.dataset.stEnter);
+            const inView = newGroups.map(group => isStandingsGroupInView(group));
+            if (revealPending) releasePendingStandingsMotion(panel);
+            newGroups.forEach(function(group, index) {
+                if (inView[index]) {
+                    playStandingsMotion(group);
+                } else if (observeStandingsElement(group)) {
+                    group.dataset.stEnter = 'pending';
+                    pendingStandingsMotion.add(group);
+                }
+            });
+        }
+        for (const group of pendingStandingsMotion) {
+            if (!group.isConnected) retireStandingsMotion(group);
+        }
+    }
     if (activeStandingsTab === tabName) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 }
+
+function releasePendingStandingsMotion(panel) {
+    [...pendingStandingsMotion].filter(group =>
+        panel?.contains(group) && isStandingsGroupInView(group, STANDINGS_OBSERVER_MARGIN)
+    ).forEach(playStandingsMotion);
+}
+
+function isStandingsGroupInView(group, margin = 0) {
+    const { top, bottom, left, right } = group.getBoundingClientRect();
+    return top < bottom && left < right && top < window.innerHeight + margin
+        && bottom > -margin && left < window.innerWidth && right > 0;
+}
+
+function unobserveStandingsMotion(group) {
+    if (pendingStandingsMotion.delete(group)) standingsObserver.unobserve(group);
+}
+
+function retireStandingsMotion(group) {
+    unobserveStandingsMotion(group);
+    delete group.dataset.stEnter;
+}
+
+function finishStandingsMotion(group) {
+    if (group?.dataset.stEnter === 'play') group.dataset.stEnter = 'done';
+}
+
+function playStandingsMotion(group) {
+    unobserveStandingsMotion(group);
+    if (prefersReducedMotion()) {
+        group.dataset.stEnter = 'done';
+    } else {
+        group.dataset.stEnter = 'play';
+        window.setTimeout(finishStandingsMotion, 620, group);
+    }
+}
+
+reducedMotion?.addListener(function(event) {
+    if (event.matches) document.querySelectorAll(PLAYING_MOTION_SELECTOR).forEach(finishStandingsMotion);
+});
+
+document.addEventListener('focusin', function(event) {
+    finishStandingsMotion(event.target.closest(PLAYING_MOTION_SELECTOR));
+}, true);
+
+document.addEventListener('animationcancel', function(event) {
+    const group = event.target.closest(PLAYING_MOTION_SELECTOR);
+    if (group && !group.getClientRects().length) finishStandingsMotion(group);
+});
 
 function showError(el) {
     renderMessage(el, {
@@ -1044,8 +1123,8 @@ function showError(el) {
         retryAction: 'reload',
         retryLabel: 'Νέα προσπάθεια'
     }, 'standings table error');
-    if (el === driversTable) finalizeRenderedPanel('drivers');
-    if (el === constructorsTable) finalizeRenderedPanel('constructors');
+    if (el === driversTable) finalizeRenderedPanel('drivers', false);
+    if (el === constructorsTable) finalizeRenderedPanel('constructors', false);
 }
 
 function imageLoadAttrs(index, eagerLimit, highPriority) {
@@ -1068,7 +1147,24 @@ function loadStandingsLazyImage(img) {
     if (!src) return;
     img.removeAttribute('data-standings-lazy-src');
     img.src = src;
-    if (standingsLazyImageObserver) standingsLazyImageObserver.unobserve(img);
+    standingsObserver?.unobserve(img);
+}
+
+function observeStandingsElement(element) {
+    if (!('IntersectionObserver' in window)) return false;
+    standingsObserver ||= new IntersectionObserver(function(entries) {
+        for (const { target, isIntersecting } of entries) {
+            if (!isIntersecting) continue;
+            if (pendingStandingsMotion.has(target)) {
+                if (target.isConnected) playStandingsMotion(target);
+                else unobserveStandingsMotion(target);
+            } else {
+                loadStandingsLazyImage(target);
+            }
+        }
+    }, { rootMargin: `${STANDINGS_OBSERVER_MARGIN}px 0px` });
+    standingsObserver.observe(element);
+    return true;
 }
 
 function hydrateStandingsLazyImages(root) {
@@ -1083,19 +1179,7 @@ function hydrateStandingsLazyImages(root) {
         return;
     }
 
-    if (!standingsLazyImageObserver) {
-        standingsLazyImageObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting || entry.intersectionRatio > 0) {
-                    loadStandingsLazyImage(entry.target);
-                }
-            });
-        }, { rootMargin: '80px 0px' });
-    }
-
-    imgs.forEach(function(img) {
-        standingsLazyImageObserver.observe(img);
-    });
+    imgs.forEach(observeStandingsElement);
 }
 
 function getStandingsLists(payload) {
@@ -1194,8 +1278,8 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     refreshEmbedFooter();
 
     clearRaceDeskScopes();
-    renderDrivers(dStandings, {});
-    renderConstructors(cStandings, dStandings);
+    renderDrivers(dStandings, {}, !meta?.background);
+    renderConstructors(cStandings, dStandings, !meta?.background);
     acceptRaceDeskScopes(dList[0], dStandings, cList && cList[0], cStandings);
     return true;
 }
@@ -1228,7 +1312,8 @@ function renderPrimaryStandings(useFallback) {
         renderStandingsPayload(payload.driverStandings, payload.constructorStandings, {
             updatedAt: new Date().toISOString(),
             source: 'Jolpica F1',
-            live: true
+            live: true,
+            background: !useFallback
         });
     }).catch(function(err) {
         if (!useFallback) {
@@ -1344,14 +1429,20 @@ function rowInteractionAttrs(detailId) {
     return IS_EMBED ? '' : ' role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '"';
 }
 
-function renderDrivers(standings, openf1Map) {
+function chartBarRowHTML(label, tc, pts, maxPts) {
+    const pct = Math.max(4, (pts / maxPts) * 100);
+    return '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
+        + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+}
+
+function renderDrivers(standings, openf1Map, animate) {
     if (!standings || !standings.length) {
         renderMessage(driversTable, {
             stateClass: 'standings-empty',
             icon: 'fa-flag-checkered',
             message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.'
         }, 'empty driver standings table');
-        finalizeRenderedPanel('drivers');
+        finalizeRenderedPanel('drivers', false);
         return;
     }
 
@@ -1416,13 +1507,11 @@ function renderDrivers(standings, openf1Map) {
         const tc = getCanonicalTeamColor(cId, constructor ? constructor.name : '', of1.teamColor);
         const label = (driver.code || driver.driverId.substring(0, 3)).toUpperCase();
         const pts = normalizePoints(s.points);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'driver standings chart rows');
     if (driversChart) driversChart.style.display = 'block';
-    finalizeRenderedPanel('drivers');
+    finalizeRenderedPanel('drivers', animate);
 }
 
 function teamDriverCodes(driverStandings) {
@@ -1438,14 +1527,14 @@ function teamDriverCodes(driverStandings) {
     return teamDrivers;
 }
 
-function renderConstructors(standings, driverStandings) {
+function renderConstructors(standings, driverStandings, animate) {
     if (!standings || !standings.length) {
         renderMessage(constructorsTable, {
             stateClass: 'standings-empty',
             icon: 'fa-flag-checkered',
             message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.'
         }, 'empty constructor standings table');
-        finalizeRenderedPanel('constructors');
+        finalizeRenderedPanel('constructors', false);
         return;
     }
 
@@ -1505,13 +1594,11 @@ function renderConstructors(standings, driverStandings) {
         const tc = getCanonicalTeamColor(cId, c.name || '', '');
         const label = (c.name || '').substring(0, 3).toUpperCase();
         const pts = normalizePoints(s.points);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'constructor standings chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
-    finalizeRenderedPanel('constructors');
+    finalizeRenderedPanel('constructors', animate);
 }
 
 function renderDriversFromOpenF1(standings, driverInfo) {
@@ -1554,9 +1641,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         const tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
         const label = d.name_acronym || ('P' + positionLabel(s.position_current));
         const pts = normalizePoints(s.points_current);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'OpenF1 fallback driver chart rows');
     if (driversChart) driversChart.style.display = 'block';
@@ -1601,9 +1686,7 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
         const tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
         const label = (s.team_name || '').substring(0, 3).toUpperCase();
         const pts = normalizePoints(s.points_current);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'OpenF1 fallback constructor chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';

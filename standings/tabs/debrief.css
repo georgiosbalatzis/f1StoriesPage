@@ -59,7 +59,7 @@
 
 .debrief-view-panel { display: none; }
 
-.debrief-view-panel.active { display: block; animation: panelIn 0.28s ease-out; }
+.debrief-view-panel.active { display: block; }
 
 .debrief-figure { padding: 1.2rem 1.2rem 1rem; border-radius: var(--st-radius); border: 1px solid var(--st-border); background: var(--st-surface-raised); box-shadow: var(--st-shadow-sm); color: var(--st-text); overflow-x: auto; }
 

@@ -267,8 +267,6 @@ body { overflow-y: visible !important; }
 
 .standings-panel.active { display: block; }
 
-@keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
 .panel-tools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--st-surface); border: 1px solid var(--st-border); border-radius: var(--st-radius-sm); padding: 0.82rem 0.92rem; margin-bottom: 0.9rem; }
 
 .panel-tools-copy, .chart-copy { min-width: 0; }
@@ -366,7 +364,7 @@ body { overflow-y: visible !important; }
 
 .st-bar-wrap { position: absolute; bottom: 0; left: 46px; right: 0; height: 2px; }
 
-.st-bar { height: 100%; opacity: 0.3; border-radius: 0 1px 1px 0; transition: width 0.6s ease-out; }
+.st-bar { height: 100%; opacity: 0.3; border-radius: 0 1px 1px 0; }
 
 /* Team badge in constructors view */
 
@@ -396,7 +394,7 @@ body { overflow-y: visible !important; }
 
 .chart-track { flex: 1; height: 20px; background: var(--st-surface); border-radius: 5px; overflow: hidden; }
 
-.chart-fill { height: 100%; border-radius: 5px; transition: width 0.8s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; min-width: 30px; }
+.chart-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; min-width: 30px; }
 
 .chart-pts-label {
     display: inline-flex;
@@ -452,14 +450,6 @@ body { overflow-y: visible !important; }
 .round-badge.is-visible { visibility: visible; opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-    .standings-panel.active,
-    .live-dot,
-    .skel {
-        animation: none;
-    }
-
-    .st-bar,
-    .chart-fill,
     .share-feedback,
     .share-focus-target {
         transition: none;
@@ -500,7 +490,7 @@ body.standings-embed .standings-wrapper .container { max-width: none; width: aut
 
 body.standings-embed .standings-panel { display: none !important; }
 
-body.standings-embed .standings-panel.active { display: block !important; animation: none; }
+body.standings-embed .standings-panel.active { display: block !important; }
 
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 
@@ -659,7 +649,6 @@ body.standings-embed .embed-footer-link {
 @media (prefers-reduced-motion: reduce) {
     .live-dot { animation: none; opacity: 1; }
     .skel { animation: none; opacity: 0.55; }
-    .standings-panel.active { animation: none; }
     * { transition-duration: 0.01ms !important; }
 }
 
@@ -731,4 +720,63 @@ body.standings-embed :is(#drivers-table, #constructors-table) { min-height: 0; }
         text-transform: uppercase;
         color: var(--st-text-muted);
     }
+}
+
+/* Released groups hold the entrance pose through the stagger. */
+@media screen and (prefers-reduced-motion: no-preference) {
+    :where([data-st-enter="play"]) > :is(
+        .st-row, .chart-bar-row, .quali-gap-card, .quali-race-pair, .lap1-gain-card, .lap1-race-row,
+        .dirty-air-summary-row, .dirty-air-timeline-row, .track-dom-team-metric,
+        .pit-stops-row, .pit-stops-team-row, .debrief-hchart-row, .debrief-corner-row,
+        .debrief-ideal-bar-col, tr
+    ):not(.st-static, :focus-within) {
+        animation: st-row-in 190ms ease-out var(--st-row-delay, 0ms) backwards;
+    }
+
+    :where([data-st-enter="play"]) :is(
+        .st-bar, .chart-fill, .pit-stops-bar, .debrief-hchart-bar, .debrief-corner-bar
+    ):not(.debrief-chart-hit:focus-within *) {
+        transform-origin: left center;
+        animation: st-bar-in 210ms ease-out var(--st-row-delay, 0ms) backwards;
+    }
+
+    :where([data-st-enter="play"]) .quali-race-gap-line {
+        transform-origin: center top;
+        animation: st-gap-in 210ms ease-out var(--st-row-delay, 0ms) backwards;
+    }
+
+    :where([data-st-enter="play"]) .debrief-ideal-bar:not(.debrief-chart-hit:focus-within *) {
+        transform-origin: center bottom;
+        animation: st-column-in 210ms ease-out var(--st-row-delay, 0ms) backwards;
+    }
+
+    :where([data-st-enter="play"]).track-dom-advantage-bar,
+    :where([data-st-enter="play"]) :is(.dirty-air-summary-bar, .dirty-air-timeline-bar) {
+        animation: st-wipe-in 210ms ease-out var(--st-row-delay, 0ms) backwards;
+    }
+
+    :where([data-st-enter="play"]):is(.lap1-chart-scroll, .tyre-pace-chart-scroll),
+    :where([data-st-enter="play"]):is(.track-dom-track-shell, .debrief-ideal-panel) > svg:not(:focus-within) {
+        animation: st-chart-in 240ms ease-out backwards;
+    }
+
+    @keyframes st-row-in { from { opacity: .4; transform: translateY(4px); } }
+    @keyframes st-bar-in { from { transform: scaleX(0); } }
+    @keyframes st-gap-in { from { transform: translateX(-50%) scaleY(0); } }
+    @keyframes st-column-in { from { transform: scaleY(0); } }
+    @keyframes st-wipe-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+    @keyframes st-chart-in { from { opacity: .45; } }
+
+    /* Detail rows and timeline overlays do not take a place in the stagger. */
+    :where([data-st-enter]) > :nth-child(2 of :not(.st-static)) { --st-row-delay: 35ms; }
+    :where([data-st-enter]) > :nth-child(3 of :not(.st-static)) { --st-row-delay: 70ms; }
+    :where([data-st-enter]) > :nth-child(4 of :not(.st-static)) { --st-row-delay: 105ms; }
+    :where([data-st-enter]) > :nth-child(5 of :not(.st-static)) { --st-row-delay: 140ms; }
+    :where([data-st-enter]) > :nth-child(6 of :not(.st-static)) { --st-row-delay: 175ms; }
+    :where([data-st-enter]) > :nth-child(7 of :not(.st-static)) { --st-row-delay: 210ms; }
+    :where([data-st-enter]) > :nth-child(8 of :not(.st-static)) { --st-row-delay: 245ms; }
+    :where([data-st-enter]) > :nth-child(9 of :not(.st-static)) { --st-row-delay: 280ms; }
+    :where([data-st-enter]) > :nth-child(10 of :not(.st-static)) { --st-row-delay: 315ms; }
+    :where([data-st-enter]) > :nth-child(11 of :not(.st-static)) { --st-row-delay: 350ms; }
+    :where([data-st-enter]) > :nth-child(n+12 of :not(.st-static)) { --st-row-delay: 385ms; }
 }

@@ -99,7 +99,7 @@ export function ensureLoaded(forceReload) {
         const selectedSession = getSelectedSessionRecord();
         if (cached && selectedSession) {
             if (lastRender && lastRender.data === cached && lastRender.key === renderKey() && dirtyAirTable.firstElementChild === lastRender.node) {
-                fireRendered();
+                fireRendered(null);
                 return;
             }
             renderDirtyAir(cached, selectedSession);
@@ -109,8 +109,8 @@ export function ensureLoaded(forceReload) {
     loadAndRenderDirtyAir(true);
 }
 
-function fireRendered() {
-    if (onRendered) onRendered('dirty-air');
+function fireRendered(animate, revealPending) {
+    if (onRendered) onRendered('dirty-air', animate, revealPending);
 }
 
 function sanitizeView(value) {
@@ -189,6 +189,7 @@ function handleTableClick(event) {
     applyViewState();
     // The existing report now represents this view; keep it on the next tab visit.
     if (lastRender && dirtyAirTable.firstElementChild === lastRender.node) lastRender.key = renderKey();
+    fireRendered(true, true);
 }
 
 function handleSessionChange(event) {
@@ -196,6 +197,7 @@ function handleSessionChange(event) {
     if (!raceSelect) return;
 
     event.stopImmediatePropagation();
+    if (raceSelect.value === String(state.selectedSessionKey)) return;
     state.selectedSessionKey = raceSelect.value;
     state.loaded = false;
     if (onSessionChange) onSessionChange(state.selectedSessionKey);
@@ -1123,6 +1125,12 @@ function buildDirtyAirSessionData(session, drivers, laps, results, raceControl, 
 
 function renderDirtyAir(sessionData, session) {
     if (!dirtyAirTable) return;
+    const key = renderKey();
+    if (lastRender && lastRender.data === sessionData && lastRender.key === key
+        && dirtyAirTable.firstElementChild === lastRender.node) {
+        fireRendered(null);
+        return;
+    }
     pendingTimeline = null;
 
     const sessionOptions = state.sessions.slice().reverse().map(function(item) {
@@ -1185,14 +1193,14 @@ function renderDirtyAir(sessionData, session) {
             const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
             return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"></span>';
         }).join('');
-        const scOverlayHTML = scBandsHTML ? '<div class="dirty-air-timeline-overlays">' + scBandsHTML + '</div>' : '';
+        const scOverlayHTML = scBandsHTML ? '<div class="dirty-air-timeline-overlays st-static">' + scBandsHTML + '</div>' : '';
         const scMarkerBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
             const startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
             const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
             return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"><em>SC</em></span>';
         }).join('');
         const scMarkerRowHTML = scMarkerBandsHTML
-            ? '<div class="dirty-air-timeline-row dirty-air-sc-row">'
+            ? '<div class="dirty-air-timeline-row dirty-air-sc-row st-static">'
                 + '<div class="dirty-air-driver-tag sticky dirty-air-sc-marker"><span class="dirty-air-driver-code">SC</span></div>'
                 + '<div class="dirty-air-timeline-bar dirty-air-sc-marker-bar">' + scMarkerBandsHTML + '</div>'
                 + '</div>'
@@ -1219,7 +1227,7 @@ function renderDirtyAir(sessionData, session) {
         if (maxLaps % axisStep !== 0) {
             axisLabels += '<span class="dirty-air-axis-label end" style="left:100%;">' + esc(String(maxLaps)) + '</span>';
         }
-        return '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Χρονολόγιο ανά γύρο</h4><p class="dirty-air-section-note">Κάθε γύρος χωρίζεται σε 30 ίσα minisectors. Οι γύροι με Safety Car επισημαίνονται στο γράφημα.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>';
+        return '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Χρονολόγιο ανά γύρο</h4><p class="dirty-air-section-note">Κάθε γύρος χωρίζεται σε 30 ίσα minisectors. Οι γύροι με Safety Car επισημαίνονται στο γράφημα.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="st-motion dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>';
     };
 
     const activeView = sanitizeView(state.activeView);
@@ -1233,14 +1241,14 @@ function renderDirtyAir(sessionData, session) {
         + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + sessionLabel(session.session_name || 'Αγώνας') + ' · ' + sessionData.maxLaps + ' γύροι') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Περίοδοι SC</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
         + viewSwitchHTML
-        + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Ποσοστό αγώνα ανά απόσταση</h4><p class="dirty-air-section-note">Ποσοστό των έγκυρων minisectors αγώνα που δαπανήθηκαν σε κάθε κατηγορία κίνησης.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
+        + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Ποσοστό αγώνα ανά απόσταση</h4><p class="dirty-air-section-note">Ποσοστό των έγκυρων minisectors αγώνα που δαπανήθηκαν σε κάθε κατηγορία κίνησης.</p></div></div><div class="st-motion dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
         + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline">' + (activeView === 'timeline' ? buildTimeline() : '') + '</div>'
         + '<p class="dirty-air-footnote">Πηγή: OpenF1. Η απόσταση από το πλησιέστερο μονοθέσιο μπροστά μετριέται ανά minisector, με το πιο πρόσφατο πέρασμα από το ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
     setTrustedHtml(dirtyAirTable, html, 'dirty air report template');
     pendingTimeline = activeView === 'timeline' ? null : buildTimeline;
-    lastRender = { data: sessionData, key: renderKey(), node: dirtyAirTable.firstElementChild };
+    lastRender = { data: sessionData, key: key, node: dirtyAirTable.firstElementChild };
     fireRendered();
 }
 

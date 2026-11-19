@@ -50,6 +50,7 @@ let onRendered = null;
 let onViewChange = null;
 let onRoundChange = null;
 let listenersBound = false;
+let lastSeasonRender = null;
 
 export function sanitizeView(value) {
     return value === 'season' ? 'season' : 'race';
@@ -133,6 +134,7 @@ function handleRoundChange(event) {
     const sel = event.target.closest('[data-pitstop-select]');
     if (!sel) return;
     event.stopImmediatePropagation();
+    if (sel.value === state.selectedRound) return;
     state.selectedRound = sel.value;
     state.activeView = 'race';
     renderTrustedHtml(pitStopsTable, createPitStopsSkeleton(), 'pit stops round-change loading skeleton');
@@ -166,16 +168,16 @@ function handleViewClick(event) {
     const seasonPanel = pitStopsTable.querySelector('[data-pitstop-panel="season"]');
     if (!seasonPanel) return;
     if (state.seasonCache) {
-        renderTrustedHtml(seasonPanel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops cached season-best panel');
+        renderSeasonPanel(seasonPanel);
         return;
     }
 
     renderTrustedHtml(seasonPanel, createPitStopsSeasonLoading(), 'pit stops season-best loading state');
     loadSeasonPitStops(state.races).then(function() {
-        state.seasonCache = buildSeasonBestCache(state.races);
-        const panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
-        if (panel && state.activeView === 'season') {
-            renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
+        const cache = buildSeasonBestCache(state.races);
+        if (JSON.stringify(cache) !== JSON.stringify(state.seasonCache)) state.seasonCache = cache;
+        if (state.activeView === 'season') {
+            renderSeasonPanel(pitStopsTable.querySelector('[data-pitstop-panel="season"]'));
         }
     }).catch(function(e) {
         console.error('Season pit stops error:', e);
@@ -188,6 +190,13 @@ function handleViewClick(event) {
             }, 'pit stops season-best error state');
         }
     });
+}
+
+function renderSeasonPanel(panel) {
+    if (!panel || (lastSeasonRender?.cache === state.seasonCache && lastSeasonRender.node === panel.firstElementChild)) return;
+    renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
+    lastSeasonRender = { cache: state.seasonCache, node: panel.firstElementChild };
+    fireRendered();
 }
 
 function fireRendered() {
@@ -319,7 +328,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     let html = disclaimer;
 
     if (teamBest.length) {
-        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Ρεκόρ σεζόν ομάδων</p><div class="pit-stops-team-rows">';
+        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Ρεκόρ σεζόν ομάδων</p><div class="st-motion pit-stops-team-rows">';
         const teamFastest = teamBest[0].duration;
         teamBest.forEach(function(entry, idx) {
             const rgb = hexToRgbChannels(entry.teamColor);
@@ -345,7 +354,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     }
 
     if (driverBest.length) {
-        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="pit-stops-rows">';
+        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="st-motion pit-stops-rows">';
         const driverFastest = driverBest[0].duration;
         capEmbedRows(driverBest).forEach(function(entry, idx) {
             const modifiedEntry = Object.assign({}, entry, {
@@ -435,7 +444,7 @@ function renderPitStops(raceData, race, races) {
             + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Συνολικές στάσεις</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'
             + '</div></div>';
 
-        html += '<div class="pit-stops-rows">';
+        html += '<div class="st-motion pit-stops-rows">';
         capEmbedRows(sorted).forEach(function(entry, idx) {
             html += buildPitStopsDriverRowHTML(entry, idx, p1.duration);
         });
@@ -455,6 +464,9 @@ function renderPitStops(raceData, race, races) {
     html += '</div>';
 
     renderTrustedHtml(pitStopsTable, html, 'pit stops trusted race and season panels');
+    if (state.activeView === 'season' && state.seasonCache) {
+        lastSeasonRender = { cache: state.seasonCache, node: pitStopsTable.querySelector('[data-pitstop-panel="season"]')?.firstElementChild };
+    }
     fireRendered();
 }
 
