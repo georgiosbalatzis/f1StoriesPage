@@ -50,6 +50,7 @@ let onRendered = null;
 let onViewChange = null;
 let onRoundChange = null;
 let listenersBound = false;
+let lastSeasonRender = null;
 
 export function sanitizeView(value) {
     return value === 'season' ? 'season' : 'race';
@@ -166,20 +167,17 @@ function handleViewClick(event) {
 
     const seasonPanel = pitStopsTable.querySelector('[data-pitstop-panel="season"]');
     if (!seasonPanel) return;
-    if (seasonPanel.querySelector('.st-motion')) return;
     if (state.seasonCache) {
-        renderTrustedHtml(seasonPanel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops cached season-best panel');
-        fireRendered();
+        renderSeasonPanel(seasonPanel);
         return;
     }
 
     renderTrustedHtml(seasonPanel, createPitStopsSeasonLoading(), 'pit stops season-best loading state');
     loadSeasonPitStops(state.races).then(function() {
-        state.seasonCache = buildSeasonBestCache(state.races);
-        const panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
-        if (panel && state.activeView === 'season' && !panel.querySelector('.st-motion')) {
-            renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
-            fireRendered();
+        const cache = buildSeasonBestCache(state.races);
+        if (JSON.stringify(cache) !== JSON.stringify(state.seasonCache)) state.seasonCache = cache;
+        if (state.activeView === 'season') {
+            renderSeasonPanel(pitStopsTable.querySelector('[data-pitstop-panel="season"]'));
         }
     }).catch(function(e) {
         console.error('Season pit stops error:', e);
@@ -192,6 +190,13 @@ function handleViewClick(event) {
             }, 'pit stops season-best error state');
         }
     });
+}
+
+function renderSeasonPanel(panel) {
+    if (!panel || (lastSeasonRender?.cache === state.seasonCache && lastSeasonRender.node === panel.firstElementChild)) return;
+    renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
+    lastSeasonRender = { cache: state.seasonCache, node: panel.firstElementChild };
+    fireRendered();
 }
 
 function fireRendered() {
@@ -459,6 +464,9 @@ function renderPitStops(raceData, race, races) {
     html += '</div>';
 
     renderTrustedHtml(pitStopsTable, html, 'pit stops trusted race and season panels');
+    if (state.activeView === 'season' && state.seasonCache) {
+        lastSeasonRender = { cache: state.seasonCache, node: pitStopsTable.querySelector('[data-pitstop-panel="season"]')?.firstElementChild };
+    }
     fireRendered();
 }
 

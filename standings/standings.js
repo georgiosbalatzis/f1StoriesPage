@@ -144,6 +144,7 @@ let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
 let standingsObserver = null;
 const pendingStandingsMotion = new Set();
+const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -406,7 +407,7 @@ function showShareFeedback(message) {
 }
 
 function prefersReducedMotion() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    return reducedMotion?.matches;
 }
 
 function scrollStandingsTabIntoView(tabName, smooth) {
@@ -1031,41 +1032,55 @@ function activateStandingsTab(tabName, options) {
 
 function finalizeRenderedPanel(tabName, animate = true) {
     refreshEmbedVisibility();
-    // Memo hits skip the scan. A live refresh can only end motion already in progress.
-    if (animate !== null && !prefersReducedMotion()) {
+    if (animate !== null) {
         for (const group of pendingStandingsMotion) {
-            if (group.isConnected) continue;
-            standingsObserver.unobserve(group);
-            pendingStandingsMotion.delete(group);
+            if (!group.isConnected) retireStandingsMotion(group);
         }
         document.getElementById('panel-' + tabName)?.querySelectorAll(
             '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
         ).forEach(function(group) {
-            if (!animate) {
-                if (group.dataset.stEnter === 'play') group.classList.remove('st-enter');
-                return;
+            if (!animate) return retireStandingsMotion(group);
+            if (prefersReducedMotion() || group.dataset.stEnter) return;
+            // Release visible groups before paint. The observer has a head start on the rest.
+            const { top, bottom, left, right } = group.getBoundingClientRect();
+            if (top < window.innerHeight && bottom > 0 && left < window.innerWidth && right > 0) {
+                playStandingsMotion(group);
+            } else if (observeStandingsElement(group)) {
+                group.dataset.stEnter = 'pending';
+                pendingStandingsMotion.add(group);
             }
-            if (group.dataset.stEnter || (!group.matches('.st-motion') && !group.querySelector('.st-row, .chart-fill'))) return;
-            group.dataset.stEnter = 'pending';
-            group.classList.add('st-enter');
-            if (observeStandingsElement(group)) pendingStandingsMotion.add(group);
-            else playStandingsMotion(group);
         });
     }
     if (activeStandingsTab === tabName) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 }
 
-function playStandingsMotion(group) {
-    group.dataset.stEnter = 'play';
-    function finish() {
-        group.classList.remove('st-enter');
-        group.dataset.stEnter = 'done';
-        group.removeEventListener('animationcancel', finish);
-    }
-    group.addEventListener('animationcancel', finish);
-    window.setTimeout(finish, 620);
+function retireStandingsMotion(group) {
+    if (pendingStandingsMotion.delete(group)) standingsObserver.unobserve(group);
+    delete group.dataset.stEnter;
 }
+
+function finishStandingsMotion(group) {
+    if (group.dataset.stEnter === 'play') group.dataset.stEnter = 'done';
+}
+
+function playStandingsMotion(group) {
+    if (prefersReducedMotion()) {
+        group.dataset.stEnter = 'done';
+    } else {
+        group.dataset.stEnter = 'play';
+        window.setTimeout(finishStandingsMotion, 620, group);
+    }
+}
+
+reducedMotion?.addListener(function(event) {
+    if (event.matches) document.querySelectorAll('[data-st-enter="play"]').forEach(finishStandingsMotion);
+});
+
+document.addEventListener('animationcancel', function(event) {
+    const group = event.target.closest('[data-st-enter="play"]');
+    if (group && !group.getClientRects().length) finishStandingsMotion(group);
+});
 
 function showError(el) {
     renderMessage(el, {
@@ -1077,8 +1092,8 @@ function showError(el) {
         retryAction: 'reload',
         retryLabel: 'Νέα προσπάθεια'
     }, 'standings table error');
-    if (el === driversTable) finalizeRenderedPanel('drivers');
-    if (el === constructorsTable) finalizeRenderedPanel('constructors');
+    if (el === driversTable) finalizeRenderedPanel('drivers', false);
+    if (el === constructorsTable) finalizeRenderedPanel('constructors', false);
 }
 
 function imageLoadAttrs(index, eagerLimit, highPriority) {
@@ -1383,6 +1398,12 @@ function rowInteractionAttrs(detailId) {
     return IS_EMBED ? '' : ' role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '"';
 }
 
+function chartBarRowHTML(label, tc, pts, maxPts) {
+    const pct = Math.max(4, (pts / maxPts) * 100);
+    return '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
+        + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+}
+
 function renderDrivers(standings, openf1Map, animate) {
     if (!standings || !standings.length) {
         renderMessage(driversTable, {
@@ -1390,7 +1411,7 @@ function renderDrivers(standings, openf1Map, animate) {
             icon: 'fa-flag-checkered',
             message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.'
         }, 'empty driver standings table');
-        finalizeRenderedPanel('drivers');
+        finalizeRenderedPanel('drivers', false);
         return;
     }
 
@@ -1455,9 +1476,7 @@ function renderDrivers(standings, openf1Map, animate) {
         const tc = getCanonicalTeamColor(cId, constructor ? constructor.name : '', of1.teamColor);
         const label = (driver.code || driver.driverId.substring(0, 3)).toUpperCase();
         const pts = normalizePoints(s.points);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'driver standings chart rows');
     if (driversChart) driversChart.style.display = 'block';
@@ -1484,7 +1503,7 @@ function renderConstructors(standings, driverStandings, animate) {
             icon: 'fa-flag-checkered',
             message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.'
         }, 'empty constructor standings table');
-        finalizeRenderedPanel('constructors');
+        finalizeRenderedPanel('constructors', false);
         return;
     }
 
@@ -1544,9 +1563,7 @@ function renderConstructors(standings, driverStandings, animate) {
         const tc = getCanonicalTeamColor(cId, c.name || '', '');
         const label = (c.name || '').substring(0, 3).toUpperCase();
         const pts = normalizePoints(s.points);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'constructor standings chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
@@ -1593,9 +1610,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         const tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
         const label = d.name_acronym || ('P' + positionLabel(s.position_current));
         const pts = normalizePoints(s.points_current);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'OpenF1 fallback driver chart rows');
     if (driversChart) driversChart.style.display = 'block';
@@ -1640,9 +1655,7 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
         const tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
         const label = (s.team_name || '').substring(0, 3).toUpperCase();
         const pts = normalizePoints(s.points_current);
-        const pct = Math.max(4, (pts / maxPts) * 100);
-        chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-            + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
+        chartHTML += chartBarRowHTML(label, tc, pts, maxPts);
     });
     if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'OpenF1 fallback constructor chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
