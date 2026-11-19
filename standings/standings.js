@@ -64,6 +64,7 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const STANDINGS_ROW_HEIGHT = 62;
 const ABOVE_FOLD_DRIVER_IMAGES = 10;
 const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
+const STANDINGS_OBSERVER_MARGIN = 80;
 const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
 const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
@@ -1015,6 +1016,11 @@ function activateStandingsTab(tabName, options) {
     });
 
     refreshEmbedVisibility();
+    // Start pending entrances in the same task that shows the panel.
+    const activePanel = document.getElementById('panel-' + nextTab);
+    [...pendingStandingsMotion].filter(group =>
+        activePanel?.contains(group) && isStandingsGroupInView(group, STANDINGS_OBSERVER_MARGIN)
+    ).forEach(playStandingsMotion);
     if (nextTab === 'drivers' && driversTable) hydrateStandingsLazyImages(driversTable);
     if (nextTab === 'constructors' && constructorsTable) hydrateStandingsLazyImages(constructorsTable);
     if (!options || !options.skipURL) writeStandingsURLState(true);
@@ -1033,38 +1039,52 @@ function activateStandingsTab(tabName, options) {
 function finalizeRenderedPanel(tabName, animate = true) {
     refreshEmbedVisibility();
     if (animate !== null) {
+        const groups = document.getElementById('panel-' + tabName)?.querySelectorAll(
+            '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
+        ) ?? [];
+        if (!animate) {
+            groups.forEach(retireStandingsMotion);
+        } else if (!prefersReducedMotion()) {
+            const newGroups = Array.from(groups).filter(group => !group.dataset.stEnter);
+            const inView = newGroups.map(group => isStandingsGroupInView(group));
+            newGroups.forEach(function(group, index) {
+                if (inView[index]) {
+                    playStandingsMotion(group);
+                } else if (observeStandingsElement(group)) {
+                    group.dataset.stEnter = 'pending';
+                    pendingStandingsMotion.add(group);
+                }
+            });
+        }
         for (const group of pendingStandingsMotion) {
             if (!group.isConnected) retireStandingsMotion(group);
         }
-        document.getElementById('panel-' + tabName)?.querySelectorAll(
-            '.st-motion, .standings-table-wrap, [id$="-chart-bars"]'
-        ).forEach(function(group) {
-            if (!animate) return retireStandingsMotion(group);
-            if (prefersReducedMotion() || group.dataset.stEnter) return;
-            // Release visible groups before paint. The observer has a head start on the rest.
-            const { top, bottom, left, right } = group.getBoundingClientRect();
-            if (top < window.innerHeight && bottom > 0 && left < window.innerWidth && right > 0) {
-                playStandingsMotion(group);
-            } else if (observeStandingsElement(group)) {
-                group.dataset.stEnter = 'pending';
-                pendingStandingsMotion.add(group);
-            }
-        });
     }
     if (activeStandingsTab === tabName) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 }
 
-function retireStandingsMotion(group) {
+function isStandingsGroupInView(group, margin = 0) {
+    const { top, bottom, left, right } = group.getBoundingClientRect();
+    return top < bottom && left < right && top < window.innerHeight + margin
+        && bottom > -margin && left < window.innerWidth && right > 0;
+}
+
+function unobserveStandingsMotion(group) {
     if (pendingStandingsMotion.delete(group)) standingsObserver.unobserve(group);
+}
+
+function retireStandingsMotion(group) {
+    unobserveStandingsMotion(group);
     delete group.dataset.stEnter;
 }
 
 function finishStandingsMotion(group) {
-    if (group.dataset.stEnter === 'play') group.dataset.stEnter = 'done';
+    if (group?.dataset.stEnter === 'play') group.dataset.stEnter = 'done';
 }
 
 function playStandingsMotion(group) {
+    unobserveStandingsMotion(group);
     if (prefersReducedMotion()) {
         group.dataset.stEnter = 'done';
     } else {
@@ -1075,6 +1095,10 @@ function playStandingsMotion(group) {
 
 reducedMotion?.addListener(function(event) {
     if (event.matches) document.querySelectorAll('[data-st-enter="play"]').forEach(finishStandingsMotion);
+});
+
+document.addEventListener('focusin', function(event) {
+    finishStandingsMotion(event.target.closest('[data-st-enter="play"]'));
 });
 
 document.addEventListener('animationcancel', function(event) {
@@ -1124,14 +1148,14 @@ function observeStandingsElement(element) {
     standingsObserver ||= new IntersectionObserver(function(entries) {
         for (const { target, isIntersecting } of entries) {
             if (!isIntersecting) continue;
-            if (pendingStandingsMotion.delete(target)) {
-                standingsObserver.unobserve(target);
+            if (pendingStandingsMotion.has(target)) {
                 if (target.isConnected) playStandingsMotion(target);
+                else unobserveStandingsMotion(target);
             } else {
                 loadStandingsLazyImage(target);
             }
         }
-    }, { rootMargin: '80px 0px' });
+    }, { rootMargin: `${STANDINGS_OBSERVER_MARGIN}px 0px` });
     standingsObserver.observe(element);
     return true;
 }
