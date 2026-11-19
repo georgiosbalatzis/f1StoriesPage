@@ -35,6 +35,19 @@ test('nav snapshot keeps published race starts and the newest audio enclosure', 
     });
 });
 
+test('nav snapshot serializes precomposed and decomposed race text as NFC', async () => {
+    for (const form of ['NFC', 'NFD']) {
+        const accented = {
+            ...race, raceName: 'São Paulo Grand Prix'.normalize(form),
+            Circuit: { Location: { country: 'México'.normalize(form) } }
+        };
+        const races = JSON.stringify(schedule([accented]));
+        assert.deepEqual(await createSnapshot(fetcher({ races }), now), {
+            races: [{ ...raceStart, name: 'São Paulo GP', country: 'México' }], audioUrl
+        });
+    }
+});
+
 const outage = new Error('service unavailable');
 for (const { name, failures, expected } of [
     { name: 'Jolpica fails', failures: { races: outage }, expected: { audioUrl } },
@@ -170,9 +183,11 @@ test('the shared snapshot deadline aborts stalled headers and body reads', async
     }
 });
 
-test('an exhausted snapshot restores the bundled next race when Jolpica has no usable future start', async () => {
-    for (const data of [undefined, schedule([]), schedule([race])]) {
-        let now = raceStart.ts - 1000;
+test('an exhausted snapshot skips a bundled start for an already started race', async () => {
+    const correctedRace = { ...race, time: '13:00:00Z' };
+    const correctedStart = { ...raceStart, ts: Date.parse('2026-07-05T13:00:00Z') };
+    for (const data of [undefined, schedule([]), schedule([correctedRace])]) {
+        let now = correctedStart.ts - 1000;
         let tick;
         class Clock extends Date {
             constructor(...args) { super(...(args.length ? args : [now])); }
@@ -184,7 +199,7 @@ test('an exhausted snapshot restores the bundled next race when Jolpica has no u
             Date: Clock,
             document: { getElementById: id => id === 'next-race-name' ? name : null, addEventListener() {} },
             window: { clearTimeout() {}, setTimeout(callback) { tick = callback; return 1; } },
-            loadNavSnapshot: async () => ({ races: [raceStart] }),
+            loadNavSnapshot: async () => ({ races: [correctedStart] }),
             fetch: async url => {
                 requests.push(url);
                 if (!data) throw new Error('Network unavailable');
@@ -195,8 +210,9 @@ test('an exhausted snapshot restores the bundled next race when Jolpica has no u
         await new Promise(resolve => setImmediate(resolve));
         assert.equal(context.calendarSource, 'snapshot');
         assert.equal(name.textContent, 'British GP');
-        now = raceStart.ts;
+        now = correctedStart.ts;
         tick();
+        assert.equal(name.textContent, 'Belgian GP');
         await new Promise(resolve => setImmediate(resolve));
         assert.equal(context.calendarSource, 'fallback');
         assert.equal(name.textContent, 'Belgian GP');

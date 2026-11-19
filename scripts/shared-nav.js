@@ -606,8 +606,8 @@
 
     function getNextRace(now, races = RACES) {
         var next = null;
-        for (var i = 0; i < races.length; i++) {
-            if (races[i].ts > now && (!next || races[i].ts < next.ts)) next = races[i];
+        for (var race of races) {
+            if (race.ts > now && (!next || race.ts < next.ts)) next = race;
         }
         return next;
     }
@@ -704,9 +704,13 @@
         var now = Date.now();
         var race = getNextRace(now);
         var refresh = !race && calendarSource === 'snapshot';
-        if (!race && (race = getNextRace(now, FALLBACK_RACES))) {
-            RACES = FALLBACK_RACES;
-            calendarSource = 'fallback';
+        if (!race && calendarSource !== 'fallback') {
+            // A corrected start can leave a later bundled entry for the same race.
+            var remaining = FALLBACK_RACES.filter(r => RACES.every(known => r.ts > known.ts && r.name !== known.name));
+            if ((race = getNextRace(now, remaining))) {
+                RACES = remaining;
+                calendarSource = 'fallback';
+            }
         }
         if (!race) {
             var year = new Date(now).getUTCFullYear();

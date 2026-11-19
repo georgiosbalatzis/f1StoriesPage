@@ -19,11 +19,13 @@ function raceStarts(schedule, year) {
     const starts = [];
     for (const race of races) {
         const { raceName, date, time } = race ?? {};
-        const country = race?.Circuit?.Location?.country;
+        const rawCountry = race?.Circuit?.Location?.country;
+        const name = typeof raceName === 'string' ? raceName.normalize('NFC') : '';
+        const country = typeof rawCountry === 'string' ? rawCountry.normalize('NFC') : '';
         const hasDate = date !== undefined && date !== '';
         const hasTime = time !== undefined && time !== '';
-        if (typeof raceName !== 'string' || !raceName.trim() || raceName.length > 120 || UNSAFE_RACE_TEXT.test(raceName)
-            || typeof country !== 'string' || !country.trim() || country.length > 80 || UNSAFE_RACE_TEXT.test(country)
+        if (!name.trim() || name.length > 120 || UNSAFE_RACE_TEXT.test(name)
+            || !country.trim() || country.length > 80 || UNSAFE_RACE_TEXT.test(country)
             || (hasTime && (typeof time !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/.test(time)))) {
             throw new Error(`Jolpica returned an invalid race for ${year}`);
         }
@@ -35,7 +37,7 @@ function raceStarts(schedule, year) {
         if (!Number.isFinite(ts) || new Date(ts).toISOString().slice(0, 10) !== date) {
             throw new Error(`Jolpica returned an invalid race date for ${year}`);
         }
-        if (hasTime) starts.push({ name: raceName.trim().replace('Grand Prix', 'GP'), country: country.trim(), ts });
+        if (hasTime) starts.push({ name: name.trim().replace('Grand Prix', 'GP'), country: country.trim(), ts });
     }
     if (new Set(starts.map(race => race.ts)).size !== starts.length) {
         throw new Error(`Jolpica returned duplicate race starts for ${year}`);
