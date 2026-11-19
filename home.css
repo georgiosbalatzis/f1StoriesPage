@@ -466,6 +466,11 @@ body.home-page footer .footer-wordmark img { width: 346px; }
         transition: opacity .24s var(--ease-out), clip-path .24s var(--ease-out);
         transition-delay: .65s;
     }
+
+    .home-page .fade-in.is-settled :is(.pd-mast__word, .pd-mast__word > span) {
+        clip-path: none;
+        transition: none;
+    }
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
@@ -501,7 +506,14 @@ body.home-page footer .footer-wordmark img { width: 346px; }
     .grid-desk :is(.tower, .pace) > :nth-child(10) { --grid-row-delay: 450ms; }
 }
 @media print {
-    .home-page .fade-in.is-observed { transform: none; transition: none; }
+    .home-page .fade-in,
+    .home-page .fade-in :is(.pd-mast__word, .pd-mast__word > span),
+    .home-page .grid-desk :is(.tower-row__bar > span, .grid-share__bar, .pace__track, .pace__dot) {
+        clip-path: none;
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 @media (prefers-reduced-motion: reduce) {
     .home-page *, .home-page *::before, .home-page *::after { animation: none; transition: none; scroll-behavior: auto; }
