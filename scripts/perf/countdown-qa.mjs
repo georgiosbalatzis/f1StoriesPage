@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // countdown-qa.mjs - behaviour check for the masthead race countdown (scripts/shared-nav.js).
 //
-// Serves the working tree (or --root=dist) and drives it in Chrome with a fixed clock and the Jolpica schedule
-// request aborted or mocked, so it needs no network and does not depend on the production API failing. Asserts:
+// Serves the working tree (or --root=dist) and drives it in Chrome with a fixed clock and mocked nav data. Asserts:
 //   fallback   with the API down, the countdown targets the right 2026 race START, including round 16 (Malaysia) and the
 //              rounds whose start instants were wrong (AUS, CAN, USA, Las Vegas, Qatar)
 //   target     the container says what it counts down to (race start, in the visitor's own time zone) for tooltips and
@@ -28,6 +27,7 @@ const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), 
 const rootArg = process.argv.find(arg => arg.startsWith('--root='));
 const ROOT = rootArg ? path.resolve(REPO_ROOT, rootArg.slice(7)) : REPO_ROOT;
 const SCHEDULE_URL = '**/api.jolpi.ca/ergast/f1/*.json';
+const SNAPSHOT_URL = '**/data/nav-snapshot.json';
 const MIME = new Map([['.html', 'text/html; charset=utf-8'], ['.js', 'text/javascript; charset=utf-8'], ['.css', 'text/css; charset=utf-8'],
     ['.json', 'application/json; charset=utf-8'], ['.webp', 'image/webp'], ['.png', 'image/png'], ['.svg', 'image/svg+xml; charset=utf-8'],
     ['.woff2', 'font/woff2'], ['.map', 'application/json']]);
@@ -52,10 +52,17 @@ function startServer() {
     return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve({ server, origin: `http://127.0.0.1:${server.address().port}` })));
 }
 
-async function readCountdown(browser, origin, { now, schedule, cached, timezoneId = 'UTC' }) {
+async function readCountdown(browser, origin, { now, snapshot = [], schedule, cached, timezoneId = 'UTC' }) {
     const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 900 }, timezoneId, locale: 'el-GR' });
     await guardContext(context, origin, networkViolations, { freeze: false });
     const page = await context.newPage();
+    const upstreamRequests = [];
+    page.on('request', request => {
+        if (['api.jolpi.ca', 'anchor.fm'].includes(new URL(request.url()).hostname)) upstreamRequests.push(request.url());
+    });
+    await page.route(SNAPSHOT_URL, route => route.fulfill({
+        json: { races: snapshot, audioUrl: 'https://anchor.fm/latest.mp3' }
+    }));
     await page.route(SCHEDULE_URL, route => (schedule ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(schedule) }) : route.abort()));
     await page.clock.setFixedTime(new Date(now));
     if (cached) await page.addInitScript(value => sessionStorage.setItem('f1s-schedule-v2', JSON.stringify(value)), cached);
@@ -72,10 +79,10 @@ async function readCountdown(browser, origin, { now, schedule, cached, timezoneI
         };
     });
     await context.close();
-    return state;
+    return { ...state, upstreamRequests };
 }
 
-const browser = await chromium.launch({ executablePath: Launcher.getFirstInstallation(), headless: true });
+const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || Launcher.getFirstInstallation(), headless: true });
 const { server, origin } = await startServer();
 try {
     // fallback: the rounds that used to be wrong or missing
@@ -120,6 +127,19 @@ try {
     const unordered = await readCountdown(browser, origin, { now: fixtureNow,
         schedule: { MRData: { RaceTable: { Races: [mexico, us] } } } });
     check('unordered live calendar still targets the nearest start', unordered.source === 'live' && unordered.name === 'United States GP', unordered.name);
+    const snapshotRace = race => ({
+        name: race.raceName.replace('Grand Prix', 'GP'),
+        country: race.Circuit.Location.country,
+        ts: Date.parse(race.date + 'T' + race.time)
+    });
+    const fresh = await readCountdown(browser, origin, { now: fixtureNow, snapshot: [mexico, us].map(snapshotRace) });
+    check('fresh snapshot selects the next start without upstream requests',
+        fresh.source === 'snapshot' && fresh.name === 'United States GP' && !fresh.upstreamRequests.length, JSON.stringify(fresh));
+    const stale = await readCountdown(browser, origin, { now: '2026-10-26T00:00:00Z', snapshot: [snapshotRace(us)],
+        schedule: { MRData: { RaceTable: { Races: [mexico] } } } });
+    check('stale snapshot falls back to Jolpica and keeps snapshot audio',
+        stale.source === 'live' && stale.name === 'Mexico City GP' && stale.upstreamRequests.length === 1
+        && stale.upstreamRequests[0].startsWith('https://api.jolpi.ca/'), JSON.stringify(stale));
     const missingTime = await readCountdown(browser, origin, { now: fixtureNow,
         schedule: { MRData: { RaceTable: { Races: [{ ...us, time: undefined }] } } } });
     check('missing race time retains named fallback without a noon guess', missingTime.source === 'fallback' && missingTime.name === 'US GP' && missingTime.timer === '4d 20h 0m', JSON.stringify(missingTime));

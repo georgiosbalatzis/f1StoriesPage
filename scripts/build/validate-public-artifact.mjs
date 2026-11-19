@@ -49,6 +49,7 @@ const FORBIDDEN_EXACT = new Set([
 ]);
 
 const REQUIRED_EXACT = [
+    'data/nav-snapshot.json',
     '.nojekyll',
     '_headers',
     '404.html',
