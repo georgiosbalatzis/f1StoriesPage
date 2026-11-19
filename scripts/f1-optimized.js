@@ -11,13 +11,40 @@
         return YOUTUBE_ID_RE.test(id) ? id : '';
     }
 
+    function settleWordmarkAfterReveal(target) {
+        var word = target.querySelector('.pd-mast__word');
+        if (!word) return;
+        if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) {
+            target.classList.add('is-settled');
+            return;
+        }
+
+        var pending = new Set([word]);
+        var dot = word.firstElementChild;
+        if (dot) pending.add(dot);
+
+        function settle() {
+            target.classList.add('is-settled');
+            target.removeEventListener('transitionend', onTransitionEnd);
+            window.clearTimeout(timeout);
+        }
+
+        function onTransitionEnd(event) {
+            if (event.propertyName === 'clip-path' && pending.delete(event.target) && !pending.size) settle();
+        }
+
+        // Allow the 650 ms wipe and 240 ms dot reveal to finish, plus a 200 ms buffer.
+        var timeout = window.setTimeout(settle, 1090);
+        target.addEventListener('transitionend', onTransitionEnd);
+    }
+
     function initFadeIns() {
-        var sections = document.querySelectorAll('.fade-in');
-        if (!sections.length) return;
+        var targets = document.querySelectorAll('.fade-in, #numbers :is(.tower, .grid-share, .grid-pace)');
+        if (!targets.length) return;
 
         if (!('IntersectionObserver' in window)) {
-            sections.forEach(function (section) {
-                section.classList.add('visible');
+            targets.forEach(function (target) {
+                target.classList.add('visible', 'is-settled');
             });
             return;
         }
@@ -25,18 +52,32 @@
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
+                    settleWordmarkAfterReveal(entry.target);
                     entry.target.classList.add('visible');
                     observer.unobserve(entry.target);
                 }
             });
         }, {
-            threshold: 0.12,
-            rootMargin: '0px 0px -80px 0px'
+            // Reveal each section or chart as it enters the viewport.
+            threshold: 0,
+            rootMargin: '0px'
         });
 
-        sections.forEach(function (section) {
-            section.classList.add('is-observed');
-            observer.observe(section);
+        var viewport = document.documentElement;
+        var width = viewport.clientWidth;
+        var height = viewport.clientHeight;
+        var inView = Array.from(targets, function (target) {
+            var rect = target.getBoundingClientRect();
+            return rect.bottom > 0 && rect.right > 0 && rect.top < height && rect.left < width;
+        });
+
+        targets.forEach(function (target, index) {
+            if (inView[index]) {
+                target.classList.add('is-observed', 'visible', 'is-settled');
+            } else {
+                target.classList.add('is-observed');
+                observer.observe(target);
+            }
         });
     }
 
