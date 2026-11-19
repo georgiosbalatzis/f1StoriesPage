@@ -139,3 +139,12 @@ test('race-start boundaries advance correctly and unknown seasons are distinct f
         data: schedule(race('Abu Dhabi Grand Prix', '2027-12-06', '13:00:00Z')) });
     assert.equal(nextSeasonEnd.timer, '2028 προσεχώς');
 });
+
+test('a corrected United States GP start advances to Mexico City when the live prefix ends', async () => {
+    const result = await readCountdown({
+        instant: '2026-10-25T19:00:00Z',
+        data: schedule(race('United States Grand Prix', '2026-10-25', '19:00:00Z'))
+    });
+    assert.equal(result.name, 'Mexico City GP');
+    assert.equal(result.source, 'fallback');
+});

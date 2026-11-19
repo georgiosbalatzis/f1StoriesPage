@@ -587,6 +587,8 @@
         'UAE': '\u{1F1E6}\u{1F1EA}',       'United Arab Emirates': '\u{1F1E6}\u{1F1EA}'
     };
 
+    // Consecutive F1 rounds are at least about five days apart, while start-time corrections differ by hours.
+    const BUNDLED_RESTORE_GAP_MS = 3 * 24 * 60 * 60 * 1000;
     var RACES = FALLBACK_RACES;
     var calendarSource = 'fallback';
     var countdownNameEl = document.getElementById('next-race-name');
@@ -705,8 +707,7 @@
         var race = getNextRace(now);
         var refresh = !race && calendarSource === 'snapshot';
         if (!race && calendarSource !== 'fallback') {
-            // A corrected start can leave a later bundled entry for the same race.
-            var remaining = FALLBACK_RACES.filter(r => RACES.every(known => r.ts > known.ts && r.name !== known.name));
+            var remaining = FALLBACK_RACES.filter(r => RACES.every(known => r.ts - known.ts > BUNDLED_RESTORE_GAP_MS));
             if ((race = getNextRace(now, remaining))) {
                 RACES = remaining;
                 calendarSource = 'fallback';

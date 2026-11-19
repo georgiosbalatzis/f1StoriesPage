@@ -183,7 +183,7 @@ test('the shared snapshot deadline aborts stalled headers and body reads', async
     }
 });
 
-test('an exhausted snapshot skips a bundled start for an already started race', async () => {
+test('a corrected British GP start advances to Belgium when the snapshot ends', async () => {
     const correctedRace = { ...race, time: '13:00:00Z' };
     const correctedStart = { ...raceStart, ts: Date.parse('2026-07-05T13:00:00Z') };
     for (const data of [undefined, schedule([]), schedule([correctedRace])]) {
@@ -219,3 +219,38 @@ test('an exhausted snapshot skips a bundled start for an already started race', 
         assert.deepEqual(requests, ['https://api.jolpi.ca/ergast/f1/2026.json']);
     }
 });
+
+for (const { description, races, instant, expected } of [
+    {
+        description: 'the snapshot calls the Barcelona round Spanish GP',
+        races: [
+            { name: 'Spanish GP', country: 'Spain', ts: Date.parse('2026-06-14T13:00:00Z') },
+            { name: 'Italian GP', country: 'Italy', ts: Date.parse('2026-09-06T13:00:00Z') }
+        ],
+        instant: '2026-09-06T13:00:00Z', expected: 'Spanish GP'
+    },
+    {
+        description: 'the snapshot ends at the scheduled Austrian GP start',
+        races: [{ name: 'Austrian GP', country: 'Austria', ts: Date.parse('2026-06-28T13:00:00Z') }],
+        instant: '2026-06-28T13:00:00Z', expected: 'British GP'
+    }
+]) {
+    test(`the next bundled race is restored when ${description}`, async () => {
+        class Clock extends Date {
+            constructor(...args) { super(...(args.length ? args : [instant])); }
+            static now() { return Date.parse(instant); }
+        }
+        const name = {};
+        const context = vm.createContext({
+            Date: Clock,
+            document: { getElementById: id => id === 'next-race-name' ? name : null, addEventListener() {} },
+            window: { clearTimeout() {}, setTimeout() {} },
+            loadNavSnapshot: async () => ({ races }),
+            fetch: async () => ({ ok: false })
+        });
+        vm.runInContext(countdown, context);
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(name.textContent, expected);
+        assert.equal(context.calendarSource, 'fallback');
+    });
+}
