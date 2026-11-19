@@ -28,8 +28,8 @@ const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), 
 const rootArg = process.argv.find(arg => arg.startsWith('--root='));
 const ROOT = rootArg ? path.resolve(REPO_ROOT, rootArg.slice(7)) : REPO_ROOT;
 const FEED_URL = 'https://anchor.fm/s/101588098/podcast/rss';
-const AUDIO_URL = 'https://audio.f1stories.test/stream.wav';
-const OLDER_URL = 'https://audio.f1stories.test/older-episode.wav';
+const AUDIO_URL = 'https://anchor.fm/s/101588098/podcast/play/123/stream.wav';
+const OLDER_URL = 'https://anchor.fm/s/101588098/podcast/play/122/older-episode.wav';
 const WIDTHS = [768, 430, 390, 375];
 const MIME = new Map([['.html', 'text/html; charset=utf-8'], ['.js', 'text/javascript; charset=utf-8'], ['.css', 'text/css; charset=utf-8'],
     ['.json', 'application/json; charset=utf-8'], ['.webp', 'image/webp'], ['.png', 'image/png'], ['.svg', 'image/svg+xml; charset=utf-8'],
@@ -70,7 +70,7 @@ const luminance = ([r, g, b]) => [r, g, b].map(v => { const s = v / 255; return 
 const contrast = (a, b) => { const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
 const rgb = css => (css.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
 
-// Opens the page with a mocked podcast feed. meta: object | string (raw body) | null (HTTP 500).
+// Opens the page with mocked snapshot audio or a fallback feed.
 async function open(browser, origin, { meta, theme = 'dark', width = 1440, audio = 'ok', pagePath = '/authors/' }) {
     const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width, height: 800 } });
     await guardContext(context, origin, networkViolations);
@@ -85,6 +85,12 @@ async function open(browser, origin, { meta, theme = 'dark', width = 1440, audio
     const errors = [];
     page.on('request', request => requests.push(request.url()));
     page.on('pageerror', error => errors.push(error.message));
+    if (meta?.audioUrl !== AUDIO_URL) await context.route('**/data/nav-snapshot.json', route => route.fulfill({ status: 404 }));
+    else await context.route('**/data/nav-snapshot.json', async route => {
+        const response = await route.fetch();
+        const snapshot = response.ok() ? await response.json() : {};
+        await route.fulfill({ json: { ...snapshot, audioUrl: AUDIO_URL } });
+    });
     // The podcast feed (newest episode first). meta: { audioUrl } builds one, a string is served raw, null is HTTP 500.
     await context.route(FEED_URL, route => {
         const cors = { 'access-control-allow-origin': '*' };
@@ -130,7 +136,7 @@ const snapshot = page => page.evaluate(() => {
 });
 
 const youtube = requests => requests.some(url => /youtube|ytimg|googlevideo/.test(url));
-const audioHit = requests => requests.some(url => url.includes('audio.f1stories.test'));
+const audioHit = requests => requests.includes(AUDIO_URL) || requests.includes(OLDER_URL);
 
 async function behaviourChecks(browser, origin) {
     const player = await open(browser, origin, { meta: { audioUrl: AUDIO_URL } });
@@ -139,6 +145,7 @@ async function behaviourChecks(browser, origin) {
     check('the box starts empty', s.progress === 0, String(s.progress));
     check('paused aria-label', hasPausedAudioLabel(s), s.aria);
     check('no audio element or media request before click', s.audios === 0 && !audioHit(player.requests));
+    check('snapshot audio avoids the live RSS request', !player.requests.includes(FEED_URL));
     check('no video, thumbnail or iframe in the player', s.media === 0);
     check('no YouTube requests or Player API', !youtube(player.requests));
     check('no iframe on the page', await player.page.evaluate(() => document.querySelectorAll('iframe').length) === 0);
@@ -265,7 +272,7 @@ async function persistenceChecks(browser, origin) {
     await host.context.close();
 
     const stale = await open(browser, origin, { meta: { audioUrl: AUDIO_URL }, pagePath: '/authors/' });
-    await stale.page.evaluate(() => sessionStorage.setItem('f1stories-audio', JSON.stringify({ url: 'https://audio.f1stories.test/previous-episode.mp3', playing: true, time: 30, at: Date.now() })));
+    await stale.page.evaluate(url => sessionStorage.setItem('f1stories-audio', JSON.stringify({ url, playing: true, time: 30, at: Date.now() })), OLDER_URL);
     await stale.page.goto(`${origin}/`, { waitUntil: 'load' });
     await stale.page.waitForTimeout(600);
     s = await snapshot(stale.page);

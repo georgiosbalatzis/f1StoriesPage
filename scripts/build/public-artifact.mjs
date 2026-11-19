@@ -28,6 +28,7 @@ const PUBLIC_IMAGE_MAX_BYTES = Number(process.env.PUBLIC_IMAGE_MAX_BYTES || 300 
 
 const ROOT_FILES = new Set([
     '.nojekyll',
+    'data/nav-snapshot.json',
     '404.html',
     'favicon.ico',
     'CNAME',

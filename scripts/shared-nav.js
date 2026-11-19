@@ -48,20 +48,28 @@
 
     ensureNavThemeButton();
 
+    var navSnapshot;
+    function loadNavSnapshot() {
+        if (!navSnapshot) {
+            var controller = new AbortController();
+            var timer = setTimeout(function () { controller.abort(); }, 3000);
+            navSnapshot = fetch('/data/nav-snapshot.json', { signal: controller.signal })
+                .then(function (response) { return response.ok ? response.json() : null; })
+                .catch(function () { return null; })
+                .finally(function () { clearTimeout(timer); });
+        }
+        return navSnapshot;
+    }
+
     // ── Navbar audio player ──────────────────────
-    // [ ▶ ON AIR. ] and nothing else: the masthead's end-cap, which fills with red as the episode plays. The
-    // newest episode's audio is the first enclosure of the show's public
-    // podcast feed (Spotify for Podcasters / Anchor, CORS-open, ~11 KB, cached by the browser for 5 minutes) and
-    // plays through a plain <audio> element created on the first click. Never a YouTube player. Nothing starts on
-    // its own: only a listener who pressed play continues on the next page (sessionStorage, this tab only), and
-    // only the latest episode ever plays; when it ends the player simply stops.
+    // Only the latest episode plays. A listener who pressed play can resume on the next page in the same tab.
     var BETCAST_FEED = 'https://anchor.fm/s/101588098/podcast/rss';
 
     function safeAudioUrl(value) {
+        if (typeof value !== 'string' || value.length > 2048) return '';
         try {
-            var parsed = new URL(value);
-            // YouTube is never an audio source.
-            return parsed.protocol === 'https:' && !/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be|googlevideo\.com|ytimg\.com)$/i.test(parsed.hostname) ? parsed.href : '';
+            var url = new URL(value).href;
+            return url.length <= 2048 && /^https:\/\/(?:anchor\.fm\/s\/101588098\/|d3ctxlq1ktw2nl\.cloudfront\.net\/staging\/)/.test(url) ? url : '';
         } catch (_) {
             return '';
         }
@@ -277,22 +285,23 @@
             if (saved.playing) begin(resumeAt, true);
         }
 
-        function loadLatest() {
+        async function loadLatest() {
+            var latest = '';
             try {
-                fetch(BETCAST_FEED, { credentials: 'omit' })
-                    .then(function (response) { return response.ok ? response.text() : ''; })
-                    .then(function (xml) { return xml ? newestEnclosure(xml) : ''; })
-                    .catch(function () { return ''; })
-                    .then(accept);
-            } catch (_) {
-                accept('');
-            }
+                var response = await fetch(BETCAST_FEED, { credentials: 'omit' });
+                if (response.ok) latest = newestEnclosure(await response.text());
+            } catch (_) {}
+            accept(latest);
         }
 
         render();
-        // Read the feed once the page itself has loaded, so it never competes with it.
-        if (document.readyState === 'complete') loadLatest();
-        else window.addEventListener('load', loadLatest, { once: true });
+        loadNavSnapshot().then(function (snapshot) {
+            var latest = safeAudioUrl(snapshot && snapshot.audioUrl);
+            if (latest) return accept(latest);
+            // Wait for page load so the live feed never competes with the page.
+            if (document.readyState === 'complete') loadLatest();
+            else window.addEventListener('load', loadLatest, { once: true });
+        });
     }
 
     initAudioPlayer();
@@ -578,8 +587,10 @@
         'UAE': '\u{1F1E6}\u{1F1EA}',       'United Arab Emirates': '\u{1F1E6}\u{1F1EA}'
     };
 
+    // Consecutive F1 rounds are at least about five days apart, while start-time corrections differ by hours.
+    const BUNDLED_RESTORE_GAP_MS = 3 * 24 * 60 * 60 * 1000;
     var RACES = FALLBACK_RACES;
-    var calendarSource = 'fallback'; // 'fallback' | 'cache' | 'live'
+    var calendarSource = 'fallback';
     var countdownNameEl = document.getElementById('next-race-name');
     var countdownEl = document.getElementById('race-countdown');
     var countdownMobileEl = document.getElementById('race-countdown-mobile');
@@ -595,10 +606,10 @@
 
     RACES.forEach(function (r) { r.ts = new Date(r.date).getTime(); });
 
-    function getNextRace(now) {
+    function getNextRace(now, races = RACES) {
         var next = null;
-        for (var i = 0; i < RACES.length; i++) {
-            if (RACES[i].ts > now && (!next || RACES[i].ts < next.ts)) next = RACES[i];
+        for (var race of races) {
+            if (race.ts > now && (!next || race.ts < next.ts)) next = race;
         }
         return next;
     }
@@ -639,8 +650,8 @@
     }
 
     function getCountryFlag(country) {
-        var key = String(country || '').trim();
-        return COUNTRY_FLAGS[key] || '\u{1F3C1}';
+        var flag = COUNTRY_FLAGS[country];
+        return typeof flag === 'string' ? flag : '\u{1F3C1}';
     }
 
     function getMobileFlagEl() {
@@ -694,8 +705,16 @@
     function tickCountdown() {
         var now = Date.now();
         var race = getNextRace(now);
+        var refresh = !race && calendarSource === 'snapshot';
+        if (!race && calendarSource !== 'fallback') {
+            var remaining = FALLBACK_RACES.filter(r => RACES.every(known => r.ts - known.ts > BUNDLED_RESTORE_GAP_MS));
+            if ((race = getNextRace(now, remaining))) {
+                RACES = remaining;
+                calendarSource = 'fallback';
+            }
+        }
         if (!race) {
-            var year = new Date(now).getFullYear();
+            var year = new Date(now).getUTCFullYear();
             var seasonKnown = RACES.some(function (r) { return new Date(r.ts).getUTCFullYear() === year; });
             if (countdownNameEl) countdownNameEl.textContent = seasonKnown ? 'Η σεζόν ολοκληρώθηκε' : 'Πρόγραμμα μη διαθέσιμο';
             if (countdownEl) countdownEl.textContent = seasonKnown ? (year + 1) + ' προσεχώς' : 'Αναμονή προγράμματος';
@@ -705,25 +724,37 @@
                 var el = document.getElementById(id);
                 if (el) ['aria-label', 'title'].forEach(function (a) { el.removeAttribute(a); });
             });
-            return;
+        } else {
+            var ms = race.ts - now;
+            if (countdownNameEl) countdownNameEl.textContent = race.name;
+            if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
+            if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
+            if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
+            setMobileFlag(race.flag);
+            labelCountdown(race);
+            scheduleCountdown(ms);
         }
-        var ms = race.ts - now;
-        if (countdownNameEl) countdownNameEl.textContent = race.name;
-        if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
-        if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
-        if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
-        setMobileFlag(race.flag);
-        labelCountdown(race);
-        scheduleCountdown(ms);
+        if (refresh) loadLiveSchedule();
     }
 
     // ── Fetch live schedule from Jolpica (Ergast replacement) ──
     function validSchedule(races, year) {
-        return Array.isArray(races) && races.length > 0 && races.every(function (r) {
-            return r && typeof r.name === 'string' && r.name.trim()
-                && typeof r.flag === 'string' && typeof r.ts === 'number' && Number.isFinite(r.ts)
+        return Array.isArray(races) && races.length > 0 && races.length <= 32 && races.every(function (r) {
+            return r && typeof r.name === 'string' && r.name.length <= 120 && r.name.trim()
+                && typeof r.flag === 'string' && Number.isSafeInteger(r.ts)
                 && new Date(r.ts).getUTCFullYear() === year;
         });
+    }
+
+    function parseSnapshotRaces(snapshot) {
+        var races = snapshot && snapshot.races;
+        if (!Array.isArray(races) || !races.length || races.length > 32) return null;
+        var parsed = races.map(function (r) {
+            return r && typeof r.country === 'string' && r.country.trim() && r.country.length <= 80
+                ? { name: r.name, flag: getCountryFlag(r.country), ts: r.ts } : null;
+        });
+        var year = new Date().getUTCFullYear();
+        return validSchedule(parsed, year) || validSchedule(parsed, year + 1) ? parsed : null;
     }
 
     function parseJolpicaRaces(data) {
@@ -731,7 +762,7 @@
             var races = data.MRData.RaceTable.Races;
             return races.map(function (r) {
                 var country = r.Circuit.Location.country;
-                var flag = getCountryFlag(country);
+                var flag = getCountryFlag(String(country || '').trim());
                 // An unpublished start time cannot truthfully drive a countdown.
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(r.date) || !/^\d{2}:\d{2}:\d{2}Z$/.test(r.time)) return null;
                 var date = new Date(r.date + 'T' + r.time);
@@ -741,11 +772,14 @@
         } catch (_) { return null; }
     }
 
+    var liveRequested = false;
     function loadLiveSchedule() {
+        if (liveRequested) return;
+        liveRequested = true;
         var CACHE_KEY = 'f1s-schedule-v2';
         var CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
         var now = Date.now();
-        var year = new Date(now).getFullYear();
+        var year = new Date(now).getUTCFullYear();
         try {
             var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
             if (cached && typeof cached.ts === 'number' && now >= cached.ts && now - cached.ts < CACHE_TTL
@@ -774,7 +808,14 @@
 
     if (countdownNameEl || countdownEl || countdownMobileEl || countdownFlagEl) {
         tickCountdown(); // start immediately with fallback
-        loadLiveSchedule(); // update async with live data
+        loadNavSnapshot().then(function (snapshot) {
+            var races = parseSnapshotRaces(snapshot);
+            if (!races) return loadLiveSchedule();
+            RACES = races;
+            calendarSource = 'snapshot';
+            window.clearTimeout(countdownTimer);
+            tickCountdown();
+        });
         document.addEventListener('visibilitychange', function () {
             if (document.hidden) {
                 if (countdownTimer) { window.clearTimeout(countdownTimer); countdownTimer = null; }

@@ -376,12 +376,13 @@ try {
       const detailText = await details.innerText(); assert.ok(detailText.includes(source.revision)); assert.ok(detailText.includes(source.path));
     }
     assert.equal(await page.locator('script[type="application/json"]').count(), 0, 'source evidence must not be hidden in JSON');
-    assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl] : [], 'only the shared navigation calendar request is allowed');
+    // The shared navigation reads the build-time /data/nav-snapshot.json, so hubs make no provider requests.
+    assert.deepEqual(providerRequests(run.requests), [], 'hubs must not contact data providers');
     assert.deepEqual(run.errors, []);
     const reload = await page.reload({ waitUntil: 'domcontentloaded' }); assert.equal(reload.status(), 200);
     assert.ok((await page.locator('h1').innerText()).includes(model.displayName));
     await ready(page);
-    assert.deepEqual(providerRequests(run.requests), javascriptEnabled ? [calendarUrl, calendarUrl] : [], 'reload must only repeat the shared navigation calendar request');
+    assert.deepEqual(providerRequests(run.requests), [], 'reload must not contact data providers');
     assert.deepEqual(run.errors, []);
   };
   if (deploy) {
@@ -398,7 +399,7 @@ try {
   await check('incumbent shared navigation calendar on authors baseline', async () => {
     assert.equal((await baseline.page.goto(origin + '/authors/', { waitUntil: 'domcontentloaded' })).status(), 200); await ready(baseline.page);
     report.baselineProviderRequests = providerRequests(baseline.requests);
-    assert.deepEqual(report.baselineProviderRequests, [calendarUrl]);
+    assert.deepEqual(report.baselineProviderRequests, []);
   });
   await baseline.context.close();
   for (const model of models) for (const javascriptEnabled of [false, true]) {
@@ -458,7 +459,7 @@ try {
       assert.ok(layout.main.left >= -2 && layout.main.right <= layout.viewport + 2, JSON.stringify(layout));
       assert.deepEqual(layout.overflow, [], JSON.stringify(layout.overflow));
       const first = run.page.locator('a[href],button').first(); await first.focus(); assert.equal(await first.evaluate(el => document.activeElement === el), true); await run.page.keyboard.press('Tab'); assert.ok(await run.page.evaluate(() => document.activeElement !== document.body));
-      assert.deepEqual(report.observations.at(-1).providerRequests, javascriptEnabled ? [calendarUrl] : []); assert.deepEqual(run.errors, []);
+      assert.deepEqual(report.observations.at(-1).providerRequests, []); assert.deepEqual(run.errors, []);
     });
     await run.context.close();
   }

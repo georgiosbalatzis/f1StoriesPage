@@ -48,6 +48,9 @@ blog-module/blog-entries/**/*.docx
 styles/vendor/bootstrap.slim.css
 images/icons/sprite.svg
 scripts/build/asset-manifest.json
+# Refreshed by npm run build:public
+data/nav-snapshot.json
+data/nav-snapshot.json.*.tmp
 
 # Local legacy/raw image leftovers that are no longer referenced by the site
 images/logo.png
