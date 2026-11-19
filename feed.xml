@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Wed, 18 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Ducati – Aprilia: Η μάχη του τίτλου</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261119W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261119W/article.html</guid>
+      <pubDate>Wed, 18 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Ο Márquez πλησιάζει στον τίτλο των αναβατών, αλλά η Ducati και η Aprilia δίνουν μια συναρπαστική μάχη για την κορυφή των κατασκευαστών.</description>
+      <category>Ανάλυση</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
+    <item>
       <title>Brabham BT46: Το μονοθέσιο με το φουρφούρι!</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261119G/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261119G/article.html</guid>
@@ -267,15 +276,6 @@
       <description>Στο καθιερωμένο GridCast για την ανάλυση του Αγώνα στο Μεξικό. Ελαστικά, καιρός, συνθήκες και δεδομένα.</description>
       <category>Ανάλυση</category>
       <dc:creator>Γιώργος Μπαλατζής</dc:creator>
-    </item>
-    <item>
-      <title>Ο Verstappen 2 φορές πρωταθλητής(κατασκευαστών)</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261028W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261028W/article.html</guid>
-      <pubDate>Tue, 27 Oct 2026 22:00:00 GMT</pubDate>
-      <description>Ο Max Verstappen συγκέντρωσε περισσότερους βαθμούς από ολόκληρη τη Ferrari το 2022 και το 2023, αποτυπώνοντας το μέγεθος της κυριαρχίας του στη Formula 1.</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

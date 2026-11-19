@@ -1,6 +1,40 @@
 {
   "posts": [
     {
+      "id": "20261119W",
+      "title": "Ducati – Aprilia: Η μάχη του τίτλου",
+      "author": "Themis Charvalis",
+      "date": "2026-11-19",
+      "dateISO": "2026-11-19",
+      "displayDate": "19 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261119W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261119W/2.webp",
+      "excerpt": "Ο Márquez πλησιάζει στον τίτλο των αναβατών, αλλά η Ducati και η Aprilia δίνουν μια συναρπαστική μάχη για την κορυφή των κατασκευαστών.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261119W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Motogp",
+        "Ducati",
+        "Aprillia",
+        "Marc Marquez",
+        "Jorge Martin",
+        "Marco Bezzechi"
+      ],
+      "wordCount": 309,
+      "readingTime": "2 min",
+      "imageWidth": 498,
+      "imageHeight": 1293,
+      "backgroundImageWidth": 616,
+      "backgroundImageHeight": 331,
+      "inputDigest": "053b7b00e5581aa8cffc29591722276a7b664a633d9a3ae7b58d2b1c9982142b"
+    },
+    {
       "id": "20261119G",
       "title": "Brabham BT46: Το μονοθέσιο με το φουρφούρι!",
       "author": "Georgios Balatzis",
@@ -12171,5 +12205,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-19T15:27:40.279Z"
+  "lastUpdated": "2026-11-19T16:54:00.015Z"
 }
