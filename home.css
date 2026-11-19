@@ -452,6 +452,33 @@ body.home-page footer .footer-wordmark img { width: 346px; }
 @media (prefers-reduced-motion: no-preference) {
     .home-page .fade-in { transition: transform .8s var(--ease-editorial); }
     .home-page .fade-in.is-observed:not(.visible) { transform: translateY(18px); }
+
+    .grid-desk :is(.tower-row__bar > span, .pace__track) { transform-origin: left center; }
+    .grid-desk.is-observed:not(.visible) :is(.tower-row__bar > span, .pace__track) { transform: scaleX(0); }
+    .grid-desk.visible .tower-row__bar > span { transition: transform .6s var(--ease-editorial) var(--grid-row-delay, 0ms); }
+    .grid-desk.visible .pace__track { transition: transform var(--dur-slow) var(--ease-editorial); }
+
+    .grid-desk.is-observed:not(.visible) .grid-share__bar { clip-path: inset(0 100% 0 0); }
+    .grid-desk.visible .grid-share__bar {
+        clip-path: inset(0);
+        transition: clip-path .65s var(--ease-editorial);
+    }
+
+    .grid-desk.is-observed:not(.visible) .pace__dot { opacity: 0; transform: scale(.75); }
+    .grid-desk.visible .pace__dot {
+        transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+        transition-delay: calc(var(--dur-slow) + var(--grid-row-delay, 0ms));
+    }
+
+    .grid-desk :is(.tower, .pace) > :nth-child(2) { --grid-row-delay: 50ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(3) { --grid-row-delay: 100ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(4) { --grid-row-delay: 150ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(5) { --grid-row-delay: 200ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(6) { --grid-row-delay: 250ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(7) { --grid-row-delay: 300ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(8) { --grid-row-delay: 350ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(9) { --grid-row-delay: 400ms; }
+    .grid-desk :is(.tower, .pace) > :nth-child(10) { --grid-row-delay: 450ms; }
 }
 @media (prefers-reduced-motion: reduce) {
     .home-page *, .home-page *::before, .home-page *::after { animation: none; transition: none; scroll-behavior: auto; }
