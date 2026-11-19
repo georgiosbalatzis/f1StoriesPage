@@ -1306,6 +1306,16 @@ function validateRetiredPage(errors, html, relPath, entry, sitemapUrls, indexedA
     if (indexedArticleUrls.has(own) || sitemapUrls.has(own)) errors.push(`${relPath}: a retired article must not be listed in the index or sitemap`);
 }
 
+export function briefingContentDigests(manifest = briefings.loadBriefingInputs().manifest) {
+    return manifest.editions.map(item => item.review && item.review.contentSha256).filter(Boolean);
+}
+
+export function validatePublicText(errors, text, relPath, briefingDigests) {
+    if (text.includes('briefings.v1.json') || text.includes('"contentSha256"') || briefingDigests.some(digest => text.includes(digest))) errors.push(`${relPath}: briefing editorial data leaked`);
+    if (SECRET_PATTERN.test(text)) errors.push(`${relPath}: contains a credential or key verifier`);
+    if (PLAINTEXT_ANALYTICS_PATTERN.test(text)) errors.push(`${relPath}: contains plaintext dashboard analytics`);
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -1323,7 +1333,7 @@ function main() {
     }
     const today = taxonomy.athensDay();
     const briefingInputs = briefings.loadBriefingInputs();
-    const briefingDigests = briefingInputs.manifest.editions.map(item => item.review && item.review.contentSha256).filter(Boolean);
+    const briefingDigests = briefingContentDigests(briefingInputs.manifest);
     const briefingDay = briefings.publicationDay();
     const approvedBriefingFiles = briefings.publicBriefingFiles(briefingInputs, { today: briefingDay });
     const files = [];
@@ -1363,10 +1373,7 @@ function main() {
         }
 
         if (/\.(?:html|js|mjs|json|css|txt|xml|map)$/i.test(relPath)) {
-            const text = fs.readFileSync(abs, 'utf8');
-            if (text.includes('briefings.v1.json') || text.includes('\"contentSha256\"') || briefingDigests.some(digest => text.includes(digest))) errors.push(`${relPath}: briefing editorial data leaked`);
-            if (SECRET_PATTERN.test(text)) errors.push(`${relPath}: contains a credential or key verifier`);
-            if (PLAINTEXT_ANALYTICS_PATTERN.test(text)) errors.push(`${relPath}: contains plaintext dashboard analytics`);
+            validatePublicText(errors, fs.readFileSync(abs, 'utf8'), relPath, briefingDigests);
         }
         validateSnapshot(errors, relPath, abs);
 

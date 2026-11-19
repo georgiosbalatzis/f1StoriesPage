@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { createSnapshot } from '../refresh-nav-snapshot.mjs';
+import { validatePublicText } from '../validate-public-artifact.mjs';
 
+const source = readFileSync(new URL('../../shared-nav.js', import.meta.url), 'utf8');
+const countdown = source.slice(source.indexOf('    var FALLBACK_RACES'), source.indexOf('    Array.prototype.forEach.call(document.querySelectorAll(\'[data-current-year]\')'));
 const now = new Date('2026-06-01T00:00:00Z');
 const race = {
     raceName: 'British Grand Prix', date: '2026-07-05', time: '14:00:00Z',
@@ -13,7 +16,7 @@ const schedule = (races = [race], year = 2026) =>
     ({ MRData: { total: String(races.length), RaceTable: { season: String(year), Races: races } } });
 const rss = enclosure => `<rss><channel><item>${enclosure}</item>
     <item><enclosure type="audio/mpeg" url="https://example.com/older.mp3"/></item></channel></rss>`;
-const audioUrl = 'https://example.com/latest.mp3';
+const audioUrl = 'https://anchor.fm/s/101588098/podcast/play/123/latest.mp3';
 const feed = rss(`<enclosure type="audio/mpeg" url="${audioUrl}"/>`);
 const raceStart = { name: 'British GP', country: 'UK', ts: Date.parse('2026-07-05T14:00:00Z') };
 
@@ -61,6 +64,43 @@ test('invalid or incomplete upstream data only drops the affected section', asyn
     }
 });
 
+test('race text that would fail the artifact scan is omitted without failing snapshot generation', async t => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    for (const [raceName, reason] of [['briefings.v1.json', /invalid race/],
+        ['-----BEGIN PRIVATE KEY-----', /contains a credential/]]) {
+        const errors = [];
+        validatePublicText(errors, JSON.stringify({ raceName }), 'data/nav-snapshot.json', []);
+        assert.equal(errors.length, 1);
+        const races = JSON.stringify(schedule([{ ...race, raceName }]));
+        assert.deepEqual(await createSnapshot(fetcher({ races }), now), { audioUrl });
+        assert.match(warn.mock.calls.at(-1).arguments[0], reason);
+    }
+
+    const internationalRace = {
+        ...race, raceName: "São Paulo 2 - D’Oeste Grand Prix",
+        Circuit: { Location: { country: "Côte d'Ivoire" } }
+    };
+    assert.deepEqual(await createSnapshot(fetcher({ races: JSON.stringify(schedule([internationalRace])) }), now), {
+        races: [{ ...raceStart, name: 'São Paulo 2 - D’Oeste GP', country: "Côte d'Ivoire" }], audioUrl
+    });
+    const badCountry = { ...race, Circuit: { Location: { country: 'UK/NI' } } };
+    assert.deepEqual(await createSnapshot(fetcher({ races: JSON.stringify(schedule([badCountry])) }), now), { audioUrl });
+});
+
+test('snapshot audio is limited to the podcast paths and passes the artifact scan', async t => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    for (const url of ['https://example.com/latest.mp3', 'https://youtube.com./s/101588098/latest.mp3',
+        audioUrl.replace('anchor.fm', 'anchor.fm.'), audioUrl.replace('101588098', '101588099'),
+        'https://d3ctxlq1ktw2nl.cloudfront.net/other/latest.mp3', audioUrl + '?name=briefings.v1.json']) {
+        const audio = rss(`<enclosure type="audio/mpeg" url="${url}"/>`);
+        assert.deepEqual(await createSnapshot(fetcher({ audio }), now), { races: [raceStart] });
+    }
+    assert.match(warn.mock.calls.at(-1).arguments[0], /briefing editorial data leaked/);
+    const direct = 'https://d3ctxlq1ktw2nl.cloudfront.net/staging/2026-9-7/latest.mp3';
+    const audio = rss(`<enclosure type="audio/mpeg" url="${direct}"/>`);
+    assert.deepEqual(await createSnapshot(fetcher({ audio }), now), { races: [raceStart], audioUrl: direct });
+});
+
 test('nav snapshot fetches the next UTC season when the current season has no future starts', async t => {
     const next = { ...race, date: '2027-07-04' };
     const offSeason = new Date('2026-12-31T23:30:00Z');
@@ -76,8 +116,6 @@ test('nav snapshot fetches the next UTC season when the current season has no fu
 });
 
 test('the countdown accepts next season and falls back to Jolpica when snapshot races are missing', async () => {
-    const source = readFileSync(new URL('../../shared-nav.js', import.meta.url), 'utf8');
-    const countdown = source.slice(source.indexOf('    var FALLBACK_RACES'), source.indexOf('    Array.prototype.forEach.call(document.querySelectorAll(\'[data-current-year]\')'));
     const now = Date.parse('2026-12-31T23:30:00Z');
     class Clock extends Date {
         constructor(...args) { super(...(args.length ? args : [now])); }
@@ -101,5 +139,66 @@ test('the countdown accepts next season and falls back to Jolpica when snapshot 
         } else {
             assert.deepEqual(requests, ['https://api.jolpi.ca/ergast/f1/2026.json']);
         }
+    }
+});
+
+test('the shared snapshot deadline aborts stalled headers and body reads', async () => {
+    const loader = source.slice(source.indexOf('    var navSnapshot;'), source.indexOf('    // ── Navbar audio player'));
+    for (const stallBody of [false, true]) {
+        let expire, signal, bodyRead;
+        const load = vm.runInNewContext(loader + '\nloadNavSnapshot;', {
+            AbortController,
+            setTimeout(callback, delay) { assert.equal(delay, 3000); expire = callback; },
+            clearTimeout() {},
+            fetch(url, options) {
+                assert.equal(url, '/data/nav-snapshot.json');
+                signal = options.signal;
+                const stall = () => new Promise((_, reject) => {
+                    signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+                });
+                return stallBody ? Promise.resolve({ ok: true, json() { bodyRead = true; return stall(); } }) : stall();
+            }
+        });
+        const snapshot = load();
+        assert.equal(load(), snapshot);
+        await Promise.resolve();
+        assert.equal(Boolean(bodyRead), stallBody);
+        expire();
+        assert.equal(await snapshot, null);
+        assert.equal(signal.aborted, true);
+    }
+});
+
+test('an exhausted snapshot restores the bundled next race when Jolpica has no usable future start', async () => {
+    for (const data of [undefined, schedule([]), schedule([race])]) {
+        let now = raceStart.ts - 1000;
+        let tick;
+        class Clock extends Date {
+            constructor(...args) { super(...(args.length ? args : [now])); }
+            static now() { return now; }
+        }
+        const name = {};
+        const requests = [];
+        const context = vm.createContext({
+            Date: Clock,
+            document: { getElementById: id => id === 'next-race-name' ? name : null, addEventListener() {} },
+            window: { clearTimeout() {}, setTimeout(callback) { tick = callback; return 1; } },
+            loadNavSnapshot: async () => ({ races: [raceStart] }),
+            fetch: async url => {
+                requests.push(url);
+                if (!data) throw new Error('Network unavailable');
+                return { ok: true, json: async () => data };
+            }
+        });
+        vm.runInContext(countdown, context);
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(context.calendarSource, 'snapshot');
+        assert.equal(name.textContent, 'British GP');
+        now = raceStart.ts;
+        tick();
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(context.calendarSource, 'fallback');
+        assert.equal(name.textContent, 'Belgian GP');
+        assert.deepEqual(requests, ['https://api.jolpi.ca/ergast/f1/2026.json']);
     }
 });

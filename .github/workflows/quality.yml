@@ -58,6 +58,9 @@ jobs:
       - name: Run countdown schedule tests
         run: node --test scripts/build/__tests__/countdown-schedule.test.mjs scripts/build/__tests__/race-calendar.test.mjs
 
+      - name: Run navigation snapshot and audio tests
+        run: node --test scripts/build/__tests__/nav-snapshot.test.mjs scripts/build/__tests__/shared-nav-audio-name.test.mjs
+
       - name: Run visual focus capture regression
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: node --test scripts/perf/__tests__/visual-qa-focus.test.mjs scripts/perf/__tests__/embed-qa.test.mjs scripts/perf/__tests__/size-budget.test.mjs scripts/perf/__tests__/presentation-qa.test.mjs scripts/perf/__tests__/qa-portability.test.mjs

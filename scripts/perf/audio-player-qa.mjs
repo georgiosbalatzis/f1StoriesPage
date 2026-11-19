@@ -28,8 +28,8 @@ const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), 
 const rootArg = process.argv.find(arg => arg.startsWith('--root='));
 const ROOT = rootArg ? path.resolve(REPO_ROOT, rootArg.slice(7)) : REPO_ROOT;
 const FEED_URL = 'https://anchor.fm/s/101588098/podcast/rss';
-const AUDIO_URL = 'https://audio.f1stories.test/stream.wav';
-const OLDER_URL = 'https://audio.f1stories.test/older-episode.wav';
+const AUDIO_URL = 'https://anchor.fm/s/101588098/podcast/play/123/stream.wav';
+const OLDER_URL = 'https://anchor.fm/s/101588098/podcast/play/122/older-episode.wav';
 const WIDTHS = [768, 430, 390, 375];
 const MIME = new Map([['.html', 'text/html; charset=utf-8'], ['.js', 'text/javascript; charset=utf-8'], ['.css', 'text/css; charset=utf-8'],
     ['.json', 'application/json; charset=utf-8'], ['.webp', 'image/webp'], ['.png', 'image/png'], ['.svg', 'image/svg+xml; charset=utf-8'],
@@ -136,7 +136,7 @@ const snapshot = page => page.evaluate(() => {
 });
 
 const youtube = requests => requests.some(url => /youtube|ytimg|googlevideo/.test(url));
-const audioHit = requests => requests.some(url => url.includes('audio.f1stories.test'));
+const audioHit = requests => requests.includes(AUDIO_URL) || requests.includes(OLDER_URL);
 
 async function behaviourChecks(browser, origin) {
     const player = await open(browser, origin, { meta: { audioUrl: AUDIO_URL } });
@@ -272,7 +272,7 @@ async function persistenceChecks(browser, origin) {
     await host.context.close();
 
     const stale = await open(browser, origin, { meta: { audioUrl: AUDIO_URL }, pagePath: '/authors/' });
-    await stale.page.evaluate(() => sessionStorage.setItem('f1stories-audio', JSON.stringify({ url: 'https://audio.f1stories.test/previous-episode.mp3', playing: true, time: 30, at: Date.now() })));
+    await stale.page.evaluate(url => sessionStorage.setItem('f1stories-audio', JSON.stringify({ url, playing: true, time: 30, at: Date.now() })), OLDER_URL);
     await stale.page.goto(`${origin}/`, { waitUntil: 'load' });
     await stale.page.waitForTimeout(600);
     s = await snapshot(stale.page);

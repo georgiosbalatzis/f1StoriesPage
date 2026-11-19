@@ -61,7 +61,7 @@ async function readCountdown(browser, origin, { now, snapshot = [], schedule, ca
         if (['api.jolpi.ca', 'anchor.fm'].includes(new URL(request.url()).hostname)) upstreamRequests.push(request.url());
     });
     await page.route(SNAPSHOT_URL, route => route.fulfill({
-        json: { races: snapshot, audioUrl: 'https://anchor.fm/latest.mp3' }
+        json: { races: snapshot, audioUrl: 'https://anchor.fm/s/101588098/podcast/play/123/latest.mp3' }
     }));
     await page.route(SCHEDULE_URL, route => (schedule ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(schedule) }) : route.abort()));
     await page.clock.setFixedTime(new Date(now));

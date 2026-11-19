@@ -3,9 +3,11 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DOMParser, onErrorStopParsing } from '@xmldom/xmldom';
 import { reader } from '../intelligence/health-check.mjs';
+import { briefingContentDigests, validatePublicText } from './validate-public-artifact.mjs';
 
 const FEED_URL = 'https://anchor.fm/s/101588098/podcast/rss';
 const OUTPUT = new URL('../../data/nav-snapshot.json', import.meta.url);
+const UNSAFE_RACE_TEXT = /[^\p{L}\p{Nd} '’-]/u;
 
 function raceStarts(schedule, year) {
     const table = schedule?.MRData?.RaceTable;
@@ -20,8 +22,8 @@ function raceStarts(schedule, year) {
         const country = race?.Circuit?.Location?.country;
         const hasDate = date !== undefined && date !== '';
         const hasTime = time !== undefined && time !== '';
-        if (typeof raceName !== 'string' || !raceName.trim() || raceName.length > 120
-            || typeof country !== 'string' || !country.trim() || country.length > 80
+        if (typeof raceName !== 'string' || !raceName.trim() || raceName.length > 120 || UNSAFE_RACE_TEXT.test(raceName)
+            || typeof country !== 'string' || !country.trim() || country.length > 80 || UNSAFE_RACE_TEXT.test(country)
             || (hasTime && (typeof time !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/.test(time)))) {
             throw new Error(`Jolpica returned an invalid race for ${year}`);
         }
@@ -49,9 +51,8 @@ function newestAudioUrl(feed) {
         if (!href || href.length > 2048) continue;
         if (!/^audio\//i.test(enclosure.getAttribute('type')) && !/\.(mp3|m4a|aac|ogg)(\?|$)/i.test(href)) continue;
         const url = URL.parse(href);
-        if (url?.protocol === 'https:' && !url.username && !url.password
-            && !/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be|googlevideo\.com|ytimg\.com)$/i.test(url.hostname)
-            && url.href.length <= 2048) {
+        if (url && url.href.length <= 2048
+            && /^https:\/\/(?:anchor\.fm\/s\/101588098\/|d3ctxlq1ktw2nl\.cloudfront\.net\/staging\/)/.test(url.href)) {
             return url.href;
         }
     }
@@ -76,10 +77,17 @@ export async function createSnapshot(fetchText, now = new Date()) {
         (async () => newestAudioUrl(await fetchText(FEED_URL)))()
     ]);
     const snapshot = {};
-    if (races.status === 'fulfilled') snapshot.races = races.value;
-    else console.warn(`warning: nav snapshot omitted races: ${races.reason}`);
-    if (audio.status === 'fulfilled') snapshot.audioUrl = audio.value;
-    else console.warn(`warning: nav snapshot omitted audio: ${audio.reason}`);
+    const digests = briefingContentDigests();
+    for (const [key, label, result] of [['races', 'races', races], ['audioUrl', 'audio', audio]]) {
+        if (result.status === 'rejected') {
+            console.warn(`warning: nav snapshot omitted ${label}: ${result.reason}`);
+            continue;
+        }
+        const errors = [];
+        validatePublicText(errors, JSON.stringify({ [key]: result.value }), 'data/nav-snapshot.json', digests);
+        if (errors.length) console.warn(`warning: nav snapshot omitted ${label}: ${errors.join(', ')}`);
+        else snapshot[key] = result.value;
+    }
     return snapshot;
 }
 

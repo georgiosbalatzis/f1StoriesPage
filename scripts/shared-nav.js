@@ -51,9 +51,12 @@
     var navSnapshot;
     function loadNavSnapshot() {
         if (!navSnapshot) {
-            navSnapshot = fetch('/data/nav-snapshot.json')
+            var controller = new AbortController();
+            var timer = setTimeout(function () { controller.abort(); }, 3000);
+            navSnapshot = fetch('/data/nav-snapshot.json', { signal: controller.signal })
                 .then(function (response) { return response.ok ? response.json() : null; })
-                .catch(function () { return null; });
+                .catch(function () { return null; })
+                .finally(function () { clearTimeout(timer); });
         }
         return navSnapshot;
     }
@@ -65,9 +68,8 @@
     function safeAudioUrl(value) {
         if (typeof value !== 'string' || value.length > 2048) return '';
         try {
-            var parsed = new URL(value);
-            // YouTube is never an audio source.
-            return parsed.protocol === 'https:' && !parsed.username && !parsed.password && !/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be|googlevideo\.com|ytimg\.com)$/i.test(parsed.hostname) ? parsed.href : '';
+            var url = new URL(value).href;
+            return url.length <= 2048 && /^https:\/\/(?:anchor\.fm\/s\/101588098\/|d3ctxlq1ktw2nl\.cloudfront\.net\/staging\/)/.test(url) ? url : '';
         } catch (_) {
             return '';
         }
@@ -602,10 +604,10 @@
 
     RACES.forEach(function (r) { r.ts = new Date(r.date).getTime(); });
 
-    function getNextRace(now) {
+    function getNextRace(now, races = RACES) {
         var next = null;
-        for (var i = 0; i < RACES.length; i++) {
-            if (RACES[i].ts > now && (!next || RACES[i].ts < next.ts)) next = RACES[i];
+        for (var i = 0; i < races.length; i++) {
+            if (races[i].ts > now && (!next || races[i].ts < next.ts)) next = races[i];
         }
         return next;
     }
@@ -701,6 +703,11 @@
     function tickCountdown() {
         var now = Date.now();
         var race = getNextRace(now);
+        var refresh = !race && calendarSource === 'snapshot';
+        if (!race && (race = getNextRace(now, FALLBACK_RACES))) {
+            RACES = FALLBACK_RACES;
+            calendarSource = 'fallback';
+        }
         if (!race) {
             var year = new Date(now).getUTCFullYear();
             var seasonKnown = RACES.some(function (r) { return new Date(r.ts).getUTCFullYear() === year; });
@@ -712,17 +719,17 @@
                 var el = document.getElementById(id);
                 if (el) ['aria-label', 'title'].forEach(function (a) { el.removeAttribute(a); });
             });
-            if (calendarSource === 'snapshot') loadLiveSchedule();
-            return;
+        } else {
+            var ms = race.ts - now;
+            if (countdownNameEl) countdownNameEl.textContent = race.name;
+            if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
+            if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
+            if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
+            setMobileFlag(race.flag);
+            labelCountdown(race);
+            scheduleCountdown(ms);
         }
-        var ms = race.ts - now;
-        if (countdownNameEl) countdownNameEl.textContent = race.name;
-        if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
-        if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
-        if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
-        setMobileFlag(race.flag);
-        labelCountdown(race);
-        scheduleCountdown(ms);
+        if (refresh) loadLiveSchedule();
     }
 
     // ── Fetch live schedule from Jolpica (Ergast replacement) ──
