@@ -12,7 +12,7 @@
     }
 
     function initFadeIns() {
-        var targets = document.querySelectorAll('.fade-in, #numbers :is(.grid-tower, .grid-share, .grid-pace)');
+        var targets = document.querySelectorAll('.fade-in, #numbers :is(.tower, .grid-share, .grid-pace)');
         if (!targets.length) return;
 
         if (!('IntersectionObserver' in window)) {
@@ -45,7 +45,7 @@
 
         targets.forEach(function (target, index) {
             if (inView[index]) {
-                target.classList.add('is-observed', 'visible', 'is-settled');
+                target.classList.add('is-observed', 'visible');
             } else {
                 target.classList.add('is-observed');
                 observer.observe(target);

@@ -450,21 +450,21 @@ body.home-page footer { background: var(--deep); }
 body.home-page footer .footer-wordmark img { width: 346px; }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word { clip-path: inset(0 100% 0 0); }
-    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word > span { opacity: 0; }
-
-    .home-page .fade-in.is-observed.visible:not(.is-settled) .pd-mast__word { animation: home-wordmark-wipe .65s var(--ease-editorial); }
-    .home-page .fade-in.is-observed.visible:not(.is-settled) .pd-mast__word > span { animation: home-wordmark-dot .24s var(--ease-out) .65s backwards; }
-
-    @keyframes home-wordmark-wipe {
-        from { clip-path: inset(-.2em 100% -.2em -.1em); }
-        to { clip-path: inset(-.2em -.1em); }
+    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word { clip-path: inset(-.2em 100% -.2em -.1em); }
+    .home-page .fade-in.visible .pd-mast__word {
+        clip-path: inset(-.2em -.1em);
+        transition: clip-path .65s var(--ease-editorial);
     }
 
     /* Grow the visible ink around the period's center without changing its inline box. */
-    @keyframes home-wordmark-dot {
-        from { opacity: 0; clip-path: circle(.032em at .112em .925em); }
-        to { opacity: 1; clip-path: circle(.12em at .112em .925em); }
+    .home-page .fade-in.is-observed:not(.visible) .pd-mast__word > span {
+        opacity: 0;
+        clip-path: circle(.032em at .112em .925em);
+    }
+    .home-page .fade-in.visible .pd-mast__word > span {
+        clip-path: circle(.12em at .112em .925em);
+        transition: opacity .24s var(--ease-out), clip-path .24s var(--ease-out);
+        transition-delay: .65s;
     }
 }
 
@@ -473,9 +473,9 @@ body.home-page footer .footer-wordmark img { width: 346px; }
     .home-page .fade-in.is-observed:not(.visible) { transform: translateY(18px); }
 
     .grid-desk :is(.tower-row__bar > span, .pace__track) { transform-origin: left center; }
-    .grid-tower.is-observed:not(.visible) .tower-row__bar > span,
+    .grid-desk .tower.is-observed:not(.visible) .tower-row__bar > span,
     .grid-pace.is-observed:not(.visible) .pace__track { transform: scaleX(0); }
-    .grid-tower.visible .tower-row__bar > span { transition: transform .6s var(--ease-editorial) var(--grid-row-delay, 0ms); }
+    .grid-desk .tower.visible .tower-row__bar > span { transition: transform .6s var(--ease-editorial) var(--grid-row-delay, 0ms); }
     .grid-pace.visible .pace__track { transition: transform var(--dur-slow) var(--ease-editorial); }
 
     .grid-share.is-observed:not(.visible) .grid-share__bar { clip-path: inset(0 100% 0 0); }
