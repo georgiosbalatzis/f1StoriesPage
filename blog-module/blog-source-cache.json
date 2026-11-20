@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261120G",
+      "title": "BetCast... Στα τυφλά με τα φώτα του Las Vegas",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-20",
+      "dateISO": "2026-11-20",
+      "displayDate": "20 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261120G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261120G/1.webp",
+      "excerpt": "BetCast, και ανάλυση σε ένα άρθρο για το GP του Miami",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261120G/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 488,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "d1248ea385b669c8ba568e530242328b9216363ed9be71a80eaca059d5372239"
+    },
+    {
       "id": "20261119W",
       "title": "Ducati – Aprilia: Η μάχη του τίτλου",
       "author": "Themis Charvalis",
@@ -12205,5 +12234,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-19T16:54:00.015Z"
+  "lastUpdated": "2026-11-20T18:51:16.243Z"
 }

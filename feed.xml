@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Wed, 18 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 19 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>BetCast... Στα τυφλά με τα φώτα του Las Vegas</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261120G/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261120G/article.html</guid>
+      <pubDate>Thu, 19 Nov 2026 22:00:00 GMT</pubDate>
+      <description>BetCast, και ανάλυση σε ένα άρθρο για το GP του Miami</description>
+      <category>Ειδήσεις</category>
+      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
+    </item>
     <item>
       <title>Ducati – Aprilia: Η μάχη του τίτλου</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261119W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Στη Σιγκαπούρη το 2016, ο Nico Rosberg άντεξε την καταιγιστική αντεπίθεση του Daniel Ricciardo, κερδίζοντας με διαφορά μόλις 0,488 δευτερολέπτων.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>GridCast #03: Ώρα για τη Σαμπάνια του Πρωταθλητή</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261029G/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261029G/article.html</guid>
-      <pubDate>Wed, 28 Oct 2026 22:00:00 GMT</pubDate>
-      <description>Στο καθιερωμένο GridCast για την ανάλυση του Αγώνα στο Μεξικό. Ελαστικά, καιρός, συνθήκες και δεδομένα.</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
     </item>
   </channel>
 </rss>
