@@ -32,7 +32,7 @@
     {
       "application": "tyres",
       "repository": "georgiosbalatzis/Tyres",
-      "sha": "6df0eeae838f68f39a530d59a28575f5c4d40b56",
+      "sha": "a02789ee2a4f5964f8874bf51dc53ff3d12e2140",
       "path": "/tyres/",
       "output": "dist",
       "build": "build:f1stories",

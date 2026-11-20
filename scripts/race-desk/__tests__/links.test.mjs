@@ -397,7 +397,7 @@ test("source lock matches reviewed origin, application paths and pinned revision
     main: ["/", undefined],
     telemetry: ["/telemetry/", "0f6a2170db99688bdeefcf4c34c1f55b65db4786"],
     ghostcar: ["/ghostcar/", "8f5e12c4e9ee2579f4080a4b63750fdf0b2179ea"],
-    tyres: ["/tyres/", "6df0eeae838f68f39a530d59a28575f5c4d40b56"],
+    tyres: ["/tyres/", "a02789ee2a4f5964f8874bf51dc53ff3d12e2140"],
   };
   for (const [name, [path, sha]] of Object.entries(expected)) {
     const app = lock.applications.find((item) => item.application === name);
