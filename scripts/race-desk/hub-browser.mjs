@@ -76,7 +76,7 @@ const uncertainDrivers = [...new Set(timelinePayload('pit').filter(pit => !paceS
 assert.deepEqual(uncertainDrivers, [6, 14, 18]);
 const formatTime = seconds => `${new Intl.NumberFormat('el-GR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(Math.floor(seconds * 1000 + 0.5 + 1e-9) / 1000)} s`;
 const storyHref = id => `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
-// TYRES override circuit.name at code/data snapshot 6df0eeae838f68f39a530d59a28575f5c4d40b56.
+// TYRES override circuit.name at code/data snapshot a02789ee2a4f5964f8874bf51dc53ff3d12e2140.
 // This pin adds WEATHER_HOLD for las-vegas/lusail; existing native selections are unchanged.
 // Its deployed data input tracks main separately, so this acceptance detects changes to native selections.
 const nativeTyres = {
@@ -87,7 +87,7 @@ const nativeTyres = {
   '2025-singapore-gp': ['Marina Bay Street Circuit', 'a26affb3980cb9c7f383f9c73373d43e9370185e'],
   '2026-mexican-gp': ['Autódromo Hermanos Rodríguez', 'be59dff04cae56bcd7966c16df20d70ac59d6673'],
 };
-const report = { site, assembled, deploy, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), officialCaptures: models.map(({ raceId, scheduleEvidence }) => ({ raceId, url: scheduleEvidence.url, observedAt: scheduleEvidence.observedAt, sha256: scheduleEvidence.sha256, bytes: scheduleEvidence.bytes })), nativeTyresEvidence: { revision: '6df0eeae838f68f39a530d59a28575f5c4d40b56', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
+const report = { site, assembled, deploy, deploymentEnabled: lock.enabled, sourcePins: lock.applications.map(({ application, sha, data }) => ({ application, sha: sha || null, data: data || null })), officialCaptures: models.map(({ raceId, scheduleEvidence }) => ({ raceId, url: scheduleEvidence.url, observedAt: scheduleEvidence.observedAt, sha256: scheduleEvidence.sha256, bytes: scheduleEvidence.bytes })), nativeTyresEvidence: { revision: 'a02789ee2a4f5964f8874bf51dc53ff3d12e2140', fields: nativeTyres }, browser: null, checks: [], failures: [], captures: [], observations: [] };
 fs.mkdirSync(reports, { recursive: true });
 let server, browser;
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif', '.jpg': 'image/jpeg' };
