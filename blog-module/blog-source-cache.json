@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261120W",
+      "title": "Ο δύσκολος δρόμος του Christijian Albers",
+      "author": "Themis Charvalis",
+      "date": "2026-11-20",
+      "dateISO": "2026-11-20",
+      "displayDate": "20 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261120W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261120W/2.webp",
+      "excerpt": "Από το DTM στη Formula 1 και από τις δύσκολες ομάδες του grid μέχρι την απότομη αποχώρηση. Η ιδιαίτερη διαδρομή του Christijan Albers.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261120W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Christijian Albers",
+        "F1",
+        "Netherlands",
+        "DTM"
+      ],
+      "wordCount": 783,
+      "readingTime": "4 min",
+      "imageWidth": 453,
+      "imageHeight": 191,
+      "backgroundImageWidth": 649,
+      "backgroundImageHeight": 280,
+      "inputDigest": "cabaf84f03718cfbc10cbf10433eb8abe61990d6264730d0cdf6ee3bcc17d3fe"
+    },
+    {
       "id": "20261120G",
       "title": "BetCast... Στα τυφλά με τα φώτα του Las Vegas",
       "author": "Georgios Balatzis",
@@ -12234,5 +12266,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T18:51:16.243Z"
+  "lastUpdated": "2026-11-20T21:36:39.383Z"
 }
