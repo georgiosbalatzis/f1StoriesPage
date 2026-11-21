@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261121W",
+      "title": "Alex Barros: Η μοτοσυκλέτα η ζωή του.",
+      "author": "Themis Charvalis",
+      "date": "2026-11-21",
+      "dateISO": "2026-11-21",
+      "displayDate": "21 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261121W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261121W/2.webp",
+      "excerpt": "Πέρα από τις νίκες και τις ταχύτητες, ο Alex Barros ανακάλυψε πως η μεγαλύτερη πρόκληση της ζωής βρίσκεται μακριά από τις πίστες, στην οικογένεια.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261121W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Alex Barros",
+        "Legend"
+      ],
+      "wordCount": 409,
+      "readingTime": "3 min",
+      "imageWidth": 436,
+      "imageHeight": 495,
+      "backgroundImageWidth": 547,
+      "backgroundImageHeight": 346,
+      "inputDigest": "343a19bde53debaae07dd3e8d9b14f81654802f11b00a8a2e3223af755dc7c56"
+    },
+    {
       "id": "20261120W",
       "title": "Ο δύσκολος δρόμος του Christijian Albers",
       "author": "Themis Charvalis",
@@ -12266,5 +12297,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T21:36:39.383Z"
+  "lastUpdated": "2026-11-21T18:40:41.326Z"
 }

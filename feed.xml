@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Thu, 19 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 20 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Alex Barros: Η μοτοσυκλέτα η ζωή του.</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261121W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261121W/article.html</guid>
+      <pubDate>Fri, 20 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Πέρα από τις νίκες και τις ταχύτητες, ο Alex Barros ανακάλυψε πως η μεγαλύτερη πρόκληση της ζωής βρίσκεται μακριά από τις πίστες, στην οικογένεια.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Ο δύσκολος δρόμος του Christijian Albers</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261120W/article.html</link>
@@ -267,15 +276,6 @@
       <description>BetCast #278: Mexico με Μεξικανό στους βαθμούς... Με 4 σημεία για αγώνα και κατατακτήριες.</description>
       <category>Στοίχημα</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>McLaren Mcl40: Γρήγορη αλλά ασταθής.</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261031W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261031W/article.html</guid>
-      <pubDate>Fri, 30 Oct 2026 22:00:00 GMT</pubDate>
-      <description>Η McLaren MCL40 διαθέτει ταχύτητα για βάθρα, αλλά η αστάθεια στην απόδοσή της δυσκολεύει τη μάχη με τους κορυφαίους αντιπάλους.</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>
