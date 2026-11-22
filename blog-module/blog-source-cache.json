@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261122W",
+      "title": "Δεν τελείωσε ακόμη...",
+      "author": "Themis Charvalis",
+      "date": "2026-11-22",
+      "dateISO": "2026-11-22",
+      "displayDate": "22 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261122W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261122W/2.webp",
+      "excerpt": "Από το -102 στην κορυφή του κόσμου! Ο Marc Márquez γράφει ιστορία με την κατάκτηση του όγδοου τίτλου του στην μεγάλη κατηγορία του MotoGP.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261122W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Marc Marquez",
+        "Ducati",
+        "GOAT"
+      ],
+      "wordCount": 150,
+      "readingTime": "1 min",
+      "imageWidth": 457,
+      "imageHeight": 543,
+      "backgroundImageWidth": 1037,
+      "backgroundImageHeight": 1585,
+      "inputDigest": "fc582180d1bd95548004c4caae1ee79e5e8df9381e84aa5d93e0a925041f6ef7"
+    },
+    {
       "id": "20261121W",
       "title": "Alex Barros: Η μοτοσυκλέτα η ζωή του.",
       "author": "Themis Charvalis",
@@ -12297,5 +12329,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-21T18:40:41.326Z"
+  "lastUpdated": "2026-11-22T16:47:18.422Z"
 }
