@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sat, 21 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 22 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Απολογισμός Vowles</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261123G/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261123G/article.html</guid>
+      <pubDate>Sun, 22 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Οι ημέρες του Vowles: Γιατί η Williams εξακολουθεί να μην μπορεί να απεγκλωβιστεί</description>
+      <category>Άποψη</category>
+      <dc:creator>Γιώργος Μπαλατζής</dc:creator>
+    </item>
     <item>
       <title>Δεν τελείωσε ακόμη...</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261122W/article.html</link>
@@ -266,15 +275,6 @@
       <pubDate>Sat, 31 Oct 2026 22:00:00 GMT</pubDate>
       <description>Ο Marc Márquez θριαμβεύει στη Μαλαισία, αποδεικνύοντας πως η κλάση, το ταλέντο και η δίψα για νίκες δεν χάνονται ποτέ.</description>
       <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Sete Gibernau: Πλησιάζοντας τον (prime), Rossi</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261101W/article.html</guid>
-      <pubDate>Sat, 31 Oct 2026 22:00:00 GMT</pubDate>
-      <description>Ένας αναβάτης που έφτασε δύο φορές στη θέση του αντιπάλου που μπορούσε πραγματικά να πιέσει τον Valentino Rossi.</description>
-      <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>

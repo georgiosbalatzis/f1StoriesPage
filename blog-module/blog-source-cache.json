@@ -1,6 +1,47 @@
 {
   "posts": [
     {
+      "id": "20261123G",
+      "title": "Απολογισμός Vowles",
+      "author": "Georgios Balatzis",
+      "date": "2026-11-23",
+      "dateISO": "2026-11-23",
+      "displayDate": "23 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261123G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261123G/1.webp",
+      "excerpt": "Οι ημέρες του Vowles: Γιατί η Williams εξακολουθεί να μην μπορεί να απεγκλωβιστεί",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261123G/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "James Vowles",
+        "Williams",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026",
+        "Sainz",
+        "Albon",
+        "Seargent",
+        "Colapinto"
+      ],
+      "wordCount": 4079,
+      "readingTime": "21 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "30add057368dac59e76dd5bf0898ec9e71b856f088ea8d376d39ce84ce51ec89"
+    },
+    {
       "id": "20261122W",
       "title": "Δεν τελείωσε ακόμη...",
       "author": "Themis Charvalis",
@@ -12329,5 +12370,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-22T16:47:18.422Z"
+  "lastUpdated": "2026-11-23T13:22:36.089Z"
 }
