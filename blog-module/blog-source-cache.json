@@ -23,11 +23,11 @@
       ],
       "wordCount": 479,
       "readingTime": "3 min",
-      "imageWidth": 1600,
-      "imageHeight": 900,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900,
-      "inputDigest": "06136fbe7ddf69c0e6b4b1cb588c5fc608334f5961c4524fe40c62bc08b0b974"
+      "imageWidth": 1254,
+      "imageHeight": 706,
+      "backgroundImageWidth": 1254,
+      "backgroundImageHeight": 706,
+      "inputDigest": "b69cc015e456f51283f417afa72f18d44738c6f96155602976982bb063860871"
     },
     {
       "id": "20261123W",
@@ -12430,5 +12430,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-23T19:23:40.280Z"
+  "lastUpdated": "2026-11-23T19:55:25.826Z"
 }
