@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 22 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Η τραγική αλήθεια της σημερινής Formula 1</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261123J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261123J/article.html</guid>
+      <pubDate>Sun, 22 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Με τέρμα γκάζι... τα μονοθέσια δεν τραβάνε. Αυτό είναι το μέλλον της Formula 1.</description>
+      <category>Άποψη</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
+    <item>
       <title>Williams: Από τα τροχόσπιτα του Sir Frank στην αβεβαιότητα του 2020</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261123W/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261123W/article.html</guid>
@@ -267,15 +276,6 @@
       <description>«Θα βάλει έναν μικρό πίσω από το τιμόνι της Mercedes». Αυτά ήταν λίγα ειπώθηκαν για τον μικρότερο ηλικιακά πρωταθλητή στην Formula 1.</description>
       <category>Ειδήσεις</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Max Verstappen: Η τέχνη να κερδίζεις</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261102W/article.html</guid>
-      <pubDate>Sun, 01 Nov 2026 22:00:00 GMT</pubDate>
-      <description>Ο Max Verstappen μετατρέπει την πέμπτη θέση εκκίνησης σε θρίαμβο στο Μεξικό, αποδεικνύοντας την ταχύτητα, την ψυχραιμία και την αγωνιστική του ευφυΐα.</description>
-      <category>Ανάλυση</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

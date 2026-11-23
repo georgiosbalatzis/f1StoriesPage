@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261123J",
+      "title": "Η τραγική αλήθεια της σημερινής Formula 1",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-23",
+      "dateISO": "2026-11-23",
+      "displayDate": "23 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261123J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261123J/1.webp",
+      "excerpt": "Με τέρμα γκάζι... τα μονοθέσια δεν τραβάνε. Αυτό είναι το μέλλον της Formula 1.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261123J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 479,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "06136fbe7ddf69c0e6b4b1cb588c5fc608334f5961c4524fe40c62bc08b0b974"
+    },
+    {
       "id": "20261123W",
       "title": "Williams: Από τα τροχόσπιτα του Sir Frank στην αβεβαιότητα του 2020",
       "author": "Themis Charvalis",
@@ -12401,5 +12430,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-23T13:23:31.524Z"
+  "lastUpdated": "2026-11-23T19:23:40.280Z"
 }
