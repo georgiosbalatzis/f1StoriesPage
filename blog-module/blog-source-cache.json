@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261123W",
+      "title": "Williams: Από τα τροχόσπιτα του Sir Frank στην αβεβαιότητα του 2020",
+      "author": "Themis Charvalis",
+      "date": "2026-11-23",
+      "dateISO": "2026-11-23",
+      "displayDate": "23 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261123W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261123W/2.webp",
+      "excerpt": "Από τα ταπεινά τροχόσπιτα και τις οικονομικές δυσκολίες στην απόλυτη δόξα της Formula 1 και την αβεβαιότητα του 2020. Η συγκλονιστική ιστορία της Williams.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261123W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Frank Williams",
+        "Legend",
+        "Champions"
+      ],
+      "wordCount": 1761,
+      "readingTime": "9 min",
+      "imageWidth": 528,
+      "imageHeight": 171,
+      "backgroundImageWidth": 660,
+      "backgroundImageHeight": 403,
+      "inputDigest": "54bb279307df850bd3c7cbaf00f166ba851835750f4705f1bcb6866da97b634f"
+    },
+    {
       "id": "20261123G",
       "title": "Απολογισμός Vowles",
       "author": "Georgios Balatzis",
@@ -12370,5 +12401,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-23T13:22:36.089Z"
+  "lastUpdated": "2026-11-23T13:23:31.524Z"
 }
