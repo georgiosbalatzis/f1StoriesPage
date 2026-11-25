@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sun, 22 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 24 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Η γυναίκα που πίστεψε στον Marc Márquez</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261125W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261125W/article.html</guid>
+      <pubDate>Tue, 24 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Η Nadia Padovani πίστεψε στον Marc Márquez και του έδωσε την ευκαιρία να ξαναβρεί τον δρόμο προς την κορυφή του MotoGP.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Η τραγική αλήθεια της σημερινής Formula 1</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261123J/article.html</link>
@@ -267,15 +276,6 @@
       <description>Gigi Galli ο θεαματικός Ιταλός με το ακραία επιθετικό στυλ.</description>
       <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>«Είναι πολύ μικρός»… Τώρα είναι ο πρωταθλητής!</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261102J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261102J/article.html</guid>
-      <pubDate>Sun, 01 Nov 2026 22:00:00 GMT</pubDate>
-      <description>«Θα βάλει έναν μικρό πίσω από το τιμόνι της Mercedes». Αυτά ήταν λίγα ειπώθηκαν για τον μικρότερο ηλικιακά πρωταθλητή στην Formula 1.</description>
-      <category>Ειδήσεις</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
 </rss>

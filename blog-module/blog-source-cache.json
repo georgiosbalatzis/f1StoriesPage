@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261125W",
+      "title": "Η γυναίκα που πίστεψε στον Marc Márquez",
+      "author": "Themis Charvalis",
+      "date": "2026-11-25",
+      "dateISO": "2026-11-25",
+      "displayDate": "25 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261125W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261125W/2.webp",
+      "excerpt": "Η Nadia Padovani πίστεψε στον Marc Márquez και του έδωσε την ευκαιρία να ξαναβρεί τον δρόμο προς την κορυφή του MotoGP.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261125W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Nadia Padovani",
+        "Fausto Gresini"
+      ],
+      "wordCount": 664,
+      "readingTime": "4 min",
+      "imageWidth": 491,
+      "imageHeight": 327,
+      "backgroundImageWidth": 464,
+      "backgroundImageHeight": 364,
+      "inputDigest": "1996ccb83e39a025a2caf334e5df4126e7e4067c8a4885e34944309d590ef6ca"
+    },
+    {
       "id": "20261123J",
       "title": "Η τραγική αλήθεια της σημερινής Formula 1",
       "author": "Giannis Poulikidis",
@@ -12430,5 +12461,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-23T19:55:25.826Z"
+  "lastUpdated": "2026-11-25T14:17:07.341Z"
 }
