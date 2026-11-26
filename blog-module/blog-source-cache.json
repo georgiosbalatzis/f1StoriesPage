@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261126W",
+      "title": "Ένα δεκάχρονο παιδί ακουσε μια Stratos",
+      "author": "Themis Charvalis",
+      "date": "2026-11-26",
+      "dateISO": "2026-11-26",
+      "displayDate": "26 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261126W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261126W/2.webp",
+      "excerpt": "Από ένα δεκάχρονο παιδί που μαγεύτηκε από τη Lancia Stratos, στον πρωταθλητή Γερμανίας και Ευρώπης και νικητή του WRC.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261126W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Armis Schwartz",
+        "WRC",
+        "Racing Lagend"
+      ],
+      "wordCount": 480,
+      "readingTime": "3 min",
+      "imageWidth": 552,
+      "imageHeight": 272,
+      "backgroundImageWidth": 643,
+      "backgroundImageHeight": 274,
+      "inputDigest": "783ddf21779ae78fb8df487fe820984da64c29f17a222898f80fc31c851f96c1"
+    },
+    {
       "id": "20261125W",
       "title": "Η γυναίκα που πίστεψε στον Marc Márquez",
       "author": "Themis Charvalis",
@@ -12461,5 +12492,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-25T14:17:07.341Z"
+  "lastUpdated": "2026-11-26T17:31:22.172Z"
 }

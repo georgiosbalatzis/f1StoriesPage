@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Tue, 24 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 25 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Ένα δεκάχρονο παιδί ακουσε μια Stratos</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261126W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261126W/article.html</guid>
+      <pubDate>Wed, 25 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Από ένα δεκάχρονο παιδί που μαγεύτηκε από τη Lancia Stratos, στον πρωταθλητή Γερμανίας και Ευρώπης και νικητή του WRC.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
     <item>
       <title>Η γυναίκα που πίστεψε στον Marc Márquez</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261125W/article.html</link>
@@ -266,15 +275,6 @@
       <pubDate>Tue, 03 Nov 2026 22:00:00 GMT</pubDate>
       <description>Η Aston Martin AMR23: η τεχνική φιλοσοφία, η αεροδυναμική και η εντυπωσιακή επιστροφή του Fernando Alonso στα βάθρα της Formula 1.</description>
       <category>Τεχνικά</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
-    </item>
-    <item>
-      <title>Gigi Galli: όταν η επιθετικότητα γίνεται τέχνη</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261103W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261103W/article.html</guid>
-      <pubDate>Mon, 02 Nov 2026 22:00:00 GMT</pubDate>
-      <description>Gigi Galli ο θεαματικός Ιταλός με το ακραία επιθετικό στυλ.</description>
-      <category>Ιστορία</category>
       <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
