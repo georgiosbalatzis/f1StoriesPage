@@ -106,6 +106,21 @@ test('TYRES Pages refreshes run every 6 h Thursday–Monday and once a day Tuesd
     assert.deepEqual(perDay, [4, 4, 1, 1, 4, 4, 4]);
 });
 
+test('TYRES pin update runs Mon–Thu 23:59 UTC (Tue–Fri 01:59 EET / 02:59 EEST)', () => {
+    const tyresPin = read('tyres-pin.yml');
+    const crons = [...tyresPin.matchAll(/- cron: '([^']+)'(\n\s+timezone:)?/g)];
+    assert.equal(crons.length, 1);
+    assert.ok(!crons[0][2], 'tyres-pin schedule is UTC');
+    assert.equal(crons[0][1], '59 23 * * 1,2,3,4');
+    // Verify UTC weekday Mon..Thu maps to Athens Tue..Fri 01:59 EET (Nov) and 02:59 EEST (Jul).
+    const athensDayHour = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/Athens', hourCycle: 'h23', weekday: 'short', hour: '2-digit', minute: '2-digit'
+    });
+    assert.equal(athensDayHour.format(new Date('2026-11-23T23:59:00Z')), 'Tue 01:59');
+    assert.equal(athensDayHour.format(new Date('2026-11-26T23:59:00Z')), 'Fri 01:59');
+    assert.equal(athensDayHour.format(new Date('2026-07-06T23:59:00Z')), 'Tue 02:59');
+});
+
 test('every maintenance and Pages runner job has a bounded timeout', () => {
     for (const [workflow, names] of [
         [maintenance, ['changes', 'publish_blog', 'refresh_standings_data', 'publish_data']],
