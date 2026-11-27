@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261127W",
+      "title": "Ο Ζακ Βιλνέβ και η ζωή πίσω από το κράνος",
+      "author": "Themis Charvalis",
+      "date": "2026-11-27",
+      "dateISO": "2026-11-27",
+      "displayDate": "27 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261127W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261127W/2.webp",
+      "excerpt": "Πίσω από τη δόξα, τους τίτλους και τη δημοσιότητα, ο Ζακ Βιλνέβ γνώριζε καλά πως η επιτυχία έχει και το δικό της τίμημα.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261127W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Jacques Villeneuve",
+        "F1",
+        "Champion"
+      ],
+      "wordCount": 200,
+      "readingTime": "1 min",
+      "imageWidth": 1600,
+      "imageHeight": 871,
+      "backgroundImageWidth": 779,
+      "backgroundImageHeight": 262,
+      "inputDigest": "eb5668d85aa9fad0c16c468f99837c9f17049a8b8df439b6c9f83b4a9bb0b471"
+    },
+    {
       "id": "20261127J",
       "title": "GridCast #279 | Μόνο 27 γύροι... και μετά αλλαγή!",
       "author": "Giannis Poulikidis",
@@ -12521,5 +12552,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-27T11:05:33.570Z"
+  "lastUpdated": "2026-11-27T20:52:57.684Z"
 }
