@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261127J",
+      "title": "GridCast #279 | Μόνο 27 γύροι... και μετά αλλαγή!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-27",
+      "dateISO": "2026-11-27",
+      "displayDate": "27 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261127J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261127J/1.webp",
+      "excerpt": "Ανάλυση για το GP στο Qatar. Με την FIA να παίρνει μέρος.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261127J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 427,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 901,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 901,
+      "inputDigest": "dd1da4da93b1736f4d62ed468fbfd6578a25907346dc25e8d8602e3487bd330b"
+    },
+    {
       "id": "20261126W",
       "title": "Ένα δεκάχρονο παιδί ακουσε μια Stratos",
       "author": "Themis Charvalis",
@@ -12492,5 +12521,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-26T17:31:22.172Z"
+  "lastUpdated": "2026-11-27T11:05:33.570Z"
 }
