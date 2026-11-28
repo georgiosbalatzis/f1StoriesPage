@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261128W",
+      "title": "Το παιδί-θαύμα των 125cc και θρύλος του MotoGP",
+      "author": "Themis Charvalis",
+      "date": "2026-11-28",
+      "dateISO": "2026-11-28",
+      "displayDate": "28 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261128W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261128W/2.webp",
+      "excerpt": "Από το παιδί-θαύμα των 125cc στον θρύλο του MotoGP, η εντυπωσιακή διαδρομή του Loris Capirossi με τρία παγκόσμια πρωταθλήματα.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261128W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Loris Capirossi",
+        "Champion"
+      ],
+      "wordCount": 648,
+      "readingTime": "4 min",
+      "imageWidth": 715,
+      "imageHeight": 428,
+      "backgroundImageWidth": 636,
+      "backgroundImageHeight": 363,
+      "inputDigest": "b9384b28f15b725c86ed6be89ec5e175956634d64792c82106ecdaff64fe2b65"
+    },
+    {
       "id": "20261128J",
       "title": "BetCast #281: Η FIA αλλάζει τα δεδομένα στο Κατάρ",
       "author": "Giannis Poulikidis",
@@ -12581,5 +12612,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-28T12:38:29.030Z"
+  "lastUpdated": "2026-11-28T19:53:18.920Z"
 }

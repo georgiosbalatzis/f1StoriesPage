@@ -8,6 +8,15 @@
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Fri, 27 Nov 2026 22:00:00 GMT</lastBuildDate>
     <item>
+      <title>Το παιδί-θαύμα των 125cc και θρύλος του MotoGP</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261128W/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261128W/article.html</guid>
+      <pubDate>Fri, 27 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Από το παιδί-θαύμα των 125cc στον θρύλο του MotoGP, η εντυπωσιακή διαδρομή του Loris Capirossi με τρία παγκόσμια πρωταθλήματα.</description>
+      <category>Ιστορία</category>
+      <dc:creator>Θέμης Χαρβάλης</dc:creator>
+    </item>
+    <item>
       <title>BetCast #281: Η FIA αλλάζει τα δεδομένα στο Κατάρ</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261128J/article.html</link>
       <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261128J/article.html</guid>
@@ -266,15 +275,6 @@
       <pubDate>Fri, 06 Nov 2026 22:00:00 GMT</pubDate>
       <description>BetCast #279 και οι επιλογές της Βραζιλίας.</description>
       <category>Ειδήσεις</category>
-      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>GRIDCAST #04 - Στη σκιά του νέου Παγκόσμιου Πρωταθλητή</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107J/article.html</guid>
-      <pubDate>Fri, 06 Nov 2026 22:00:00 GMT</pubDate>
-      <description>Ανάλυση του Grand Prix της Βραζιλίας</description>
-      <category>Ανάλυση</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
     </item>
   </channel>
