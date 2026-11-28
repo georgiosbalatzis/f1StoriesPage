@@ -6,7 +6,16 @@
     <description>Άρθρα Formula 1, αναλύσεις και ιστορίες από το F1 Stories.</description>
     <language>el</language>
     <atom:link href="https://f1-stories.gr/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Thu, 26 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 22:00:00 GMT</lastBuildDate>
+    <item>
+      <title>BetCast #281: Η FIA αλλάζει τα δεδομένα στο Κατάρ</title>
+      <link>https://f1-stories.gr/blog-module/blog-entries/20261128J/article.html</link>
+      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261128J/article.html</guid>
+      <pubDate>Fri, 27 Nov 2026 22:00:00 GMT</pubDate>
+      <description>Η FIA αλλάζει τα δεδομένα στο Κατάρ και η Mercedes κυριαρχή.</description>
+      <category>Στοίχημα</category>
+      <dc:creator>Γιάννης Πουλικίδης</dc:creator>
+    </item>
     <item>
       <title>Ο Ζακ Βιλνέβ και η ζωή πίσω από το κράνος</title>
       <link>https://f1-stories.gr/blog-module/blog-entries/20261127W/article.html</link>
@@ -267,15 +276,6 @@
       <description>Ανάλυση του Grand Prix της Βραζιλίας</description>
       <category>Ανάλυση</category>
       <dc:creator>Γιάννης Πουλικίδης</dc:creator>
-    </item>
-    <item>
-      <title>Έκπτωτες αυτοκρατορίες</title>
-      <link>https://f1-stories.gr/blog-module/blog-entries/20261107W/article.html</link>
-      <guid isPermaLink="true">https://f1-stories.gr/blog-module/blog-entries/20261107W/article.html</guid>
-      <pubDate>Fri, 06 Nov 2026 22:00:00 GMT</pubDate>
-      <description>Ford, Ferrari και Repsol Honda: τρεις αγωνιστικές αυτοκρατορίες που γνώρισαν την απόλυτη κυριαρχία και σήμερα η κορυφή ανήκει αλλού.</description>
-      <category>Ιστορία</category>
-      <dc:creator>Θέμης Χαρβάλης</dc:creator>
     </item>
   </channel>
 </rss>

@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261128J",
+      "title": "BetCast #281: Η FIA αλλάζει τα δεδομένα στο Κατάρ",
+      "author": "Giannis Poulikidis",
+      "date": "2026-11-28",
+      "dateISO": "2026-11-28",
+      "displayDate": "28 Νοεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20261128J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261128J/1.webp",
+      "excerpt": "Η FIA αλλάζει τα δεδομένα στο Κατάρ και η Mercedes κυριαρχή.",
+      "editorialExcerpt": true,
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261128J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 228,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900,
+      "inputDigest": "fea47274b65a4a38294e31098fbf85d3aec1207f3d6aea904b20d19f114d5890"
+    },
+    {
       "id": "20261127W",
       "title": "Ο Ζακ Βιλνέβ και η ζωή πίσω από το κράνος",
       "author": "Themis Charvalis",
@@ -12552,5 +12581,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-27T20:52:57.684Z"
+  "lastUpdated": "2026-11-28T12:38:29.030Z"
 }
