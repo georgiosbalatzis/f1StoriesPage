@@ -232,16 +232,16 @@ test('duplicate as_of skip reuses only matching published telemetry; no query wo
     assert.equal(state(assess(value), 'costGuard'), 'UNKNOWN');
 });
 
-test('a delayed but successful schedule degrades only schedule; observed 5.5h delay is tolerated', () => {
+test('a delayed but successful schedule degrades only schedule beyond the 12h allowance', () => {
     const value = evidence();
     const later = '2026-11-20T15:00:00Z';
-    // 6.5 h late, like the 6 h 23 min start that opened issue #435: inside the 8 h grace, so still healthy.
-    value.runs.value[0].run_started_at = '2026-11-20T07:30:00Z';
+    // 9.5 h late, like the 9 h 32 min start that opened issue #548: inside the 12 h allowance, so still healthy.
+    value.runs.value[0].run_started_at = '2026-11-20T10:30:00Z';
     assert.equal(state(assess(value, later), 'schedule'), 'HEALTHY');
-    // Exactly the grace is tolerated; beyond it the late run degrades schedule only.
-    value.runs.value[0].run_started_at = '2026-11-20T09:00:00Z';
+    // Exactly 12 h is tolerated; strictly beyond 12 h degrades schedule only.
+    value.runs.value[0].run_started_at = '2026-11-20T13:00:00Z';
     assert.equal(state(assess(value, later), 'schedule'), 'HEALTHY');
-    value.runs.value[0].run_started_at = '2026-11-20T09:30:00Z';
+    value.runs.value[0].run_started_at = '2026-11-20T13:30:00Z';
     assert.equal(state(assess(value, later), 'schedule'), 'DEGRADED');
     assert.equal(state(assess(value, later), 'publication'), 'HEALTHY');
     assert.equal(state(assess(), 'schedule'), 'HEALTHY');
@@ -1213,5 +1213,6 @@ test('watchdog workflow has two timezone schedules, serialized jobs, read-only c
     assert.match(producer, /name: Upload operational metadata\n\s+if: \$\{\{ always\(\) \}\}/);
     assert.match(producer, /name: intelligence-operation-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
     assert.equal(CONFIG.scheduleGraceMs, 8 * 3600000);
+    assert.equal(CONFIG.scheduleDelayMs, 12 * 3600000);
     assert.equal(CONFIG.scheduleCriticalMs, 12 * 3600000);
 });
